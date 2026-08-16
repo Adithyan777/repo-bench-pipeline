@@ -1,0 +1,27 @@
+# secrets
+.env
+.env.*
+
+# assignment inputs (not part of the deliverable)
+*.pdf
+github-repo-url.txt
+target-repo-scan/
+target_repo/
+
+# local tooling
+.claude/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.json
+htmlcov/
+
+# pipeline runtime artifacts
+.llm_cache/
