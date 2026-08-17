@@ -234,6 +234,9 @@ All values are **PROPOSED** and require user confirmation before finalization.
 | `llm.max_tokens_per_repo` | `5000000` | Hard cap on total tokens (input+output) per repo run | Cost control; abort repo when exceeded | PROPOSED -- needs user confirmation |
 | `llm.classify_batch_size` | `15` | Commits or excision candidates per SMALL-model call | Balances throughput vs context-window usage | PROPOSED -- needs user confirmation |
 | `llm.okf_module_chunk_tokens` | `12000` | Max tokens per module before chunking by class/function | Fits within model context window | PROPOSED -- needs user confirmation |
+| `llm.big_max_tokens` | `8192` | Output-token ceiling for BIG-tier calls | Kimi thinking-on can spend hundreds of completion tokens before the answer; needs headroom (S1) | PROPOSED -- needs user confirmation |
+| `llm.small_max_tokens` | `2048` | Output-token ceiling for SMALL-tier calls | Classification/lookup outputs are short (S1) | PROPOSED -- needs user confirmation |
+| `llm.cassette_dir` | `"tests/cassettes"` | Directory of record/replay fixtures used by tests | Offline, deterministic tests via `LLM_MODE=replay` (S1) | PROPOSED -- needs user confirmation |
 
 ### Agent configuration
 
@@ -241,6 +244,8 @@ All values are **PROPOSED** and require user confirmation before finalization.
 |---|---|---|---|---|
 | `agent.max_turns` | `25` | Max tool-call turns per agent run | Hard stop to prevent runaway agents | PROPOSED -- needs user confirmation |
 | `agent.max_tokens_per_tool_result` | `8000` | Truncation limit for tool output returned to model | Keeps context usage bounded | PROPOSED -- needs user confirmation |
+| `agent.chars_per_token` | `4` | Approx chars/token used to convert the tool-result token budget into a char cap | Cheap truncation without a tokenizer dependency (S1) | PROPOSED -- needs user confirmation |
+| `agent.grep_max_matches` | `100` | Cap on matches the `grep` tool returns to the model | Bounds tool-result size on large repos (S1) | PROPOSED -- needs user confirmation |
 | `agent.run_tool_timeout_s` | `600` | Timeout (seconds) for agent `run` tool (executes inside container) | Prevents hung commands within agent loops | PROPOSED -- needs user confirmation |
 | `agent.docker_repair_max_attempts` | `3` | Max agent attempts to fix a failing docker build/test | Bound repair cost; 3 covers most fixable issues | PROPOSED -- needs user confirmation |
 | `agent.baseline_fix_max_attempts` | `1` | Bounded agent-fix attempts for pre-existing broken tests | Audited repair; capped to avoid rabbit holes | PROPOSED -- needs user confirmation |
@@ -289,7 +294,8 @@ Estimated volume for glom: ~25-35 agent runs, ~100-150 direct calls.
 
 | Env var | Default | Purpose | Status |
 |---|---|---|---|
-| `LLM_BASE_URL` | `""` (required) | Baseten OpenAI-compatible endpoint | PROPOSED -- needs user confirmation |
-| `LLM_API_KEY` | `""` (required) | API key for the serving endpoint | PROPOSED -- needs user confirmation |
+| `LLM_BASE_URL` | `""` (required) | OpenAI-compatible endpoint (read from `.env`) | PROPOSED -- needs user confirmation |
+| `LLM_API_KEY` | `""` (required) | API key for the serving endpoint; never logged or written to disk | PROPOSED -- needs user confirmation |
+| `LLM_MODE` | `"live"` | `live` \| `record` \| `replay`. Tests use `replay` (cassettes); recording spends tokens once (S1) | PROPOSED -- needs user confirmation |
 | `LLM_MODEL_BIG` | `moonshotai/Kimi-K2.6` (thinking on) | Model ID for BIG tier (authoring/coding/agents/review) | PROPOSED -- needs user confirmation |
 | `LLM_MODEL_SMALL` | `deepseek-ai/DeepSeek-V4-Flash-0731` (reasoning low) | Model ID for SMALL tier (classification/lookup) | PROPOSED -- needs user confirmation |

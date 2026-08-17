@@ -1,0 +1,166 @@
+{
+  "request": {
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "max_tokens": 8192,
+    "messages": [
+      {
+        "content": "You are a coding agent. Use the tools to complete the task, then reply with a short summary. Do not ask questions.",
+        "role": "system"
+      },
+      {
+        "content": "Create a file hello.py that prints 42, run it with `python hello.py`, and report the output it produced.",
+        "role": "user"
+      }
+    ],
+    "model": "moonshotai/Kimi-K2.6",
+    "temperature": 0.0,
+    "tool_choice": "auto",
+    "tools": [
+      {
+        "function": {
+          "description": "Read a source file. Optional `lines` as 'start:end' (1-indexed).",
+          "name": "read_file",
+          "parameters": {
+            "properties": {
+              "lines": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Search the repo for a regular expression. Returns file:line:match.",
+          "name": "grep",
+          "parameters": {
+            "properties": {
+              "pattern": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "pattern"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Write (create or overwrite) a file in the repo.",
+          "name": "write_file",
+          "parameters": {
+            "properties": {
+              "content": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "content"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Run a shell command inside the repo's Docker container. Returns exit code and output.",
+          "name": "run",
+          "parameters": {
+            "properties": {
+              "cmd": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "cmd"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": "The user wants me to create a file hello.py that prints 42, run it with python hello.py, and report the output. I'll use write_file to create the file, then run to execute it.",
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"path\": \"hello.py\", \"content\": \"print(42)\"}",
+                "name": "write_file"
+              },
+              "id": "functions.write_file:0",
+              "type": "function"
+            },
+            {
+              "function": {
+                "arguments": "{\"cmd\": \"python hello.py\"}",
+                "name": "run"
+              },
+              "id": "functions.run:1",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786948689,
+    "id": "chatcmpl-fad312cf4a504eddbb416960c0516c23",
+    "model": "moonshotai/Kimi-K2.6",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 84,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 62,
+        "audio_tokens": 0,
+        "reasoning_tokens": 42,
+        "rejected_prediction_tokens": 30,
+        "text_tokens": null
+      },
+      "prompt_tokens": 219,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 303
+    }
+  }
+}

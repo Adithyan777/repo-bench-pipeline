@@ -1,0 +1,97 @@
+{
+  "request": {
+    "extra_body": {
+      "reasoning_effort": "low"
+    },
+    "max_tokens": 2048,
+    "messages": [
+      {
+        "content": "Return the integer 42 as `answer`.",
+        "role": "user"
+      }
+    ],
+    "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "answer": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "answer"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"answer\": 42}",
+                "name": "emit"
+              },
+              "id": "chatcmpl-tool-cbc6433ad1ef4873b9b2586f2982a02e",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786948687,
+    "id": "chatcmpl-f8ae7258ee0e4e75828784d5820c6c0a",
+    "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 26,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 20,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 15,
+        "text_tokens": null
+      },
+      "prompt_tokens": 301,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 327
+    }
+  }
+}

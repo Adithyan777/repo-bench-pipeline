@@ -25,3 +25,10 @@ htmlcov/
 
 # pipeline runtime artifacts
 .llm_cache/
+output/
+transcripts/
+scripts/_record_workdir/
+
+# fixture repos are rebuilt by tests/fixtures/build_mini_pkg.py; don't commit .git
+tests/fixtures/mini_pkg/
+tests/fixtures/mini_pkg_notests/

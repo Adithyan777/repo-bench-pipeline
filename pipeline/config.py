@@ -14,7 +14,9 @@ from typing import Literal
 LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "")  # Baseten OpenAI-compatible endpoint
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
 LLM_MODEL_BIG = os.environ.get("LLM_MODEL_BIG", "moonshotai/Kimi-K2.6")  # Baseten slug; thinking on
-LLM_MODEL_SMALL = os.environ.get("LLM_MODEL_SMALL", "deepseek-ai/DeepSeek-V4-Flash-0731")  # Baseten slug
+LLM_MODEL_SMALL = os.environ.get(
+    "LLM_MODEL_SMALL", "deepseek-ai/DeepSeek-V4-Flash-0731"
+)  # Baseten slug
 
 Tier = Literal["big", "small"]
 Reasoning = Literal["off", "low", "high", "max"]  # normalized; translated per model in llm/
@@ -80,12 +82,22 @@ class LLMConfig:
     max_tokens_per_repo: int = 5_000_000  # abort repo when exceeded
     classify_batch_size: int = 15  # commits / excision candidates per small-model call
     okf_module_chunk_tokens: int = 12_000  # chunk modules larger than this by class/function
+    # Per-tier output-token ceiling. BIG needs headroom: Kimi with thinking on can
+    # spend hundreds of completion tokens before the visible answer.
+    big_max_tokens: int = 8_192
+    small_max_tokens: int = 2_048
+    cassette_dir: str = "tests/cassettes"  # record/replay fixtures for tests (LLM_MODE)
+
+    def max_tokens_for(self, tier: Tier) -> int:
+        return self.big_max_tokens if tier == "big" else self.small_max_tokens
 
 
 @dataclass
 class AgentConfig:
     max_turns: int = 25
     max_tokens_per_tool_result: int = 8_000
+    chars_per_token: int = 4  # approx chars/token for tool-result truncation budget
+    grep_max_matches: int = 100  # cap on grep tool matches returned to the model
     run_tool_timeout_s: int = 600  # `run` tool executes only inside the container
     docker_repair_max_attempts: int = 3
     baseline_fix_max_attempts: int = 1  # bounded agent fix of pre-existing failing tests
@@ -241,8 +253,17 @@ class HistoryFunnelConfig:
     max_source_lines_changed: int = 300
     max_source_files_changed: int = 6
     require_coverage_or_added_tests: bool = True
-    reject_manifest_changes: bool = True  # setup.py / requirements* / pyproject -> dependency-changing
-    ignore_paths: tuple[str, ...] = ("docs/", "*.md", "*.rst", ".github/", "CHANGELOG*", "*_version.py")
+    reject_manifest_changes: bool = (
+        True  # setup.py / requirements* / pyproject -> dependency-changing
+    )
+    ignore_paths: tuple[str, ...] = (
+        "docs/",
+        "*.md",
+        "*.rst",
+        ".github/",
+        "CHANGELOG*",
+        "*_version.py",
+    )
     fix_keyword_regex: str = r"fix|bug|GH-\d+|#\d+|error|incorrect|regression|edge case"
     score_fix_keyword: float = 1.0
     score_adds_tests: float = 2.0
@@ -327,7 +348,9 @@ class DifficultyConfig:
         "test_count",
     )
     justification_must_cite_feature: bool = True
-    target_spread: dict[str, int] = field(default_factory=lambda: {"easy": 2, "medium": 5, "hard": 3})
+    target_spread: dict[str, int] = field(
+        default_factory=lambda: {"easy": 2, "medium": 5, "hard": 3}
+    )
 
 
 @dataclass

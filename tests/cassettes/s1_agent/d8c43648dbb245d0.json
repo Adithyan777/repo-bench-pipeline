@@ -1,0 +1,181 @@
+{
+  "request": {
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "max_tokens": 8192,
+    "messages": [
+      {
+        "content": "You are a coding agent. Use the tools to complete the task, then reply with a short summary. Do not ask questions.",
+        "role": "system"
+      },
+      {
+        "content": "Create a file hello.py that prints 42, run it with `python hello.py`, and report the output it produced.",
+        "role": "user"
+      },
+      {
+        "content": "",
+        "role": "assistant",
+        "tool_calls": [
+          {
+            "function": {
+              "arguments": "{\"path\": \"hello.py\", \"content\": \"print(42)\"}",
+              "name": "write_file"
+            },
+            "id": "functions.write_file:0",
+            "type": "function"
+          },
+          {
+            "function": {
+              "arguments": "{\"cmd\": \"python hello.py\"}",
+              "name": "run"
+            },
+            "id": "functions.run:1",
+            "type": "function"
+          }
+        ]
+      },
+      {
+        "content": "wrote 9 bytes to hello.py",
+        "role": "tool",
+        "tool_call_id": "functions.write_file:0"
+      },
+      {
+        "content": "exit_code=0\n--- stdout ---\n42\n\n--- stderr ---\n",
+        "role": "tool",
+        "tool_call_id": "functions.run:1"
+      }
+    ],
+    "model": "moonshotai/Kimi-K2.6",
+    "temperature": 0.0,
+    "tool_choice": "auto",
+    "tools": [
+      {
+        "function": {
+          "description": "Read a source file. Optional `lines` as 'start:end' (1-indexed).",
+          "name": "read_file",
+          "parameters": {
+            "properties": {
+              "lines": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Search the repo for a regular expression. Returns file:line:match.",
+          "name": "grep",
+          "parameters": {
+            "properties": {
+              "pattern": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "pattern"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Write (create or overwrite) a file in the repo.",
+          "name": "write_file",
+          "parameters": {
+            "properties": {
+              "content": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "content"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      },
+      {
+        "function": {
+          "description": "Run a shell command inside the repo's Docker container. Returns exit code and output.",
+          "name": "run",
+          "parameters": {
+            "properties": {
+              "cmd": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "cmd"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": "Created `hello.py` containing `print(42)` and ran it with `python hello.py`.\n\nOutput produced:\n```\n42\n```",
+          "function_call": null,
+          "reasoning_content": "The user asked me to create a file hello.py that prints 42, run it with `python hello.py`, and report the output it produced.\n\nI have:\n1. Created hello.py with content `print(42)`\n2. Run it with `python hello.py`\n3. The output was `42` (with exit code 0, no stderr)\n\nI should report this clearly.",
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": null
+        }
+      }
+    ],
+    "created": 1786948697,
+    "id": "chatcmpl-8a7f92180a264bf48373b0a00af8f58b",
+    "model": "moonshotai/Kimi-K2.6",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 107,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 78,
+        "audio_tokens": 0,
+        "reasoning_tokens": 79,
+        "rejected_prediction_tokens": 42,
+        "text_tokens": null
+      },
+      "prompt_tokens": 312,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 419
+    }
+  }
+}
