@@ -360,15 +360,33 @@ class HistoryFunnelConfig:
 
 @dataclass
 class ExcisionFunnelConfig:
-    min_covering_tests: int = 2
-    min_lines: int = 8
+    min_covering_tests: int = 2  # distinct base test nodeids that PASSED at baseline
+    # Central dispatch/registry code is hit by most of the suite; excising it fails
+    # nearly everything instead of a targeted set of tests -> not a focused task.
+    max_covering_tests: int = 40
+    min_lines: int = 8  # span = end_line - def line + 1 (decorators excluded)
     max_lines: int = 80
     min_complexity: int = 3
     public_only: bool = True
+    require_public_parent: bool = True  # method on a `_Private` class is not public API
+    skip_init_modules: bool = True  # functions defined in __init__.py (re-export shims)
     min_assertions_touching_fn: int = 3  # below this, agent adds edge-case tests
+    verifier_agent_max_attempts: int = 1  # bounded top-up agent runs per candidate
     excision_body: str = 'raise NotImplementedError("excised")'
     strip_docstring: bool = False  # flag: --excision-hard
     build_target: int = 5
+    # Pre-gate: a candidate whose covering test files import private repo symbols/modules
+    # is rejected before the screen (same AST rule as the harness static gate).
+    reject_private_verifier_imports: bool = True
+    # The SMALL screen walks the ranking in classify_batch_size chunks until build_target
+    # survivors are found (backfills past screened-out candidates); rest are `surplus`.
+    # Screen decisions are persisted in candidates.json keyed by content hash and reused
+    # on rerun (unless the step is --force'd), so reruns need no LLM call.
+    reuse_screen_decisions: bool = True
+    # Score = covering_tests * complexity; ranked round-robin over modules for diversity.
+    rank_module_round_robin: bool = True
+    # Verifier test files are copied with their conftest.py ancestors so fixtures resolve.
+    copy_conftests: bool = True
 
 
 @dataclass
@@ -385,11 +403,12 @@ class NetNewConfig:
 class HarnessConfig:
     determinism_runs: int = 3
     strict_fail_reason: bool = True
+    # The classifier may ONLY emit reasons from these two lists (enforced).
     valid_fail_reasons: tuple[str, ...] = (
         "AssertionError",
         "pytest.raises",
         "NotImplementedError",
-        "exception_in_function_under_test",
+        "exception_in_repo_code",  # any exception whose traceback passed through repo code
     )
     invalid_fail_reasons: tuple[str, ...] = (
         "ImportError",
@@ -400,11 +419,56 @@ class HarnessConfig:
         "collected_0_items",
         "fixture_not_found",
         "error_before_repo_call",
+        "no_failing_test",
+        "no_report",
     )
     run_collateral_for_excision: bool = True
     recopy_canonical_verifier: bool = True
     verifier_may_only_import_public_symbols_in_input: bool = True
     verifier_visibility: str = "visible"  # flag: --verifier-visibility visible|hidden
+    # A failing test is "valid" only if the exception passed through repo (non-test)
+    # code, or it is an assertion / pytest.raises mismatch raised in the test itself.
+    report_filename: str = ".pytest-report.json"  # json-report written inside the workdir
+    min_failing_tests: int = 1  # fail-before must have at least this many failing tests
+    # If the task's image tag is missing locally, build it from <task>/input/Dockerfile.
+    build_image_if_missing: bool = False
+    # The verdict records the live image digest; a rebuilt image gets a new Id even
+    # from the same pinned Dockerfile, so a digest mismatch is reported, not a gate.
+    gate_on_image_digest: bool = False
+    evidence_dirname: str = "evidence"
+    fail_before_log: str = "fail_before.log"
+    pass_after_log: str = "pass_after.log"
+    collateral_log: str = "collateral.log"
+    raw_report_suffix: str = ".report.json"  # raw json-report kept next to each log
+    determinism_filename: str = "determinism.json"
+    collateral_filename: str = "collateral.json"
+    verdict_filename: str = "verdict.json"
+
+
+@dataclass
+class TasksConfig:
+    """Layout + bookkeeping for the P3 stage (funnels, builders, harness, manifest)."""
+
+    tasks_root: str = "tasks"  # tasks/<repo>/<task_id>/ ; tasks/<repo>/tasks.json
+    manifest_filename: str = "tasks.json"
+    candidates_filename: str = "candidates.json"  # output/<repo>/tasks/candidates.json
+    task_json: str = "task.json"
+    golden_solution: str = "goldenSolution.md"
+    verifier_run_script: str = "run.sh"
+    excision_id_prefix: str = "exc"  # exc-<module>-<func>
+    # Trees copied into input/ and solution/ skip these (never .git: tasks are self-contained)
+    tree_ignore: tuple[str, ...] = (".git", "__pycache__", "*.egg-info", ".pytest_cache")
+    instruction_status_template: str = "template-S4"  # LLM-authored instruction lands in S5
+    # Pipeline sources whose contents fingerprint every tasks step's input hash.
+    code_fingerprint_files: tuple[str, ...] = (
+        "pipeline/tasks/excision.py",
+        "pipeline/tasks/build_excision.py",
+        "pipeline/tasks/harness.py",
+        "pipeline/tasks/manifest.py",
+        "pipeline/tasks/runner.py",
+        "pipeline/tasks/classify.py",
+        "pipeline/ecosystems/source_ops.py",
+    )
 
 
 @dataclass
@@ -463,6 +527,7 @@ class Config:
     excision: ExcisionFunnelConfig = field(default_factory=ExcisionFunnelConfig)
     netnew: NetNewConfig = field(default_factory=NetNewConfig)
     harness: HarnessConfig = field(default_factory=HarnessConfig)
+    tasks: TasksConfig = field(default_factory=TasksConfig)
     instruction: InstructionConfig = field(default_factory=InstructionConfig)
     difficulty: DifficultyConfig = field(default_factory=DifficultyConfig)
     selection: SelectionConfig = field(default_factory=SelectionConfig)

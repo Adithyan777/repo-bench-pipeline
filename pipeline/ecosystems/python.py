@@ -407,6 +407,15 @@ class PythonAdapter(EcosystemAdapter):
             parts.append(f"--deselect {shlex.quote(nodeid)}")
         return " ".join(parts)
 
+    def verifier_command(self, nodeids: list[str]) -> str:
+        """The documented command that runs exactly these tests (no report flags)."""
+        return " ".join([self.test_command(Path(".")), *(shlex.quote(n) for n in nodeids)])
+
+    def with_report(self, cmd: str, report_rel: str) -> str:
+        """Same run, plus the structured report the harness parses (pytest accepts
+        options after positional nodeids)."""
+        return f"{cmd} -p no:cacheprovider --json-report --json-report-file={report_rel}"
+
     def test_framework_bootstrap(self, repo: Path) -> None:
         repo = Path(repo)
         tests = repo / "tests"
@@ -416,7 +425,9 @@ class PythonAdapter(EcosystemAdapter):
             conftest.write_text("# bootstrapped by pipeline; generated tests land here (S6)\n")
 
     def parse_test_report(self, path: Path) -> dict[str, dict[str, str]]:
-        data = json.loads(Path(path).read_text())
+        return self.parse_test_report_data(json.loads(Path(path).read_text()))
+
+    def parse_test_report_data(self, data: dict) -> dict[str, dict[str, str]]:
         results: dict[str, dict[str, str]] = {}
         status_map = {
             "passed": "pass",

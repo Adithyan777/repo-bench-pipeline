@@ -46,3 +46,11 @@ def build_image(context_dir: Path, tag: str) -> str:
         raise DockerError(f"no Dockerfile in {context_dir}")
     _run(["docker", "build", "-t", tag, str(context_dir)])
     return _run(["docker", "inspect", "--format", "{{.Id}}", tag])
+
+
+def image_id(ref: str) -> str | None:
+    """Local ``sha256:...`` id of an image tag/id, or None when it is not present."""
+    try:
+        return _run(["docker", "inspect", "--format", "{{.Id}}", ref])
+    except DockerError:
+        return None

@@ -181,9 +181,16 @@ class LLMClient:
         if self.audit_dir is None:
             return
         self.audit_dir.mkdir(parents=True, exist_ok=True)
-        data = {stage: vars(usage) for stage, usage in self.usage_by_stage.items()}
-        data["_total"] = vars(self._total_usage())
-        (self.audit_dir / "llm_usage.json").write_text(json.dumps(data, indent=2, sort_keys=True))
+        path = self.audit_dir / "llm_usage.json"
+        # Steps from other stages' clients are kept; this client's steps replace their own.
+        data = json.loads(path.read_text()) if path.is_file() else {}
+        data.update({step: vars(usage) for step, usage in self.usage_by_stage.items()})
+        total = Usage()
+        for step, usage in data.items():
+            if step != "_total":
+                total.add(Usage(**usage))
+        data["_total"] = vars(total)
+        path.write_text(json.dumps(data, indent=2, sort_keys=True))
 
     # --- internals ---
 

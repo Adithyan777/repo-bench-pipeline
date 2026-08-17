@@ -10,7 +10,7 @@ Legend: `todo` · `in-progress` · `review` (awaiting author review) · `done`
 | S1 | Steps 0+1: fixture repos (`tests/fixtures/mini_pkg`, `mini_pkg_notests`), package skeleton, `state` (resumability), `docker.run_in_container` + image build, LLM client (big/small, reasoning per tier, schema-forced JSON, retries, usage log, record/replay), agent loop + tools, foundation tests | review | See `### S1`. `pytest` → 32 passed (Docker live). Cassettes recorded (1049 tokens). Kimi-K2.6 tool-calling-with-thinking day-1 check PASSED. |
 | S2 | Step 2+2b: P1 core — detect → synthesize requirements → uv lock → Dockerfile/compose → build → baseline + quarantine; `ecosystems/python.py`; run on glom, then toolz + minidump | review | See `### S2` (+ round-2 fixes). glom/toolz/minidump/fixtures green; glom & toolz twice-identical ✓; toolz 0-LLM/no-agent after F1. `pytest` → 72 passed / 3 slow. |
 | S3 | Step 3: P2 static — repo_graph.json, history_index, test_map, coverage, hotspots, graph self-verification | review | See `### S3` (+ review-round fixes). mini_pkg/glom/toolz/minidump all built; graph byte-identical twice; verification precision 1.0 on every edge type, 0 mismatches. `pytest` → 96 passed / 3 slow. NO LLM. |
-| S4 | Step 4: excision funnel + validation harness end-to-end → first VALID task; task folder format, evidence, verdict, tasks.json writer | todo | |
+| S4 | Step 4: excision funnel + validation harness end-to-end → first VALID task; task folder format, evidence, verdict, tasks.json writer | review | See `### S4`. `--stage tasks` wired (funnel → build → validate → manifest). glom **4/5 VALID**, toolz **5/5** (after review fixes), mini_pkg 3/3 in tests (relaxed thresholds). Harness idempotent. `pytest` → 124 passed / 3 slow, `ruff check .` clean. LLM: SMALL screen (decisions persisted + reused) + one bounded top-up agent. |
 | S5 | Step 5: history funnel + task-builder agent (verifier authoring/neutrality, instruction + leak gates, difficulty) | todo | |
 | S6 | Step 6: P1 test-gen + AST mutators + mutation gate | todo | |
 | S7 | Step 7: P2 .okf/ writer + claim verifier | todo | |
@@ -449,3 +449,207 @@ geometry→shapes rename); source module count 4→5 (adds `mini_pkg.shapes`).
   `--end-of-options` achieves the intent (sha can never be parsed as an option) and is git-correct.
 - Full suite **98 passed / 3 slow**, ruff clean. All knowledge artifacts regenerated from fresh
   outputs; glom graph byte-identical across recompute.
+
+### S4
+
+**Scope delivered.** Excision funnel → task builder → validation harness → `tasks.json`, wired as
+`--stage tasks` (`--stage all` = hygiene → knowledge → tasks). Only LLM use: the SMALL screen
+(batched) and, when a candidate has fewer than `excision.min_assertions_touching_fn` assertions,
+ONE bounded BIG top-up agent (fired once this session, on the mini_pkg fixture). No agent-authored
+instructions, no leak gates, no difficulty, no history/net-new funnels — all S5+.
+
+**What exists (real, tested)**
+- `tasks/excision.py` — deterministic funnel over `symbol_index.json` + `test_map.json` +
+  `hygiene/baseline.json` (only baseline-PASSING tests count as covering; parametrized cases
+  collapse to base nodeids). Rejects with a reason (`test-code`, `init-module`, `private`,
+  `private-parent`, `uncovered`, `few-covering-tests(n<k)`, `too-central(n>k)`, `too-short`,
+  `too-long`, `low-complexity`), scores survivors `covering_tests × complexity`, ranks round-robin
+  over modules, screens the top `build_target × screen_pool_multiplier` with the SMALL model
+  (`p3.excision.screen_candidate`, `{docstring_leaks_impl, trivially_inferable, reason}` per
+  function; reject reasons `docstring-leaks-implementation` / `trivially-inferable`), keeps the
+  first `build_target` survivors (`selected`), the rest `surplus`. Everything considered lands in
+  `output/<repo>/tasks/candidates.json`.
+- `ecosystems/source_ops.py` (Python-specific, next to `symbols.py`) — `excise_function` splices the
+  body by line span (decorators, multi-line signature, docstring, comments and every other def stay
+  byte-identical; nested defs go with the body; one-liners → `ExciseError`), `module_bound_names`
+  (top-level bindings incl. `try/if` blocks + star-import expansion, for the static gate),
+  `verifier_imports`, `count_assertions`, `test_functions_in`.
+- `tasks/build_excision.py` — `tasks/<repo>/<task_id>/`: `solution/` = `output/<repo>/repo` tree
+  minus `.git`/caches; `input/` = same tree with the target body → `excision_body` (docstring kept
+  unless `--excision-hard`); `verifier/` = the covering test files at their repo-relative paths +
+  `conftest.py` ancestors + `run.sh`; `goldenSolution.md` = unified diff input→solution + a
+  mechanical "why correct" (LLM prose marked TODO-S5); `task.json` (schema below) with a
+  structural non-leaking instruction (`instruction_status: "template-S4"`, `difficulty: null`).
+  Top-up agent (`p3.build.verifier_agent`, BIG): works on a throw-away copy of `solution/` with
+  concrete + graph tools, may only contribute ONE new file
+  `<test dir>/test_excision_<name>.py`; everything else it touches is discarded; audited to
+  `agent_actions.jsonl`; `excision.verifier_agent_max_attempts` bounds it.
+- `tasks/classify.py` — STRICT right-reason classifier over pytest-json-report (shape verified
+  in the real image, 11 failure modes probed): valid = `AssertionError` / `Failed: DID NOT RAISE` /
+  `NotImplementedError` / any exception whose traceback passed through a repo (non-test) frame;
+  invalid = collector failures (`ImportError`/`SyntaxError`/`collection_error`), `collected_0_items`
+  (`summary.total == 0`), `fixture_not_found`, `error_before_repo_call` (incl. import errors in a
+  test body). ALL failing tests must be valid.
+- `tasks/harness.py` + `pipeline/validate.py` — `python -m pipeline.validate <task_dir>...` /
+  `validate_task(task_dir)`. Per task: image present (digest recorded; see deviations) → fail-before
+  on `input/` (+ canonical `verifier/` overlaid, always) → right-reason → pass-after on `solution/`
+  → determinism (`determinism_runs` total runs each, compares `{exit_code, nodeid→outcome}`) →
+  collateral (repo's baseline suite on `solution/`, no baseline-passing test may fail; runs for
+  excision too) → static gate (verifier `from <repo module> import <name>`: name must exist in
+  `input/` and not start with `_`). Evidence: `fail_before.log`, `pass_after.log`,
+  `collateral.log` (real container stdout/stderr), `determinism.json`, `collateral.json`,
+  `verdict.json`. Tasks validate in parallel (`docker.harness_parallel_workers`).
+- `tasks/manifest.py` — `tasks/<repo>/tasks.json`; `validation_status` READ from
+  `evidence/verdict.json` (`VALID`/`INVALID`/`UNVALIDATED`), never set by hand.
+- `tasks/runner.py` — steps `excision_funnel → build_excision → validate → manifest`, resumable,
+  `tasks.code_fingerprint_files` in every input hash; stale `exc-*` folders from an earlier build
+  are pruned; timings under `report_data.stages`, counts under `report_data.tasks`, LLM usage
+  merged into `audit/llm_usage.json` (client `write_usage` now merges per-step instead of
+  overwriting other stages).
+- Adapter additions: `verifier_command(nodeids)`, `with_report(cmd, report)`,
+  `parse_test_report_data`; `docker.image.image_id`; `HygieneContext.tasks_dir` +
+  `build_context(llm_stage=...)` (cassette/transcript stage per pipeline stage).
+
+**Per-repo results (fresh outputs from the final code)**
+
+| Repo | functions considered | rejected by reason (deterministic) | screened out (SMALL) | built | VALID | INVALID (reason) | screen tokens | validate wall |
+|---|---|---|---|---|---|---|---|---|
+| glom | 497 | private 196, test-code 195, few-covering-tests 28, too-short 21, low-complexity 14, private-parent 8, too-central 7, uncovered 4 (pre-gate: 0) | 0 of 15 | 5 | **4** (`exc-glom.core-format_target_spec_trace`, `exc-glom.grouping-GROUP`, `exc-glom.matching-Check.glomit`, `exc-glom.reduction-Fold.glomit`) | 1: `exc-glom.cli-mw_get_target` (fail-reason:error_before_repo_call) | 5871 first run; **0 on rerun** (15 decisions reused) | 21 s (5 tasks in parallel, 3 determinism runs + collateral each) |
+| toolz | 375 | test-code 217, private 55, few-covering-tests 38, too-short 16, low-complexity 14, uncovered 8, **verifier-imports-private 6** (`_signatures`), init-module 1, too-long 1 | 5 of 15 (backfilled to target) | 5 | **5** (`merge_with`, `update_in`, `memoize`, `groupby`, `sandbox.parallel.fold`) | 0 | 6602 | 28 s |
+| mini_pkg (defaults) | 26 | test-code 11, too-short 5, few-covering-tests 4, private 3, uncovered 3 | — | 0 | 0 | — | 0 | — |
+| mini_pkg (tests, `min_lines=3 min_complexity=1`, cassette) | 26 | test-code 11, few-covering-tests 4, private 3, uncovered 3 | 2 (trivially-inferable: ceil_div, Registry.register) | 3 | **3** (`clamp`, `display_width`, `truncate`) | — | 1134 (cassette) | 7 s |
+| minidump | — | no tests → `test_map` empty → 0 candidates by construction (not run) | — | — | — | — | — | — |
+
+`verifier_on_input` (recorded at build time, in `task.json` + `tasks.json`): glom
+format_target_spec_trace 28 failing / 0 passing, GROUP 6/0, Check.glomit 6/21, Fold.glomit 12/0,
+mw_get_target 10/0; toolz merge_with 9/0, update_in 6/0, memoize 10/0, groupby 9/0, fold 1/1.
+
+- glom INVALID `exc-glom.cli-mw_get_target`: `fail-reason:error_before_repo_call` — the CLI tests
+  drive the command through face's `CommandChecker`, which catches the excision
+  `NotImplementedError` and raises its own `CheckError` from site-packages, so no repo frame is in
+  the traceback. STRICT is doing its job (the test does not visibly fail for the excision reason).
+- toolz: six candidates whose covering tests import the private `toolz._signatures` module /
+  `_is_valid_args` helpers are now rejected by the funnel pre-gate (`verifier-imports-private`)
+  before any LLM spend (before the review they reached the harness and failed its static gate);
+  the screen backfilled past 5 screened-out candidates and all 5 built tasks are VALID.
+- mini_pkg: nothing in the fixture meets the default `min_lines=8`/`min_complexity=3` (largest
+  covered public function is 7 lines) → **0 candidates by default** (recorded, every function has
+  a reason). The tests use `--set excision.min_lines=3 --set excision.min_complexity=1`
+  (`tests/_smoke.mini_pkg_excision_config`, top-up agent disabled there); an earlier live fixture
+  run (since removed from `output/`) exercised the top-up agent for `truncate` (2 assertions):
+  5 tests added, 16.6k BIG tokens, audited.
+- Harness re-run on the same folder is idempotent: `python -m pipeline.validate
+  tasks/glom/exc-glom.core-format_target_spec_trace` twice → identical `verdict.json` minus
+  `timestamps` (asserted in the tests as well).
+- The SMALL screen is NOT byte-stable across runs at temperature 0 (one toolz candidate flipped
+  between two runs) — expected per DESIGN ("determinism from gates, not models"). Screen decisions
+  are therefore persisted in `candidates.json` (`screen_key` = content hash) and reused on rerun
+  unless `--force excision_funnel`/`--fresh`: verified live — a rerun of glom after a code change
+  re-ran the funnel with 15 reused decisions, zero LLM calls and the identical selection.
+
+**Deviations / decisions (flag for author)**
+1. `verdict.json` records the LIVE image Id and `digest_matches_task` but does not gate on it
+   (`harness.gate_on_image_digest=False`): every rebuild from the same pinned Dockerfile yields a
+   new Id (bench-mini_pkg's live Id already differs from `output/mini_pkg/hygiene/build.json`), so
+   gating would invalidate every task after any rebuild. A missing image is always INVALID.
+2. Static gate scope: only `from <repo module> import <name>` over modules that exist in `input/`
+   is judged; `import pkg.sub`/dynamic modules (toolz's `tlz` builds submodules at import time —
+   a first pass falsely flagged it) are left to the container runs.
+3. New PROPOSED heuristics: `excision.max_covering_tests=40` (glom `get_handler` is covered by 112
+   tests; excising it fails the whole suite), `require_public_parent`, `skip_init_modules`,
+   `screen_pool_multiplier`, `rank_module_round_robin`, `copy_conftests`,
+   `verifier_agent_max_attempts`; harness `require_at_least_one_failing_test`,
+   `gate_on_image_digest`, evidence filenames; `TasksConfig` (layout). All in HEURISTICS.md.
+4. `verifier/` layout mirrors repo-relative paths so "re-copy the canonical verifier" is a
+   directory overlay (DESIGN 5.5 note added). `determinism_runs` counts the primary run.
+5. `tasks/` is gitignored for now (author decision Q1); the final `tasks/glom` + `tasks.json`
+   are committed in S9. `ruff` excludes `tasks` and `output`.
+
+**Schemas S5 must know**
+- `task.json`: `{id, title, repo, base_sha, provenance{type:"excision", target, file,
+  span[line,end_line], excised_lines[start,end], docstring_kept}, difficulty: null,
+  difficulty_rationale: null, files_in_scope[], instruction, instruction_status:"template-S4",
+  verifier_cmd (plain, documented: "python -m pytest -q <nodeids>"), verifier_tests[],
+  verifier_files[], verifier_visibility, assertions_touching_fn, verifier_agent{...}|null,
+  collateral{cmd, report, baseline_passing[]}|null, image_tag, image_digest}`. The harness adds
+  `-p no:cacheprovider --json-report ...` via `adapter.with_report`.
+- `evidence/verdict.json`: `{task_id, valid, checks{image, fail_before, right_reason{ok, invalid[],
+  tests{nodeid→{reason, valid, detail}}}, pass_after, determinism, collateral, static_gate},
+  reasons[], repeat_count, image_tag, image_digest (live), task_image_digest, timestamps{started,
+  finished}}`. `determinism.json`: `{runs, identical, fail_before[{exit_code, outcomes}],
+  pass_after[...]}`. `collateral.json`: `{cmd, exit_code, baseline_passing, still_passing,
+  newly_failing[], report_present}`.
+- `output/<repo>/tasks/candidates.json`: `{selected[], ranked[], counts{status|rejected:reason →
+  n}, candidates[{qualname, module, file, line, end_line, span, complexity, is_method, parent,
+  signature, docstring, covering_tests[], score, status, reject_reason, screen}]}` (feeds REPORT).
+  `built.json`: `{qualname → {task_dir, task_id} | {task_dir: null, reject_reason}}`.
+- `tasks/<repo>/tasks.json`: `{repo, tasks[{id, title, source_type, module, difficulty,
+  provenance, verifier_cmd, validation_status, validation_reasons[], path}]}`.
+- History-funnel builders should reuse `build_excision._collateral`, `_files_in_scope`, the
+  `verifier/` overlay convention, `Harness` unchanged (only `provenance.type` differs) and
+  `manifest.write_manifest`. LLM instruction/leak gates/difficulty replace `_instruction` and the
+  `template-S4` marker; `goldenSolution.md` "why correct" prose replaces the TODO-S5 line.
+
+**Exact test command**
+```
+.venv/bin/python -m pytest            # fast: + tests/test_tasks.py (17 unit + 9 docker)
+.venv/bin/python -m pytest -m slow
+.venv/bin/ruff check .
+```
+Result: **124 passed, 3 deselected** (fast) + **3 passed** (slow). `ruff check .` clean at the repo root.
+`tests/test_tasks.py`: AST splice byte-preservation (decorators, multi-line signature, nested def,
+docstring keep/strip, one-liner error), classifier valid/invalid matrix (incl. collector
+ImportError/SyntaxError, 0 collected, fixture-not-found, third-party wrapper), funnel reasons on the
+fixture (defaults → all rejected with reasons; relaxed → clamp ranked first; baseline-passing set
+restricts covering tests; too-central/private-parent/init-module), screen via the `s4_screen`
+cassette (1134 tokens recorded once), static gate, manifest-from-verdict, prune; docker: full
+`--stage tasks` e2e on mini_pkg (3 VALID, all evidence files, provenance/instruction/golden checks,
+resumable second run skips every step, harness idempotent), verifier importing a solution-only
+symbol → INVALID (`fail-reason:ImportError` + static gate), flaky verifier → `nondeterministic`,
+broken `ceil_div` in solution → `collateral-breakage`, tampered `input/tests` defeated by the
+verifier re-copy (and caught when re-copy is disabled), private import → static gate,
+`python -m pipeline.validate` CLI; the top-up agent path with a scripted endpoint (only the one
+file kept, audit written).
+
+**LLM spend this session:** ~75k tokens total (incl. the review-round reruns: glom 5.9k, toolz 6.6k, one earlier toolz/glom pass each) — pre-review figure was ~56k (Baseten): SMALL screen ~46k across all runs (glom 3× ~4.5k, toolz 3× ~3.5k,
+mini_pkg 2× ~1.1k, cassette 1.1k) + BIG top-up agent 28k (two mini_pkg fixture runs, 11.6k +
+16.6k). Zero LLM calls in the harness.
+
+#### S4 review round — GO-with-fixes applied
+
+1. **`verifier/run.sh`** now `cd`s to its own directory (it is overlaid onto the workdir root) and is
+   `+x`; test executes it in the container on `solution/` (exit 0) and `input/` (exit 1).
+2. **ruff** `extend-exclude += tasks, output`; `tasks/` gitignored (Q1) and `tasks/glom` unstaged;
+   stray `tasks/mini_pkg`, `tasks/toolz` and the manual-run `output/mini_pkg/tasks` artifacts
+   removed. `ruff check .` clean at the repo root.
+3. **Funnel pre-gate** `excision.reject_private_verifier_imports`: covering test files that import a
+   private repo module/symbol (any dotted component starting with `_`; same AST rule as the harness
+   static gate, `source_ops.private_repo_imports`) reject the candidate with
+   `verifier-imports-private(<file>: ...)`. The static gate gained the `private-module` reason.
+   The screen now walks the ranking in batches until `build_target` survivors are found (backfill;
+   `screen_pool_multiplier` removed). toolz: 6 pre-gated, 5 screened out, 5 built, **5/5 VALID**.
+4. **`source_ops.read_source`/`write_source`** use strict UTF-8 with `newline=""`; test: CRLF + tab
+   indented file round-trips byte-identical outside the excised body.
+5. **`harness.min_failing_tests`** (config + HEURISTICS; replaces the boolean); the builder runs
+   the verifier on `input/` once at build time and records `verifier_on_input {exit_code,
+   n_failing, n_passing}` in `task.json` and `tasks.json`; top-up tests that do not fail on input
+   are dropped (`verifier_agent.dropped_passing_on_input`).
+6. **README** "Validate a task standalone" (`docker build -t <image_tag> <task>/input` +
+   `python -m pipeline.validate <task>`); `harness.build_image_if_missing` (default False) builds
+   the tag from `input/Dockerfile` when absent.
+7. **Classifier reasons are enforced** against `harness.valid_fail_reasons` /
+   `invalid_fail_reasons` (unknown reason → `ValueError`; validity must agree with the lists);
+   renamed `exception_in_function_under_test → exception_in_repo_code`; `AttributeError@import`
+   only at collection, a test-body `AttributeError` is `error_before_repo_call`; `no_failing_test`
+   and `no_report` added to the invalid list. Setup-phase and collateral decisions documented in
+   HEURISTICS.
+8. **Lows**: raw json reports kept under `evidence/*.report.json`; collateral treats a
+   baseline-passing test that is skipped/not collected on `solution/` as failure-to-run
+   (`not_run`, fails the check); `candidates.json` counts/selected recomputed after an
+   unsplittable candidate (`unsplittable(...)` reason); stray `__all__` dropped.
+- **Q2**: `verdict.json.environment_hashes` = sha256 of `input/Dockerfile` and the lock;
+  `gate_on_image_digest` stays False. **Q4**: screen decisions persisted (`screen_key`) and reused
+  unless forced; unit test with a counting fake endpoint (backfill + zero calls on rerun) and a
+  live glom rerun (15 reused, 0 calls). Not done / noted: `harness.min_failing_tests` is not yet
+  surfaced as a CLI flag (use `--set`); the top-up agent's dropped-on-input rule is exercised only
+  by the unit path (no live candidate needed it after the pre-gate).

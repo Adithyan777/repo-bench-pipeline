@@ -7,7 +7,7 @@ By default each stage is SKIPPED if it already has cassettes (so re-runs don't
 re-spend tokens or churn multi-turn tapes). Pass --rerecord <stage> to force one,
 or --rerecord all to force everything. Secrets are read from .env, never printed.
 
-Stages: s1_smoke, s1_agent, s2_pin, s2_baseline, s2_reask.
+Stages: s1_smoke, s1_agent, s2_pin, s2_baseline, s2_reask, s4_screen.
 """
 
 from __future__ import annotations
@@ -71,6 +71,7 @@ def main(argv: list[str] | None = None) -> int:
     stage(_smoke.PIN_STAGE, _smoke.run_alias_map)
     stage(_smoke.BASELINE_STAGE, _smoke.run_classify)
     stage(_smoke.REASK_STAGE, _smoke.run_reask)
+    stage(_smoke.SCREEN_STAGE, _smoke.run_excision_screen)
 
     total = 0
     for client in clients:

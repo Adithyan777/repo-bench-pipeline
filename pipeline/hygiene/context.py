@@ -51,6 +51,10 @@ class HygieneContext:
         return self.run_dir / "knowledge"
 
     @property
+    def tasks_dir(self) -> Path:  # output/<repo>/tasks (candidates + build bookkeeping)
+        return self.run_dir / "tasks"
+
+    @property
     def audit_dir(self) -> Path:
         return self.run_dir / "audit"
 
@@ -105,6 +109,7 @@ def build_context(
     fresh: bool = False,
     output_root: Path = Path("output"),
     llm_mode: str | None = None,
+    llm_stage: str = "hygiene",
 ) -> HygieneContext:
     from pipeline.cli import repo_name
 
@@ -117,7 +122,7 @@ def build_context(
     state = State.load(run_dir, force=force, fresh=fresh)
     llm = LLMClient(
         config=config,
-        stage="hygiene",
+        stage=llm_stage,
         audit_dir=run_dir / "audit",
         transcripts_dir=Path("transcripts"),
         **({"mode": llm_mode} if llm_mode else {}),

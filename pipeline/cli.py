@@ -106,7 +106,7 @@ def main(argv: list[str] | None = None) -> int:
         elif stage == "knowledge":
             _run_knowledge(args, config)
         else:
-            raise SystemExit(f"stage '{stage}' is not implemented yet (lands in S4+)")
+            _run_tasks(args, config)
     return 0
 
 
@@ -135,6 +135,24 @@ def _run_knowledge(args: argparse.Namespace, config: Config) -> None:
     )
     run_knowledge(ctx)
     print(f"knowledge done: {ctx.run_dir}")
+
+
+def _run_tasks(args: argparse.Namespace, config: Config) -> None:
+    from pipeline.hygiene.context import build_context
+    from pipeline.tasks.runner import repo_tasks_dir, run_tasks
+
+    ctx = build_context(
+        args.repo,
+        config=config,
+        force=tuple(args.force),
+        fresh=args.fresh,
+        output_root=OUTPUT_ROOT,
+        llm_stage="tasks",
+    )
+    run_tasks(ctx)
+    summary = ctx.report.get("tasks", {}).get("validate", {})
+    valid, total = summary.get("valid", 0), summary.get("tasks", 0)
+    print(f"tasks done: {repo_tasks_dir(ctx)} ({valid}/{total} VALID)")
 
 
 if __name__ == "__main__":

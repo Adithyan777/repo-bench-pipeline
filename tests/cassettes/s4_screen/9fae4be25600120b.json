@@ -1,0 +1,119 @@
+{
+  "request": {
+    "extra_body": {
+      "reasoning_effort": "low"
+    },
+    "max_tokens": 2048,
+    "messages": [
+      {
+        "content": "You screen candidate functions for a 'reimplement this function' benchmark task. The task hides the body but keeps the signature and docstring, and the solver must reimplement it so the existing tests pass. For EACH function answer:\n- docstring_leaks_impl: does the docstring spell out the implementation step by step (so a solver could transcribe it without understanding)? Describing behavior or the contract is NOT a leak.\n- trivially_inferable: is it a trivial wrapper/one-liner whose body is obvious from the signature and name alone (delegation, attribute access, constant)?\nReturn one entry per function, same qualname, with a one-sentence reason.\n\n### mini_pkg.calc.clamp\n```python\ndef clamp(value, low, high):\n    \"\"\"Clamp value into the inclusive range [low, high].\"\"\"\n    if value < low:\n        return low\n    if value > high:\n        return high\n    return value\n```\n\n### mini_pkg.text.display_width\n```python\ndef display_width(s):\n    \"\"\"Return the display width of a string in terminal columns.\"\"\"\n    width = wcswidth(s)\n    return len(s) if width < 0 else width\n```\n\n### mini_pkg.core.Registry.register\n```python\n    def register(self, name, value):\n        if name in self._items:\n            raise KeyError(f\"already registered: {name}\")\n        self._items[name] = value\n```\n\n### mini_pkg.calc.ceil_div\n```python\ndef ceil_div(a, b):\n    \"\"\"Return ceil(a / b) for positive integers.\"\"\"\n    return (a + b - 1) // b\n```\n\n### mini_pkg.text.truncate\n```python\ndef truncate(s, width):\n    \"\"\"Truncate s to at most `width` display columns, adding an ellipsis.\"\"\"\n    if not _needs_truncation(s, width):\n        return s\n    if width <= 1:\n        return \".\"[:width]\n    return s[: width - 1] + \"\\u2026\"\n```",
+        "role": "user"
+      }
+    ],
+    "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "properties": {
+              "screens": {
+                "items": {
+                  "properties": {
+                    "docstring_leaks_impl": {
+                      "type": "boolean"
+                    },
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "trivially_inferable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "docstring_leaks_impl",
+                    "trivially_inferable",
+                    "reason"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "screens"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"screens\": [{\"qualname\": \"mini_pkg.calc.clamp\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring only describes the contract (clamp into range), not the step-by-step comparison logic.\"}, {\"qualname\": \"mini_pkg.text.display_width\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring describes behavior but the wcswidth call and fallback logic are not spelled out.\"}, {\"qualname\": \"mini_pkg.core.Registry.register\", \"docstring_leaks_impl\": false, \"trivially_inferable\": true, \"reason\": \"No docstring; body is a trivial dict insertion with a duplicate check obvious from name and signature.\"}, {\"qualname\": \"mini_pkg.calc.ceil_div\", \"docstring_leaks_impl\": false, \"trivially_inferable\": true, \"reason\": \"Docstring only states the contract; the body is the standard one-liner formula obvious from the name.\"}, {\"qualname\": \"mini_pkg.text.truncate\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring describes behavior but the ellipsis character, width<=1 edge case, and helper call are not spelled out.\"}]}",
+                "name": "emit"
+              },
+              "id": "chatcmpl-tool-958100dd388344a7b536f43f0e6761a0",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786963771,
+    "id": "chatcmpl-a51d0b89a31b45d28be0d1744a0ca9e5",
+    "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 321,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 254,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 86,
+        "text_tokens": null
+      },
+      "prompt_tokens": 813,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 1134
+    }
+  }
+}

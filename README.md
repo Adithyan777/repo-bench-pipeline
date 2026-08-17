@@ -40,6 +40,36 @@ under `hygiene/` (incl. the documented test command in `hygiene/test_command.txt
 `report_data.json`. The container test command is `python -m pytest -q` inside the built
 `bench-<repo>` image.
 
+## Generate and validate tasks
+
+```
+./run.sh <repo_url_or_path> --stage tasks        # excision funnel -> build -> validate -> tasks.json
+```
+
+Writes `tasks/<repo>/<task_id>/{task.json,input/,solution/,verifier/,goldenSolution.md,evidence/}`
+and `tasks/<repo>/tasks.json` (whose `validation_status` is read from each task's
+`evidence/verdict.json`). Every candidate considered, with its reject reason, is in
+`output/<repo>/tasks/candidates.json`.
+
+### Validate a task standalone
+
+A task folder is self-contained: `input/` carries the pinned `Dockerfile` + lock. To
+re-judge one on a fresh machine:
+
+```
+docker build -t <image_tag> tasks/<repo>/<task_id>/input      # image_tag is in task.json
+python -m pipeline.validate tasks/<repo>/<task_id> [more task dirs...]
+# or let the harness build it: python -m pipeline.validate --set harness.build_image_if_missing=true <task_dir>
+```
+
+The harness runs, inside that image and on a fresh copy each time: fail-before on `input/`
+(strict right-reason check), pass-after on `solution/`, `harness.determinism_runs` repeats,
+the repo's full baseline suite on `solution/` (collateral), and a static gate on what the
+verifier imports. It always re-copies the canonical `verifier/` over the workdir before
+judging, and writes `evidence/{fail_before.log,pass_after.log,determinism.json,collateral.json,verdict.json}`.
+Inside a workdir, `sh verifier/run.sh` (overlaid at the root: `sh run.sh`) runs the
+verifier tests exactly as the harness does.
+
 ## Development
 
 ```

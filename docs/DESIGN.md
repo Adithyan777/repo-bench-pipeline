@@ -496,6 +496,8 @@ Build:
 
 Select candidates from test_map + graph (deterministic code): covered by at least 2 tests, 8-80 lines, complexity >= 3, public.
 
+Also rejected (S4): functions covered by more than `excision.max_covering_tests` tests (`too-central` -- excising glom's `TargetRegistry.get_handler` fails ~112 tests, not a focused task), methods on `_Private` classes, functions defined in `__init__.py`. Only tests that PASSED at the P1 baseline count as covering. Ranking = covering tests x complexity, round-robin over modules; the SMALL screen sees the top `build_target x screen_pool_multiplier` and the first `build_target` survivors are built. Every function considered lands in `output/<repo>/tasks/candidates.json` with a status and `reject_reason`.
+
 Screen with LLM (SMALL): "Does the docstring spell out the implementation?" and "Is it a trivial wrapper whose callers make it obvious?" Reject if yes.
 
 Build (code): AST rewrite replaces the function body with `raise NotImplementedError("excised")`, keeping signature + docstring. Flag `--excision-hard` (configurable) also strips the docstring, so the contract lives only in the tests and the instruction.
@@ -540,6 +542,8 @@ Steps:
 The harness ALWAYS re-copies the canonical `verifier/` into the workspace before judging (so a solving agent that edits tests cannot hack the verdict). Harness runs tasks in parallel (ThreadPoolExecutor over docker runs).
 
 Alternative-implementation evidence: static gate only. Verifier tests may only import public symbols that exist in `input/`. Rejected alternative: agent-written alternative solutions per task.
+
+S4 implementation notes: `verifier/` mirrors repo-relative paths (`verifier/glom/test/test_x.py`, plus `conftest.py` ancestors and a `run.sh`), so "re-copy the canonical verifier" is a directory overlay onto the fresh workdir. The static gate judges `from <repo module> import <name>` statements over modules that exist in `input/` (private name or missing name -> INVALID); modules it cannot see statically (toolz's `tlz` builds submodules at import time) are left to the container runs. `verdict.json` records the LIVE image digest and whether it matches `task.json` but does not gate on it (`harness.gate_on_image_digest=False`): a rebuild from the same pinned Dockerfile yields a new image Id, and pinning would invalidate every task after any rebuild. A missing image is always INVALID. `determinism_runs` counts the primary run.
 
 
 ### task.json and instruction (step 5.6)
