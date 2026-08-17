@@ -1,0 +1,132 @@
+{
+  "step": "p2.okf.function_contracts",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "For each function of module `glom.grouping` below, write a behavioral contract: inputs (what each parameter means), outputs (what is returned), raises (list of exception TYPE NAMES it can raise, [] if none), side_effects (\"none\" or a short phrase), invariants (a property that always holds, or \"\"). Base every field ONLY on the code shown. Return one entry per qualname.\n\n### glom.grouping.Avg.agg\nsignature: agg(self, target, tree)\n    def agg(self, target, tree):\n        try:\n            avg_acc = tree[self]\n        except KeyError:\n            # format is [sum, count]\n            avg_acc = tree[self] = [0.0, 0]\n        avg_acc[0] += target\n        avg_acc[1] += 1\n        return avg_acc[0] / avg_acc[1]\n\n### glom.grouping.First.agg\nsignature: agg(self, target, tree)\n    def agg(self, target, tree):\n        if self not in tree:\n            tree[self] = STOP\n            return target\n        return STOP\n\n### glom.grouping.GROUP\nsignature: GROUP(target, spec, scope)\ndef GROUP(target, spec, scope):\n    \"\"\"\n    Group mode dispatcher; also sentinel for current mode = group\n    \"\"\"\n    recurse = lambda spec: scope[glom](target, spec, scope)\n    tree = scope[ACC_TREE]  # current accumulator support structure\n    if callable(getattr(spec, \"agg\", None)):\n        return spec.agg(target, tree)\n    elif callable(spec):\n        return spec(target)\n    _spec_type = type(spec)\n    if _spec_type not in (dict, list):\n        raise BadSpec(\"Group mode expected dict, list, callable, or\"\n                      \" aggregator, not: %r\" % (spec,))\n    _spec_id = id(spec)\n    try:\n        acc = tree[_spec_id]  # current accumulator\n    except KeyError:\n        acc = tree[_spec_id] = _spec_type()\n    if _spec_type is dict:\n        done = True\n        for keyspec, valspec in spec.items():\n            if tree.get(keyspec, None) is STOP:\n                continue\n            key = recurse(keyspec)\n            if key is SKIP:\n                done = False  # SKIP means we still want more vals\n                continue\n            if key is STOP:\n                tree[keyspec] = STOP\n                continue\n            if key not in acc:\n                # TODO: guard against key == id(spec)\n                tree[key] = {}\n            scope[ACC_TREE] = tree[key]\n            result = recurse(valspec)\n            if result is STOP:\n                tree[keyspec] = STOP\n                continue\n            done = False  # SKIP or returning a value means we still want more vals\n            if result is not SKIP:\n                acc[key] = result\n        if done:\n            return STOP\n        return acc\n    elif _spec_type is list:\n        for valspec in spec:\n            if type(valspec) is dict:\n                # doesn't make sense due to arity mismatch. did you mean [Auto({...})] ?\n                raise BadSpec('dicts within lists are not'\n                              ' allowed while in Group mode: %r' % spec)\n            result = recurse(valspec)\n            if result is STOP:\n                return STOP\n            if result is not SKIP:\n                acc.append(result)\n        return acc\n    raise ValueError(f\"{_spec_type} not a valid spec type for Group mode\")  # pragma: no cover\n\n### glom.grouping.Group.glomit\nsignature: glomit(self, target, scope)\n    def glomit(self, target, scope):\n        scope[MODE] = GROUP\n        scope[CUR_AGG] = None  # reset aggregation tripwire for sub-specs\n        scope[ACC_TREE] = {}\n\n        # handle the basecase where the spec stops immediately\n        # TODO: something smarter\n        if type(self.spec) in (dict, list):\n            ret = type(self.spec)()\n        else:\n            ret = None\n\n        for t in target_iter(target, scope):\n            last, ret = ret, scope[glom](t, self.spec, scope)\n            if ret is STOP:\n                return last\n        return ret\n\n### glom.grouping.Limit.glomit\nsignature: glomit(self, target, scope)\n    def glomit(self, target, scope):\n        if scope[MODE] is not GROUP:\n            raise BadSpec(\"Limit() only valid in Group mode\")\n        tree = scope[ACC_TREE]  # current accumulator support structure\n        if self not in tree:\n            tree[self] = [0, {}]\n        scope[ACC_TREE] = tree[self][1]\n        tree[self][0] += 1\n        if tree[self][0] > self.n:\n            return STOP\n        return scope[glom](target, self.subspec, scope)\n\n### glom.grouping.Max.agg\nsignature: agg(self, target, tree)\n    def agg(self, target, tree):\n        if self not in tree or target > tree[self]:\n            tree[self] = target\n        return tree[self]\n\n### glom.grouping.Min.agg\nsignature: agg(self, target, tree)\n    def agg(self, target, tree):\n        if self not in tree or target < tree[self]:\n            tree[self] = target\n        return tree[self]\n\n### glom.grouping.Sample.agg\nsignature: agg(self, target, tree)\n    def agg(self, target, tree):\n        # simple reservoir sampling scheme\n        # https://en.wikipedia.org/wiki/Reservoir_sampling#Simple_algorithm\n        if self not in tree:\n            tree[self] = [0, []]\n        num_seen, sample = tree[self]\n        if len(sample) < self.size:\n            sample.append(target)\n        else:\n            pos = random.randint(0, num_seen)\n            if pos < self.size:\n                sample[pos] = target\n        tree[self][0] += 1\n        return sample\n\n### glom.grouping.target_iter\nsignature: target_iter(target, scope)\ndef target_iter(target, scope):\n    iterate = scope[TargetRegistry].get_handler('iterate', target, path=scope[Path])\n\n    try:\n        iterator = iterate(target)\n    except Exception as e:\n        raise TypeError('failed to iterate on instance of type %r at %r (got %r)'\n                        % (target.__class__.__name__, Path(*scope[Path]), e))\n    return iterator"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "contracts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "inputs": {
+                      "type": "string"
+                    },
+                    "outputs": {
+                      "type": "string"
+                    },
+                    "raises": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "side_effects": {
+                      "type": "string"
+                    },
+                    "invariants": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "inputs",
+                    "outputs",
+                    "raises",
+                    "side_effects"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "contracts"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-431eb726ad5541a290e8a0175f6891e4",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"contracts\": [{\"qualname\":\"glom.grouping.Avg.agg\",\"inputs\":\"self: the aggregator instance; target: a numeric value to incorporate into the running average; tree: a mutable mapping (accumulator tree) keyed by aggregator instances\",\"outputs\":\"the current running average (sum / count) as a float after incorporating target\",\"raises\":[\"KeyError (internally caught)\"],\"side_effects\":\"mutates tree by inserting or updating a [sum, count] list under tree[self]\",\"invariants\":\"the returned value equals the arithmetic mean of all target values seen so far for this aggregator instance\"},{\"qualname\":\"glom.grouping.First.agg\",\"inputs\":\"self: the aggregator instance; target: the value to consider as the first element; tree: a mutable mapping (accumulator tree) keyed by aggregator instances\",\"outputs\":\"target on the first call for this self; STOP on subsequent calls\",\"raises\":[],\"side_effects\":\"mutates tree by inserting STOP under tree[self] on first call\",\"invariants\":\"returns target at most once per self; after the first call, tree[self] is STOP and the method returns STOP\"},{\"qualname\":\"glom.grouping.GROUP\",\"inputs\":\"target: the current item being processed; spec: a grouping specification (dict, list, callable, or object with agg method); scope: the glom execution scope containing glom, ACC_TREE, etc.\",\"outputs\":\"the accumulated result for the spec, or STOP, or SKIP; for dict specs returns the accumulated dict or STOP; for list specs returns the accumulated list or STOP; for callables/aggregators returns their result\",\"raises\":[\"BadSpec\",\"ValueError\"],\"side_effects\":\"mutates tree (scope[ACC_TREE]) by inserting new accumulators and updating nested accumulator trees; may mutate scope[ACC_TREE] to point at sub-trees during recursion\",\"invariants\":\"if spec is dict or list, the returned accumulator has the same type as spec; dict specs never produce a done result on the first item because SKIP/values always set done=False\"},{\"qualname\":\"glom.grouping.Group.glomit\",\"inputs\":\"self: the Group specifier instance with a spec attribute; target: an iterable target to group over; scope: the glom execution scope\",\"outputs\":\"the final accumulated grouping result, or the last value before STOP if STOP is encountered\",\"raises\":[],\"side_effects\":\"mutates scope by setting MODE=GROUP, CUR_AGG=None, and ACC_TREE={}; iterates over target; calls scope[glom] repeatedly\",\"invariants\":\"scope[MODE] is set to GROUP before processing begins; if target iteration yields nothing and self.spec is dict/list, ret starts as an empty dict/list, otherwise None\"},{\"qualname\":\"glom.grouping.Limit.glomit\",\"inputs\":\"self: the Limit specifier instance with attributes n and subspec; target: the current item being processed; scope: the glom execution scope\",\"outputs\":\"the result of evaluating self.subspec against target, or STOP once the count exceeds self.n\",\"raises\":[\"BadSpec\"],\"side_effects\":\"mutates scope[ACC_TREE] by inserting a [count, {}] list under tree[self] and updating the count; temporarily redirects scope[ACC_TREE] to the nested dict\",\"invariants\":\"the counter stored in tree[self][0] increments by exactly 1 per call; once the counter exceeds self.n, the method returns STOP and does not recurse further\"},{\"qualname\":\"glom.grouping.Max.agg\",\"inputs\":\"self: the aggregator instance; target: a value to compare; tree: a mutable mapping (accumulator tree) keyed by aggregator instances\",\"outputs\":\"the current maximum value stored for this aggregator (either the previous max or target if larger)\",\"raises\":[],\"side_effects\":\"mutates tree by inserting or updating tree[self] with the maximum value seen so far\",\"invariants\":\"the returned value is the maximum of all target values seen so far for this self; tree[self] always holds the current maximum\"},{\"qualname\":\"glom.grouping.Min.agg\",\"inputs\":\"self: the aggregator instance; target: a value to compare; tree: a mutable mapping (accumulator tree) keyed by aggregator instances\",\"outputs\":\"the current minimum value stored for this aggregator (either the previous min or target if smaller)\",\"raises\":[],\"side_effects\":\"mutates tree by inserting or updating tree[self] with the minimum value seen so far\",\"invariants\":\"the returned value is the minimum of all target values seen so far for this self; tree[self] always holds the current minimum\"},{\"qualname\":\"glom.grouping.Sample.agg\",\"inputs\":\"self: the aggregator instance with attribute size; target: the value to sample; tree: a mutable mapping (accumulator tree) keyed by aggregator instances\",\"outputs\":\"the current reservoir sample list (length up to self.size) after possibly incorporating target\",\"raises\":[],\"side_effects\":\"mutates tree by inserting or updating tree[self] with [num_seen, sample_list]; may append to or replace an element in the sample list\",\"invariants\":\"len(returned list) <= self.size; the returned list represents a simple reservoir sample of all targets seen so far\"},{\"qualname\":\"glom.grouping.target_iter\",\"inputs\":\"target: the object to iterate over; scope: the glom execution scope containing TargetRegistry and Path\",\"outputs\":\"an iterator over target produced by the registered iterate handler\",\"raises\":[\"TypeError\"],\"side_effects\":\"none\",\"invariants\":\"the returned iterator yields the elements of target according to the registered iterate handler\"}]}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787003681,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 1139,
+      "prompt_tokens": 1456,
+      "total_tokens": 2595,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 719,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 961,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 64,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

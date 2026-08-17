@@ -1,0 +1,202 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 458,
+          "nodeid": "glom/test/test_error.py::test_all_public_errors",
+          "type": "Function"
+        },
+        {
+          "lineno": 56,
+          "nodeid": "glom/test/test_grouping.py::test_agg",
+          "type": "Function"
+        },
+        {
+          "lineno": 8,
+          "nodeid": "glom/test/test_grouping.py::test_bucketing",
+          "type": "Function"
+        },
+        {
+          "lineno": 15,
+          "nodeid": "glom/test/test_grouping.py::test_corner_cases",
+          "type": "Function"
+        },
+        {
+          "lineno": 78,
+          "nodeid": "glom/test/test_grouping.py::test_limit",
+          "type": "Function"
+        },
+        {
+          "lineno": 97,
+          "nodeid": "glom/test/test_grouping.py::test_sample",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787005971.8802073,
+  "duration": 0.0631403923034668,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 6,
+    "passed": 6,
+    "total": 6
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.004271357000106946,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_all_public_errors",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 458,
+      "nodeid": "glom/test/test_error.py::test_all_public_errors",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00033337399509036914,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.708300058264285e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005864139966433868,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_agg",
+        "test_grouping.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 56,
+      "nodeid": "glom/test/test_grouping.py::test_agg",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.220800034701824e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012916600098833442,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00031279100221581757,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_bucketing",
+        "test_grouping.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 8,
+      "nodeid": "glom/test/test_grouping.py::test_bucketing",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.154100214596838e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.970799586270005e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.002035407997027505,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_corner_cases",
+        "test_grouping.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 15,
+      "nodeid": "glom/test/test_grouping.py::test_corner_cases",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.37490045139566e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.166599971242249e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00035524799750419334,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_limit",
+        "test_grouping.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 78,
+      "nodeid": "glom/test/test_grouping.py::test_limit",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.029199721524492e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.28749985480681e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011133200314361602,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sample",
+        "test_grouping.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 97,
+      "nodeid": "glom/test/test_grouping.py::test_sample",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.516600453527644e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.174999725772068e-05,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

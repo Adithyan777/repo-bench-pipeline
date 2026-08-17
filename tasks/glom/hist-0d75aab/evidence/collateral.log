@@ -1,0 +1,604 @@
+$ python -m pytest -p no:cacheprovider -q --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+............................F..F.........F......FFFFF..FFF.........F.... [ 42%]
+...................F.................................................... [ 85%]
+........................                                                 [100%]
+=================================== FAILURES ===================================
+___________________________________ test_ref ___________________________________
+
+    def test_ref():
+        assert glom([[[]]], Ref('item', [Ref('item')])) == [[[]]]
+        with pytest.raises(Exception):  # check that it recurses downards and dies on int iteration
+            glom([[[1]]], Ref('item', [Ref('item')]))
+>       assert repr(Ref('item', (T[1], Ref('item')))) == "Ref('item', (T[1], Ref('item')))"
+E       assert 'Ref(\n      ...        ),\n)' == "Ref('item', ...Ref('item')))"
+E         
+E         - Ref('item', (T[1], Ref('item')))
+E         + Ref(
+E         +                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ...
+E         
+E         ...Full output truncated (6 lines hidden), use '-vv' to show
+
+glom/test/test_basic.py:420: AssertionError
+_________________________________ test_bbrepr __________________________________
+
+    def test_bbrepr():
+>       assert bbrepr({int: dict}) == "{int: dict}"
+E       AssertionError: assert '{\n         ...int: dict,\n}' == '{int: dict}'
+E         
+E         - {int: dict}
+E         + {
+E         +                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+glom/test/test_basic.py:458: AssertionError
+____________________________ test_main_yaml_target _____________________________
+
+target_text = '--- \nHello: \n  - World\n', target_format = 'yml'
+
+    def mw_handle_target(target_text, target_format):
+        """ Handles reading in a file specified in cli command.
+    
+        Args:
+            target_text (str): String that specifies where 6
+            target_format (str): Valid formats include `.json` and `.yml` or `.yaml`
+        Returns:
+            The content of the file that you specified
+        Raises:
+            CommandLineError: Issue with file format or appropriate file reading package not installed.
+        """
+        if not target_text:
+            return {}
+        target = {}
+        if target_format == 'json':
+            load_func = json.loads
+        elif target_format in ('yaml', 'yml'):
+            try:
+                import yaml
+                load_func = yaml.load
+            except ImportError:
+                raise UsageError('No YAML package found. To process yaml files, run: pip install PyYAML')
+        elif target_format == 'python':
+            load_func = ast.literal_eval
+        else:
+            raise UsageError('expected target-format to be one of python, json, or yaml')
+    
+    
+        try:
+>           target = load_func(target_text)
+                     ^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: load() missing 1 required positional argument: 'Loader'
+
+glom/cli.py:140: TypeError
+
+During handling of the above exception, another exception occurred:
+
+    def test_main_yaml_target():
+        cwd = os.path.dirname(os.path.abspath(__file__))
+        # Handles the filepath if running tox
+        if '.tox' in cwd:
+            cwd = os.path.join(cwd.split('.tox')[0] + '/glom/test/')
+        path = os.path.join(cwd, 'data/test_valid.yaml')
+        argv = ['__', '--target-file', path, '--target-format', 'yml', 'Hello']
+>       assert cli.main(argv) == 0
+               ^^^^^^^^^^^^^^
+
+glom/test/test_cli.py:125: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/cli.py:96: in main
+    return cmd.run(argv) or 0
+           ^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/face/command.py:478: in run
+    ret = inject(wrapped, kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/face/sinter.py:55: in inject
+    return f(**kwargs)
+           ^^^^^^^^^^^
+<sinter generated next_ d7785146809ed89b>:6: in next_
+    return funcs[0](next_=next_, posargs_=posargs_, spec_file=spec_file, spec_format=spec_format, target_file=target_file, target_format=target_format)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+glom/cli.py:192: in mw_get_target
+    target = mw_handle_target(target_text, target_format)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target_text = '--- \nHello: \n  - World\n', target_format = 'yml'
+
+    def mw_handle_target(target_text, target_format):
+        """ Handles reading in a file specified in cli command.
+    
+        Args:
+            target_text (str): String that specifies where 6
+            target_format (str): Valid formats include `.json` and `.yml` or `.yaml`
+        Returns:
+            The content of the file that you specified
+        Raises:
+            CommandLineError: Issue with file format or appropriate file reading package not installed.
+        """
+        if not target_text:
+            return {}
+        target = {}
+        if target_format == 'json':
+            load_func = json.loads
+        elif target_format in ('yaml', 'yml'):
+            try:
+                import yaml
+                load_func = yaml.load
+            except ImportError:
+                raise UsageError('No YAML package found. To process yaml files, run: pip install PyYAML')
+        elif target_format == 'python':
+            load_func = ast.literal_eval
+        else:
+            raise UsageError('expected target-format to be one of python, json, or yaml')
+    
+    
+        try:
+            target = load_func(target_text)
+        except Exception as e:
+>           raise UsageError('could not load target data, got: %s: %s'
+                             % (e.__class__.__name__, e))
+E           face.errors.UsageError: could not load target data, got: TypeError: load() missing 1 required positional argument: 'Loader'
+
+glom/cli.py:142: UsageError
+----------------------------- Captured stderr call -----------------------------
+error: could not load target data, got: TypeError: load() missing 1 required positional argument: 'Loader'
+_______________________________ test_short_trace _______________________________
+
+    def test_short_trace():
+        stacklifier = ([{'data': S}],)
+        scope = glom([1], stacklifier)[0]['data']
+        fmtd_stack = format_target_spec_trace(scope)
+        exp_lines = [
+            " - Target: [1]",
+            " - Spec: ([{'data': S}],)",
+            " - Spec: [{'data': S}]",
+            " - Target: 1",
+            " - Spec: {'data': S}",
+            " - Spec: S",
+        ]
+>       assert fmtd_stack.splitlines() == exp_lines
+E       AssertionError: assert [' - Target: ...(len=1)', ...] == [' - Target: ... ' - Spec: S']
+E         
+E         At index 0 diff: ' - Target: [' != ' - Target: [1]'
+E         Left contains 4 more items, first extra item: ' - Target: 1'
+E         Use -v to get more diff
+
+/repo/glom/test/test_error.py:60: AssertionError
+___________________________ test_regular_error_stack ___________________________
+
+    def test_regular_error_stack():
+        actual = _make_stack({'results': [{'value': _raise_exc}]})
+        expected = """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.GlomError.wrap(Exception): error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: [None]
+     - Spec: {'results': [{'value': <function _raise_exc at
+     - Spec: [{'value': <function _raise_exc at
+     - Target: None
+     - Spec: {'value': <function _raise_exc at
+     - Spec: <function _raise_exc at
+      File "<boltons.funcutils.FunctionBuilder-0>", line ___, in _raise_exc
+    Exception: unique message
+    """
+        # _raise_exc being present in the second-to-last line above tests
+        # that errors in user-defined functions result in frames being
+        # visible
+>       assert expected == actual
+E       AssertionError: assert 'Traceback (m...que message\n' == 'Traceback (m...que message\n'
+E         
+E         Skipping 281 identical leading characters in diff, use -v to show
+E         -  Target: [
+E         +  Target: [None]
+E         ?           +++++
+E         +  - Spec: {'results': [{'value': <function _raise_exc at
+E         +  - Spec: [{'value': <function _raise_exc at...
+E         
+E         ...Full output truncated (13 lines hidden), use '-vv' to show
+
+/repo/glom/test/test_error.py:147: AssertionError
+____________________________ test_glom_error_stack _____________________________
+
+    def test_glom_error_stack():
+        # NoneType has not attribute value
+        expected = u"""\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.PathAccessError: error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: [None]
+     - Spec: {'results': [{'valué': 'value'}]}
+     - Spec: [{'valué': 'value'}]
+     - Target: None
+     - Spec: {'valué': 'value'}
+     - Spec: 'value'
+    glom.core.PathAccessError: could not access 'value', part 0 of Path('value'), got error: AttributeError("'NoneType' object has no attribute 'value'")
+    """
+        #import glom.core
+        #glom.core.GLOM_DEBUG = True
+        actual = _make_stack({'results': [{u'valué': u'value'}]})
+        print(actual)
+>       assert expected == actual
+E       assert 'Traceback (m...\'value\'")\n' == 'Traceback (m...\'value\'")\n'
+E         
+E         Skipping 271 identical leading characters in diff, use -v to show
+E         -  Target: [
+E         +  Target: [None]
+E         ?           +++++
+E         +  - Spec: {'results': [{'valué': 'value'}]}
+E         +  - Spec: [{'valué': 'value'}]...
+E         
+E         ...Full output truncated (11 lines hidden), use '-vv' to show
+
+/repo/glom/test/test_error.py:172: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Traceback (most recent call last):
+  File "test_error.py", line ___, in _make_stack
+    glom(target, spec)
+  File "core.py", line ___, in glom
+    raise err
+glom.core.PathAccessError: error raised while processing, details below.
+ Target-spec trace (most recent last):
+ - Target: [
+                                                      ... (len=1)
+ - Spec: {
+                                                        ... (len=1)
+ - Spec: [
+                                                        ... (len=1)
+ - Target: None
+ - Spec: {
+                                                        ... (len=1)
+ - Spec: 'value'
+glom.core.PathAccessError: could not access 'value', part 0 of Path('value'), got error: AttributeError("'NoneType' object has no attribute 'value'")
+
+_________________________ test_glom_error_double_stack _________________________
+
+    def test_glom_error_double_stack():
+        actual = _make_stack({'results': [{'value': _subglom_wrap}]})
+        expected = """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.PathAccessError: error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: [None]
+     - Spec: {'results': [{'value': <function _subglom_wrap at
+     - Spec: [{'value': <function _subglom_wrap at
+     - Target: None
+     - Spec: {'value': <function _subglom_wrap at
+     - Spec: <function _subglom_wrap at
+    glom.core.PathAccessError: error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: ['Nested']
+     - Spec: {'internal': ['val']}
+     - Spec: ['val']
+     - Target: 'Nested'
+     - Spec: 'val'
+    glom.core.PathAccessError: could not access 'val', part 0 of Path('val'), got error: AttributeError("'str' object has no attribute 'val'")
+    """
+>       assert expected == actual
+E       assert 'Traceback (m...e \'val\'")\n' == 'Traceback (m...e \'val\'")\n'
+E         
+E         Skipping 271 identical leading characters in diff, use -v to show
+E         -  Target: [
+E         +  Target: [None]
+E         ?           +++++
+E         +  - Spec: {'results': [{'value': <function _subglom_wrap at
+E         +  - Spec: [{'value': <function _subglom_wrap at...
+E         
+E         ...Full output truncated (25 lines hidden), use '-vv' to show
+
+/repo/glom/test/test_error.py:215: AssertionError
+____________________________ test_long_target_repr _____________________________
+
+    def test_long_target_repr():
+        import glom as glom_mod
+        assert not glom_mod.core.GLOM_DEBUG
+        actual = _make_stack(target=[None] * 1000, spec='1001')
+        assert '(len=1000)' in actual
+    
+        class ObjectWithLongRepr(object):
+            def __repr__(self):
+                return '<%s %s>' % (self.__class__.__name__, 'w' + ('ooooo' * 250))
+    
+        actual = _make_stack(target=ObjectWithLongRepr(), spec='badattr')
+>       assert '...' in actual
+E       assert '...' in 'Traceback (most recent call last):\n  File "test_error.py", line ___, in _make_stack\n    glom(target, spec)\n  File "core.py", line ___, in glom\n    raise err\nglom.core.PathAccessError: <exception str() failed>\n'
+
+/repo/glom/test/test_error.py:229: AssertionError
+____________________________ test_all_public_errors ____________________________
+
+    def test_all_public_errors():
+        """test that all errors importable from the top-level glom module
+        pass a basic set of standards.
+    
+        When adding a new public error type, this test will be fail unless
+        that type is also tested below.
+        """
+        import glom
+        import copy
+    
+        err_types = [t for t in
+                     [getattr(glom, name) for name in dir(glom)]
+                     if isinstance(t, type) and issubclass(t, Exception)]
+        non_glomerrors = [t for t in err_types if not issubclass(t, glom.GlomError)]
+        assert not non_glomerrors, "expected all public exception types to subclass GlomError"
+    
+        err_types = sorted([t for t in err_types if not t is glom.GlomError],
+                           key=lambda t: t.__name__)
+    
+        results = []
+    
+        def _test_exc(exc_type, target, spec):
+            with pytest.raises(exc_type) as exc_info:
+                glom.glom(target, spec)
+            results.append((target, spec, exc_info.value))
+            return exc_info.value
+    
+        _test_exc(glom.CheckError, {}, glom.Check(equal_to=[]))
+    
+        _test_exc(glom.FoldError, 2, glom.Flatten())
+    
+        _test_exc(glom.BadSpec, range(5), glom.grouping.Group([{T: T}]))
+    
+        _test_exc(glom.PathAccessError, {}, 'a.b.c')
+    
+        _test_exc(glom.UnregisteredTarget, 'kurt', [glom.T])
+    
+        _test_exc(glom.CoalesceError, {}, glom.Coalesce('a', 'b'))
+    
+        _test_exc(glom.PathAssignError, object(), glom.Assign('a', 'b'))
+    
+        _test_exc(glom.PathDeleteError, object(), glom.Delete('a'))
+    
+        _test_exc(MatchError, 1, M == 2)
+    
+        _test_exc(TypeMatchError, 1, Match(str))
+    
+        for (target, spec, exc) in results:
+            assert copy.copy(exc) is not exc
+            exc_str = str(exc)
+            exc_type_name = exc.__class__.__name__
+            assert exc_type_name in exc_str
+            assert bbrepr(exc).startswith(exc_type_name)
+    
+            assert bbrepr(target)[:80] in exc_str
+>           assert bbrepr(spec)[:80] in exc_str
+E           assert '[\n                                                                              ' in "error raised while processing, details below.\n Target-spec trace (most recent last):\n - Target: 'kurt'\n - Spec: [\...rget type 'str' not registered for 'iterate', expected one of registered types: (_AbstractIterable, dict, list, tuple)"
+
+/repo/glom/test/test_error.py:325: AssertionError
+_____________________________ test_glom_dev_debug ______________________________
+
+    def test_glom_dev_debug():
+        with pytest.raises(GlomError) as exc_info:
+            glom({'a': 'yesandno'}, 'a.b.c')
+    
+        assert ' - Target:' in str(exc_info.value)
+>       assert 'yesandno' in str(exc_info.value)
+E       assert 'yesandno' in 'error raised while processing, details below.\n Target-spec trace (most recent last):\n - Target: {\n                ... access \'b\', part 1 of Path(\'a\', \'b\', \'c\'), got error: AttributeError("\'str\' object has no attribute \'b\'")'
+E        +  where 'error raised while processing, details below.\n Target-spec trace (most recent last):\n - Target: {\n                ... access \'b\', part 1 of Path(\'a\', \'b\', \'c\'), got error: AttributeError("\'str\' object has no attribute \'b\'")' = str(PathAccessError(AttributeError("'str' object has no attribute 'b'"), Path('a', 'b', 'c'), 1))
+E        +    where PathAccessError(AttributeError("'str' object has no attribute 'b'"), Path('a', 'b', 'c'), 1) = <ExceptionInfo PathAccessError(AttributeError("'str' object has no attribute 'b'"), Path('a', 'b', 'c'), 1) tblen=2>.value
+
+/repo/glom/test/test_error.py:338: AssertionError
+______________________________ test_unicode_stack ______________________________
+
+    def test_unicode_stack():
+        val = {u'resumé': u'beyoncé'}
+        stack = _make_stack(target=val, spec=u'a.é.i.o')
+>       assert 'beyonc' in stack
+E       assert 'beyonc' in 'Traceback (most recent call last):\n  File "test_error.py", line ___, in _make_stack\n    glom(target, spec)\n  File ...core.PathAccessError: could not access \'a\', part 0 of Path(\'a\', \'é\', \'i\', \'o\'), got error: KeyError(\'a\')\n'
+
+/repo/glom/test/test_error.py:351: AssertionError
+__________________________________ test_vars ___________________________________
+
+    def test_vars():
+        assert glom(1, A.a) == 1  # A should not change the target
+        assert glom(1, (A.a, S.a)) == 1
+        # check that tuple vars don't "leak" into parent tuple
+        assert glom(1, (A.t, Val(2), A.t, S.t)) == 2
+        assert glom(1, (A.t, (Val(2), A.t), S.t)) == 1
+        let = Let(v=Vars({'b': 2}, c=3))
+        assert glom(1, (let, A.v.a, S.v.a)) == 1
+        with pytest.raises(AttributeError):
+            glom(1, (let, S.v.a))  # check that Vars() inside a spec doesn't hold state
+        assert glom(1, (let, Path(A, 'v', 'a'), S.v.a)) == 1
+        assert glom(1, (let, S.v.b)) == 2
+        assert glom(1, (let, S.v.c)) == 3
+>       assert repr(let) == "Let(v=Vars({'b': 2}, c=3))"
+               ^^^^^^^^^
+
+/repo/glom/test/test_let_vars.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/repo/glom/core.py:1603: in __repr__
+    return format_invocation(cn, kwargs=self._binding, repr=bbrepr)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/repo/glom/core.py:497: in format_invocation
+    kw_text = ', '.join(['%s=%s' % (k, _repr(v)) for k, v in kwarg_items])
+                                       ^^^^^^^^
+/usr/local/lib/python3.12/reprlib.py:70: in repr
+    return self.repr1(x, self.maxlevel)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/repo/glom/core.py:452: in repr1
+    ret = Repr.repr1(self, x, level)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/reprlib.py:90: in repr1
+    return self.repr_instance(x, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <glom.core._BBRepr object at 0xffff9e9706b0>
+x = Vars({
+                                                                                                               ...                                                                                                        'b': 2,
+}, c=3)
+level = 1024
+
+    def repr_instance(self, x, level):
+        try:
+            s = builtins.repr(x)
+            # Bugs in x.__repr__() can cause arbitrary
+            # exceptions -- then make up something
+        except Exception:
+            return '<%s instance at %#x>' % (x.__class__.__name__, id(x))
+        if len(s) > self.maxother:
+            i = max(0, (self.maxother-3)//2)
+            j = max(0, self.maxother-3-i)
+>           s = s[:i] + self.fillvalue + s[len(s)-j:]
+                ^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: can only concatenate str (not "int") to str
+
+/usr/local/lib/python3.12/reprlib.py:200: TypeError
+___________________________ test_check_ported_tests ____________________________
+
+    def test_check_ported_tests():
+        """
+        Tests ported from Check() to make sure all the functionality has an analogue.
+        """
+        target = [{'id': 0}, {'id': 1}, {'id': 2}]
+    
+        # check that skipping non-passing values works
+        assert glom(target, [Coalesce(M(T['id']) == 0, default=SKIP)]) == [{'id': 0}]
+    
+        # TODO: should M(subspec, default='') work? I lean no.
+        # NB: this is not a very idiomatic use of Match, just brought over for Check reasons
+        assert glom(target, [Match({'id': And(int, M == 1)}, default=SKIP)]) == [{'id': 1}]
+        assert glom(target, [Match({'id': And(int, M <= 1)}, default=STOP)]) == [{'id': 0}, {'id': 1}]
+    
+        # check that stopping chain execution on non-passing values works
+        spec = (Or(Match(len), Val(STOP)), T[0])
+        assert glom('hello', spec, glom_debug=True) == 'h'
+        assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work
+    
+        target = [1, u'a']
+        assert glom(target, [Match(unicode, default=SKIP)]) == ['a']
+        assert glom(target, Match([Or(unicode, int)])) == [1, 'a']
+    
+        target = ['1']
+        assert glom(target, [(M(T), int)]) == [1]
+        assert glom(target, M(T)) == ['1']
+    
+        failing_checks = [({'a': {'b': 1}}, {'a': ('a', 'b', Match(str))},
+                           '''expected type str, not int'''),  # TODO: bbrepr at least, maybe include path like Check did
+                          ({'a': {'b': 1}}, {'a': ('a', Match({'b': str}))},
+                           '''expected type str, not int'''),  # TODO: include subspec path ('b')
+                          (1, Match(Or(unicode, bool))),
+                          (1, Match(unicode)),
+                          (1, Match(0)),
+                          (1, Match(Or(0, 2))),
+                          ('-3.14', Match(lambda x: int(x) > 0)),
+                          # ('-3.14', M(lambda x: int(x) > 0)),
+                          # TODO: M doesn't behave quite like Match because it's mode-free
+        ]
+    
+        for fc in failing_checks:
+            if len(fc) == 2:
+                target, check = fc
+                msg = None
+            else:
+                target, check, msg = fc
+    
+            with pytest.raises(MatchError) as exc_info:
+                glom(target, check)
+    
+            if msg is not None:
+>               actual_msg = str(exc_info.value)
+                             ^^^^^^^^^^^^^^^^^^^
+
+/repo/glom/test/test_match.py:480: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/repo/glom/core.py:150: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/repo/glom/core.py:205: in format_target_spec_trace
+    segments.append(" - Spec: " + _format_trace_value(spec, spec_width))
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/repo/glom/core.py:183: in _format_trace_value
+    s = bbrepr(value)  # TODO: integrate bbrepr with an option for reprlib
+        ^^^^^^^^^^^^^
+/usr/local/lib/python3.12/reprlib.py:70: in repr
+    return self.repr1(x, self.maxlevel)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/repo/glom/core.py:452: in repr1
+    ret = Repr.repr1(self, x, level)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/reprlib.py:88: in repr1
+    return method(x, level)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/reprlib.py:166: in repr_dict
+    valrepr = repr1(x[key], newlevel)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+/repo/glom/core.py:452: in repr1
+    ret = Repr.repr1(self, x, level)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/reprlib.py:88: in repr1
+    return method(x, level)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/reprlib.py:128: in repr_tuple
+    return self._repr_iterable(x, level, '(', ')', self.maxtuple, ',')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/reprlib.py:119: in _repr_iterable
+    pieces = [repr1(elem, newlevel) for elem in islice(x, maxiter)]
+              ^^^^^^^^^^^^^^^^^^^^^
+/repo/glom/core.py:452: in repr1
+    ret = Repr.repr1(self, x, level)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/reprlib.py:90: in repr1
+    return self.repr_instance(x, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <glom.core._BBRepr object at 0xffff9e9706b0>
+x = Match({
+                                                                                                              ...                                                                                                           'b': str,
+})
+level = 1022
+
+    def repr_instance(self, x, level):
+        try:
+            s = builtins.repr(x)
+            # Bugs in x.__repr__() can cause arbitrary
+            # exceptions -- then make up something
+        except Exception:
+            return '<%s instance at %#x>' % (x.__class__.__name__, id(x))
+        if len(s) > self.maxother:
+            i = max(0, (self.maxother-3)//2)
+            j = max(0, self.maxother-3-i)
+>           s = s[:i] + self.fillvalue + s[len(s)-j:]
+                ^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: can only concatenate str (not "int") to str
+
+/usr/local/lib/python3.12/reprlib.py:200: TypeError
+=============================== warnings summary ===============================
+glom/test/test_match.py::test_reprs
+  /usr/local/lib/python3.12/re/__init__.py:302: DeprecationWarning: The re.TEMPLATE/re.T flag is deprecated as it is an undocumented flag without an obvious purpose. Don't use it.
+    warnings.warn("The re.TEMPLATE/re.T flag is deprecated "
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED glom/test/test_basic.py::test_ref - assert 'Ref(\n      ...        ),\...
+FAILED glom/test/test_basic.py::test_bbrepr - AssertionError: assert '{\n    ...
+FAILED glom/test/test_cli.py::test_main_yaml_target - face.errors.UsageError:...
+FAILED glom/test/test_error.py::test_short_trace - AssertionError: assert [' ...
+FAILED glom/test/test_error.py::test_regular_error_stack - AssertionError: as...
+FAILED glom/test/test_error.py::test_glom_error_stack - assert 'Traceback (m....
+FAILED glom/test/test_error.py::test_glom_error_double_stack - assert 'Traceb...
+FAILED glom/test/test_error.py::test_long_target_repr - assert '...' in 'Trac...
+FAILED glom/test/test_error.py::test_all_public_errors - assert '[\n         ...
+FAILED glom/test/test_error.py::test_glom_dev_debug - assert 'yesandno' in 'e...
+FAILED glom/test/test_error.py::test_unicode_stack - assert 'beyonc' in 'Trac...
+FAILED glom/test/test_let_vars.py::test_vars - TypeError: can only concatenat...
+FAILED glom/test/test_match.py::test_check_ported_tests - TypeError: can only...
+13 failed, 155 passed, 1 warning in 1.14s
+
+--- stderr ---
+

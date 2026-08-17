@@ -32,14 +32,16 @@ from pipeline.state import hash_inputs
 
 WRITE_STEP = "p1.testgen.write_tests_agent"
 RETRY_STEP = "p1.testgen.mutation_retry_agent"
-PROMPT_VERSION = "testgen.2"  # bump when the prompts/gate change: keys of persisted decisions
+PROMPT_VERSION = "testgen.3"  # bump when the prompts/gate change: keys of persisted decisions
 
 _SYSTEM = (
     "You write pytest tests for a Python library. You may create or edit ONLY the single "
     "test file you are told to write; never touch the library source or any other file. "
     "Write focused, deterministic tests that assert concrete behavior (exact return values, "
-    "raised exceptions, boundaries) of the target functions -- not smoke tests. Use the run "
-    "tool to execute the file and confirm it passes before finishing."
+    "raised exceptions, boundaries) of the target functions -- not smoke tests. The target "
+    "functions' source is already in your instructions: do not spend turns exploring the "
+    "module; write the file within your first few turns, then use the run tool to execute "
+    "it and iterate. A run that ends without the file written is a failure."
 )
 
 
@@ -328,7 +330,16 @@ def _save_decisions(ctx: HygieneContext, decisions: dict) -> None:
 
 def _module_key(ctx: HygieneContext, module: str, source: str, targets: list[dict]) -> str:
     payload = "\n".join(
-        [PROMPT_VERSION, module, source, ctx.config.model_for(WRITE_STEP)]
+        [
+            PROMPT_VERSION,
+            module,
+            source,
+            ctx.config.model_for(WRITE_STEP),
+            # a different budget is a different attempt: never replay a smaller-budget drop
+            str(ctx.config.testgen.agent_max_turns),
+            str(ctx.config.testgen.mutants_per_function),
+            str(ctx.config.testgen.min_mutants_killed),
+        ]
         + [t["qualname"] for t in targets]
     )
     return hashlib.sha256(payload.encode()).hexdigest()[:16]
@@ -517,7 +528,8 @@ def input_hash(ctx: HygieneContext) -> str:
         if ".git" not in p.parts and p.is_file() and marker not in p.relative_to(ctx.repo).parts
     ]
     files = sorted({p.resolve() for p in [*parts, *src_files] if p.is_file()})
-    return hash_inputs(*files)
+    # knobs that change what the agent may do or how the gate judges must invalidate the step
+    return hash_inputs(repr(ctx.config.testgen), *files)
 
 
 def _source_functions(ctx: HygieneContext) -> list[dict]:

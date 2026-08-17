@@ -1,0 +1,20 @@
+$ python -m pytest -p no:cacheprovider -q --json-report --json-report-file=.pytest-report.json
+exit_code=0
+--- stdout ---
+........................................................................ [ 33%]
+........................................................................ [ 67%]
+.....................................................................    [100%]
+=============================== warnings summary ===============================
+glom/test/test_match.py::test_reprs
+  /usr/local/lib/python3.12/re/__init__.py:302: DeprecationWarning: The re.TEMPLATE/re.T flag is deprecated as it is an undocumented flag without an obvious purpose. Don't use it.
+    warnings.warn("The re.TEMPLATE/re.T flag is deprecated "
+
+glom/test/test_path_and_t.py::test_star_warning
+  /repo/glom/core.py:661: UserWarning: '*' and '**' have changed behavior in glom version 23.1. Recommend switch to T['*'] or T['**'].
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+213 passed, 2 warnings in 1.04s
+
+--- stderr ---
+

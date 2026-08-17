@@ -1,0 +1,52 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 6,
+          "nodeid": "glom/test/test_check.py::test_check_basic",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787006012.4302154,
+  "duration": 0.030355453491210938,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "passed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.0005859559969394468,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_check_basic",
+        "test_check.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 6,
+      "nodeid": "glom/test/test_check.py::test_check_basic",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0003654570027720183,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.820800187299028e-05,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

@@ -1,0 +1,311 @@
+{
+  "step": "p1.testgen.write_tests_agent",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You write pytest tests for a Python library. You may create or edit ONLY the single test file you are told to write; never touch the library source or any other file. Write focused, deterministic tests that assert concrete behavior (exact return values, raised exceptions, boundaries) of the target functions -- not smoke tests. Use the run tool to execute the file and confirm it passes before finishing."
+      },
+      {
+        "role": "user",
+        "content": "Write pytest tests to the file `glom/test/generated/test_glom_streaming.py` for these functions from module `glom.streaming`. Test real behavior so a wrong implementation would fail.\n\nModule imports:\nfrom itertools import islice, dropwhile, takewhile, chain\nfrom functools import partial\nfrom boltons.iterutils import split_iter, chunked_iter, windowed_iter, unique_iter, first\nfrom boltons.funcutils import FunctionBuilder\nfrom .core import glom, T, STOP, SKIP, _MISSING, Path, TargetRegistry, Call, Spec, Pipe, S, bbrepr, format_invocation\nfrom .matching import Check\n\nTarget functions:\n### glom.streaming.Iter.chunked  (signature: chunked(self, size, fill=_MISSING))\n    def chunked(self, size, fill=_MISSING):\n        \"\"\"Return a new :class:`Iter()` spec which groups elements in the iterable\n        into lists of length *size*.\n\n        If the optional *fill* argument is provided, iterables not\n        evenly divisible by *size* will be padded out by the *fill*\n        constant. Otherwise, the final chunk will be shorter than *size*.\n\n        >>> list(glom(range(10), Iter().chunked(3)))\n        [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]\n        >>> list(glom(range(10), Iter().chunked(3, fill=None)))\n        [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, None, None]]\n        \"\"\"\n        kw = {'size': size}\n        args = size,\n        if fill is not _MISSING:\n            kw['fill'] = fill\n            args += (fill,)\n        return self._add_op(\n            'chunked', args, lambda it, scope: chunked_iter(it, **kw))\n\nExisting test style for reference:\n# glom/test/test_basic.py\nimport sys\nfrom xml.etree import ElementTree as ElementTree\n\nimport pytest\n\nfrom glom import glom, SKIP, STOP, Path, Inspect, Coalesce, CoalesceError, Val, Call, T, S, Invoke, Spec, Ref\nfrom glom import Auto, Fill, Iter, A, Vars, Val, GlomError, Pipe\n\nimport glom.core as glom_core\nfrom glom.core import UP, ROOT, bbformat, bbrepr\nfrom glom.mutation import PathAssignError\n\n\n\ndef test_initial_integration():\n    class Example:\n        pass\n\n    example = Example()\n    subexample = Example()\n    subexample.name = 'good_name'\n    example.mapping = {'key': subexample}\n\n    val = {'a': {'b': 'c'},  # basic dictionary nesting\n           'example': example,  # basic object\n           'd': {'e': ['f'],    # list in dictionary\n                 'g': 'h'},\n           'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries\n           'n': 'o'}\n\n    spec = {'a': (Inspect(recursive=True), 'a', 'b'),  # inspect just prints here\n            'name': 'example.mapping.key.name',  # test object access\n            'e': 'd.e',  # d.e[0] or d.e: (callable to fetch 0)\n            'i': ('i', [{'j': 'j'}]),  # TODO: support True for cases when the value should simply be mapped into the field name?\n            'n': ('n', lambda n: n.upper()),\n            'p': Coalesce('xxx',\n                          'yyy',\n                          default='zzz')}\n\n    ret = glom(val, spec)\n\n    print('in: ', val)\n    print('got:', ret)\n    expected = {'a': 'c',\n                'name': 'good_name',\n                'e': ['f'\n\n# glom/test/test_check.py\nfrom pytest import raises\n\nfrom glom import glom, Check, CheckError, Coalesce, SKIP, STOP, T\n\ntry:\n    unicode\nexcept NameError:\n    unicode = str\n\n\ndef test_check_basic():\n    assert glom([0, SKIP], [T]) == [0]  # sanity check SKIP\n\n    target = [{'id': 0}, {'id': 1}, {'id': 2}]\n\n    # check that skipping non-passing values works\n    assert glom(target, ([Coalesce(Check('id', equal_to=0), default=SKIP)], T[0])) == {'id': 0}\n    assert glom(target, ([Check('id', equal_to=0, default=SKIP)], T[0])) == {'id': 0}\n\n    # check that stopping iteration on non-passing values works\n    assert glom(target, [Check('id', equal_to=0, default=STOP)]) == [{'id': 0}]\n\n    # check that stopping chain execution on non-passing values works\n    spec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])\n    assert glom('hello', spec) == 'h'\n    assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work\n\n    assert repr(Check()) == 'Check()'\n    assert repr(Check(T.a)) == 'Check(T.a)'\n    assert repr(Check(equal_to=1)) == 'Check(equal_to=1)'\n    assert repr(Check(instance_of=dict)) == 'Check(instance_of=dict)'\n    assert repr(Check(T(len), validate=sum)) == 'Check(T(len), validate=sum)'\n\n    target = [1, 'a']\n    assert glom(target, [Check(type=unicode, default=SKIP)]) == ['a']\n    assert glom(target, [Check(type=(unicode, int))]) == [1, 'a']\n    assert glom(target, [Check(instance_of=unicode, default=SKIP)]) == ['a']\n    assert glom(target, [Check(instance_of=(unicode, i\n\nWrite ONLY `glom/test/generated/test_glom_streaming.py`. Confirm with: python -m pytest -q glom/test/generated/test_glom_streaming.py"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.grep:0",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"class Iter\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:0",
+        "content": "glom/streaming.py:27:class Iter:"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.read_file:0",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/streaming.py\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:0",
+        "content": "\"\"\"glom's helpers for streaming use cases.\n\nSpecifier types which yield their results incrementally so that they\ncan be applied to targets which are themselves streaming (e.g. chunks\nof rows from a database, lines from a file) without excessive memory\nusage.\n\nglom's streaming functionality revolves around a single :class:`Iter`\nSpecifier type, which has methods to transform the target stream.\n\"\"\"\n\nfrom itertools import islice, dropwhile, takewhile, chain\nfrom functools import partial\ntry:\n    from itertools import imap, ifilter\nexcept ImportError:\n    # py3\n    imap = map\n    ifilter = filter\n\nfrom boltons.iterutils import split_iter, chunked_iter, windowed_iter, unique_iter, first\nfrom boltons.funcutils import FunctionBuilder\n\nfrom .core import glom, T, STOP, SKIP, _MISSING, Path, TargetRegistry, Call, Spec, Pipe, S, bbrepr, format_invocation\nfrom .matching import Check\n\nclass Iter:\n    \"\"\"``Iter()`` is glom's counterpart to Python's built-in :func:`iter()`\n    function. Given an iterable target, ``Iter()`` yields the result\n    of applying the passed spec to each element of the target, similar\n    to the built-in ``[]`` spec, but streaming.\n\n    The following turns a list of strings into integers using Iter(),\n    before deduplicating and converting it to a tuple:\n\n    >>> glom(['1', '2', '1', '3'], (Iter(int), set, tuple))\n    (1, 2, 3)\n\n    ``Iter()`` also has many useful methods which can be chained to\n    compose a stream processing pipeline. The above can also be\n    written as:\n\n    >>> glom(['1', '2', '1', '3'], (Iter().map(int).unique(), tuple))\n    (1, 2, 3)\n\n    ``Iter()`` also respects glom's :data:`~glom.SKIP` and\n    :data:`~glom.STOP` singletons for filtering and breaking\n    iteration.\n\n    Args:\n\n       subspec: A subspec to be applied on each element from the iterable.\n       sentinel: Keyword-only argument, which, when found in the\n         iterable stream, causes the iteration to stop. Same as with the\n         built-in :func:`iter`.\n\n    \"\"\"\n    def __init__(self, subspec=T, **kwargs):\n        self.subspec = subspec\n        self._iter_stack = kwargs.pop('_iter_stack', [])\n\n        self.sentinel = kwargs.pop('sentinel', STOP)\n        if kwargs:\n            raise TypeError('unexpected keyword arguments: %r' % sorted(kwargs))\n        return\n\n    def __repr__(self):\n        base_args = ()\n        if self.subspec != T:\n            base_args = (self.subspec,)\n        base = format_invocation(self.__class__.__name__, base_args, repr=bbrepr)\n        chunks = [base]\n        for fname, args, _ in reversed(self._iter_stack):\n            meth = getattr(self, fname)\n            fb = FunctionBuilder.from_func(meth)\n            fb.args = fb.args[1:]  # drop self\n            arg_names = fb.get_arg_names()\n            # TODO: something fancier with defaults:\n            kwargs = []\n            if len(args) > 1 and arg_names:\n                args, kwargs = (), zip(arg_names, args)\n            chunks.append('.' + format_invocation(fname, args, kwargs, repr=bbrepr))\n        return ''.join(chunks)\n\n    def glomit(self, target, scope):\n        iterator = self._iterate(target, scope)\n\n        for _, _, callback in reversed(self._iter_stack):\n            iterator = callback(iterator, scope)\n\n        return iter(iterator)\n\n    def _iterate(self, target, scope):\n        iterate = scope[TargetRegistry].get_handler('iterate', target, path=scope[Path])\n        try:\n            iterator = iterate(target)\n        except Exception as e:\n            raise TypeError('failed to iterate on instance of type %r at %r (got %r)'\n                            % (target.__class__.__name__, Path(*scope[Path]), e))\n\n        base_path = scope[Path]\n        for i, t in enumerate(iterator):\n            scope[Path] = base_path + [i]\n            yld = (t if self.subspec is T else scope[glom](t, self.subspec, scope))\n            if yld is SKIP:\n                continue\n            elif yld is self.sentinel or yld is STOP:\n                # NB: sentinel defaults to STOP so I was torn whether\n                # to also check for STOP, and landed on the side of\n                # never letting STOP through.\n                return\n            yield yld\n        return\n\n    def _add_op(self, opname, args, callback):\n        return type(self)(subspec=self.subspec, _iter_stack=[(opname, args, callback)] + self._iter_stack)\n\n    def map(self, subspec):\n        \"\"\"Return a new :class:`Iter()` spec which will apply the provided\n        *subspec* to each element of the iterable.\n\n        >>> glom(range(5), Iter().map(lambda x: x * 2).all())\n        [0, 2, 4, 6, 8]\n\n        Because a spec can be a callable, :meth:`Iter.map()` does\n        everything the built-in :func:`map` does, but with the full\n        power of glom specs.\n\n        >>> glom(['a', 'B', 'C'], Iter().map(T.islower()).all())\n        [True, False, False]\n        \"\"\"\n        # whatever validation you want goes here\n        # TODO: DRY the self._add_op with a decorator?\n        return self._add_op(\n            'map',\n            (subspec,),\n            lambda iterable, scope: imap(\n                lambda t: scope[glom](t, subspec, scope), iterable))\n\n    def filter(self, key=T):\n        \"\"\"Return a new :class:`Iter()` spec which will include only elements matching the\n        given *key*.\n\n        >>> glom(range(6), Iter().filter(lambda x: x % 2).all())\n        [1, 3, 5]\n\n        Because a spec can be a callable, :meth:`Iter.filter()` does\n        everything the built-in :func:`filter` does, but with the full\n        power of glom specs. For even more power, combine,\n        :meth:`Iter.filter()` with :class:`Check()`.\n\n        >>> # PROTIP: Python's ints know how many binary digits they require, using the bit_length method\n        >>> glom(range(9), Iter().filter(Check(T.bit_length(), one_of=(2, 4), default=SKIP)).all())\n        [2, 3, 8]\n\n        \"\"\"\n        # NB: Check's validate function defaults to bool, and\n        # *default* is returned on access errors as well validation\n        # errors, so the lambda passed to ifilter below works fine.\n        check_spec = key if isinstance(key, Check) else Check(key, default=SKIP)\n        return self._add_op(\n            'filter',\n            (key,),\n            lambda iterable, scope: ifilter(\n                lambda t: scope[glom](t, check_spec, scope) is not SKIP, iterable))\n\n    def chunked(self, size, fill=_MISSING):\n        \"\"\"Return a new :class:`Iter()` spec which groups elements in the iterable\n        into lists of length *size*.\n\n        If the optional *fill* argument is provided, iterables not\n        evenly divisible by *size* will be padded out by the *fill*\n        constant. Otherwise, the final chunk will be shorter than *size*.\n\n        >>> list(glom(range(10), Iter().chunked(3)))\n        [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]\n        >>> list(glom(range(10), Iter().chunked(3, fill=None)))\n        [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, None, None]]\n        \"\"\"\n        kw = {'size': size}\n        args = size,\n        if fill is not _MISSING:\n            kw['fill'] = fill\n            args += (fill,)\n        return self._add_op(\n            'chunked', args, lambda it, scope: chunked_iter(it, **kw))\n\n    def windowed(self, size):\n        \"\"\"Return a new :class:`Iter()` spec which will yield a sliding window of\n        adjacent elements in the iterable. Each tuple yielded will be\n        of length *size*.\n\n        Useful for getting adjacent pairs and triples.\n\n        >>> list(glom(range(4), Iter().windowed(2)))\n        [(0, 1), (1, 2), (2, 3)]\n        \"\"\"\n        return self._add_op(\n            'windowed', (size,), lambda it, scope: windowed_iter(it, size))\n\n    def split(self, sep=None, maxsplit=None):\n        \"\"\"Return a new :class:`Iter()` spec which will lazily split an iterable based\n        on a separator (or list of separators), *sep*. Like\n        :meth:`str.split()`, but for all iterables.\n\n        ``split_iter()`` yields lists of non-separator values. A separator will\n        never appear in the output.\n\n        >>> target = [1, 2, None, None, 3, None, 4, None]\n        >>> list(glom(target, Iter().split()))\n        [[1, 2], [3], [4]]\n\n        Note that ``split_iter`` is based on :func:`str.split`, so if\n        *sep* is ``None``, ``split()`` **groups** separators. If empty lists\n        are desired between two contiguous ``None`` values, simply use\n        ``sep=[None]``:\n\n        >>> list(glom(target, Iter().split(sep=[None])))\n        [[1, 2], [], [3], [4], []]\n\n        A max number of splits may also be set:\n\n        >>> list(glom(target, Iter().split(maxsplit=2)))\n        [[1, 2], [3], [4, None]]\n\n        \"\"\"\n        return self._add_op(\n            'split',\n            (sep, maxsplit),\n            lambda it, scope: split_iter(it, sep=sep, maxsplit=maxsplit))\n\n    def flatten(self):\n        \"\"\"Returns a new :class:`Iter()` instance which combines iterables into a\n        single iterable.\n\n        >>> target = [[1, 2], [3, 4], [5]]\n        >>> list(glom(target, Iter().flatten()))\n        [1, 2, 3, 4, 5]\n        \"\"\"\n        return self._add_op(\n            'flatten',\n            (),\n            lambda it, scope: chain.from_iterable(it))\n\n    def unique(self, key=T):\n        \"\"\"Return a new :class:`Iter()` spec which lazily filters out duplicate\n        values, i.e., only the first appearance of a value in a stream will\n        be yielded.\n\n        >>> target = list('gloMolIcious')\n        >>> out = list(glom(target, Iter().unique(T.lower())))\n        >>> print(''.join(out))\n        gloMIcus\n        \"\"\"\n        return self._add_op(\n            'unique',\n            (key,),\n            lambda it, scope: unique_iter(it, key=lambda t: scope[glom](t, key, scope)))\n\n\n    def slice(self, *args):\n        \"\"\"Returns a new :class:`Iter()` spec which trims iterables in the\n        same manner as :func:`itertools.islice`.\n\n        >>> target = [0, 1, 2, 3, 4, 5]\n        >>> glom(target, Iter().slice(3).all())\n        [0, 1, 2]\n        >>> glom(target, Iter().slice(2, 4).all())\n        [2, 3]\n\n        This method accepts only positional arguments.\n        \"\"\"\n        # TODO: make a kwarg-compatible version of this (islice takes no kwargs)\n        # TODO: also support slice syntax Iter()[::]\n        try:\n            islice([], *args)\n        except TypeError:\n            raise TypeError(f'invalid slice arguments: {args!r}')\n        return self._add_op('slice', args, lambda it, scope: islice(it, *args))\n\n    def limit(self, count):\n        \"\"\"A convenient alias for :meth:`~Iter.slice`, which takes a single\n        argument, *count*, the max number of items to yield.\n        \"\"\"\n        return self._add_op('limit', (count,), lambda it, scope: islice(it, count))\n\n    def takewhile(self, key=T):\n        \"\"\"Returns a new :class:`Iter()` spec which stops the stream once\n        *key* becomes falsy.\n\n        >>> glom([3, 2, 0, 1], Iter().takewhile().all())\n        [3, 2]\n\n        :func:`itertools.takewhile` for more details.\n        \"\"\"\n        return self._add_op(\n            'takewhile',\n            (key,),\n            lambda it, scope: takewhile(\n                lambda t: scope[glom](t, key, scope), it))\n\n    def dropwhile(self, key=T):\n        \"\"\"Returns a new :class:`Iter()` spec which drops stream items until\n        *key* becomes falsy.\n\n        >>> glom([0, 0, 3, 2, 0], Iter().dropwhile(lambda t: t < 1).all())\n        [3, 2, 0]\n\n        Note that while similar to :meth:`Iter.filter()`, the filter\n        only applies to the beginning of the stream. In a way,\n        :meth:`Iter.dropwhile` can be thought of as\n        :meth:`~str.lstrip()` for streams. See\n        :func:`itertools.dropwhile` for more details.\n\n        \"\"\"\n\n        return self._add_op(\n            'dropwhile',\n            (key,),\n            lambda it, scope: dropwhile(\n                lambda t: scope[glom](t, key, scope), it))\n\n    # Terminal methods follow\n\n    def all(self):\n        \"\"\"A convenience method which returns a new spec which turns an\n        iterable into a list.\n\n        >>> glom(range(5), Iter(lambda t: t * 2).all())\n        [0, 2, 4, 6, 8]\n\n        Note that this spec will always consume the whole iterable, and as\n        such, the spec returned is *not* an :class:`Iter()` instance.\n        \"\"\"\n        return Pipe(self, list)\n\n    def first(self, key=T, default=None):\n        \"\"\"A convenience method for lazily yielding a single truthy item from\n        an iterable.\n\n        >>> target = [False, 1, 2, 3]\n        >>> glom(target, Iter().first())\n        1\n\n        This method takes a condition, *key*, which can also be a\n        glomspec, as well as a *default*, in case nothing matches the\n        condition.\n\n        As this spec yields at most one item, and not an iterable, the\n        spec returned from this method is not an :class:`Iter()` instance.\n        \"\"\"\n        return (self, First(key=key, default=default))\n\n\nclass First:\n    \"\"\"Get the first element of an iterable which matches *key*, if there\n    is one, otherwise return *default* (``None`` if unset).\n\n    >>> is_odd = lambda x: x % 2\n    >>> glom([0, 1, 2, 3], First(is_odd))\n    1\n    >>> glom([0, 2, 4], First(is_odd, default=False))\n    False\n    \"\"\"\n    # The impl of this ain't pretty and basically just exists for a\n    # nicer-looking repr. (Iter(), First()) is the equivalent of doing\n    # (Iter().filter(spec), Call(first, args=(T,), kwargs={'default':\n    # default}))\n    __slots__ = ('_spec', '_default', '_first')\n\n    def __init__(self, key=T, default=None):\n        self._spec = key\n        self._default = default\n\n        spec_glom = Spec(Call(partial, args=(Spec(self._spec).glom,), kwargs={'scope': S}))\n        self._first = Call(first, args=(T,), kwargs={'default': default, 'key': spec_glom})\n\n    def glomit(self, target, scope):\n        return self._first.glomit(target, scope)\n\n    def __repr__(self):\n        cn = self.__class__.__name__\n        if self._default is None:\n            return f'{cn}({bbrepr(self._spec)})'\n        return f'{cn}({bbrepr(self._spec)}, default={bbrepr(self._default)})'\n"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.grep:0",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"chunked\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:0",
+        "content": "docs/streaming.rst:15:.. automethod:: chunked\nglom/streaming.py:21:from boltons.iterutils import split_iter, chunked_iter, windowed_iter, unique_iter, first\nglom/streaming.py:167:def chunked(self, size, fill=_MISSING):\nglom/streaming.py:175:>>> list(glom(range(10), Iter().chunked(3)))\nglom/streaming.py:177:>>> list(glom(range(10), Iter().chunked(3, fill=None)))\nglom/streaming.py:186:'chunked', args, lambda it, scope: chunked_iter(it, **kw))\nglom/test/test_streaming.py:78:def test_chunked():\nglom/test/test_streaming.py:81:spec = Iter().chunked(3)\nglom/test/test_streaming.py:85:spec = Iter().chunked(3).map(sum)"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.read_file:0",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/test/test_streaming.py\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:0",
+        "content": "import pytest\n\nfrom itertools import count, dropwhile, chain\n\nfrom glom import Iter\nfrom glom import glom, SKIP, STOP, T, Call, Spec, Glommer, Check, SKIP\n\n\nRANGE_5 = list(range(5))\n\n\ndef test_iter():\n    assert list(glom(['1', '2', '3'], Iter(int))) == [1, 2, 3]\n    cnt = count()\n    cnt_1 = glom(cnt, Iter(lambda t: t + 1))\n    assert (next(cnt_1), next(cnt_1)) == (1, 2)\n    assert next(cnt) == 2\n\n    assert list(glom(['1', '2', '3'], (Iter(int), enumerate))) == [(0, 1), (1, 2), (2, 3)]\n\n    assert list(glom([1, SKIP, 2], Iter())) == [1, 2]\n    assert list(glom([1, STOP, 2], Iter())) == [1]\n\n    with pytest.raises(TypeError):\n        Iter(nonexistent_kwarg=True)\n\n\ndef test_filter():\n    is_odd = lambda x: x % 2\n    odd_spec = Iter().filter(is_odd)\n    out = glom(RANGE_5, odd_spec)\n    assert list(out) == [1, 3]\n\n    # let's just make sure we're actually streaming just in case\n    counter = count()\n    out = glom(counter, odd_spec)\n    assert next(out) == 1\n    assert next(out) == 3\n    assert next(counter) == 4\n    assert next(counter) == 5\n    assert next(out) == 7\n\n    bools = [True, False, False, True, False]\n    spec = Iter().filter().all()\n    out = glom(bools, spec)\n    assert out == [True, True]\n\n    imags = [0j, 1j, 2, 2j, 3j]\n    spec = Iter().filter(Check(T.imag.real, type=float, one_of=(0, 2), default=SKIP)).all()\n    out = glom(imags, spec)\n    assert out == [0j, 2j]\n\n    assert repr(Iter().filter(T.a.b)) == 'Iter().filter(T.a.b)'\n    assert repr(Iter(list).filter(sum)) == 'Iter(list).filter(sum)'\n\n\ndef test_map():\n    spec = Iter().map(lambda x: x * 2)\n    out = glom(RANGE_5, spec)\n    assert list(out) == [0, 2, 4, 6, 8]\n    assert repr(Iter().map(T.a.b)) == 'Iter().map(T.a.b)'\n\n\ndef test_split_flatten():\n    falsey_stream = [1, None, None, 2, 3, None, 4]\n    spec = Iter().split()\n    out = glom(falsey_stream, spec)\n    assert list(out) == [[1], [2, 3], [4]]\n\n    spec = Iter().split().flatten()\n    out = glom(falsey_stream, spec)\n    assert list(out) == [1, 2, 3, 4]\n\n    assert repr(Iter().split(sep=None, maxsplit=2)) == 'Iter().split(sep=None, maxsplit=2)'\n    assert repr(Iter(T.a.b[1]).flatten()) == 'Iter(T.a.b[1]).flatten()'\n\n\ndef test_chunked():\n    int_list = list(range(9))\n\n    spec = Iter().chunked(3)\n    out = glom(int_list, spec)\n    assert list(out) == [[0, 1, 2], [3, 4, 5], [6, 7, 8]]\n\n    spec = Iter().chunked(3).map(sum)\n    out = glom(int_list, spec)\n    assert list(out) == [3, 12, 21]\n\n\ndef test_windowed():\n    int_list = list(range(5))\n\n    spec = Iter().windowed(3)\n    out = glom(int_list, spec)\n    assert list(out) == [(0, 1, 2), (1, 2, 3), (2, 3, 4)]\n    assert repr(spec) == 'Iter().windowed(3)'\n\n    spec = spec.filter(lambda x: bool(x[0] % 2)).map(sum)\n    out = glom(int_list, spec)\n    assert next(out) == 6\n\n    out = glom(range(10), spec)\n    assert list(out) == [6, 12, 18, 24]\n\n\ndef test_unique():\n    int_list = list(range(10))\n\n    spec = Iter().unique()\n    out = glom(int_list, spec)\n    assert list(out) == int_list\n\n    spec = Iter(lambda x: x % 4).unique()\n    out = glom(int_list, spec)\n    assert list(out) == int_list[:4]\n    assert repr(Iter().unique(T.a)) == 'Iter().unique(T.a)'\n\n\ndef test_slice():\n    cnt = count()\n\n    spec = Iter().slice(3)\n    out = glom(cnt, spec)\n\n    assert list(out) == [0, 1, 2]\n    assert next(cnt) == 3\n\n    out = glom(range(10), Iter().slice(1, 5))\n    assert list(out) == [1, 2, 3, 4]\n\n    out = glom(range(10), Iter().slice(1, 6, 2))\n    assert list(out) == [1, 3, 5]\n    assert repr(Iter().slice(1, 6, 2)) == 'Iter().slice(1, 6, 2)'\n\n    out = glom(range(10), Iter().limit(3))\n    assert list(out) == [0, 1, 2]\n    assert repr(Iter().limit(3)) == 'Iter().limit(3)'\n\n    out = glom(range(5), Iter().limit(10))\n    assert list(out) == [0, 1, 2, 3, 4]\n\n    # test broken args\n    with pytest.raises(TypeError):\n        Iter().slice(1, 2, 3, 4)\n\n\ndef test_while():\n    cnt = count()\n    out = glom(cnt, Iter().takewhile(lambda x: x < 3))\n    assert list(out) == [0, 1, 2]\n    assert next(cnt) == 4\n    assert repr(Iter().takewhile(T.a) == 'Iter().takewhile(T.a)')\n\n    range_iter = iter(range(7))\n    out = glom(range_iter, Iter().dropwhile(lambda x: x < 3 or x > 5))\n    assert list(out) == [3, 4, 5, 6]  # 6 still here despite the x>5 above\n\n    out = glom(range(10), Iter().dropwhile(lambda x: x >= 0).limit(10))\n    assert list(out) == []\n\n    out = glom(range(8), Iter().dropwhile((T.bit_length(), lambda x: x < 3)))\n    assert list(out) == [4, 5, 6, 7]\n    assert repr(Iter().dropwhile(T.a) == 'Iter().dropwhile(T.a)')\n\n\ndef test_iter_composition():\n    int_list = list(range(10))\n    out = glom(int_list, (Iter(), Iter(), list))\n    assert out == int_list\n\n    out = glom([int_list] * 3, Iter(Iter(lambda x: x % 4)).flatten().unique())\n    assert list(out) == [0, 1, 2, 3]\n\n\ndef test_faulty_iterate():\n    glommer = Glommer()\n\n    def bad_iter(obj):\n        raise RuntimeError('oops')\n\n    glommer.register(str, iterate=bad_iter)\n\n    with pytest.raises(TypeError):\n        glommer.glom('abc', (Iter(), list))\n\n\ndef test_first():\n    spec = Iter().first(T.imag)\n\n    target = iter([1, 2, 3j, 4])\n    out = glom(target, spec)\n    assert out == 3j\n    assert next(target) == 4\n    assert repr(spec) == '(Iter(), First(T.imag))'\n\n    spec = Iter().first(T.imag, default=0)\n    target = iter([1, 2, 4])\n    out = glom(target, spec)\n    assert out == 0\n    assert repr(spec) == '(Iter(), First(T.imag, default=0))'\n\n\ndef test_all():\n    int_iter = iter(range(10))\n\n    out = glom(int_iter, Iter().all())\n    assert out == list(range(10))\n    assert next(int_iter, None) is None\n    assert repr(Iter().all()) == 'Pipe(Iter(), list)'\n"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.write_file:0",
+            "type": "function",
+            "function": {
+              "name": "write_file",
+              "arguments": "{\"path\": \"glom/test/generated/test_glom_streaming.py\", \"content\": \"import pytest\\n\\nfrom glom import glom, Iter\\n\\n\\ndef test_chunked_basic_even():\\n    \\\"\\\"\\\"Chunked with evenly divisible elements and no fill.\\\"\\\"\\\"\\n    target = list(range(6))\\n    spec = Iter().chunked(2)\\n    result = list(glom(target, spec))\\n    assert result == [[0, 1], [2, 3], [4, 5]]\\n\\n\\ndef test_chunked_basic_uneven():\\n    \\\"\\\"\\\"Chunked with non-evenly divisible elements and no fill; final chunk is shorter.\\\"\\\"\\\"\\n    target = list(range(10))\\n    spec = Iter().chunked(3)\\n    result = list(glom(target, spec))\\n    assert result == [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]\\n\\n\\ndef test_chunked_with_fill():\\n    \\\"\\\"\\\"Chunked with fill pads the final chunk.\\\"\\\"\\\"\\n    target = list(range(10))\\n    spec = Iter().chunked(3, fill=None)\\n    result = list(glom(target, spec))\\n    assert result == [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, None, None]]\\n\\n\\ndef test_chunked_with_fill_even():\\n    \\\"\\\"\\\"Chunked with fill when elements are evenly divisible; no padding needed.\\\"\\\"\\\"\\n    target = list(range(6))\\n    spec = Iter().chunked(3, fill='X')\\n    result = list(glom(target, spec))\\n    assert result == [[0, 1, 2], [3, 4, 5]]\\n\\n\\ndef test_chunked_size_one():\\n    \\\"\\\"\\\"Chunked with size 1 wraps each element in its own list.\\\"\\\"\\\"\\n    target = list(range(3))\\n    spec = Iter().chunked(1)\\n    result = list(glom(target, spec))\\n    assert result == [[0], [1], [2]]\\n\\n\\ndef test_chunked_size_larger_than_iterable():\\n    \\\"\\\"\\\"Chunked with size larger than iterable returns a single short chunk.\\\"\\\"\\\"\\n    target = [1, 2]\\n    spec = Iter().chunked(10)\\n    result = list(glom(target, spec))\\n    assert result == [[1, 2]]\\n\\n\\ndef test_chunked_size_larger_than_iterable_with_fill():\\n    \\\"\\\"\\\"Chunked with size larger than iterable and fill pads to size.\\\"\\\"\\\"\\n    target = [1, 2]\\n    spec = Iter().chunked(5, fill=0)\\n    result = list(glom(target, spec))\\n    assert result == [[1, 2, 0, 0, 0]]\\n\\n\\ndef test_chunked_empty_iterable():\\n    \\\"\\\"\\\"Chunked on an empty iterable yields nothing.\\\"\\\"\\\"\\n    target = []\\n    spec = Iter().chunked(3)\\n    result = list(glom(target, spec))\\n    assert result == []\\n\\n\\ndef test_chunked_chained_with_map():\\n    \\\"\\\"\\\"Chunked can be chained with other Iter operations like map.\\\"\\\"\\\"\\n    target = list(range(9))\\n    spec = Iter().chunked(3).map(sum)\\n    result = list(glom(target, spec))\\n    assert result == [3, 12, 21]\\n\\n\\ndef test_chunked_chained_with_limit():\\n    \\\"\\\"\\\"Chunked can be chained with limit to restrict number of chunks.\\\"\\\"\\\"\\n    target = list(range(10))\\n    spec = Iter().chunked(2).limit(2)\\n    result = list(glom(target, spec))\\n    assert result == [[0, 1], [2, 3]]\\n\\n\\ndef test_chunked_repr():\\n    \\\"\\\"\\\"Chunked repr includes the size argument.\\\"\\\"\\\"\\n    spec = Iter().chunked(4)\\n    assert repr(spec) == 'Iter().chunked(4)'\\n\\n\\ndef test_chunked_repr_with_fill():\\n    \\\"\\\"\\\"Chunked repr includes both size and fill when fill is provided.\\\"\\\"\\\"\\n    spec = Iter().chunked(4, fill='pad')\\n    assert repr(spec) == \\\"Iter().chunked(4, fill='pad')\\\"\\n\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.write_file:0",
+        "content": "wrote 2892 bytes to glom/test/generated/test_glom_streaming.py"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.run:0",
+            "type": "function",
+            "function": {
+              "name": "run",
+              "arguments": "{\"cmd\": \"python -m pytest -q glom/test/generated/test_glom_streaming.py\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.run:0",
+        "content": "exit_code=1\n--- stdout ---\n...........F                                                             [100%]\n=================================== FAILURES ===================================\n_________________________ test_chunked_repr_with_fill __________________________\n\n    def test_chunked_repr_with_fill():\n        \"\"\"Chunked repr includes both size and fill when fill is provided.\"\"\"\n        spec = Iter().chunked(4, fill='pad')\n>       assert repr(spec) == \"Iter().chunked(4, fill='pad')\"\nE       assert \"Iter().chunk..., fill='pad')\" == \"Iter().chunk..., fill='pad')\"\nE         \nE         - Iter().chunked(4, fill='pad')\nE         + Iter().chunked(size=4, fill='pad')\nE         ?                +++++\n\nglom/test/generated/test_glom_streaming.py:95: AssertionError\n=========================== short test summary info ============================\nFAILED glom/test/generated/test_glom_streaming.py::test_chunked_repr_with_fill\n1 failed, 11 passed in 0.03s\n\n--- stderr ---\n"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.read_file:0",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/streaming.py\", \"lines\": \"50:75\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:0",
+        "content": "    Args:\n\n       subspec: A subspec to be applied on each element from the iterable.\n       sentinel: Keyword-only argument, which, when found in the\n         iterable stream, causes the iteration to stop. Same as with the\n         built-in :func:`iter`.\n\n    \"\"\"\n    def __init__(self, subspec=T, **kwargs):\n        self.subspec = subspec\n        self._iter_stack = kwargs.pop('_iter_stack', [])\n\n        self.sentinel = kwargs.pop('sentinel', STOP)\n        if kwargs:\n            raise TypeError('unexpected keyword arguments: %r' % sorted(kwargs))\n        return\n\n    def __repr__(self):\n        base_args = ()\n        if self.subspec != T:\n            base_args = (self.subspec,)\n        base = format_invocation(self.__class__.__name__, base_args, repr=bbrepr)\n        chunks = [base]\n        for fname, args, _ in reversed(self._iter_stack):\n            meth = getattr(self, fname)\n            fb = FunctionBuilder.from_func(meth)"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.read_file:0",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/streaming.py\", \"lines\": \"65:85\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:0",
+        "content": "        return\n\n    def __repr__(self):\n        base_args = ()\n        if self.subspec != T:\n            base_args = (self.subspec,)\n        base = format_invocation(self.__class__.__name__, base_args, repr=bbrepr)\n        chunks = [base]\n        for fname, args, _ in reversed(self._iter_stack):\n            meth = getattr(self, fname)\n            fb = FunctionBuilder.from_func(meth)\n            fb.args = fb.args[1:]  # drop self\n            arg_names = fb.get_arg_names()\n            # TODO: something fancier with defaults:\n            kwargs = []\n            if len(args) > 1 and arg_names:\n                args, kwargs = (), zip(arg_names, args)\n            chunks.append('.' + format_invocation(fname, args, kwargs, repr=bbrepr))\n        return ''.join(chunks)\n\n    def glomit(self, target, scope):"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "read_file",
+          "description": "Read a source file. Optional `lines` as 'start:end' (1-indexed).",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "lines": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "grep",
+          "description": "Search the repo for a regular expression. Returns file:line:match.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "pattern": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "pattern"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "write_file",
+          "description": "Write (create or overwrite) a file in the repo.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "content"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "run",
+          "description": "Run a shell command inside the repo's Docker container. Returns exit code and output.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "cmd": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "cmd"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": "auto"
+  },
+  "response": {
+    "id": "chatcmpl-2436c9d9804c4952b27342ec4cdc3f69",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.write_file:0",
+              "function": {
+                "arguments": "{\"path\": \"glom/test/generated/test_glom_streaming.py\", \"content\": \"import pytest\\n\\nfrom glom import glom, Iter\\n\\n\\ndef test_chunked_basic_even():\\n    \\\"\\\"\\\"Chunked with evenly divisible elements and no fill.\\\"\\\"\\\"\\n    target = list(range(6))\\n    spec = Iter().chunked(2)\\n    result = list(glom(target, spec))\\n    assert result == [[0, 1], [2, 3], [4, 5]]\\n\\n\\ndef test_chunked_basic_uneven():\\n    \\\"\\\"\\\"Chunked with non-evenly divisible elements and no fill; final chunk is shorter.\\\"\\\"\\\"\\n    target = list(range(10))\\n    spec = Iter().chunked(3)\\n    result = list(glom(target, spec))\\n    assert result == [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]\\n\\n\\ndef test_chunked_with_fill():\\n    \\\"\\\"\\\"Chunked with fill pads the final chunk.\\\"\\\"\\\"\\n    target = list(range(10))\\n    spec = Iter().chunked(3, fill=None)\\n    result = list(glom(target, spec))\\n    assert result == [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, None, None]]\\n\\n\\ndef test_chunked_with_fill_even():\\n    \\\"\\\"\\\"Chunked with fill when elements are evenly divisible; no padding needed.\\\"\\\"\\\"\\n    target = list(range(6))\\n    spec = Iter().chunked(3, fill='X')\\n    result = list(glom(target, spec))\\n    assert result == [[0, 1, 2], [3, 4, 5]]\\n\\n\\ndef test_chunked_size_one():\\n    \\\"\\\"\\\"Chunked with size 1 wraps each element in its own list.\\\"\\\"\\\"\\n    target = list(range(3))\\n    spec = Iter().chunked(1)\\n    result = list(glom(target, spec))\\n    assert result == [[0], [1], [2]]\\n\\n\\ndef test_chunked_size_larger_than_iterable():\\n    \\\"\\\"\\\"Chunked with size larger than iterable returns a single short chunk.\\\"\\\"\\\"\\n    target = [1, 2]\\n    spec = Iter().chunked(10)\\n    result = list(glom(target, spec))\\n    assert result == [[1, 2]]\\n\\n\\ndef test_chunked_size_larger_than_iterable_with_fill():\\n    \\\"\\\"\\\"Chunked with size larger than iterable and fill pads to size.\\\"\\\"\\\"\\n    target = [1, 2]\\n    spec = Iter().chunked(5, fill=0)\\n    result = list(glom(target, spec))\\n    assert result == [[1, 2, 0, 0, 0]]\\n\\n\\ndef test_chunked_empty_iterable():\\n    \\\"\\\"\\\"Chunked on an empty iterable yields nothing.\\\"\\\"\\\"\\n    target = []\\n    spec = Iter().chunked(3)\\n    result = list(glom(target, spec))\\n    assert result == []\\n\\n\\ndef test_chunked_chained_with_map():\\n    \\\"\\\"\\\"Chunked can be chained with other Iter operations like map.\\\"\\\"\\\"\\n    target = list(range(9))\\n    spec = Iter().chunked(3).map(sum)\\n    result = list(glom(target, spec))\\n    assert result == [3, 12, 21]\\n\\n\\ndef test_chunked_chained_with_limit():\\n    \\\"\\\"\\\"Chunked can be chained with limit to restrict number of chunks.\\\"\\\"\\\"\\n    target = list(range(10))\\n    spec = Iter().chunked(2).limit(2)\\n    result = list(glom(target, spec))\\n    assert result == [[0, 1], [2, 3]]\\n\\n\\ndef test_chunked_repr():\\n    \\\"\\\"\\\"Chunked repr includes the size argument.\\\"\\\"\\\"\\n    spec = Iter().chunked(4)\\n    assert repr(spec) == 'Iter().chunked(4)'\\n\\n\\ndef test_chunked_repr_with_fill():\\n    \\\"\\\"\\\"Chunked repr includes both size and fill as kwargs when fill is provided.\\\"\\\"\\\"\\n    spec = Iter().chunked(4, fill='pad')\\n    assert repr(spec) == \\\"Iter().chunked(size=4, fill='pad')\\\"\\n\"}",
+                "name": "write_file"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": "I see. The repr logic checks if `len(args) > 1 and arg_names`, and if so, it converts args to kwargs using the arg names. Since `chunked` has args `(4, 'pad')` (length 2), it converts them to kwargs as `(size=4, fill='pad')`. Let me fix the test to match the actual behavior."
+        }
+      }
+    ],
+    "created": 1787003456,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 1103,
+      "prompt_tokens": 9311,
+      "total_tokens": 10414,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 855,
+        "audio_tokens": 0,
+        "reasoning_tokens": 79,
+        "rejected_prediction_tokens": 141,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 1632,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

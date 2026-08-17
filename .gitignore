@@ -29,26 +29,43 @@ htmlcov/
 .llm_cache/
 scripts/_record_workdir/
 
-# output/: ignore everything (repo trees, other repos' runs) EXCEPT glom's knowledge
-# deliverables (repo_graph.json + the OKF bundle), per DESIGN "output/".
+# output/: only the glom deliverables are committed — the transformed repo (working tree,
+# never its nested .git), the knowledge layer, the report summary and the generated report.
 output/*
+!output/README.md
 !output/glom/
 output/glom/*
+!output/glom/repo/
+output/glom/repo/.git/
 !output/glom/knowledge/
 output/glom/knowledge/*
 !output/glom/knowledge/repo_graph.json
 !output/glom/knowledge/.okf/
+!output/glom/report_summary.json
+!output/glom/REPORT.md
 
-# transcripts/: the bulky per-call pipeline/agent transcripts are regenerable audit and
-# stay ignored; only the curated dev session log is committed.
-transcripts/*
-!transcripts/dev/
+# transcripts/: the final glom run's per-call LLM transcripts and agent trajectories are
+# committed as evidence; dev/ holds the methodology notes.
+transcripts/README.md
+!transcripts/README.md
 
-# generated task folders: the committed deliverable is the repo-root tasks.json plus the
-# SELECTED task folders under tasks/glom/ (the 10 listed in output/glom/tasks/selection.json).
-# Surplus glom folders and other repos' task trees are NOT part of the committed set.
+# tasks/: the committed deliverable is the repo-root tasks.json plus the 10 SELECTED task
+# folders under tasks/glom/ (see output/glom/tasks/selection.json) and the glom manifest.
 /tasks/*
+!/tasks/README.md
 !/tasks/glom/
+/tasks/glom/*
+!/tasks/glom/tasks.json
+!/tasks/glom/exc-glom.core-format_target_spec_trace/
+!/tasks/glom/exc-glom.reduction-Fold.glomit/
+!/tasks/glom/exc-glom.grouping-GROUP/
+!/tasks/glom/exc-glom.matching-Check.glomit/
+!/tasks/glom/hist-94b6375/
+!/tasks/glom/hist-e515fb3/
+!/tasks/glom/hist-0d75aab/
+!/tasks/glom/hist-4a48227/
+!/tasks/glom/hist-a32abdd/
+!/tasks/glom/hist-c2acc2b/
 
 # fixture repos are rebuilt by tests/fixtures/build_mini_pkg.py; don't commit .git
 tests/fixtures/mini_pkg/

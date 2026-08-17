@@ -1,0 +1,82 @@
+$ python -m pytest -q glom/test/test_error.py::test_pae_fallback_for_non_path glom/test/test_error.py::test_pae_scope_printable -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________________________ test_pae_fallback_for_non_path ________________________
+
+    def test_pae_fallback_for_non_path():
+        # get_message() should not crash even if .path lacks a .values() method
+        # (e.g. a manually constructed PathAccessError with a plain string path).
+        exc = PathAccessError(KeyError('z'), 'a.b.c', 0)
+        msg = exc.get_message()
+        assert 'a.b.c' in msg
+        assert "KeyError" in msg
+    
+        # Also cover IndexError fallback: part_idx beyond path length
+        exc2 = PathAccessError(KeyError('z'), Path('a', 'b'), 99)
+>       msg2 = exc2.get_message()
+               ^^^^^^^^^^^^^^^^^^
+
+glom/test/test_error.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PathAccessError(KeyError('z'), Path('a', 'b'), 99)
+
+    def get_message(self):
+>       path_part = Path(self.path).values()[self.part_idx]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       IndexError: tuple index out of range
+
+glom/core.py:348: IndexError
+___________________________ test_pae_scope_printable ___________________________
+
+    def test_pae_scope_printable():
+        # A PathAccessError whose path comes from a Scope/S access must still be
+        # printable: get_message() (and therefore str()) must not raise even
+        # though Path() rejects an S-based path. Regression for #249.
+        with pytest.raises(PathAccessError) as exc_info:
+            glom({}, S['X'], scope={'x': 'y'})
+    
+        exc = exc_info.value
+>       msg = exc.get_message()
+              ^^^^^^^^^^^^^^^^^
+
+glom/test/test_error.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/core.py:348: in get_message
+    path_part = Path(self.path).values()[self.part_idx]
+                ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <[AttributeError("'Path' object has no attribute 'path_t'") raised in repr()] Path object at 0xffffa37570e0>
+path_parts = (T['X'],)
+
+    def __init__(self, *path_parts):
+        if not path_parts:
+            self.path_t = T
+            return
+        if isinstance(path_parts[0], TType):
+            path_t = path_parts[0]
+            offset = 1
+        else:
+            path_t = T
+            offset = 0
+        for part in path_parts[offset:]:
+            if isinstance(part, Path):
+                part = part.path_t
+            if isinstance(part, TType):
+                sub_parts = part.__ops__
+                if sub_parts[0] is not T:
+>                   raise ValueError('path segment must be path from T, not %r'
+                                     % sub_parts[0])
+E                   ValueError: path segment must be path from T, not S
+
+glom/core.py:626: ValueError
+=========================== short test summary info ============================
+FAILED glom/test/test_error.py::test_pae_fallback_for_non_path - IndexError: ...
+FAILED glom/test/test_error.py::test_pae_scope_printable - ValueError: path s...
+2 failed in 0.10s
+
+--- stderr ---
+

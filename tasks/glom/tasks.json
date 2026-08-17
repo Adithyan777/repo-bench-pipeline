@@ -1,0 +1,682 @@
+{
+  "repo": "glom",
+  "tasks": [
+    {
+      "difficulty": null,
+      "difficulty_status": null,
+      "id": "exc-glom.cli-mw_handle_target",
+      "instruction_status": "template",
+      "module": "glom.cli",
+      "modules": [
+        "glom.cli"
+      ],
+      "path": "exc-glom.cli-mw_handle_target",
+      "provenance": {
+        "docstring_kept": true,
+        "excised_lines": [
+          129,
+          164
+        ],
+        "file": "glom/cli.py",
+        "span": [
+          118,
+          164
+        ],
+        "target": "glom.cli.mw_handle_target",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Reimplement glom.cli.mw_handle_target",
+      "validation_reasons": [
+        "fail-reason:error_before_repo_call"
+      ],
+      "validation_status": "INVALID",
+      "verifier_cmd": "python -m pytest -q glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_empty_string_returns_empty_dict glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_invalid_format_raises glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_invalid_json_raises glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_invalid_python_raises glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_invalid_yaml_raises glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_json_format glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_none_returns_empty_dict glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_python_format glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_python_format_list glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_toml_format glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_yaml_format glom/test/generated/test_glom_cli.py::TestMwHandleTarget::test_yml_format glom/test/test_cli.py::test_cli_blank glom/test/test_cli.py::test_cli_scalar glom/test/test_cli.py::test_cli_spec_argv_target_stdin_basic glom/test/test_cli.py::test_cli_spec_target_argv_basic glom/test/test_cli.py::test_cli_spec_target_files_basic glom/test/test_cli.py::test_main_basic glom/test/test_cli.py::test_main_python_full_spec_python_target glom/test/test_cli.py::test_main_toml_target glom/test/test_cli.py::test_main_yaml_target glom/test/test_cli.py::test_usage_errors",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 22,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "exc-glom.core-format_target_spec_trace",
+      "instruction_status": "final",
+      "module": "glom.core",
+      "modules": [
+        "glom.core"
+      ],
+      "path": "exc-glom.core-format_target_spec_trace",
+      "provenance": {
+        "docstring_kept": true,
+        "excised_lines": [
+          246,
+          279
+        ],
+        "file": "glom/core.py",
+        "span": [
+          242,
+          279
+        ],
+        "target": "glom.core.format_target_spec_trace",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore format_target_spec_trace behavior",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/generated/test_glom_cli.py::TestGlomCli::test_glom_error_returns_one glom/test/test_check.py::test_check_basic glom/test/test_check.py::test_check_multi glom/test/test_cli.py::test_main_basic glom/test/test_error.py::test_3_11_byte_code_caret glom/test/test_error.py::test_all_public_errors glom/test/test_error.py::test_branching_stack glom/test/test_error.py::test_coalesce_stack glom/test/test_error.py::test_glom_dev_debug glom/test/test_error.py::test_glom_error_double_stack glom/test/test_error.py::test_glom_error_stack glom/test/test_error.py::test_long_target_repr glom/test/test_error.py::test_midway_branch glom/test/test_error.py::test_nesting_stack glom/test/test_error.py::test_pae_scope_printable glom/test/test_error.py::test_partially_failing_branch glom/test/test_error.py::test_regular_error_stack glom/test/test_error.py::test_unicode_stack glom/test/test_match.py::test_check_ported_tests glom/test/test_mutation.py::test_bad_assign_target glom/test/test_mutation.py::test_bad_delete_target glom/test/test_mutation.py::test_sequence_assign glom/test/test_mutation.py::test_sequence_delete glom/test/test_mutation.py::test_unregistered_assign glom/test/test_mutation.py::test_unregistered_delete glom/test/test_path_and_t.py::test_path_access_error_message glom/test/test_path_and_t.py::test_t_arithmetic_errors glom/test/test_spec.py::test_spec glom/test/test_target_types.py::test_types_bare",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 29,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "medium",
+      "difficulty_status": "final",
+      "id": "exc-glom.grouping-GROUP",
+      "instruction_status": "final",
+      "module": "glom.grouping",
+      "modules": [
+        "glom.grouping"
+      ],
+      "path": "exc-glom.grouping-GROUP",
+      "provenance": {
+        "docstring_kept": true,
+        "excised_lines": [
+          102,
+          155
+        ],
+        "file": "glom/grouping.py",
+        "span": [
+          98,
+          155
+        ],
+        "target": "glom.grouping.GROUP",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore GROUP function behavior in glom.grouping",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_error.py::test_all_public_errors glom/test/test_grouping.py::test_agg glom/test/test_grouping.py::test_bucketing glom/test/test_grouping.py::test_corner_cases glom/test/test_grouping.py::test_limit glom/test/test_grouping.py::test_sample",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 6,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "medium",
+      "difficulty_status": "final",
+      "id": "exc-glom.matching-Check.glomit",
+      "instruction_status": "final",
+      "module": "glom.matching",
+      "modules": [
+        "glom.matching"
+      ],
+      "path": "exc-glom.matching-Check.glomit",
+      "provenance": {
+        "docstring_kept": false,
+        "excised_lines": [
+          959,
+          1008
+        ],
+        "file": "glom/matching.py",
+        "span": [
+          958,
+          1008
+        ],
+        "target": "glom.matching.Check.glomit",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore Check.glomit behavior in glom.matching",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_check.py::test_check_basic glom/test/test_check.py::test_check_multi glom/test/test_error.py::test_all_public_errors glom/test/test_snippets.py::test_snippet glom/test/test_streaming.py::test_filter glom/test/test_streaming.py::test_windowed",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 6,
+        "n_passing": 21
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "exc-glom.reduction-Fold.glomit",
+      "instruction_status": "final",
+      "module": "glom.reduction",
+      "modules": [
+        "glom.reduction"
+      ],
+      "path": "exc-glom.reduction-Fold.glomit",
+      "provenance": {
+        "docstring_kept": false,
+        "excised_lines": [
+          69,
+          83
+        ],
+        "file": "glom/reduction.py",
+        "span": [
+          68,
+          83
+        ],
+        "target": "glom.reduction.Fold.glomit",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore Fold.glomit to make Fold, flatten, merge, and sum work",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_error.py::test_all_public_errors glom/test/test_grouping.py::test_agg glom/test/test_grouping.py::test_reduce glom/test/test_reduction.py::test_flatten glom/test/test_reduction.py::test_flatten_func glom/test/test_reduction.py::test_fold glom/test/test_reduction.py::test_fold_bad_iter glom/test/test_reduction.py::test_merge glom/test/test_reduction.py::test_merge_func glom/test/test_reduction.py::test_merge_omd glom/test/test_reduction.py::test_sum_integers glom/test/test_reduction.py::test_sum_seqs",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 12,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "hist-0d75aab",
+      "instruction_status": "final",
+      "module": "glom.core",
+      "modules": [
+        "glom.core"
+      ],
+      "path": "hist-0d75aab",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Improves the error message raised when accessing a dunder attribute on a T spec, telling the user the exact attribute name and how to access it via `T.__()`. The exception type and behavior are unchanged.",
+          "difficulty_guess": "easy",
+          "kind": "bugfix",
+          "self_contained": true,
+          "sha": "0d75aab",
+          "verifiable_via_tests": true
+        },
+        "commit": "0d75aab4bfdc6cc7dfa13b1a44a2f05c93f7c884",
+        "files": [
+          "glom/core.py",
+          "glom/test/test_path_and_t.py"
+        ],
+        "is_merge": false,
+        "message": "more specific T dunder attribute error message",
+        "modules": [
+          "glom.core"
+        ],
+        "parent": "81316a1c61df29cfbdc0c501bd4e24091d4362fa",
+        "pr_number": null,
+        "source_files": [
+          "glom/core.py"
+        ],
+        "touched_functions": [
+          "glom.core.TType.__getattr__"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Improve T dunder attribute error message",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_path_and_t.py::test_t_dunders",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "hist-4a48227",
+      "instruction_status": "final",
+      "module": "glom.core",
+      "modules": [
+        "glom.core"
+      ],
+      "path": "hist-4a48227",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Check now returns its configured default when a validator function raises the validation error type, instead of only handling non-validation exceptions; previously failing validators wouldn't trigger the default return.",
+          "difficulty_guess": "medium",
+          "kind": "bugfix",
+          "self_contained": true,
+          "sha": "4a48227",
+          "verifiable_via_tests": true
+        },
+        "commit": "4a4822740692de2ead233fae232530ad4bbcf931",
+        "files": [
+          "glom/core.py",
+          "glom/test/test_check.py"
+        ],
+        "is_merge": false,
+        "message": "add STOP support to Check tests, fix a bug in Check where failing validator functions wouldn't trigger the returning of the default",
+        "modules": [
+          "glom.core"
+        ],
+        "parent": "10d07943849e3f00cc22b7ebc55485a75ef2dfa6",
+        "pr_number": null,
+        "source_files": [
+          "glom/core.py"
+        ],
+        "touched_functions": [
+          "glom.core.Check.glomit"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Check default should apply when validator raises validation error",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_check.py::test_check_basic",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "hard",
+      "difficulty_status": "final",
+      "id": "hist-94b6375",
+      "instruction_status": "final",
+      "module": "glom.core",
+      "modules": [
+        "glom.core",
+        "glom.matching",
+        "glom.mutation",
+        "glom.reprlib_backport"
+      ],
+      "path": "hist-94b6375",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Introduces an arg-mode feature (MIN_MODE, arg_val) enabling arguments to be evaluated/valued against targets, and makes Coalesce defaults and recursive repr handling use it; broad behavior changes across glom, matching, and mutation.",
+          "difficulty_guess": "hard",
+          "kind": "feature",
+          "self_contained": true,
+          "sha": "94b6375",
+          "verifiable_via_tests": true
+        },
+        "commit": "94b63752c686a42bf71baeec15e250257aee167d",
+        "files": [
+          "codecov.yml",
+          "glom/core.py",
+          "glom/matching.py",
+          "glom/mutation.py",
+          "glom/reprlib_backport.py",
+          "glom/test/test_basic.py",
+          "glom/test/test_error.py",
+          "glom/test/test_match.py",
+          "glom/test/test_mutation.py",
+          "glom/test/test_path_and_t.py",
+          "glom/test/test_scope_vars.py"
+        ],
+        "is_merge": true,
+        "message": "Merge pull request #196 from mahmoud/arg-mode",
+        "modules": [
+          "glom.core",
+          "glom.matching",
+          "glom.mutation",
+          "glom.reprlib_backport"
+        ],
+        "parent": "599496d9f55f86f19402c692627ea51671c4e9f2",
+        "pr_number": 196,
+        "source_files": [
+          "glom/core.py",
+          "glom/matching.py",
+          "glom/mutation.py",
+          "glom/reprlib_backport.py"
+        ],
+        "touched_functions": [
+          "glom.core.Call.glomit",
+          "glom.core.Coalesce.glomit",
+          "glom.core._ArgValuator.__init__",
+          "glom.core._ArgValuator.mode",
+          "glom.core._glom",
+          "glom.core._t_eval",
+          "glom.core._unpack_stack",
+          "glom.core.arg_val",
+          "glom.core.format_oneline_trace",
+          "glom.core.glom",
+          "glom.matching.Check.glomit",
+          "glom.matching.Match.glomit",
+          "glom.matching.Switch.glomit",
+          "glom.matching._Bool.glomit",
+          "glom.matching._handle_dict",
+          "glom.mutation.Assign.glomit",
+          "glom.reprlib_backport.recursive_repr"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Enable argument evaluation against targets in glom constructs",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_basic.py::test_spec_and_recursion glom/test/test_match.py::test_match_default glom/test/test_match.py::test_switch glom/test/test_mutation.py::test_assign_spec_val glom/test/test_path_and_t.py::test_t_subspec glom/test/test_scope_vars.py::test_s_scope_assign",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 6,
+        "n_passing": 2
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "hist-981b090",
+      "instruction_status": "final",
+      "module": "glom.matching",
+      "modules": [
+        "glom.matching"
+      ],
+      "path": "hist-981b090",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Adds a get_message method to GlomMatchError and a __copy__ to GlomTypeMatchError so these errors can be copied and their messages rendered correctly.",
+          "difficulty_guess": "easy",
+          "kind": "bugfix",
+          "self_contained": true,
+          "sha": "981b090",
+          "verifiable_via_tests": true
+        },
+        "commit": "981b0900393601f64e2a801da4c018107a4a83c1",
+        "files": [
+          "glom/matching.py",
+          "glom/test/test_error.py"
+        ],
+        "is_merge": false,
+        "message": "tests passing with new error discipline",
+        "modules": [
+          "glom.matching"
+        ],
+        "parent": "df3a732b124cf3010b6921bc814f5e17a23cf6ce",
+        "pr_number": null,
+        "source_files": [
+          "glom/matching.py"
+        ],
+        "touched_functions": [
+          "glom.matching.GlomMatchError.__repr__",
+          "glom.matching.GlomMatchError.get_message",
+          "glom.matching.GlomTypeMatchError.__copy__"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Make GlomMatchError and GlomTypeMatchError copyable with correct message renderi",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_error.py::test_all_public_errors",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "hist-99e2ece",
+      "instruction_status": "final",
+      "module": "glom.core",
+      "modules": [
+        "glom.core"
+      ],
+      "path": "hist-99e2ece",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Invoke.star now raises a TypeError instead of an AssertionError when neither args nor kwargs are provided, so misuse produces a proper exception.",
+          "difficulty_guess": "easy",
+          "kind": "bugfix",
+          "self_contained": true,
+          "sha": "99e2ece",
+          "verifiable_via_tests": true
+        },
+        "commit": "99e2ece1ffc55be50c955e7eac6f0d256df0b2db",
+        "files": [
+          "glom/core.py",
+          "glom/test/test_basic.py"
+        ],
+        "is_merge": false,
+        "message": "replace assert statement with typeerror",
+        "modules": [
+          "glom.core"
+        ],
+        "parent": "afe438b1847b0e7683e327287056b1107f1cc81b",
+        "pr_number": null,
+        "source_files": [
+          "glom/core.py"
+        ],
+        "touched_functions": [
+          "glom.core.Invoke.star"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Invoke.star should raise TypeError when neither args nor kwargs given",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_basic.py::test_invoke",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "medium",
+      "difficulty_status": "final",
+      "id": "hist-a32abdd",
+      "instruction_status": "final",
+      "module": "glom.matching",
+      "modules": [
+        "glom.matching"
+      ],
+      "path": "hist-a32abdd",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Match mode now re-raises exceptions raised by a callable spec as MatchError, and distinguishes a non-truthy return, so validation failures are reported as MatchError instead of leaking arbitrary exceptions.",
+          "difficulty_guess": "easy",
+          "kind": "bugfix",
+          "self_contained": true,
+          "sha": "a32abdd",
+          "verifiable_via_tests": true
+        },
+        "commit": "a32abddd599f89ede932142848338580da41a5f8",
+        "files": [
+          "glom/matching.py",
+          "glom/test/test_match.py"
+        ],
+        "is_merge": false,
+        "message": "glom Match re-raises errors as MatchError",
+        "modules": [
+          "glom.matching"
+        ],
+        "parent": "43db1d704a470f682af6e717695ef2a13920a53b",
+        "pr_number": null,
+        "source_files": [
+          "glom/matching.py"
+        ],
+        "touched_functions": [
+          "glom.matching._glom_match"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Match mode should wrap callable exceptions and non-truthy returns as MatchError",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_match.py::test_basic",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "medium",
+      "difficulty_status": "final",
+      "id": "hist-c2acc2b",
+      "instruction_status": "final",
+      "module": "glom.core",
+      "modules": [
+        "glom.core"
+      ],
+      "path": "hist-c2acc2b",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Fixes the repr/formatting of T/S specs containing slice indices so that slices render like `[1:2]` instead of using the default slice repr. The string representation of T/S expressions with slices is now more readable.",
+          "difficulty_guess": "easy",
+          "kind": "bugfix",
+          "self_contained": true,
+          "sha": "c2acc2b",
+          "verifiable_via_tests": true
+        },
+        "commit": "c2acc2b4fa5ef90bbb781fa03e4e5095dd8f0d8c",
+        "files": [
+          "glom/core.py",
+          "glom/test/test_path_and_t.py"
+        ],
+        "is_merge": false,
+        "message": "fixing T[slice] repr",
+        "modules": [
+          "glom.core"
+        ],
+        "parent": "00293b2d8c1d9e084148b15f17f2c7338fc0e740",
+        "pr_number": null,
+        "source_files": [
+          "glom/core.py"
+        ],
+        "touched_functions": [
+          "glom.core._BBRepr.repr1",
+          "glom.core._format_slice",
+          "glom.core._format_t"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Fix slice repr in T and S expressions",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_path_and_t.py::test_path_t_roundtrip",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "hist-e355bce",
+      "instruction_status": "final",
+      "module": "glom.matching",
+      "modules": [
+        "glom.matching"
+      ],
+      "path": "hist-e355bce",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Or() with no arguments now raises MatchError instead of GlomError, and Not's repr handling is extended to _MExpr children.",
+          "difficulty_guess": "easy",
+          "kind": "bugfix",
+          "self_contained": true,
+          "sha": "e355bce",
+          "verifiable_via_tests": true
+        },
+        "commit": "e355bce359dce9ac3cbb554a4250ad3f093a01fd",
+        "files": [
+          "glom/matching.py",
+          "glom/test/test_match.py"
+        ],
+        "is_merge": false,
+        "message": "matching coverage and bugfixes",
+        "modules": [
+          "glom.matching"
+        ],
+        "parent": "fd8fc7fdf3d0b40b9788883066139551867561de",
+        "pr_number": null,
+        "source_files": [
+          "glom/matching.py"
+        ],
+        "touched_functions": [
+          "glom.matching.Not._m_repr",
+          "glom.matching.Or.glomit"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Fix Or() empty-args exception and Not repr for _MExpr children",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_match.py::test_basic",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 1
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "hist-e515fb3",
+      "instruction_status": "final",
+      "module": "glom.core",
+      "modules": [
+        "glom.core"
+      ],
+      "path": "hist-e515fb3",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "PathAccessError no longer crashes when formatting an error message for a Path whose path/part index cannot be resolved; it now falls back to showing the whole path instead of raising AttributeError/IndexError.",
+          "difficulty_guess": "easy",
+          "kind": "bugfix",
+          "self_contained": true,
+          "sha": "e515fb3",
+          "verifiable_via_tests": true
+        },
+        "commit": "e515fb33c7af491c6a20b2618591736361bb1d08",
+        "files": [
+          ".github/workflows/tests.yaml",
+          "codecov.yml",
+          "glom/core.py",
+          "glom/test/test_error.py"
+        ],
+        "is_merge": false,
+        "message": "Keep PathAccessError printable for Scope/S paths (#249) (#298)",
+        "modules": [
+          "glom.core"
+        ],
+        "parent": "64141ba4794eaadf63242aa76191448159306251",
+        "pr_number": 249,
+        "source_files": [
+          "glom/core.py"
+        ],
+        "touched_functions": [
+          "glom.core.PathAccessError.get_message"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Fix PathAccessError message formatting for non-Path and out-of-range paths",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q glom/test/test_error.py::test_pae_fallback_for_non_path glom/test/test_error.py::test_pae_scope_printable",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 2,
+        "n_passing": 0
+      }
+    }
+  ]
+}

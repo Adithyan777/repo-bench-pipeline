@@ -1,0 +1,44 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_t_dunders": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_t_dunders": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_t_dunders": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_t_dunders": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_t_dunders": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_t_dunders": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

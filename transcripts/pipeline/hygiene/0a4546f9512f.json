@@ -1,0 +1,132 @@
+{
+  "step": "p2.okf.function_contracts",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "For each function of module `glom.tutorial` below, write a behavioral contract: inputs (what each parameter means), outputs (what is returned), raises (list of exception TYPE NAMES it can raise, [] if none), side_effects (\"none\" or a short phrase), invariants (a property that always holds, or \"\"). Base every field ONLY on the code shown. Return one entry per qualname.\n\n### glom.tutorial.Contact.save\nsignature: save(self)\n    def save(self):\n        self.objects.save(self)\n\n### glom.tutorial.ContactManager.all\nsignature: all(self)\n    def all(self):\n        return list(CONTACTS.values())\n\n### glom.tutorial.ContactManager.get\nsignature: get(self, contact_id)\n    def get(self, contact_id):\n        return CONTACTS.get(contact_id)\n\n### glom.tutorial.ContactManager.save\nsignature: save(self, contact)\n    def save(self, contact):\n        CONTACTS[contact.id] = contact"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "contracts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "inputs": {
+                      "type": "string"
+                    },
+                    "outputs": {
+                      "type": "string"
+                    },
+                    "raises": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "side_effects": {
+                      "type": "string"
+                    },
+                    "invariants": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "inputs",
+                    "outputs",
+                    "raises",
+                    "side_effects"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "contracts"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-8192f72b3bab4bc2ad4ffb7749894245",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"contracts\": [{\"qualname\":\"glom.tutorial.Contact.save\",\"inputs\":\"self: a Contact instance\",\"outputs\":\"none\",\"raises\":[],\"side_effects\":\"saves the contact via self.objects.save(self)\",\"invariants\":\"\"},{\"qualname\":\"glom.tutorial.ContactManager.all\",\"inputs\":\"self: a ContactManager instance\",\"outputs\":\"a list of all values in CONTACTS\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.tutorial.ContactManager.get\",\"inputs\":\"self: a ContactManager instance; contact_id: a key to look up in CONTACTS\",\"outputs\":\"the value associated with contact_id in CONTACTS, or None if absent\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.tutorial.ContactManager.save\",\"inputs\":\"self: a ContactManager instance; contact: a contact object with an id attribute\",\"outputs\":\"none\",\"raises\":[],\"side_effects\":\"stores contact in CONTACTS under contact.id\",\"invariants\":\"\"}]}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787003712,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 215,
+      "prompt_tokens": 284,
+      "total_tokens": 499,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 149,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 115,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 64,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

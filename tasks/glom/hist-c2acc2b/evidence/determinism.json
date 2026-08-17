@@ -1,0 +1,44 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_path_t_roundtrip": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_path_t_roundtrip": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_path_t_roundtrip": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_path_t_roundtrip": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_path_t_roundtrip": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_path_and_t.py::test_path_t_roundtrip": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

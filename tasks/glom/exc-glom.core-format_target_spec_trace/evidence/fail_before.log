@@ -1,0 +1,2479 @@
+$ python -m pytest -q glom/test/generated/test_glom_cli.py::TestGlomCli::test_glom_error_returns_one glom/test/test_check.py::test_check_basic glom/test/test_check.py::test_check_multi glom/test/test_cli.py::test_main_basic glom/test/test_error.py::test_3_11_byte_code_caret glom/test/test_error.py::test_all_public_errors glom/test/test_error.py::test_branching_stack glom/test/test_error.py::test_coalesce_stack glom/test/test_error.py::test_glom_dev_debug glom/test/test_error.py::test_glom_error_double_stack glom/test/test_error.py::test_glom_error_stack glom/test/test_error.py::test_long_target_repr glom/test/test_error.py::test_midway_branch glom/test/test_error.py::test_nesting_stack glom/test/test_error.py::test_pae_scope_printable glom/test/test_error.py::test_partially_failing_branch glom/test/test_error.py::test_regular_error_stack glom/test/test_error.py::test_unicode_stack glom/test/test_match.py::test_check_ported_tests glom/test/test_mutation.py::test_bad_assign_target glom/test/test_mutation.py::test_bad_delete_target glom/test/test_mutation.py::test_sequence_assign glom/test/test_mutation.py::test_sequence_delete glom/test/test_mutation.py::test_unregistered_assign glom/test/test_mutation.py::test_unregistered_delete glom/test/test_path_and_t.py::test_path_access_error_message glom/test/test_path_and_t.py::test_t_arithmetic_errors glom/test/test_spec.py::test_spec glom/test/test_target_types.py::test_types_bare -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFF                                            [100%]
+=================================== FAILURES ===================================
+___________________ TestGlomCli.test_glom_error_returns_one ____________________
+
+target = {'a': 1}, spec = 'a.b.c', indent = None, debug = False, inspect = False
+scalar = False
+
+    def glom_cli(target, spec, indent, debug, inspect, scalar):
+        """Command-line interface to the glom library, providing nested data
+        access and data restructuring with the power of Python.
+        """
+        if debug or inspect:
+            stdin_open = not sys.stdin.closed
+            spec = Inspect(spec,
+                           echo=inspect,
+                           recursive=inspect,
+                           breakpoint=inspect and stdin_open,
+                           post_mortem=debug and stdin_open)
+    
+        try:
+>           result = glom.glom(target, spec)
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+
+glom/cli.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target = {'a': 1}, spec = 'a.b.c', kwargs = {}
+
+    def glom(target, spec, **kwargs):
+        """Access or construct a value from a given *target* based on the
+        specification declared by *spec*.
+    
+        Accessing nested data, aka deep-get:
+    
+        >>> target = {'a': {'b': 'c'}}
+        >>> glom(target, 'a.b')
+        'c'
+    
+        Here the *spec* was just a string denoting a path,
+        ``'a.b'``. As simple as it should be. You can also use
+        :mod:`glob`-like wildcard selectors:
+    
+        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}
+        >>> glom(target, 'a.*.k')
+        ['v1', 'v2']
+    
+        In addition to ``*``, you can also use ``**`` for recursive access:
+    
+        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}
+        >>> glom(target, '**.k')
+        ['v0', 'v3', 'v4']
+    
+        The next example shows how to use nested data to
+        access many fields at once, and make a new nested structure.
+    
+        Constructing, or restructuring more-complicated nested data:
+    
+        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}
+        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}
+        >>> output = glom(target, spec)
+        >>> pprint(output)
+        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}
+    
+        ``glom`` also takes a keyword-argument, *default*. When set,
+        if a ``glom`` operation fails with a :exc:`GlomError`, the
+        *default* will be returned, very much like
+        :meth:`dict.get()`:
+    
+        >>> glom(target, 'a.xx', default='nada')
+        'nada'
+    
+        The *skip_exc* keyword argument controls which errors should
+        be ignored.
+    
+        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)
+        0.0
+    
+        Args:
+           target (object): the object on which the glom will operate.
+           spec (object): Specification of the output object in the form
+             of a dict, list, tuple, string, other glom construct, or
+             any composition of these.
+           default (object): An optional default to return in the case
+             an exception, specified by *skip_exc*, is raised.
+           skip_exc (Exception): An optional exception or tuple of
+             exceptions to ignore and return *default* (None if
+             omitted). If *skip_exc* and *default* are both not set,
+             glom raises errors through.
+           scope (dict): Additional data that can be accessed
+             via S inside the glom-spec. Read more: :ref:`scope`.
+    
+        It's a small API with big functionality, and glom's power is
+        only surpassed by its intuitiveness. Give it a whirl!
+    
+        """
+        # TODO: check spec up front
+        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)
+        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)
+        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)
+        scope = _DEFAULT_SCOPE.new_child({
+            Path: kwargs.pop('path', []),
+            Inspect: kwargs.pop('inspector', None),
+            MODE: AUTO,
+            MIN_MODE: None,
+            CHILD_ERRORS: [],
+            'globals': ScopeVars({}, {}),
+        })
+        scope[UP] = scope
+        scope[ROOT] = scope
+        scope[T] = target
+        scope.update(kwargs.pop('scope', {}))
+        err = None
+        if kwargs:
+            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))
+        try:
+            try:
+                ret = _glom(target, spec, scope)
+            except skip_exc:
+                if default is _MISSING:
+                    raise
+                ret = default  # should this also be arg_val'd?
+        except Exception as e:
+            if glom_debug:
+                raise
+            if isinstance(e, GlomError):
+                # need to change id or else py3 seems to not let us truncate the
+                # stack trace with the explicit "raise err" below
+                err = copy.copy(e)
+                err._set_wrapped(e)
+            else:
+                err = GlomError.wrap(e)
+            if isinstance(err, GlomError):
+                err._finalize(scope[LAST_CHILD_SCOPE])
+            else:  # wrapping failed, fall back to default behavior
+                raise
+    
+        if err:
+>           raise err
+E           glom.core.PathAccessError: <exception str() failed>
+
+glom/core.py:2265: PathAccessError
+
+During handling of the above exception, another exception occurred:
+
+self = <glom.test.generated.test_glom_cli.TestGlomCli object at 0xffffb4bda390>
+capsys = <_pytest.capture.CaptureFixture object at 0xffffb4bd3d70>
+
+    def test_glom_error_returns_one(self, capsys):
+        """glom_cli should return 1 and print error on GlomError."""
+        target = {"a": 1}
+        spec = "a.b.c"  # path doesn't exist
+>       result = glom_cli(target, spec, indent=None, debug=False, inspect=False, scalar=False)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+glom/test/generated/test_glom_cli.py:183: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/cli.py:67: in glom_cli
+    print(f'{ge.__class__.__name__}: {ge}')
+                                     ^^^^
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {'a': 1}, <class 'glom.core.Spec'>: 'a.b.c', Sentinel('UP'): ChainMap({<class 'glom.core.Path'>: [], <cla...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = PathAccessError(AttributeError("'int' object has no attribute 'b'"), Path('a', 'b', 'c'), 1)
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+_______________________________ test_check_basic _______________________________
+
+    def test_check_basic():
+        assert glom([0, SKIP], [T]) == [0]  # sanity check SKIP
+    
+        target = [{'id': 0}, {'id': 1}, {'id': 2}]
+    
+        # check that skipping non-passing values works
+        assert glom(target, ([Coalesce(Check('id', equal_to=0), default=SKIP)], T[0])) == {'id': 0}
+        assert glom(target, ([Check('id', equal_to=0, default=SKIP)], T[0])) == {'id': 0}
+    
+        # check that stopping iteration on non-passing values works
+        assert glom(target, [Check('id', equal_to=0, default=STOP)]) == [{'id': 0}]
+    
+        # check that stopping chain execution on non-passing values works
+        spec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])
+        assert glom('hello', spec) == 'h'
+        assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work
+    
+        assert repr(Check()) == 'Check()'
+        assert repr(Check(T.a)) == 'Check(T.a)'
+        assert repr(Check(equal_to=1)) == 'Check(equal_to=1)'
+        assert repr(Check(instance_of=dict)) == 'Check(instance_of=dict)'
+        assert repr(Check(T(len), validate=sum)) == 'Check(T(len), validate=sum)'
+    
+        target = [1, 'a']
+        assert glom(target, [Check(type=unicode, default=SKIP)]) == ['a']
+        assert glom(target, [Check(type=(unicode, int))]) == [1, 'a']
+        assert glom(target, [Check(instance_of=unicode, default=SKIP)]) == ['a']
+        assert glom(target, [Check(instance_of=(unicode, int))]) == [1, 'a']
+    
+        target = ['1']
+        assert glom(target, [Check(validate=(int, float))])
+        assert glom(target, [Check()])  # bare check does a truthy check
+    
+        failing_checks = [({'a': {'b': 1}}, {'a': ('a', 'b', Check(type=str))},
+                           '''target at path ['a', 'b'] failed check, got error: "expected type to be 'str', found type 'int'"'''),
+                          ({'a': {'b': 1}}, {'a': ('a', Check('b', type=str))},
+                           '''target at path ['a'] failed check, subtarget at 'b' got error: "expected type to be 'str', found type 'int'"'''),
+                          (1, Check(type=(unicode, bool))),
+                          (1, Check(instance_of=unicode)),
+                          (1, Check(instance_of=(unicode, bool))),
+                          (1, Check(equal_to=0)),
+                          (1, Check(one_of=(0,))),
+                          (1, Check(one_of=(0, 2))),
+                          ('-3.14', Check(validate=int)),
+                          ('', Check(validate=lambda x: False)),]
+    
+        for fc in failing_checks:
+            if len(fc) == 2:
+                target, check = fc
+                msg = None
+            else:
+                target, check, msg = fc
+    
+            with raises(CheckError) as exc_info:
+                glom(target, check)
+    
+            if msg is not None:
+>               assert str(exc_info.value).find(msg) != -1
+                       ^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_check.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {'a': {'b': 1}}, <class 'glom.core.Spec'>: {'a': ('a', 'b', Check(type=str))}, Sentinel('UP'): ChainMap({...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = CheckError(["expected type to be 'str', found type 'int'"], Check(type=str), ['a', 'b'])
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+_______________________________ test_check_multi _______________________________
+
+    def test_check_multi():
+        target = 1
+        with raises(CheckError) as exc_info:
+            glom(target, Check(instance_of=float, validate=lambda x: x > 3.14))
+    
+>       assert "2 errors" in str(exc_info.value)
+                             ^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_check.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: 1, <class 'glom.core.Spec'>: Check(instance_of=float, validate=<function test_check_multi.<locals>.<lambd...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = CheckError(["expected '<lambda>' check to validate target", "expected instance of 'float', found instance of 'int'"], Check(instance_of=float, validate=<function test_check_multi.<locals>.<lambda> at 0xffffb4a0c180>), [])
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+_______________________________ test_main_basic ________________________________
+
+target = {'a': {'b': 'c'}}, spec = 'a.b.fail', indent = 2, debug = None
+inspect = None, scalar = None
+
+    def glom_cli(target, spec, indent, debug, inspect, scalar):
+        """Command-line interface to the glom library, providing nested data
+        access and data restructuring with the power of Python.
+        """
+        if debug or inspect:
+            stdin_open = not sys.stdin.closed
+            spec = Inspect(spec,
+                           echo=inspect,
+                           recursive=inspect,
+                           breakpoint=inspect and stdin_open,
+                           post_mortem=debug and stdin_open)
+    
+        try:
+>           result = glom.glom(target, spec)
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+
+glom/cli.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target = {'a': {'b': 'c'}}, spec = 'a.b.fail', kwargs = {}
+
+    def glom(target, spec, **kwargs):
+        """Access or construct a value from a given *target* based on the
+        specification declared by *spec*.
+    
+        Accessing nested data, aka deep-get:
+    
+        >>> target = {'a': {'b': 'c'}}
+        >>> glom(target, 'a.b')
+        'c'
+    
+        Here the *spec* was just a string denoting a path,
+        ``'a.b'``. As simple as it should be. You can also use
+        :mod:`glob`-like wildcard selectors:
+    
+        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}
+        >>> glom(target, 'a.*.k')
+        ['v1', 'v2']
+    
+        In addition to ``*``, you can also use ``**`` for recursive access:
+    
+        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}
+        >>> glom(target, '**.k')
+        ['v0', 'v3', 'v4']
+    
+        The next example shows how to use nested data to
+        access many fields at once, and make a new nested structure.
+    
+        Constructing, or restructuring more-complicated nested data:
+    
+        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}
+        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}
+        >>> output = glom(target, spec)
+        >>> pprint(output)
+        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}
+    
+        ``glom`` also takes a keyword-argument, *default*. When set,
+        if a ``glom`` operation fails with a :exc:`GlomError`, the
+        *default* will be returned, very much like
+        :meth:`dict.get()`:
+    
+        >>> glom(target, 'a.xx', default='nada')
+        'nada'
+    
+        The *skip_exc* keyword argument controls which errors should
+        be ignored.
+    
+        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)
+        0.0
+    
+        Args:
+           target (object): the object on which the glom will operate.
+           spec (object): Specification of the output object in the form
+             of a dict, list, tuple, string, other glom construct, or
+             any composition of these.
+           default (object): An optional default to return in the case
+             an exception, specified by *skip_exc*, is raised.
+           skip_exc (Exception): An optional exception or tuple of
+             exceptions to ignore and return *default* (None if
+             omitted). If *skip_exc* and *default* are both not set,
+             glom raises errors through.
+           scope (dict): Additional data that can be accessed
+             via S inside the glom-spec. Read more: :ref:`scope`.
+    
+        It's a small API with big functionality, and glom's power is
+        only surpassed by its intuitiveness. Give it a whirl!
+    
+        """
+        # TODO: check spec up front
+        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)
+        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)
+        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)
+        scope = _DEFAULT_SCOPE.new_child({
+            Path: kwargs.pop('path', []),
+            Inspect: kwargs.pop('inspector', None),
+            MODE: AUTO,
+            MIN_MODE: None,
+            CHILD_ERRORS: [],
+            'globals': ScopeVars({}, {}),
+        })
+        scope[UP] = scope
+        scope[ROOT] = scope
+        scope[T] = target
+        scope.update(kwargs.pop('scope', {}))
+        err = None
+        if kwargs:
+            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))
+        try:
+            try:
+                ret = _glom(target, spec, scope)
+            except skip_exc:
+                if default is _MISSING:
+                    raise
+                ret = default  # should this also be arg_val'd?
+        except Exception as e:
+            if glom_debug:
+                raise
+            if isinstance(e, GlomError):
+                # need to change id or else py3 seems to not let us truncate the
+                # stack trace with the explicit "raise err" below
+                err = copy.copy(e)
+                err._set_wrapped(e)
+            else:
+                err = GlomError.wrap(e)
+            if isinstance(err, GlomError):
+                err._finalize(scope[LAST_CHILD_SCOPE])
+            else:  # wrapping failed, fall back to default behavior
+                raise
+    
+        if err:
+>           raise err
+E           glom.core.PathAccessError: <exception str() failed>
+
+glom/core.py:2265: PathAccessError
+
+During handling of the above exception, another exception occurred:
+
+    def test_main_basic():
+        argv = ['__', 'a.b.fail', '{"a": {"b": "c"}}']
+>       assert cli.main(argv) == 1
+               ^^^^^^^^^^^^^^
+
+glom/test/test_cli.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/cli.py:103: in main
+    return cmd.run(argv) or 0
+           ^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/face/command.py:478: in run
+    ret = inject(wrapped, kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/face/sinter.py:55: in inject
+    return f(**kwargs)
+           ^^^^^^^^^^^
+<sinter generated next_ 041b2974ad3aa391>:6: in next_
+    return funcs[0](next_=next_, posargs_=posargs_, spec_file=spec_file, spec_format=spec_format, target_file=target_file, target_format=target_format)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+glom/cli.py:212: in mw_get_target
+    return next_(spec=spec, target=target)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<sinter generated next_ 041b2974ad3aa391>:4: in next_
+    return funcs[1](debug=debug, indent=indent, inspect=inspect, scalar=scalar, spec=spec, target=target)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+glom/cli.py:67: in glom_cli
+    print(f'{ge.__class__.__name__}: {ge}')
+                                     ^^^^
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {'a': {'b': 'c'}}, <class 'glom.core.Spec'>: 'a.b.fail', Sentinel('UP'): ChainMap({<class 'glom.core.Path...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = PathAccessError(AttributeError("'str' object has no attribute 'fail'"), Path('a', 'b', 'fail'), 2)
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+__________________________ test_3_11_byte_code_caret ___________________________
+
+    def test_3_11_byte_code_caret():
+        """the ~~^ used to mark the current byte code position should be removed"""
+>       assert _make_stack(target=1, spec=[]) == """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.GlomError.wrap(IndexError): error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: 1
+     - Spec: []
+    IndexError: list index out of range
+    """
+E       AssertionError: assert 'Traceback (m...r() failed>\n' == 'Traceback (m...ut of range\n'
+E         
+E         Skipping 185 identical leading characters in diff, use -v to show
+E         + exError): <exception str() failed>
+E         - exError): error raised while processing, details below.
+E         -  Target-spec trace (most recent last):
+E         -  - Target: 1
+E         -  - Spec: []
+E         - IndexError: list index out of range
+
+glom/test/test_error.py:546: AssertionError
+____________________________ test_all_public_errors ____________________________
+
+    def test_all_public_errors():
+        """test that all errors importable from the top-level glom module
+        pass a basic set of standards.
+    
+        When adding a new public error type, this test will be fail unless
+        that type is also tested below.
+        """
+        import glom
+        import copy
+    
+        err_types = [t for t in
+                     [getattr(glom, name) for name in dir(glom)]
+                     if isinstance(t, type) and issubclass(t, Exception)]
+        non_glomerrors = [t for t in err_types if not issubclass(t, glom.GlomError)]
+        assert not non_glomerrors, "expected all public exception types to subclass GlomError"
+    
+        err_types = sorted([t for t in err_types if not t is glom.GlomError],
+                           key=lambda t: t.__name__)
+    
+        results = []
+    
+        def _test_exc(exc_type, target, spec):
+            with pytest.raises(exc_type) as exc_info:
+                glom.glom(target, spec)
+            results.append((target, spec, exc_info.value))
+            return exc_info.value
+    
+        _test_exc(glom.CheckError, {}, glom.Check(equal_to=[]))
+    
+        _test_exc(glom.FoldError, 2, glom.Flatten())
+    
+        _test_exc(glom.BadSpec, range(5), glom.grouping.Group([{T: T}]))
+    
+        _test_exc(glom.PathAccessError, {}, 'a.b.c')
+    
+        _test_exc(glom.UnregisteredTarget, 'kurt', [glom.T])
+    
+        _test_exc(glom.CoalesceError, {}, glom.Coalesce('a', 'b'))
+    
+        _test_exc(glom.PathAssignError, object(), glom.Assign('a', 'b'))
+    
+        _test_exc(glom.PathDeleteError, object(), glom.Delete('a'))
+    
+        _test_exc(MatchError, 1, M == 2)
+    
+        _test_exc(TypeMatchError, 1, Match(str))
+    
+        for (target, spec, exc) in results:
+            assert copy.copy(exc) is not exc
+>           exc_str = str(exc)
+                      ^^^^^^^^
+
+glom/test/test_error.py:508: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {}, <class 'glom.core.Spec'>: Check(equal_to=[]), Sentinel('UP'): ChainMap({<class 'glom.core.Path'>: [],...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = CheckError(['expected [], found {}'], Check(equal_to=[]), [])
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+_____________________________ test_branching_stack _____________________________
+
+    def test_branching_stack():
+        # ends-in-branch
+        actual = _make_stack(Match(Switch(
+            [(1, 1), ('a', 'a'), (T.a, T.a)])))
+        expected = """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.matching.MatchError: error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: [None]
+     - Spec: Match(Switch([(1, 1), ('a', 'a'), (T.a, T.a)]))
+     + Spec: Switch([(1, 1), ('a', 'a'), (T.a, T.a)])
+     |\\ Spec: 1
+     |X glom.matching.MatchError: [None] does not match 1
+     |\\ Spec: 'a'
+     |X glom.matching.MatchError: [None] does not match 'a'
+     |\\ Spec: T.a
+     |X glom.core.PathAccessError: could not access 'a', part 0 of T.a, got error: AttributeError("'list' object has no attribute 'a'")
+    glom.matching.MatchError: no matches for target in Switch
+    """
+>       assert actual == expected
+E       AssertionError: assert 'Traceback (m...r() failed>\n' == 'Traceback (m...t in Switch\n'
+E         
+E         Skipping 173 identical leading characters in diff, use -v to show
+E         + tchError: <exception str() failed>
+E         - tchError: error raised while processing, details below.
+E         -  Target-spec trace (most recent last):
+E         -  - Target: [None]
+E         -  - Spec: Match(Switch([(1, 1), ('a', 'a'), (T.a, T.a)]))...
+E         
+E         ...Full output truncated (8 lines hidden), use '-vv' to show
+
+glom/test/test_error.py:297: AssertionError
+_____________________________ test_coalesce_stack ______________________________
+
+    def test_coalesce_stack():
+        val = {'a': {'b': 'c'},  # basic dictionary nesting
+           'd': {'e': ['f'],    # list in dictionary
+                 'g': 'h'},
+           'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries
+           'n': 'o'}
+        actual = _make_stack(Coalesce('xxx', 'yyy'), target=val)
+        expected = """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.CoalesceError: error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: {'a': {'b': 'c'}, 'd': {'e': ['f'], 'g': 'h'}, 'i': [{'j... (len=4)
+     + Spec: Coalesce('xxx', 'yyy')
+     |\\ Spec: 'xxx'
+     |X glom.core.PathAccessError: could not access 'xxx', part 0 of Path('xxx'), got error: KeyError('xxx')
+     |\\ Spec: 'yyy'
+     |X glom.core.PathAccessError: could not access 'yyy', part 0 of Path('yyy'), got error: KeyError('yyy')
+    glom.core.CoalesceError: no valid values found. Tried ('xxx', 'yyy') and got (PathAccessError, PathAccessError) (at path [])
+    """
+>       assert actual == expected
+E       AssertionError: assert 'Traceback (m...r() failed>\n' == 'Traceback (m...at path [])\n'
+E         
+E         Skipping 172 identical leading characters in diff, use -v to show
+E         + sceError: <exception str() failed>
+E         - sceError: error raised while processing, details below.
+E         -  Target-spec trace (most recent last):
+E         -  - Target: {'a': {'b': 'c'}, 'd': {'e': ['f'], 'g': 'h'}, 'i': [{'j... (len=4)
+E         -  + Spec: Coalesce('xxx', 'yyy')...
+E         
+E         ...Full output truncated (5 lines hidden), use '-vv' to show
+
+glom/test/test_error.py:399: AssertionError
+_____________________________ test_glom_dev_debug ______________________________
+
+    def test_glom_dev_debug():
+        with pytest.raises(GlomError) as exc_info:
+            glom({'a': 'yesandno'}, 'a.b.c')
+    
+>       assert ' - Target:' in str(exc_info.value)
+                               ^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_error.py:526: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {'a': 'yesandno'}, <class 'glom.core.Spec'>: 'a.b.c', Sentinel('UP'): ChainMap({<class 'glom.core.Path'>:...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = PathAccessError(AttributeError("'str' object has no attribute 'b'"), Path('a', 'b', 'c'), 1)
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+_________________________ test_glom_error_double_stack _________________________
+
+    def test_glom_error_double_stack():
+        actual = _make_stack({'results': [{'value': _subglom_wrap}]})
+        expected = """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.PathAccessError: error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: [None]
+     - Spec: {'results': [{'value': <function _subglom_wrap at
+     - Spec: [{'value': <function _subglom_wrap at
+     - Target: None
+     - Spec: {'value': <function _subglom_wrap at
+     - Spec: <function _subglom_wrap at
+    glom.core.PathAccessError: error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: ['Nested']
+     - Spec: {'internal': ['val']}
+     - Spec: ['val']
+     - Target: 'Nested'
+     - Spec: 'val'
+    glom.core.PathAccessError: could not access 'val', part 0 of Path('val'), got error: AttributeError("'str' object has no attribute 'val'")
+    """
+>       assert expected == actual
+E       assert 'Traceback (m...e \'val\'")\n' == 'Traceback (m...r() failed>\n'
+E         
+E         Skipping 174 identical leading characters in diff, use -v to show
+E         - essError: <exception str() failed>
+E         + essError: error raised while processing, details below.
+E         +  Target-spec trace (most recent last):
+E         +  - Target: [None]
+E         +  - Spec: {'results': [{'value': <function _subglom_wrap at...
+E         
+E         ...Full output truncated (12 lines hidden), use '-vv' to show
+
+glom/test/test_error.py:256: AssertionError
+____________________________ test_glom_error_stack _____________________________
+
+    def test_glom_error_stack():
+        # NoneType has not attribute value
+        expected = """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.PathAccessError: error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: [None]
+     - Spec: {'results': [{'valué': 'value'}]}
+     - Spec: [{'valué': 'value'}]
+     - Target: None
+     - Spec: {'valué': 'value'}
+     - Spec: 'value'
+    glom.core.PathAccessError: could not access 'value', part 0 of Path('value'), got error: AttributeError("'NoneType' object has no attribute 'value'")
+    """
+        #import glom.core
+        #glom.core.GLOM_DEBUG = True
+        actual = _make_stack({'results': [{'valué': 'value'}]})
+        print(actual)
+    
+>       assert actual == expected
+E       assert 'Traceback (m...r() failed>\n' == 'Traceback (m...\'value\'")\n'
+E         
+E         Skipping 174 identical leading characters in diff, use -v to show
+E         + essError: <exception str() failed>
+E         - essError: error raised while processing, details below.
+E         -  Target-spec trace (most recent last):
+E         -  - Target: [None]
+E         -  - Spec: {'results': [{'valué': 'value'}]}...
+E         
+E         ...Full output truncated (5 lines hidden), use '-vv' to show
+
+glom/test/test_error.py:212: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Traceback (most recent call last):
+  File "test_error.py", line ___, in _make_stack
+    glom(target, spec)
+  File "core.py", line ___, in glom
+    raise err
+glom.core.PathAccessError: <exception str() failed>
+
+____________________________ test_long_target_repr _____________________________
+
+    def test_long_target_repr():
+        import glom as glom_mod
+        assert not glom_mod.core.GLOM_DEBUG
+        actual = _make_stack(target=[None] * 1000, spec='1001')
+>       assert '(len=1000)' in actual
+E       assert '(len=1000)' in 'Traceback (most recent call last):\n  File "test_error.py", line ___, in _make_stack\n    glom(target, spec)\n  File "core.py", line ___, in glom\n    raise err\nglom.core.PathAccessError: <exception str() failed>\n'
+
+glom/test/test_error.py:263: AssertionError
+______________________________ test_midway_branch ______________________________
+
+    def test_midway_branch():
+        # midway branch, but then continues
+        actual = _make_stack(Match(Switch(
+            [(1, 1), ('a', 'a'), ([None], T.a)])))
+        expected = """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.PathAccessError: error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: [None]
+     - Spec: Match(Switch([(1, 1), ('a', 'a'), ([None], T.a)]))
+     + Spec: Switch([(1, 1), ('a', 'a'), ([None], T.a)])
+     |\\ Spec: 1
+     |X glom.matching.MatchError: [None] does not match 1
+     |\\ Spec: 'a'
+     |X glom.matching.MatchError: [None] does not match 'a'
+     |\\ Spec: [None]
+     || Spec: T.a
+    glom.core.PathAccessError: could not access 'a', part 0 of T.a, got error: AttributeError("'list' object has no attribute 'a'")
+    """
+>       assert actual == expected
+E       assert 'Traceback (m...r() failed>\n' == 'Traceback (m...ute \'a\'")\n'
+E         
+E         Skipping 174 identical leading characters in diff, use -v to show
+E         + essError: <exception str() failed>
+E         - essError: error raised while processing, details below.
+E         -  Target-spec trace (most recent last):
+E         -  - Target: [None]
+E         -  - Spec: Match(Switch([(1, 1), ('a', 'a'), ([None], T.a)]))...
+E         
+E         ...Full output truncated (8 lines hidden), use '-vv' to show
+
+glom/test/test_error.py:323: AssertionError
+______________________________ test_nesting_stack ______________________________
+
+    def test_nesting_stack():
+        # check behavior when a glom stack is nested via data structure not python call stack
+>       assert _make_stack(('a', 'b', 'c'), target={'a': {'b': {}}}) == """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.PathAccessError: error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: {'a': {'b': {}}}
+     - Spec: ('a', 'b', 'c')
+     - Spec: 'a'
+     - Target: {'b': {}}
+     - Spec: 'b'
+     - Target: {}
+     - Spec: 'c'
+    glom.core.PathAccessError: could not access 'c', part 0 of Path('c'), got error: KeyError('c')
+    """
+E       assert 'Traceback (m...r() failed>\n' == "Traceback (m...yError('c')\n"
+E         
+E         Skipping 174 identical leading characters in diff, use -v to show
+E         + essError: <exception str() failed>
+E         - essError: error raised while processing, details below.
+E         -  Target-spec trace (most recent last):
+E         -  - Target: {'a': {'b': {}}}
+E         -  - Spec: ('a', 'b', 'c')...
+E         
+E         ...Full output truncated (6 lines hidden), use '-vv' to show
+
+glom/test/test_error.py:404: AssertionError
+___________________________ test_pae_scope_printable ___________________________
+
+    def test_pae_scope_printable():
+        # A PathAccessError whose path comes from a Scope/S access must still be
+        # printable: get_message() (and therefore str()) must not raise even
+        # though Path() rejects an S-based path. Regression for #249.
+        with pytest.raises(PathAccessError) as exc_info:
+            glom({}, S['X'], scope={'x': 'y'})
+    
+        exc = exc_info.value
+        msg = exc.get_message()
+>       assert '<exception str() failed>' not in str(exc)
+                                                 ^^^^^^^^
+
+glom/test/test_error.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {}, <class 'glom.core.Spec'>: S['X'], Sentinel('UP'): ChainMap({<class 'glom.core.Path'>: [], <class 'glo...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = PathAccessError(KeyError('X'), T['X'], 0), width = 78, depth = 0
+prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+________________________ test_partially_failing_branch _________________________
+
+    def test_partially_failing_branch():
+        # what happens when part of an Or() etc fails,
+        # but another part succeeds and then an error happens further down?
+>       assert _make_stack((Or('a', T), Or('b', T), 'c'), target=None) == """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.PathAccessError: error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: None
+     - Spec: (Or('a', T), Or('b', T), 'c')
+     - Spec: Or('a', T)
+     - Spec: Or('b', T)
+     - Spec: 'c'
+    glom.core.PathAccessError: could not access 'c', part 0 of Path('c'), got error: AttributeError("'NoneType' object has no attribute 'c'")
+    """
+E       assert 'Traceback (m...r() failed>\n' == 'Traceback (m...ute \'c\'")\n'
+E         
+E         Skipping 174 identical leading characters in diff, use -v to show
+E         + essError: <exception str() failed>
+E         - essError: error raised while processing, details below.
+E         -  Target-spec trace (most recent last):
+E         -  - Target: None
+E         -  - Spec: (Or('a', T), Or('b', T), 'c')...
+E         
+E         ...Full output truncated (4 lines hidden), use '-vv' to show
+
+glom/test/test_error.py:359: AssertionError
+___________________________ test_regular_error_stack ___________________________
+
+    def test_regular_error_stack():
+        actual = _make_stack({'results': [{'value': _raise_exc}]})
+        expected = """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.GlomError.wrap(Exception): error raised while processing, details below.
+     Target-spec trace (most recent last):
+     - Target: [None]
+     - Spec: {'results': [{'value': <function _raise_exc at
+     - Spec: [{'value': <function _raise_exc at
+     - Target: None
+     - Spec: {'value': <function _raise_exc at
+     - Spec: <function _raise_exc at
+      File "<boltons.funcutils.FunctionBuilder-0>", line ___, in _raise_exc
+    Exception: unique message
+    """
+        # _raise_exc being present in the second-to-last line above tests
+        # that errors in user-defined functions result in frames being
+        # visible
+>       assert expected == actual
+E       AssertionError: assert 'Traceback (m...que message\n' == 'Traceback (m...r() failed>\n'
+E         
+E         Skipping 184 identical leading characters in diff, use -v to show
+E         - ception): <exception str() failed>
+E         + ception): error raised while processing, details below.
+E         +  Target-spec trace (most recent last):
+E         +  - Target: [None]
+E         +  - Spec: {'results': [{'value': <function _raise_exc at...
+E         
+E         ...Full output truncated (6 lines hidden), use '-vv' to show
+
+glom/test/test_error.py:186: AssertionError
+______________________________ test_unicode_stack ______________________________
+
+    def test_unicode_stack():
+        val = {'resumé': 'beyoncé'}
+        stack = _make_stack(target=val, spec='a.é.i.o')
+>       assert 'beyonc' in stack
+E       assert 'beyonc' in 'Traceback (most recent call last):\n  File "test_error.py", line ___, in _make_stack\n    glom(target, spec)\n  File "core.py", line ___, in glom\n    raise err\nglom.core.PathAccessError: <exception str() failed>\n'
+
+glom/test/test_error.py:540: AssertionError
+___________________________ test_check_ported_tests ____________________________
+
+    def test_check_ported_tests():
+        """
+        Tests ported from Check() to make sure all the functionality has an analogue.
+        """
+        target = [{'id': 0}, {'id': 1}, {'id': 2}]
+    
+        # check that skipping non-passing values works
+        assert glom(target, [Coalesce(M(T['id']) == 0, default=SKIP)]) == [{'id': 0}]
+    
+        # TODO: should M(subspec, default='') work? I lean no.
+        # NB: this is not a very idiomatic use of Match, just brought over for Check reasons
+        assert glom(target, [Match({'id': And(int, M == 1)}, default=SKIP)]) == [{'id': 1}]
+        assert glom(target, [Match({'id': And(int, M <= 1)}, default=STOP)]) == [{'id': 0}, {'id': 1}]
+    
+        # check that stopping chain execution on non-passing values works
+        spec = (Or(Match(len), Val(STOP)), T[0])
+        assert glom('hello', spec, glom_debug=True) == 'h'
+        assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work
+    
+        target = [1, 'a']
+        assert glom(target, [Match(unicode, default=SKIP)]) == ['a']
+        assert glom(target, Match([Or(unicode, int)])) == [1, 'a']
+    
+        target = ['1']
+        assert glom(target, [(M(T), int)]) == [1]
+        assert glom(target, M(T)) == ['1']
+    
+        failing_checks = [({'a': {'b': 1}}, {'a': ('a', 'b', Match(str))},
+                           '''expected type str, not int'''),  # TODO: bbrepr at least, maybe include path like Check did
+                          ({'a': {'b': 1}}, {'a': ('a', Match({'b': str}))},
+                           '''expected type str, not int'''),  # TODO: include subspec path ('b')
+                          (1, Match(Or(unicode, bool))),
+                          (1, Match(unicode)),
+                          (1, Match(0)),
+                          (1, Match(Or(0, 2))),
+                          ('-3.14', Match(lambda x: int(x) > 0)),
+                          # ('-3.14', M(lambda x: int(x) > 0)),
+                          # TODO: M doesn't behave quite like Match because it's mode-free
+        ]
+    
+        for fc in failing_checks:
+            if len(fc) == 2:
+                target, check = fc
+                msg = None
+            else:
+                target, check, msg = fc
+    
+            with pytest.raises(MatchError) as exc_info:
+                glom(target, check)
+    
+            if msg is not None:
+>               actual_msg = str(exc_info.value)
+                             ^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_match.py:482: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {'a': {'b': 1}}, <class 'glom.core.Spec'>: {'a': ('a', 'b', Match(str))}, Sentinel('UP'): ChainMap({<clas...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = TypeMatchError('expected type {0.__name__}, not {1.__name__}', <class 'str'>, <class 'int'>)
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+____________________________ test_bad_assign_target ____________________________
+
+    def test_bad_assign_target():
+        class BadTarget:
+            def __setattr__(self, name, val):
+                raise Exception("and you trusted me?")
+    
+        # sanity check
+        spec = Assign('a', 'b')
+        ok_target = lambda: None
+        glom(ok_target, spec)
+        assert ok_target.a == 'b'
+    
+        with pytest.raises(PathAssignError, match='could not assign'):
+>           glom(BadTarget(), spec)
+
+glom/test/test_mutation.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target = <glom.test.test_mutation.test_bad_assign_target.<locals>.BadTarget object at 0xffffb4bd4e90>
+spec = Assign(Path('a'), 'b'), kwargs = {}
+
+    def glom(target, spec, **kwargs):
+        """Access or construct a value from a given *target* based on the
+        specification declared by *spec*.
+    
+        Accessing nested data, aka deep-get:
+    
+        >>> target = {'a': {'b': 'c'}}
+        >>> glom(target, 'a.b')
+        'c'
+    
+        Here the *spec* was just a string denoting a path,
+        ``'a.b'``. As simple as it should be. You can also use
+        :mod:`glob`-like wildcard selectors:
+    
+        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}
+        >>> glom(target, 'a.*.k')
+        ['v1', 'v2']
+    
+        In addition to ``*``, you can also use ``**`` for recursive access:
+    
+        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}
+        >>> glom(target, '**.k')
+        ['v0', 'v3', 'v4']
+    
+        The next example shows how to use nested data to
+        access many fields at once, and make a new nested structure.
+    
+        Constructing, or restructuring more-complicated nested data:
+    
+        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}
+        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}
+        >>> output = glom(target, spec)
+        >>> pprint(output)
+        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}
+    
+        ``glom`` also takes a keyword-argument, *default*. When set,
+        if a ``glom`` operation fails with a :exc:`GlomError`, the
+        *default* will be returned, very much like
+        :meth:`dict.get()`:
+    
+        >>> glom(target, 'a.xx', default='nada')
+        'nada'
+    
+        The *skip_exc* keyword argument controls which errors should
+        be ignored.
+    
+        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)
+        0.0
+    
+        Args:
+           target (object): the object on which the glom will operate.
+           spec (object): Specification of the output object in the form
+             of a dict, list, tuple, string, other glom construct, or
+             any composition of these.
+           default (object): An optional default to return in the case
+             an exception, specified by *skip_exc*, is raised.
+           skip_exc (Exception): An optional exception or tuple of
+             exceptions to ignore and return *default* (None if
+             omitted). If *skip_exc* and *default* are both not set,
+             glom raises errors through.
+           scope (dict): Additional data that can be accessed
+             via S inside the glom-spec. Read more: :ref:`scope`.
+    
+        It's a small API with big functionality, and glom's power is
+        only surpassed by its intuitiveness. Give it a whirl!
+    
+        """
+        # TODO: check spec up front
+        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)
+        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)
+        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)
+        scope = _DEFAULT_SCOPE.new_child({
+            Path: kwargs.pop('path', []),
+            Inspect: kwargs.pop('inspector', None),
+            MODE: AUTO,
+            MIN_MODE: None,
+            CHILD_ERRORS: [],
+            'globals': ScopeVars({}, {}),
+        })
+        scope[UP] = scope
+        scope[ROOT] = scope
+        scope[T] = target
+        scope.update(kwargs.pop('scope', {}))
+        err = None
+        if kwargs:
+            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))
+        try:
+            try:
+                ret = _glom(target, spec, scope)
+            except skip_exc:
+                if default is _MISSING:
+                    raise
+                ret = default  # should this also be arg_val'd?
+        except Exception as e:
+            if glom_debug:
+                raise
+            if isinstance(e, GlomError):
+                # need to change id or else py3 seems to not let us truncate the
+                # stack trace with the explicit "raise err" below
+                err = copy.copy(e)
+                err._set_wrapped(e)
+            else:
+                err = GlomError.wrap(e)
+            if isinstance(err, GlomError):
+                err._finalize(scope[LAST_CHILD_SCOPE])
+            else:  # wrapping failed, fall back to default behavior
+                raise
+    
+        if err:
+>           raise err
+E           glom.core.PathAssignError: <exception str() failed>
+
+glom/core.py:2265: PathAssignError
+
+During handling of the above exception, another exception occurred:
+
+    def test_bad_assign_target():
+        class BadTarget:
+            def __setattr__(self, name, val):
+                raise Exception("and you trusted me?")
+    
+        # sanity check
+        spec = Assign('a', 'b')
+        ok_target = lambda: None
+        glom(ok_target, spec)
+        assert ok_target.a == 'b'
+    
+>       with pytest.raises(PathAssignError, match='could not assign'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_mutation.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:661: in matches
+    if not self._check_match(exception):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:481: in _check_match
+    stringified_exception := stringify_exception(
+/usr/local/lib/python3.12/site-packages/_pytest/_code/code.py:484: in stringify_exception
+    message = str(exc)
+              ^^^^^^^^
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: <glom.test.test_mutation.test_bad_assign_target.<locals>.BadTarget object at 0xffffb4bd4e90>, <class 'glo...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = PathAssignError(Exception('and you trusted me?'), Path(), 'a')
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+____________________________ test_bad_delete_target ____________________________
+
+    def test_bad_delete_target():
+        class BadTarget:
+            def __delattr__(self, name):
+                raise Exception("and you trusted me?")
+    
+        spec = Delete('a')
+        ok_target = lambda: None
+        ok_target.a = 1
+        glom(ok_target, spec)
+        assert not hasattr(ok_target, 'a')
+    
+        with pytest.raises(PathDeleteError, match='could not delete'):
+>           glom(BadTarget(), spec)
+
+glom/test/test_mutation.py:285: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target = <glom.test.test_mutation.test_bad_delete_target.<locals>.BadTarget object at 0xffffb4bd6930>
+spec = Delete(Path('a')), kwargs = {}
+
+    def glom(target, spec, **kwargs):
+        """Access or construct a value from a given *target* based on the
+        specification declared by *spec*.
+    
+        Accessing nested data, aka deep-get:
+    
+        >>> target = {'a': {'b': 'c'}}
+        >>> glom(target, 'a.b')
+        'c'
+    
+        Here the *spec* was just a string denoting a path,
+        ``'a.b'``. As simple as it should be. You can also use
+        :mod:`glob`-like wildcard selectors:
+    
+        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}
+        >>> glom(target, 'a.*.k')
+        ['v1', 'v2']
+    
+        In addition to ``*``, you can also use ``**`` for recursive access:
+    
+        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}
+        >>> glom(target, '**.k')
+        ['v0', 'v3', 'v4']
+    
+        The next example shows how to use nested data to
+        access many fields at once, and make a new nested structure.
+    
+        Constructing, or restructuring more-complicated nested data:
+    
+        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}
+        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}
+        >>> output = glom(target, spec)
+        >>> pprint(output)
+        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}
+    
+        ``glom`` also takes a keyword-argument, *default*. When set,
+        if a ``glom`` operation fails with a :exc:`GlomError`, the
+        *default* will be returned, very much like
+        :meth:`dict.get()`:
+    
+        >>> glom(target, 'a.xx', default='nada')
+        'nada'
+    
+        The *skip_exc* keyword argument controls which errors should
+        be ignored.
+    
+        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)
+        0.0
+    
+        Args:
+           target (object): the object on which the glom will operate.
+           spec (object): Specification of the output object in the form
+             of a dict, list, tuple, string, other glom construct, or
+             any composition of these.
+           default (object): An optional default to return in the case
+             an exception, specified by *skip_exc*, is raised.
+           skip_exc (Exception): An optional exception or tuple of
+             exceptions to ignore and return *default* (None if
+             omitted). If *skip_exc* and *default* are both not set,
+             glom raises errors through.
+           scope (dict): Additional data that can be accessed
+             via S inside the glom-spec. Read more: :ref:`scope`.
+    
+        It's a small API with big functionality, and glom's power is
+        only surpassed by its intuitiveness. Give it a whirl!
+    
+        """
+        # TODO: check spec up front
+        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)
+        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)
+        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)
+        scope = _DEFAULT_SCOPE.new_child({
+            Path: kwargs.pop('path', []),
+            Inspect: kwargs.pop('inspector', None),
+            MODE: AUTO,
+            MIN_MODE: None,
+            CHILD_ERRORS: [],
+            'globals': ScopeVars({}, {}),
+        })
+        scope[UP] = scope
+        scope[ROOT] = scope
+        scope[T] = target
+        scope.update(kwargs.pop('scope', {}))
+        err = None
+        if kwargs:
+            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))
+        try:
+            try:
+                ret = _glom(target, spec, scope)
+            except skip_exc:
+                if default is _MISSING:
+                    raise
+                ret = default  # should this also be arg_val'd?
+        except Exception as e:
+            if glom_debug:
+                raise
+            if isinstance(e, GlomError):
+                # need to change id or else py3 seems to not let us truncate the
+                # stack trace with the explicit "raise err" below
+                err = copy.copy(e)
+                err._set_wrapped(e)
+            else:
+                err = GlomError.wrap(e)
+            if isinstance(err, GlomError):
+                err._finalize(scope[LAST_CHILD_SCOPE])
+            else:  # wrapping failed, fall back to default behavior
+                raise
+    
+        if err:
+>           raise err
+E           glom.mutation.PathDeleteError: <exception str() failed>
+
+glom/core.py:2265: PathDeleteError
+
+During handling of the above exception, another exception occurred:
+
+    def test_bad_delete_target():
+        class BadTarget:
+            def __delattr__(self, name):
+                raise Exception("and you trusted me?")
+    
+        spec = Delete('a')
+        ok_target = lambda: None
+        ok_target.a = 1
+        glom(ok_target, spec)
+        assert not hasattr(ok_target, 'a')
+    
+>       with pytest.raises(PathDeleteError, match='could not delete'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_mutation.py:284: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:661: in matches
+    if not self._check_match(exception):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:481: in _check_match
+    stringified_exception := stringify_exception(
+/usr/local/lib/python3.12/site-packages/_pytest/_code/code.py:484: in stringify_exception
+    message = str(exc)
+              ^^^^^^^^
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: <glom.test.test_mutation.test_bad_delete_target.<locals>.BadTarget object at 0xffffb4bd6930>, <class 'glo...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = PathDeleteError(Exception('and you trusted me?'), Path(), 'a')
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+_____________________________ test_sequence_assign _____________________________
+
+    def test_sequence_assign():
+        target = {'alist': [0, 1, 2]}
+        assign(target, 'alist.2', 3)
+        assert target['alist'][2] == 3
+    
+        with pytest.raises(PathAssignError, match='could not assign') as exc_info:
+>           assign(target, 'alist.3', 4)
+
+glom/test/test_mutation.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/mutation.py:213: in assign
+    return glom(obj, Assign(path, val, missing=missing))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target = {'alist': [0, 1, 3]}, spec = Assign(Path('alist', '3'), 4), kwargs = {}
+
+    def glom(target, spec, **kwargs):
+        """Access or construct a value from a given *target* based on the
+        specification declared by *spec*.
+    
+        Accessing nested data, aka deep-get:
+    
+        >>> target = {'a': {'b': 'c'}}
+        >>> glom(target, 'a.b')
+        'c'
+    
+        Here the *spec* was just a string denoting a path,
+        ``'a.b'``. As simple as it should be. You can also use
+        :mod:`glob`-like wildcard selectors:
+    
+        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}
+        >>> glom(target, 'a.*.k')
+        ['v1', 'v2']
+    
+        In addition to ``*``, you can also use ``**`` for recursive access:
+    
+        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}
+        >>> glom(target, '**.k')
+        ['v0', 'v3', 'v4']
+    
+        The next example shows how to use nested data to
+        access many fields at once, and make a new nested structure.
+    
+        Constructing, or restructuring more-complicated nested data:
+    
+        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}
+        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}
+        >>> output = glom(target, spec)
+        >>> pprint(output)
+        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}
+    
+        ``glom`` also takes a keyword-argument, *default*. When set,
+        if a ``glom`` operation fails with a :exc:`GlomError`, the
+        *default* will be returned, very much like
+        :meth:`dict.get()`:
+    
+        >>> glom(target, 'a.xx', default='nada')
+        'nada'
+    
+        The *skip_exc* keyword argument controls which errors should
+        be ignored.
+    
+        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)
+        0.0
+    
+        Args:
+           target (object): the object on which the glom will operate.
+           spec (object): Specification of the output object in the form
+             of a dict, list, tuple, string, other glom construct, or
+             any composition of these.
+           default (object): An optional default to return in the case
+             an exception, specified by *skip_exc*, is raised.
+           skip_exc (Exception): An optional exception or tuple of
+             exceptions to ignore and return *default* (None if
+             omitted). If *skip_exc* and *default* are both not set,
+             glom raises errors through.
+           scope (dict): Additional data that can be accessed
+             via S inside the glom-spec. Read more: :ref:`scope`.
+    
+        It's a small API with big functionality, and glom's power is
+        only surpassed by its intuitiveness. Give it a whirl!
+    
+        """
+        # TODO: check spec up front
+        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)
+        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)
+        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)
+        scope = _DEFAULT_SCOPE.new_child({
+            Path: kwargs.pop('path', []),
+            Inspect: kwargs.pop('inspector', None),
+            MODE: AUTO,
+            MIN_MODE: None,
+            CHILD_ERRORS: [],
+            'globals': ScopeVars({}, {}),
+        })
+        scope[UP] = scope
+        scope[ROOT] = scope
+        scope[T] = target
+        scope.update(kwargs.pop('scope', {}))
+        err = None
+        if kwargs:
+            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))
+        try:
+            try:
+                ret = _glom(target, spec, scope)
+            except skip_exc:
+                if default is _MISSING:
+                    raise
+                ret = default  # should this also be arg_val'd?
+        except Exception as e:
+            if glom_debug:
+                raise
+            if isinstance(e, GlomError):
+                # need to change id or else py3 seems to not let us truncate the
+                # stack trace with the explicit "raise err" below
+                err = copy.copy(e)
+                err._set_wrapped(e)
+            else:
+                err = GlomError.wrap(e)
+            if isinstance(err, GlomError):
+                err._finalize(scope[LAST_CHILD_SCOPE])
+            else:  # wrapping failed, fall back to default behavior
+                raise
+    
+        if err:
+>           raise err
+E           glom.core.PathAssignError: <exception str() failed>
+
+glom/core.py:2265: PathAssignError
+
+During handling of the above exception, another exception occurred:
+
+    def test_sequence_assign():
+        target = {'alist': [0, 1, 2]}
+        assign(target, 'alist.2', 3)
+        assert target['alist'][2] == 3
+    
+>       with pytest.raises(PathAssignError, match='could not assign') as exc_info:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_mutation.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:661: in matches
+    if not self._check_match(exception):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:481: in _check_match
+    stringified_exception := stringify_exception(
+/usr/local/lib/python3.12/site-packages/_pytest/_code/code.py:484: in stringify_exception
+    message = str(exc)
+              ^^^^^^^^
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {'alist': [0, 1, 3]}, <class 'glom.core.Spec'>: Assign(Path('alist', '3'), 4), Sentinel('UP'): ChainMap({...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = PathAssignError(IndexError('list assignment index out of range'), Path('alist'), '3')
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+_____________________________ test_sequence_delete _____________________________
+
+    def test_sequence_delete():
+        target = {'alist': [0, 1, 2]}
+        delete(target, 'alist.1')
+        assert target['alist'] == [0, 2]
+    
+        with pytest.raises(PathDeleteError, match='could not delete') as exc_info:
+>           delete(target, 'alist.2')
+
+glom/test/test_mutation.py:298: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/mutation.py:356: in delete
+    return glom(obj, Delete(path, ignore_missing=ignore_missing))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target = {'alist': [0, 2]}, spec = Delete(Path('alist', '2')), kwargs = {}
+
+    def glom(target, spec, **kwargs):
+        """Access or construct a value from a given *target* based on the
+        specification declared by *spec*.
+    
+        Accessing nested data, aka deep-get:
+    
+        >>> target = {'a': {'b': 'c'}}
+        >>> glom(target, 'a.b')
+        'c'
+    
+        Here the *spec* was just a string denoting a path,
+        ``'a.b'``. As simple as it should be. You can also use
+        :mod:`glob`-like wildcard selectors:
+    
+        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}
+        >>> glom(target, 'a.*.k')
+        ['v1', 'v2']
+    
+        In addition to ``*``, you can also use ``**`` for recursive access:
+    
+        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}
+        >>> glom(target, '**.k')
+        ['v0', 'v3', 'v4']
+    
+        The next example shows how to use nested data to
+        access many fields at once, and make a new nested structure.
+    
+        Constructing, or restructuring more-complicated nested data:
+    
+        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}
+        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}
+        >>> output = glom(target, spec)
+        >>> pprint(output)
+        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}
+    
+        ``glom`` also takes a keyword-argument, *default*. When set,
+        if a ``glom`` operation fails with a :exc:`GlomError`, the
+        *default* will be returned, very much like
+        :meth:`dict.get()`:
+    
+        >>> glom(target, 'a.xx', default='nada')
+        'nada'
+    
+        The *skip_exc* keyword argument controls which errors should
+        be ignored.
+    
+        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)
+        0.0
+    
+        Args:
+           target (object): the object on which the glom will operate.
+           spec (object): Specification of the output object in the form
+             of a dict, list, tuple, string, other glom construct, or
+             any composition of these.
+           default (object): An optional default to return in the case
+             an exception, specified by *skip_exc*, is raised.
+           skip_exc (Exception): An optional exception or tuple of
+             exceptions to ignore and return *default* (None if
+             omitted). If *skip_exc* and *default* are both not set,
+             glom raises errors through.
+           scope (dict): Additional data that can be accessed
+             via S inside the glom-spec. Read more: :ref:`scope`.
+    
+        It's a small API with big functionality, and glom's power is
+        only surpassed by its intuitiveness. Give it a whirl!
+    
+        """
+        # TODO: check spec up front
+        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)
+        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)
+        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)
+        scope = _DEFAULT_SCOPE.new_child({
+            Path: kwargs.pop('path', []),
+            Inspect: kwargs.pop('inspector', None),
+            MODE: AUTO,
+            MIN_MODE: None,
+            CHILD_ERRORS: [],
+            'globals': ScopeVars({}, {}),
+        })
+        scope[UP] = scope
+        scope[ROOT] = scope
+        scope[T] = target
+        scope.update(kwargs.pop('scope', {}))
+        err = None
+        if kwargs:
+            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))
+        try:
+            try:
+                ret = _glom(target, spec, scope)
+            except skip_exc:
+                if default is _MISSING:
+                    raise
+                ret = default  # should this also be arg_val'd?
+        except Exception as e:
+            if glom_debug:
+                raise
+            if isinstance(e, GlomError):
+                # need to change id or else py3 seems to not let us truncate the
+                # stack trace with the explicit "raise err" below
+                err = copy.copy(e)
+                err._set_wrapped(e)
+            else:
+                err = GlomError.wrap(e)
+            if isinstance(err, GlomError):
+                err._finalize(scope[LAST_CHILD_SCOPE])
+            else:  # wrapping failed, fall back to default behavior
+                raise
+    
+        if err:
+>           raise err
+E           glom.mutation.PathDeleteError: <exception str() failed>
+
+glom/core.py:2265: PathDeleteError
+
+During handling of the above exception, another exception occurred:
+
+    def test_sequence_delete():
+        target = {'alist': [0, 1, 2]}
+        delete(target, 'alist.1')
+        assert target['alist'] == [0, 2]
+    
+>       with pytest.raises(PathDeleteError, match='could not delete') as exc_info:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_mutation.py:297: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:661: in matches
+    if not self._check_match(exception):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:481: in _check_match
+    stringified_exception := stringify_exception(
+/usr/local/lib/python3.12/site-packages/_pytest/_code/code.py:484: in stringify_exception
+    message = str(exc)
+              ^^^^^^^^
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {'alist': [0, 2]}, <class 'glom.core.Spec'>: Delete(Path('alist', '2')), Sentinel('UP'): ChainMap({<class...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = PathDeleteError(IndexError('list assignment index out of range'), Path('alist'), '2')
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+___________________________ test_unregistered_assign ___________________________
+
+    def test_unregistered_assign():
+        # test with bare target registry
+        glommer = Glommer(register_default_types=False)
+    
+        with pytest.raises(UnregisteredTarget, match='assign'):
+>           glommer.glom({}, Assign('a', 'b'))
+
+glom/test/test_mutation.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/core.py:2475: in glom
+    return glom(target, spec, scope=self.scope, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target = {}, spec = Assign(Path('a'), 'b'), kwargs = {}
+
+    def glom(target, spec, **kwargs):
+        """Access or construct a value from a given *target* based on the
+        specification declared by *spec*.
+    
+        Accessing nested data, aka deep-get:
+    
+        >>> target = {'a': {'b': 'c'}}
+        >>> glom(target, 'a.b')
+        'c'
+    
+        Here the *spec* was just a string denoting a path,
+        ``'a.b'``. As simple as it should be. You can also use
+        :mod:`glob`-like wildcard selectors:
+    
+        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}
+        >>> glom(target, 'a.*.k')
+        ['v1', 'v2']
+    
+        In addition to ``*``, you can also use ``**`` for recursive access:
+    
+        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}
+        >>> glom(target, '**.k')
+        ['v0', 'v3', 'v4']
+    
+        The next example shows how to use nested data to
+        access many fields at once, and make a new nested structure.
+    
+        Constructing, or restructuring more-complicated nested data:
+    
+        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}
+        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}
+        >>> output = glom(target, spec)
+        >>> pprint(output)
+        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}
+    
+        ``glom`` also takes a keyword-argument, *default*. When set,
+        if a ``glom`` operation fails with a :exc:`GlomError`, the
+        *default* will be returned, very much like
+        :meth:`dict.get()`:
+    
+        >>> glom(target, 'a.xx', default='nada')
+        'nada'
+    
+        The *skip_exc* keyword argument controls which errors should
+        be ignored.
+    
+        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)
+        0.0
+    
+        Args:
+           target (object): the object on which the glom will operate.
+           spec (object): Specification of the output object in the form
+             of a dict, list, tuple, string, other glom construct, or
+             any composition of these.
+           default (object): An optional default to return in the case
+             an exception, specified by *skip_exc*, is raised.
+           skip_exc (Exception): An optional exception or tuple of
+             exceptions to ignore and return *default* (None if
+             omitted). If *skip_exc* and *default* are both not set,
+             glom raises errors through.
+           scope (dict): Additional data that can be accessed
+             via S inside the glom-spec. Read more: :ref:`scope`.
+    
+        It's a small API with big functionality, and glom's power is
+        only surpassed by its intuitiveness. Give it a whirl!
+    
+        """
+        # TODO: check spec up front
+        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)
+        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)
+        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)
+        scope = _DEFAULT_SCOPE.new_child({
+            Path: kwargs.pop('path', []),
+            Inspect: kwargs.pop('inspector', None),
+            MODE: AUTO,
+            MIN_MODE: None,
+            CHILD_ERRORS: [],
+            'globals': ScopeVars({}, {}),
+        })
+        scope[UP] = scope
+        scope[ROOT] = scope
+        scope[T] = target
+        scope.update(kwargs.pop('scope', {}))
+        err = None
+        if kwargs:
+            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))
+        try:
+            try:
+                ret = _glom(target, spec, scope)
+            except skip_exc:
+                if default is _MISSING:
+                    raise
+                ret = default  # should this also be arg_val'd?
+        except Exception as e:
+            if glom_debug:
+                raise
+            if isinstance(e, GlomError):
+                # need to change id or else py3 seems to not let us truncate the
+                # stack trace with the explicit "raise err" below
+                err = copy.copy(e)
+                err._set_wrapped(e)
+            else:
+                err = GlomError.wrap(e)
+            if isinstance(err, GlomError):
+                err._finalize(scope[LAST_CHILD_SCOPE])
+            else:  # wrapping failed, fall back to default behavior
+                raise
+    
+        if err:
+>           raise err
+E           glom.core.UnregisteredTarget: <exception str() failed>
+
+glom/core.py:2265: UnregisteredTarget
+
+During handling of the above exception, another exception occurred:
+
+    def test_unregistered_assign():
+        # test with bare target registry
+        glommer = Glommer(register_default_types=False)
+    
+>       with pytest.raises(UnregisteredTarget, match='assign'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_mutation.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:661: in matches
+    if not self._check_match(exception):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:481: in _check_match
+    stringified_exception := stringify_exception(
+/usr/local/lib/python3.12/site-packages/_pytest/_code/code.py:484: in stringify_exception
+    message = str(exc)
+              ^^^^^^^^
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {}, <class 'glom.core.Spec'>: Assign(Path('a'), 'b'), Sentinel('UP'): ChainMap({<class 'glom.core.Path'>:...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = UnregisteredTarget('assign', <type 'dict'>, OrderedDict(), None)
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+___________________________ test_unregistered_delete ___________________________
+
+    def test_unregistered_delete():
+        glommer = Glommer(register_default_types=False)
+    
+        with pytest.raises(UnregisteredTarget, match='delete'):
+>           glommer.glom({'a': 1}, Delete('a'))
+
+glom/test/test_mutation.py:267: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/core.py:2475: in glom
+    return glom(target, spec, scope=self.scope, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target = {'a': 1}, spec = Delete(Path('a')), kwargs = {}
+
+    def glom(target, spec, **kwargs):
+        """Access or construct a value from a given *target* based on the
+        specification declared by *spec*.
+    
+        Accessing nested data, aka deep-get:
+    
+        >>> target = {'a': {'b': 'c'}}
+        >>> glom(target, 'a.b')
+        'c'
+    
+        Here the *spec* was just a string denoting a path,
+        ``'a.b'``. As simple as it should be. You can also use
+        :mod:`glob`-like wildcard selectors:
+    
+        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}
+        >>> glom(target, 'a.*.k')
+        ['v1', 'v2']
+    
+        In addition to ``*``, you can also use ``**`` for recursive access:
+    
+        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}
+        >>> glom(target, '**.k')
+        ['v0', 'v3', 'v4']
+    
+        The next example shows how to use nested data to
+        access many fields at once, and make a new nested structure.
+    
+        Constructing, or restructuring more-complicated nested data:
+    
+        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}
+        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}
+        >>> output = glom(target, spec)
+        >>> pprint(output)
+        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}
+    
+        ``glom`` also takes a keyword-argument, *default*. When set,
+        if a ``glom`` operation fails with a :exc:`GlomError`, the
+        *default* will be returned, very much like
+        :meth:`dict.get()`:
+    
+        >>> glom(target, 'a.xx', default='nada')
+        'nada'
+    
+        The *skip_exc* keyword argument controls which errors should
+        be ignored.
+    
+        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)
+        0.0
+    
+        Args:
+           target (object): the object on which the glom will operate.
+           spec (object): Specification of the output object in the form
+             of a dict, list, tuple, string, other glom construct, or
+             any composition of these.
+           default (object): An optional default to return in the case
+             an exception, specified by *skip_exc*, is raised.
+           skip_exc (Exception): An optional exception or tuple of
+             exceptions to ignore and return *default* (None if
+             omitted). If *skip_exc* and *default* are both not set,
+             glom raises errors through.
+           scope (dict): Additional data that can be accessed
+             via S inside the glom-spec. Read more: :ref:`scope`.
+    
+        It's a small API with big functionality, and glom's power is
+        only surpassed by its intuitiveness. Give it a whirl!
+    
+        """
+        # TODO: check spec up front
+        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)
+        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)
+        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)
+        scope = _DEFAULT_SCOPE.new_child({
+            Path: kwargs.pop('path', []),
+            Inspect: kwargs.pop('inspector', None),
+            MODE: AUTO,
+            MIN_MODE: None,
+            CHILD_ERRORS: [],
+            'globals': ScopeVars({}, {}),
+        })
+        scope[UP] = scope
+        scope[ROOT] = scope
+        scope[T] = target
+        scope.update(kwargs.pop('scope', {}))
+        err = None
+        if kwargs:
+            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))
+        try:
+            try:
+                ret = _glom(target, spec, scope)
+            except skip_exc:
+                if default is _MISSING:
+                    raise
+                ret = default  # should this also be arg_val'd?
+        except Exception as e:
+            if glom_debug:
+                raise
+            if isinstance(e, GlomError):
+                # need to change id or else py3 seems to not let us truncate the
+                # stack trace with the explicit "raise err" below
+                err = copy.copy(e)
+                err._set_wrapped(e)
+            else:
+                err = GlomError.wrap(e)
+            if isinstance(err, GlomError):
+                err._finalize(scope[LAST_CHILD_SCOPE])
+            else:  # wrapping failed, fall back to default behavior
+                raise
+    
+        if err:
+>           raise err
+E           glom.core.UnregisteredTarget: <exception str() failed>
+
+glom/core.py:2265: UnregisteredTarget
+
+During handling of the above exception, another exception occurred:
+
+    def test_unregistered_delete():
+        glommer = Glommer(register_default_types=False)
+    
+>       with pytest.raises(UnregisteredTarget, match='delete'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_mutation.py:266: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:661: in matches
+    if not self._check_match(exception):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:481: in _check_match
+    stringified_exception := stringify_exception(
+/usr/local/lib/python3.12/site-packages/_pytest/_code/code.py:484: in stringify_exception
+    message = str(exc)
+              ^^^^^^^^
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {'a': 1}, <class 'glom.core.Spec'>: Delete(Path('a')), Sentinel('UP'): ChainMap({<class 'glom.core.Path'>...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = UnregisteredTarget('delete', <type 'dict'>, OrderedDict(), None)
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+________________________ test_path_access_error_message ________________________
+
+    def test_path_access_error_message():
+    
+        # test fuzzy access
+        with raises(GlomError) as exc_info:
+            glom({}, 'a.b')
+>       assert ("PathAccessError: could not access 'a', part 0 of Path('a', 'b'), got error: KeyError"
+                in exc_info.exconly())
+E       assert "PathAccessError: could not access 'a', part 0 of Path('a', 'b'), got error: KeyError" in 'glom.core.PathAccessError: <exception str() failed>'
+E        +  where 'glom.core.PathAccessError: <exception str() failed>' = exconly()
+E        +    where exconly = <ExceptionInfo PathAccessError(KeyError('a'), Path('a', 'b'), 0) tblen=2>.exconly
+
+glom/test/test_path_and_t.py:64: AssertionError
+___________________________ test_t_arithmetic_errors ___________________________
+
+    def test_t_arithmetic_errors():
+        with raises(PathAccessError, match='zero'):
+>           glom(0, T / 0)
+
+glom/test/test_path_and_t.py:345: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target = 0, spec = T / 0, kwargs = {}
+
+    def glom(target, spec, **kwargs):
+        """Access or construct a value from a given *target* based on the
+        specification declared by *spec*.
+    
+        Accessing nested data, aka deep-get:
+    
+        >>> target = {'a': {'b': 'c'}}
+        >>> glom(target, 'a.b')
+        'c'
+    
+        Here the *spec* was just a string denoting a path,
+        ``'a.b'``. As simple as it should be. You can also use
+        :mod:`glob`-like wildcard selectors:
+    
+        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}
+        >>> glom(target, 'a.*.k')
+        ['v1', 'v2']
+    
+        In addition to ``*``, you can also use ``**`` for recursive access:
+    
+        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}
+        >>> glom(target, '**.k')
+        ['v0', 'v3', 'v4']
+    
+        The next example shows how to use nested data to
+        access many fields at once, and make a new nested structure.
+    
+        Constructing, or restructuring more-complicated nested data:
+    
+        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}
+        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}
+        >>> output = glom(target, spec)
+        >>> pprint(output)
+        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}
+    
+        ``glom`` also takes a keyword-argument, *default*. When set,
+        if a ``glom`` operation fails with a :exc:`GlomError`, the
+        *default* will be returned, very much like
+        :meth:`dict.get()`:
+    
+        >>> glom(target, 'a.xx', default='nada')
+        'nada'
+    
+        The *skip_exc* keyword argument controls which errors should
+        be ignored.
+    
+        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)
+        0.0
+    
+        Args:
+           target (object): the object on which the glom will operate.
+           spec (object): Specification of the output object in the form
+             of a dict, list, tuple, string, other glom construct, or
+             any composition of these.
+           default (object): An optional default to return in the case
+             an exception, specified by *skip_exc*, is raised.
+           skip_exc (Exception): An optional exception or tuple of
+             exceptions to ignore and return *default* (None if
+             omitted). If *skip_exc* and *default* are both not set,
+             glom raises errors through.
+           scope (dict): Additional data that can be accessed
+             via S inside the glom-spec. Read more: :ref:`scope`.
+    
+        It's a small API with big functionality, and glom's power is
+        only surpassed by its intuitiveness. Give it a whirl!
+    
+        """
+        # TODO: check spec up front
+        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)
+        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)
+        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)
+        scope = _DEFAULT_SCOPE.new_child({
+            Path: kwargs.pop('path', []),
+            Inspect: kwargs.pop('inspector', None),
+            MODE: AUTO,
+            MIN_MODE: None,
+            CHILD_ERRORS: [],
+            'globals': ScopeVars({}, {}),
+        })
+        scope[UP] = scope
+        scope[ROOT] = scope
+        scope[T] = target
+        scope.update(kwargs.pop('scope', {}))
+        err = None
+        if kwargs:
+            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))
+        try:
+            try:
+                ret = _glom(target, spec, scope)
+            except skip_exc:
+                if default is _MISSING:
+                    raise
+                ret = default  # should this also be arg_val'd?
+        except Exception as e:
+            if glom_debug:
+                raise
+            if isinstance(e, GlomError):
+                # need to change id or else py3 seems to not let us truncate the
+                # stack trace with the explicit "raise err" below
+                err = copy.copy(e)
+                err._set_wrapped(e)
+            else:
+                err = GlomError.wrap(e)
+            if isinstance(err, GlomError):
+                err._finalize(scope[LAST_CHILD_SCOPE])
+            else:  # wrapping failed, fall back to default behavior
+                raise
+    
+        if err:
+>           raise err
+E           glom.core.PathAccessError: <exception str() failed>
+
+glom/core.py:2265: PathAccessError
+
+During handling of the above exception, another exception occurred:
+
+    def test_t_arithmetic_errors():
+>       with raises(PathAccessError, match='zero'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_path_and_t.py:344: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:661: in matches
+    if not self._check_match(exception):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:481: in _check_match
+    stringified_exception := stringify_exception(
+/usr/local/lib/python3.12/site-packages/_pytest/_code/code.py:484: in stringify_exception
+    message = str(exc)
+              ^^^^^^^^
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: 0, <class 'glom.core.Spec'>: T / 0, Sentinel('UP'): ChainMap({<class 'glom.core.Path'>: [], <class 'glom....ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = PathAccessError(ZeroDivisionError('division by zero'), T / 0, 0)
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+__________________________________ test_spec ___________________________________
+
+    def test_spec():
+        assert glom(5, T) == 5  # check assumption about echo behavior
+        echo = Spec(T)
+        assert echo.glom(5) == 5
+        assert glom(5, echo) == 5
+        echo2 = Spec(echo)
+        assert echo2.glom(5) == 5
+    
+        with pytest.raises(TypeError, match='expected spec to be'):
+>           glom({}, object())
+
+glom/test/test_spec.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target = {}, spec = <object object at 0xffffb3c3d8e0>, kwargs = {}
+
+    def glom(target, spec, **kwargs):
+        """Access or construct a value from a given *target* based on the
+        specification declared by *spec*.
+    
+        Accessing nested data, aka deep-get:
+    
+        >>> target = {'a': {'b': 'c'}}
+        >>> glom(target, 'a.b')
+        'c'
+    
+        Here the *spec* was just a string denoting a path,
+        ``'a.b'``. As simple as it should be. You can also use
+        :mod:`glob`-like wildcard selectors:
+    
+        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}
+        >>> glom(target, 'a.*.k')
+        ['v1', 'v2']
+    
+        In addition to ``*``, you can also use ``**`` for recursive access:
+    
+        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}
+        >>> glom(target, '**.k')
+        ['v0', 'v3', 'v4']
+    
+        The next example shows how to use nested data to
+        access many fields at once, and make a new nested structure.
+    
+        Constructing, or restructuring more-complicated nested data:
+    
+        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}
+        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}
+        >>> output = glom(target, spec)
+        >>> pprint(output)
+        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}
+    
+        ``glom`` also takes a keyword-argument, *default*. When set,
+        if a ``glom`` operation fails with a :exc:`GlomError`, the
+        *default* will be returned, very much like
+        :meth:`dict.get()`:
+    
+        >>> glom(target, 'a.xx', default='nada')
+        'nada'
+    
+        The *skip_exc* keyword argument controls which errors should
+        be ignored.
+    
+        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)
+        0.0
+    
+        Args:
+           target (object): the object on which the glom will operate.
+           spec (object): Specification of the output object in the form
+             of a dict, list, tuple, string, other glom construct, or
+             any composition of these.
+           default (object): An optional default to return in the case
+             an exception, specified by *skip_exc*, is raised.
+           skip_exc (Exception): An optional exception or tuple of
+             exceptions to ignore and return *default* (None if
+             omitted). If *skip_exc* and *default* are both not set,
+             glom raises errors through.
+           scope (dict): Additional data that can be accessed
+             via S inside the glom-spec. Read more: :ref:`scope`.
+    
+        It's a small API with big functionality, and glom's power is
+        only surpassed by its intuitiveness. Give it a whirl!
+    
+        """
+        # TODO: check spec up front
+        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)
+        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)
+        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)
+        scope = _DEFAULT_SCOPE.new_child({
+            Path: kwargs.pop('path', []),
+            Inspect: kwargs.pop('inspector', None),
+            MODE: AUTO,
+            MIN_MODE: None,
+            CHILD_ERRORS: [],
+            'globals': ScopeVars({}, {}),
+        })
+        scope[UP] = scope
+        scope[ROOT] = scope
+        scope[T] = target
+        scope.update(kwargs.pop('scope', {}))
+        err = None
+        if kwargs:
+            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))
+        try:
+            try:
+                ret = _glom(target, spec, scope)
+            except skip_exc:
+                if default is _MISSING:
+                    raise
+                ret = default  # should this also be arg_val'd?
+        except Exception as e:
+            if glom_debug:
+                raise
+            if isinstance(e, GlomError):
+                # need to change id or else py3 seems to not let us truncate the
+                # stack trace with the explicit "raise err" below
+                err = copy.copy(e)
+                err._set_wrapped(e)
+            else:
+                err = GlomError.wrap(e)
+            if isinstance(err, GlomError):
+                err._finalize(scope[LAST_CHILD_SCOPE])
+            else:  # wrapping failed, fall back to default behavior
+                raise
+    
+        if err:
+>           raise err
+E           glom.core.GlomError.wrap(TypeError): <exception str() failed>
+
+glom/core.py:2265: GlomError.wrap(TypeError)
+
+During handling of the above exception, another exception occurred:
+
+    def test_spec():
+        assert glom(5, T) == 5  # check assumption about echo behavior
+        echo = Spec(T)
+        assert echo.glom(5) == 5
+        assert glom(5, echo) == 5
+        echo2 = Spec(echo)
+        assert echo2.glom(5) == 5
+    
+>       with pytest.raises(TypeError, match='expected spec to be'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+glom/test/test_spec.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:661: in matches
+    if not self._check_match(exception):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/_pytest/raises.py:481: in _check_match
+    stringified_exception := stringify_exception(
+/usr/local/lib/python3.12/site-packages/_pytest/_code/code.py:484: in stringify_exception
+    message = str(exc)
+              ^^^^^^^^
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: {}, <class 'glom.core.Spec'>: <object object at 0xffffb3c3d8e0>, Sentinel('UP'): ChainMap({<class 'glom.c...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = TypeError('expected spec to be dict, list, tuple, callable, string, or other Spec-like type, not: <object object at 0xffffb3c3d8e0>')
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+_______________________________ test_types_bare ________________________________
+
+    def test_types_bare():
+        glommer = Glommer(register_default_types=False)
+    
+        treg = glommer.scope[TargetRegistry]
+        assert treg._get_closest_type(object(), treg._op_type_tree.get('get', {})) is None
+    
+        # test that bare glommers can't glom anything
+        with pytest.raises(UnregisteredTarget) as exc_info:
+            glommer.glom(object(), {'object_repr': '__class__.__name__'})
+        assert repr(exc_info.value) == "UnregisteredTarget('get', <type 'object'>, OrderedDict(), ('__class__',))"
+>       assert str(exc_info.value).find(
+               ^^^^^^^^^^^^^^^^^^^
+            "glom() called without registering any types for operation 'get'."
+            " see glom.register() or Glommer's constructor for details.") != -1
+
+glom/test/test_target_types.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/core.py:173: in __str__
+    self._target_spec_trace = format_target_spec_trace(self._scope, self.__wrapped)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scope = ChainMap({T: <object object at 0xffffb3f6c070>, <class 'glom.core.Spec'>: {'object_repr': '__class__.__name__'}, Senti...ion _glom at 0xffffb49739c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffffb4bd1c70>})
+root_error = UnregisteredTarget('get', <type 'object'>, OrderedDict(), ('__class__',))
+width = 78, depth = 0, prev_target = Sentinel('_MISSING'), last_branch = True
+
+    def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):
+        """
+        unpack a scope into a multi-line but short summary
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+glom/core.py:246: NotImplementedError
+=========================== short test summary info ============================
+FAILED glom/test/generated/test_glom_cli.py::TestGlomCli::test_glom_error_returns_one
+FAILED glom/test/test_check.py::test_check_basic - NotImplementedError: excised
+FAILED glom/test/test_check.py::test_check_multi - NotImplementedError: excised
+FAILED glom/test/test_cli.py::test_main_basic - NotImplementedError: excised
+FAILED glom/test/test_error.py::test_3_11_byte_code_caret - AssertionError: a...
+FAILED glom/test/test_error.py::test_all_public_errors - NotImplementedError:...
+FAILED glom/test/test_error.py::test_branching_stack - AssertionError: assert...
+FAILED glom/test/test_error.py::test_coalesce_stack - AssertionError: assert ...
+FAILED glom/test/test_error.py::test_glom_dev_debug - NotImplementedError: ex...
+FAILED glom/test/test_error.py::test_glom_error_double_stack - assert 'Traceb...
+FAILED glom/test/test_error.py::test_glom_error_stack - assert 'Traceback (m....
+FAILED glom/test/test_error.py::test_long_target_repr - assert '(len=1000)' i...
+FAILED glom/test/test_error.py::test_midway_branch - assert 'Traceback (m...r...
+FAILED glom/test/test_error.py::test_nesting_stack - assert 'Traceback (m...r...
+FAILED glom/test/test_error.py::test_pae_scope_printable - NotImplementedErro...
+FAILED glom/test/test_error.py::test_partially_failing_branch - assert 'Trace...
+FAILED glom/test/test_error.py::test_regular_error_stack - AssertionError: as...
+FAILED glom/test/test_error.py::test_unicode_stack - assert 'beyonc' in 'Trac...
+FAILED glom/test/test_match.py::test_check_ported_tests - NotImplementedError...
+FAILED glom/test/test_mutation.py::test_bad_assign_target - NotImplementedErr...
+FAILED glom/test/test_mutation.py::test_bad_delete_target - NotImplementedErr...
+FAILED glom/test/test_mutation.py::test_sequence_assign - NotImplementedError...
+FAILED glom/test/test_mutation.py::test_sequence_delete - NotImplementedError...
+FAILED glom/test/test_mutation.py::test_unregistered_assign - NotImplementedE...
+FAILED glom/test/test_mutation.py::test_unregistered_delete - NotImplementedE...
+FAILED glom/test/test_path_and_t.py::test_path_access_error_message - assert ...
+FAILED glom/test/test_path_and_t.py::test_t_arithmetic_errors - NotImplemente...
+FAILED glom/test/test_spec.py::test_spec - NotImplementedError: excised
+FAILED glom/test/test_target_types.py::test_types_bare - NotImplementedError:...
+29 failed in 1.50s
+
+--- stderr ---
+

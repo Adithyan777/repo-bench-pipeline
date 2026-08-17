@@ -1,0 +1,52 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 24,
+          "nodeid": "glom/test/test_match.py::test_basic",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787006017.5223913,
+  "duration": 0.10371780395507812,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "passed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00568051799928071,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_basic",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 24,
+      "nodeid": "glom/test/test_match.py::test_basic",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00036579000152414665,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.679099846631289e-05,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

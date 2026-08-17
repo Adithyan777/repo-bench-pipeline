@@ -1,0 +1,142 @@
+{
+  "base_sha": "50e06d16bae9bd921e694be87c9c0be16c59eec8",
+  "collateral": null,
+  "difficulty": "easy",
+  "difficulty_features": {
+    "callers_count": 0,
+    "cross_module_edges": 0,
+    "diff_size": 5,
+    "files_touched": 1,
+    "functions_touched": 1,
+    "similar_named_functions_nearby": 14,
+    "test_count": 1
+  },
+  "difficulty_rationale": "A small behavioral tweak with diff_size=5 in a single function, though similar_named_functions_nearby=14 is high, the contract and test_count=1 make the intended change clear.",
+  "difficulty_status": "final",
+  "dropped_tests": {
+    "failing_on_solution": [],
+    "passing_on_input": []
+  },
+  "files_in_scope": [
+    "glom/__init__.py",
+    "glom/core.py",
+    "glom/grouping.py",
+    "glom/matching.py",
+    "glom/mutation.py",
+    "glom/reduction.py",
+    "glom/streaming.py",
+    "glom/test/test_check.py"
+  ],
+  "id": "hist-4a48227",
+  "image_digest": "sha256:dca64ba3b7231cf251c64edacf424e4859c1e7c526e29755074fe6623c21d998",
+  "image_tag": "bench-glom",
+  "instruction": "## Goal\n\nMake `Check` return its configured `default` when a validator function raises the library's validation error type, instead of only handling non-validation exceptions.\n\n## Observable behavior\n\n```python\n# check that stopping chain execution on non-passing values works\nspec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])\nassert glom('hello', spec) == 'h'\nassert glom('', spec) == ''  # would fail with IndexError if STOP didn't work\n```\n\n```python\nfailing_checks = [({'a': {'b': 1}}, {'a': ('a', 'b', Check(type=str))},\n                   '''target at path ['a', 'b'] failed check, got error: \"expected type to be 'str', found type 'int'\"'''),\n                  ({'a': {'b': 1}}, {'a': ('a', Check('b', type=str))},\n                   '''target at path ['a'] failed check, subtarget at 'b' got error: \"expected type to be 'str', found type 'int'\"'''),\n                  (1, Check(type=(str, bool))),\n                  (1, Check(instance_of=str)),\n                  (1, Check(instance_of=(str, bool))),\n                  (1, Check(equal_to=0)),\n                  (1, Check(one_of=(0,))),\n                  (1, Check(one_of=(0, 2))),\n                  ('-3.14', Check(validate=int)),\n                  ('', Check(validate=lambda x: False)),]\n\nfor fc in failing_checks:\n    if len(fc) == 2:\n        target, check = fc\n        msg = None\n    else:\n        target, check, msg = fc\n\n    with raises(CheckError) as exc_info:\n        glom(target, check)\n\n    if msg is not None:\n        assert str(exc_info.value) == msg\n    assert repr(exc_info.value)\n```\n\n## Constraints\n\n- Keep the public API of `Check` and `glom` unchanged.\n- Files in scope: `glom/__init__.py`, `glom/core.py`, `glom/grouping.py`, `glom/matching.py`, `glom/mutation.py`, `glom/reduction.py`, `glom/streaming.py`, `glom/test/test_check.py`.\n\n## How success is measured\n\nRun `python -m pytest -q glom/test/test_check.py::test_check_basic` and verify it passes.",
+  "instruction_attempts": [
+    {
+      "attempt": 1,
+      "draft_title": "Check default should apply when validator raises validation error",
+      "issues": [],
+      "review": {
+        "implementation_neutral": true,
+        "issues": [],
+        "self_contained": true,
+        "solvable_by_transcription": false,
+        "states_mechanical_edit": false
+      }
+    }
+  ],
+  "instruction_review": {
+    "implementation_neutral": true,
+    "issues": [],
+    "self_contained": true,
+    "solvable_by_transcription": false,
+    "states_mechanical_edit": false
+  },
+  "instruction_status": "final",
+  "module": "glom.core",
+  "modules": [
+    "glom.core"
+  ],
+  "neutrality": {
+    "checked": true,
+    "decision": {
+      "flagged_tests": [],
+      "issues": [],
+      "neutral": true
+    },
+    "key": "b2e20a97c15cedc6",
+    "reused": true,
+    "step": "p3.build.neutrality_check_rewrite"
+  },
+  "new_symbol_rewrite": null,
+  "overlay_files": {
+    "input": [
+      ".dockerignore",
+      "Dockerfile",
+      "constraints.txt",
+      "glom/test/generated/test_glom_streaming.py",
+      "pipeline-requirements.in",
+      "requirements.lock.txt"
+    ],
+    "solution": [
+      ".dockerignore",
+      "Dockerfile",
+      "constraints.txt",
+      "glom/test/generated/test_glom_streaming.py",
+      "pipeline-requirements.in",
+      "requirements.lock.txt"
+    ]
+  },
+  "provenance": {
+    "classification": {
+      "behavior_change_summary": "Check now returns its configured default when a validator function raises the validation error type, instead of only handling non-validation exceptions; previously failing validators wouldn't trigger the default return.",
+      "difficulty_guess": "medium",
+      "kind": "bugfix",
+      "self_contained": true,
+      "sha": "4a48227",
+      "verifiable_via_tests": true
+    },
+    "commit": "4a4822740692de2ead233fae232530ad4bbcf931",
+    "files": [
+      "glom/core.py",
+      "glom/test/test_check.py"
+    ],
+    "is_merge": false,
+    "message": "add STOP support to Check tests, fix a bug in Check where failing validator functions wouldn't trigger the returning of the default",
+    "modules": [
+      "glom.core"
+    ],
+    "parent": "10d07943849e3f00cc22b7ebc55485a75ef2dfa6",
+    "pr_number": null,
+    "source_files": [
+      "glom/core.py"
+    ],
+    "touched_functions": [
+      "glom.core.Check.glomit"
+    ],
+    "type": "history",
+    "verifier_source": "commit-tests"
+  },
+  "repo": "glom",
+  "title": "Check default should apply when validator raises validation error",
+  "verifier_agent": null,
+  "verifier_cmd": "python -m pytest -q glom/test/test_check.py::test_check_basic",
+  "verifier_files": [
+    "glom/test/test_check.py",
+    "run.sh"
+  ],
+  "verifier_on_input": {
+    "exit_code": 1,
+    "n_failing": 1,
+    "n_passing": 0
+  },
+  "verifier_on_solution": {
+    "exit_code": 0,
+    "n_failing": 0,
+    "n_passing": 1
+  },
+  "verifier_tests": [
+    "glom/test/test_check.py::test_check_basic"
+  ],
+  "verifier_visibility": "visible"
+}

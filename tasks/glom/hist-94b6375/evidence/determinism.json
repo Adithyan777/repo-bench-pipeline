@@ -1,0 +1,74 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_basic.py::test_spec_and_recursion": "failed",
+        "glom/test/test_match.py::test_match_default": "failed",
+        "glom/test/test_match.py::test_switch": "failed",
+        "glom/test/test_mutation.py::test_assign_spec_val": "failed",
+        "glom/test/test_path_and_t.py::test_t_subspec": "failed",
+        "glom/test/test_scope_vars.py::test_s_scope_assign": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_basic.py::test_spec_and_recursion": "failed",
+        "glom/test/test_match.py::test_match_default": "failed",
+        "glom/test/test_match.py::test_switch": "failed",
+        "glom/test/test_mutation.py::test_assign_spec_val": "failed",
+        "glom/test/test_path_and_t.py::test_t_subspec": "failed",
+        "glom/test/test_scope_vars.py::test_s_scope_assign": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_basic.py::test_spec_and_recursion": "failed",
+        "glom/test/test_match.py::test_match_default": "failed",
+        "glom/test/test_match.py::test_switch": "failed",
+        "glom/test/test_mutation.py::test_assign_spec_val": "failed",
+        "glom/test/test_path_and_t.py::test_t_subspec": "failed",
+        "glom/test/test_scope_vars.py::test_s_scope_assign": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_basic.py::test_spec_and_recursion": "passed",
+        "glom/test/test_match.py::test_match_default": "passed",
+        "glom/test/test_match.py::test_switch": "passed",
+        "glom/test/test_mutation.py::test_assign_spec_val": "passed",
+        "glom/test/test_path_and_t.py::test_t_subspec": "passed",
+        "glom/test/test_scope_vars.py::test_s_scope_assign": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_basic.py::test_spec_and_recursion": "passed",
+        "glom/test/test_match.py::test_match_default": "passed",
+        "glom/test/test_match.py::test_switch": "passed",
+        "glom/test/test_mutation.py::test_assign_spec_val": "passed",
+        "glom/test/test_path_and_t.py::test_t_subspec": "passed",
+        "glom/test/test_scope_vars.py::test_s_scope_assign": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_basic.py::test_spec_and_recursion": "passed",
+        "glom/test/test_match.py::test_match_default": "passed",
+        "glom/test/test_match.py::test_switch": "passed",
+        "glom/test/test_mutation.py::test_assign_spec_val": "passed",
+        "glom/test/test_path_and_t.py::test_t_subspec": "passed",
+        "glom/test/test_scope_vars.py::test_s_scope_assign": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

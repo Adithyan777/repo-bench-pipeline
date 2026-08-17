@@ -1,0 +1,473 @@
+{
+  "goal": "Write pytest tests to the file `glom/test/generated/test_glom_grouping.py` for these functions from module `glom.grouping`. Test real behavior so a wrong implementation would fail.\n\nModule imports:\nimport random\nfrom boltons.typeutils import make_sentinel\nfrom .core import glom, MODE, SKIP, STOP, TargetRegistry, Path, T, BadSpec, _MISSING\n\nTarget functions:\n### glom.grouping.GROUP  (signature: GROUP(target, spec, scope))\ndef GROUP(target, spec, scope):\n    \"\"\"\n    Group mode dispatcher; also sentinel for current mode = group\n    \"\"\"\n    recurse = lambda spec: scope[glom](target, spec, scope)\n    tree = scope[ACC_TREE]  # current accumulator support structure\n    if callable(getattr(spec, \"agg\", None)):\n        return spec.agg(target, tree)\n    elif callable(spec):\n        return spec(target)\n    _spec_type = type(spec)\n    if _spec_type not in (dict, list):\n        raise BadSpec(\"Group mode expected dict, list, callable, or\"\n                      \" aggregator, not: %r\" % (spec,))\n    _spec_id = id(spec)\n    try:\n        acc = tree[_spec_id]  # current accumulator\n    except KeyError:\n        acc = tree[_spec_id] = _spec_type()\n    if _spec_type is dict:\n        done = True\n        for keyspec, valspec in spec.items():\n            if tree.get(keyspec, None) is STOP:\n                continue\n            key = recurse(keyspec)\n            if key is SKIP:\n                done = False  # SKIP means we still want more vals\n                continue\n            if key is STOP:\n                tree[keyspec] = STOP\n                continue\n            if key not in acc:\n                # TODO: guard against key == id(spec)\n                tree[key] = {}\n            scope[ACC_TREE] = tree[key]\n            result = recurse(valspec)\n            if result is STOP:\n                tree[keyspec] = STOP\n                continue\n            done = False  # SKIP or returning a value means we still want more vals\n            if result is not SKIP:\n                acc[key] = result\n        if done:\n            return STOP\n        return acc\n    elif _spec_type is list:\n        for valspec in spec:\n            if type(valspec) is dict:\n                # doesn't make sense due to arity mismatch. did you mean [Auto({...})] ?\n                raise BadSpec('dicts within lists are not'\n                              ' allowed while in Group mode: %r' % spec)\n            result = recurse(valspec)\n            if result is STOP:\n                return STOP\n            if result is not SKIP:\n                acc.append(result)\n        return acc\n    raise ValueError(f\"{_spec_type} not a valid spec type for Group mode\")  # pragma: no cover\n\nExisting test style for reference:\n# glom/test/test_basic.py\nimport sys\nfrom xml.etree import ElementTree as ElementTree\n\nimport pytest\n\nfrom glom import glom, SKIP, STOP, Path, Inspect, Coalesce, CoalesceError, Val, Call, T, S, Invoke, Spec, Ref\nfrom glom import Auto, Fill, Iter, A, Vars, Val, GlomError, Pipe\n\nimport glom.core as glom_core\nfrom glom.core import UP, ROOT, bbformat, bbrepr\nfrom glom.mutation import PathAssignError\n\n\n\ndef test_initial_integration():\n    class Example:\n        pass\n\n    example = Example()\n    subexample = Example()\n    subexample.name = 'good_name'\n    example.mapping = {'key': subexample}\n\n    val = {'a': {'b': 'c'},  # basic dictionary nesting\n           'example': example,  # basic object\n           'd': {'e': ['f'],    # list in dictionary\n                 'g': 'h'},\n           'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries\n           'n': 'o'}\n\n    spec = {'a': (Inspect(recursive=True), 'a', 'b'),  # inspect just prints here\n            'name': 'example.mapping.key.name',  # test object access\n            'e': 'd.e',  # d.e[0] or d.e: (callable to fetch 0)\n            'i': ('i', [{'j': 'j'}]),  # TODO: support True for cases when the value should simply be mapped into the field name?\n            'n': ('n', lambda n: n.upper()),\n            'p': Coalesce('xxx',\n                          'yyy',\n                          default='zzz')}\n\n    ret = glom(val, spec)\n\n    print('in: ', val)\n    print('got:', ret)\n    expected = {'a': 'c',\n                'name': 'good_name',\n                'e': ['f'\n\n# glom/test/test_check.py\nfrom pytest import raises\n\nfrom glom import glom, Check, CheckError, Coalesce, SKIP, STOP, T\n\ntry:\n    unicode\nexcept NameError:\n    unicode = str\n\n\ndef test_check_basic():\n    assert glom([0, SKIP], [T]) == [0]  # sanity check SKIP\n\n    target = [{'id': 0}, {'id': 1}, {'id': 2}]\n\n    # check that skipping non-passing values works\n    assert glom(target, ([Coalesce(Check('id', equal_to=0), default=SKIP)], T[0])) == {'id': 0}\n    assert glom(target, ([Check('id', equal_to=0, default=SKIP)], T[0])) == {'id': 0}\n\n    # check that stopping iteration on non-passing values works\n    assert glom(target, [Check('id', equal_to=0, default=STOP)]) == [{'id': 0}]\n\n    # check that stopping chain execution on non-passing values works\n    spec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])\n    assert glom('hello', spec) == 'h'\n    assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work\n\n    assert repr(Check()) == 'Check()'\n    assert repr(Check(T.a)) == 'Check(T.a)'\n    assert repr(Check(equal_to=1)) == 'Check(equal_to=1)'\n    assert repr(Check(instance_of=dict)) == 'Check(instance_of=dict)'\n    assert repr(Check(T(len), validate=sum)) == 'Check(T(len), validate=sum)'\n\n    target = [1, 'a']\n    assert glom(target, [Check(type=unicode, default=SKIP)]) == ['a']\n    assert glom(target, [Check(type=(unicode, int))]) == [1, 'a']\n    assert glom(target, [Check(instance_of=unicode, default=SKIP)]) == ['a']\n    assert glom(target, [Check(instance_of=(unicode, i\n\nWrite ONLY `glom/test/generated/test_glom_grouping.py`. Confirm with: python -m pytest -q glom/test/generated/test_glom_grouping.py",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You write pytest tests for a Python library. You may create or edit ONLY the single test file you are told to write; never touch the library source or any other file. Write focused, deterministic tests that assert concrete behavior (exact return values, raised exceptions, boundaries) of the target functions -- not smoke tests. Use the run tool to execute the file and confirm it passes before finishing."
+    },
+    {
+      "role": "user",
+      "content": "Write pytest tests to the file `glom/test/generated/test_glom_grouping.py` for these functions from module `glom.grouping`. Test real behavior so a wrong implementation would fail.\n\nModule imports:\nimport random\nfrom boltons.typeutils import make_sentinel\nfrom .core import glom, MODE, SKIP, STOP, TargetRegistry, Path, T, BadSpec, _MISSING\n\nTarget functions:\n### glom.grouping.GROUP  (signature: GROUP(target, spec, scope))\ndef GROUP(target, spec, scope):\n    \"\"\"\n    Group mode dispatcher; also sentinel for current mode = group\n    \"\"\"\n    recurse = lambda spec: scope[glom](target, spec, scope)\n    tree = scope[ACC_TREE]  # current accumulator support structure\n    if callable(getattr(spec, \"agg\", None)):\n        return spec.agg(target, tree)\n    elif callable(spec):\n        return spec(target)\n    _spec_type = type(spec)\n    if _spec_type not in (dict, list):\n        raise BadSpec(\"Group mode expected dict, list, callable, or\"\n                      \" aggregator, not: %r\" % (spec,))\n    _spec_id = id(spec)\n    try:\n        acc = tree[_spec_id]  # current accumulator\n    except KeyError:\n        acc = tree[_spec_id] = _spec_type()\n    if _spec_type is dict:\n        done = True\n        for keyspec, valspec in spec.items():\n            if tree.get(keyspec, None) is STOP:\n                continue\n            key = recurse(keyspec)\n            if key is SKIP:\n                done = False  # SKIP means we still want more vals\n                continue\n            if key is STOP:\n                tree[keyspec] = STOP\n                continue\n            if key not in acc:\n                # TODO: guard against key == id(spec)\n                tree[key] = {}\n            scope[ACC_TREE] = tree[key]\n            result = recurse(valspec)\n            if result is STOP:\n                tree[keyspec] = STOP\n                continue\n            done = False  # SKIP or returning a value means we still want more vals\n            if result is not SKIP:\n                acc[key] = result\n        if done:\n            return STOP\n        return acc\n    elif _spec_type is list:\n        for valspec in spec:\n            if type(valspec) is dict:\n                # doesn't make sense due to arity mismatch. did you mean [Auto({...})] ?\n                raise BadSpec('dicts within lists are not'\n                              ' allowed while in Group mode: %r' % spec)\n            result = recurse(valspec)\n            if result is STOP:\n                return STOP\n            if result is not SKIP:\n                acc.append(result)\n        return acc\n    raise ValueError(f\"{_spec_type} not a valid spec type for Group mode\")  # pragma: no cover\n\nExisting test style for reference:\n# glom/test/test_basic.py\nimport sys\nfrom xml.etree import ElementTree as ElementTree\n\nimport pytest\n\nfrom glom import glom, SKIP, STOP, Path, Inspect, Coalesce, CoalesceError, Val, Call, T, S, Invoke, Spec, Ref\nfrom glom import Auto, Fill, Iter, A, Vars, Val, GlomError, Pipe\n\nimport glom.core as glom_core\nfrom glom.core import UP, ROOT, bbformat, bbrepr\nfrom glom.mutation import PathAssignError\n\n\n\ndef test_initial_integration():\n    class Example:\n        pass\n\n    example = Example()\n    subexample = Example()\n    subexample.name = 'good_name'\n    example.mapping = {'key': subexample}\n\n    val = {'a': {'b': 'c'},  # basic dictionary nesting\n           'example': example,  # basic object\n           'd': {'e': ['f'],    # list in dictionary\n                 'g': 'h'},\n           'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries\n           'n': 'o'}\n\n    spec = {'a': (Inspect(recursive=True), 'a', 'b'),  # inspect just prints here\n            'name': 'example.mapping.key.name',  # test object access\n            'e': 'd.e',  # d.e[0] or d.e: (callable to fetch 0)\n            'i': ('i', [{'j': 'j'}]),  # TODO: support True for cases when the value should simply be mapped into the field name?\n            'n': ('n', lambda n: n.upper()),\n            'p': Coalesce('xxx',\n                          'yyy',\n                          default='zzz')}\n\n    ret = glom(val, spec)\n\n    print('in: ', val)\n    print('got:', ret)\n    expected = {'a': 'c',\n                'name': 'good_name',\n                'e': ['f'\n\n# glom/test/test_check.py\nfrom pytest import raises\n\nfrom glom import glom, Check, CheckError, Coalesce, SKIP, STOP, T\n\ntry:\n    unicode\nexcept NameError:\n    unicode = str\n\n\ndef test_check_basic():\n    assert glom([0, SKIP], [T]) == [0]  # sanity check SKIP\n\n    target = [{'id': 0}, {'id': 1}, {'id': 2}]\n\n    # check that skipping non-passing values works\n    assert glom(target, ([Coalesce(Check('id', equal_to=0), default=SKIP)], T[0])) == {'id': 0}\n    assert glom(target, ([Check('id', equal_to=0, default=SKIP)], T[0])) == {'id': 0}\n\n    # check that stopping iteration on non-passing values works\n    assert glom(target, [Check('id', equal_to=0, default=STOP)]) == [{'id': 0}]\n\n    # check that stopping chain execution on non-passing values works\n    spec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])\n    assert glom('hello', spec) == 'h'\n    assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work\n\n    assert repr(Check()) == 'Check()'\n    assert repr(Check(T.a)) == 'Check(T.a)'\n    assert repr(Check(equal_to=1)) == 'Check(equal_to=1)'\n    assert repr(Check(instance_of=dict)) == 'Check(instance_of=dict)'\n    assert repr(Check(T(len), validate=sum)) == 'Check(T(len), validate=sum)'\n\n    target = [1, 'a']\n    assert glom(target, [Check(type=unicode, default=SKIP)]) == ['a']\n    assert glom(target, [Check(type=(unicode, int))]) == [1, 'a']\n    assert glom(target, [Check(instance_of=unicode, default=SKIP)]) == ['a']\n    assert glom(target, [Check(instance_of=(unicode, i\n\nWrite ONLY `glom/test/generated/test_glom_grouping.py`. Confirm with: python -m pytest -q glom/test/generated/test_glom_grouping.py"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.read_file:0",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"glom/grouping.py\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.read_file:0",
+      "content": "\"\"\"\nGroup mode\n\"\"\"\n\nimport random\n\nfrom boltons.typeutils import make_sentinel\n\nfrom .core import glom, MODE, SKIP, STOP, TargetRegistry, Path, T, BadSpec, _MISSING\n\n\nACC_TREE = make_sentinel('ACC_TREE')\nACC_TREE.__doc__ = \"\"\"\ntree of accumulators for aggregation;\nstructure roughly corresponds to the result,\nbut is not 1:1; instead the main purpose is to ensure\ndata is kept until the Group() finishes executing\n\"\"\"\n\nCUR_AGG = make_sentinel('CUR_AGG')\nCUR_AGG.__doc__ = \"\"\"\nthe spec which is currently performing aggregation --\nuseful for specs that want to work in either \"aggregate\"\nmode, or \"spec\" mode depending on if they are in Group mode\nor not; this sentinel in the Scope allows a spec to decide\nif it is \"closest\" to the Group and so should behave\nlike an aggregate, or if it is further away and so should\nhave normal spec behavior.\n\"\"\"\n\n\ndef target_iter(target, scope):\n    iterate = scope[TargetRegistry].get_handler('iterate', target, path=scope[Path])\n\n    try:\n        iterator = iterate(target)\n    except Exception as e:\n        raise TypeError('failed to iterate on instance of type %r at %r (got %r)'\n                        % (target.__class__.__name__, Path(*scope[Path]), e))\n    return iterator\n\n\nclass Group:\n    \"\"\"supports nesting grouping operations --\n    think of a glom-style recursive boltons.iterutils.bucketize\n\n    the \"branches\" of a Group spec are dicts;\n    the leaves are lists, or an Aggregation object\n    an Aggregation object is any object that defines the\n    method agg(target, accumulator)\n\n    For example, here we get a map of even and odd counts::\n\n    >>> glom(range(10), Group({T % 2: T}))\n    {0: 8, 1: 9}\n\n    And here we create a `\"bucketized\"\n    <https://boltons.readthedocs.io/en/latest/iterutils.html#boltons.iterutils.bucketize>`_\n    map of even and odd numbers::\n\n    >>> glom(range(10), Group({T % 2: [T]}))\n    {0: [0, 2, 4, 6, 8], 1: [1, 3, 5, 7, 9]}\n\n    target is the current target, accumulator is a dict\n    maintained by Group mode\n\n    unlike Iter(), Group() converts an iterable target\n    into a single result; Iter() converts an iterable\n    target into an iterable result\n\n    \"\"\"\n    def __init__(self, spec):\n        self.spec = spec\n\n    def glomit(self, target, scope):\n        scope[MODE] = GROUP\n        scope[CUR_AGG] = None  # reset aggregation tripwire for sub-specs\n        scope[ACC_TREE] = {}\n\n        # handle the basecase where the spec stops immediately\n        # TODO: something smarter\n        if type(self.spec) in (dict, list):\n            ret = type(self.spec)()\n        else:\n            ret = None\n\n        for t in target_iter(target, scope):\n            last, ret = ret, scope[glom](t, self.spec, scope)\n            if ret is STOP:\n                return last\n        return ret\n\n    def __repr__(self):\n        cn = self.__class__.__name__\n        return f'{cn}({self.spec!r})'\n\n\ndef GROUP(target, spec, scope):\n    \"\"\"\n    Group mode dispatcher; also sentinel for current mode = group\n    \"\"\"\n    recurse = lambda spec: scope[glom](target, spec, scope)\n    tree = scope[ACC_TREE]  # current accumulator support structure\n    if callable(getattr(spec, \"agg\", None)):\n        return spec.agg(target, tree)\n    elif callable(spec):\n        return spec(target)\n    _spec_type = type(spec)\n    if _spec_type not in (dict, list):\n        raise BadSpec(\"Group mode expected dict, list, callable, or\"\n                      \" aggregator, not: %r\" % (spec,))\n    _spec_id = id(spec)\n    try:\n        acc = tree[_spec_id]  # current accumulator\n    except KeyError:\n        acc = tree[_spec_id] = _spec_type()\n    if _spec_type is dict:\n        done = True\n        for keyspec, valspec in spec.items():\n            if tree.get(keyspec, None) is STOP:\n                continue\n            key = recurse(keyspec)\n            if key is SKIP:\n                done = False  # SKIP means we still want more vals\n                continue\n            if key is STOP:\n                tree[keyspec] = STOP\n                continue\n            if key not in acc:\n                # TODO: guard against key == id(spec)\n                tree[key] = {}\n            scope[ACC_TREE] = tree[key]\n            result = recurse(valspec)\n            if result is STOP:\n                tree[keyspec] = STOP\n                continue\n            done = False  # SKIP or returning a value means we still want more vals\n            if result is not SKIP:\n                acc[key] = result\n        if done:\n            return STOP\n        return acc\n    elif _spec_type is list:\n        for valspec in spec:\n            if type(valspec) is dict:\n                # doesn't make sense due to arity mismatch. did you mean [Auto({...})] ?\n                raise BadSpec('dicts within lists are not'\n                              ' allowed while in Group mode: %r' % spec)\n            result = recurse(valspec)\n            if result is STOP:\n                return STOP\n            if result is not SKIP:\n                acc.append(result)\n        return acc\n    raise ValueError(f\"{_spec_type} not a valid spec type for Group mode\")  # pragma: no cover\n\n\nclass First:\n    \"\"\"\n    holds onto the first value\n\n    >>> glom([1, 2, 3], Group(First()))\n    1\n    \"\"\"\n    __slots__ = ()\n\n    def agg(self, target, tree):\n        if self not in tree:\n            tree[self] = STOP\n            return target\n        return STOP\n\n    def __repr__(self):\n        return '%s()' % self.__class__.__name__\n\n\nclass Avg:\n    \"\"\"\n    takes the numerical average of all values;\n    raises exception on non-numeric value\n\n    >>> glom([1, 2, 3], Group(Avg()))\n    2.0\n    \"\"\"\n    __slots__ = ()\n\n    def agg(self, target, tree):\n        try:\n            avg_acc = tree[self]\n        except KeyError:\n            # format is [sum, count]\n            avg_acc = tree[self] = [0.0, 0]\n        avg_acc[0] += target\n        avg_acc[1] += 1\n        return avg_acc[0] / avg_acc[1]\n\n    def __repr__(self):\n        return '%s()' % self.__class__.__name__\n\n\nclass Max:\n    \"\"\"\n    takes the maximum of all values;\n    raises exception on values that are not comparable\n\n    >>> glom([1, 2, 3], Group(Max()))\n    3\n    \"\"\"\n    __slots__ = ()\n\n    def agg(self, target, tree):\n        if self not in tree or target > tree[self]:\n            tree[self] = target\n        return tree[self]\n\n    def __repr__(self):\n        return '%s()' % self.__class__.__name__\n\n\nclass Min:\n    \"\"\"\n    takes the minimum of all values;\n    raises exception on values that are not comparable\n\n    >>> glom([1, 2, 3], Group(Min()))\n    1\n    \"\"\"\n    __slots__ = ()\n\n    def agg(self, target, tree):\n        if self not in tree or target < tree[self]:\n            tree[self] = target\n        return tree[self]\n\n    def __repr__(self):\n        return '%s()' % self.__class__.__name__\n\n\nclass Sample:\n    \"\"\"takes a random sample of the values\n\n    >>> glom([1, 2, 3], Group(Sample(2)))  # doctest: +SKIP\n    [1, 3]\n    >>> glom(range(5000), Group(Sample(2)))  # doctest: +SKIP\n    [272, 2901]\n\n    The advantage of this over :func:`random.sample` is that this can\n    take an arbitrarily-sized, potentially-very-long streaming input\n    and returns a fixed-size output. Note that this does not stream\n    results out, so your streaming input must have finite length.\n    \"\"\"\n    __slots__ = ('size',)\n\n    def __init__(self, size):\n        self.size = size\n\n    def agg(self, target, tree):\n        # simple reservoir sampling scheme\n        # https://en.wikipedia.org/wiki/Reservoir_sampling#Simple_algorithm\n        if self not in tree:\n            tree[self] = [0, []]\n        num_seen, sample = tree[self]\n        if len(sample) < self.size:\n            sample.append(target)\n        else:\n            pos = random.randint(0, num_seen)\n            if pos < self.size:\n                sample[pos] = target\n        tree[self][0] += 1\n        return sample\n\n    def __repr__(self):\n        return f'{self.__class__.__name__}({self.size!r})'\n\n\n\nclass Limit:\n    \"\"\"\n    Limits the number of values passed to sub-accumulator\n\n    >>> glom([1, 2, 3], Group(Limit(2)))\n    [1, 2]\n\n    To override the default untransformed list output, set the subspec kwarg:\n\n    >>> glom(range(10), Group(Limit(3, subspec={(lambda x: x % 2): [T]})))\n    {0: [0, 2], 1: [1]}\n\n    You can even nest Limits in other ``Group`` specs:\n\n    >>> glom(range(10), Group(Limit(5, {(lambda x: x % 2): Limit(2)})))\n    {0: [0, 2], 1: [1, 3]}\n\n    \"\"\"\n    __slots__ = ('n', 'subspec')\n\n    def __init__(self, n, subspec=_MISSING):\n        if subspec is _MISSING:\n            subspec = [T]\n        self.n = n\n        self.subspec = subspec\n\n    def glomit(self, target, scope):\n        if scope[MODE] is not GROUP:\n            raise BadSpec(\"Limit() only valid in Group mode\")\n        tree = scope[ACC_TREE]  # current accumulator support structure\n        if self not in tree:\n            tree[self] = [0, {}]\n        scope[ACC_TREE] = tree[self][1]\n        tree[self][0] += 1\n        if tree[self][0] > self.n:\n            return STOP\n        return scope[glom](target, self.subspec, scope)\n\n    def __repr__(self):\n        return f'{self.__class__.__name__}({self.n!r}, {self.subspec!r})'\n"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.run:0",
+          "type": "function",
+          "function": {
+            "name": "run",
+            "arguments": "{\"cmd\": \"ls -la glom/test/\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.run:0",
+      "content": "exit_code=0\n--- stdout ---\ntotal 144\ndrwxr-xr-x 1 root root   736 Aug 17 22:15 .\ndrwxr-xr-x 1 root root   480 Aug 17 22:15 ..\n-rw-r--r-- 1 root root     0 Aug 17 21:45 __init__.py\n-rw-r--r-- 1 root root   306 Aug 17 22:15 conftest.py\ndrwxr-xr-x 1 root root   192 Aug 17 21:45 data\ndrwxr-xr-x 1 root root   160 Aug 17 22:15 generated\n-rw-r--r-- 1 root root  1962 Aug 17 22:15 perf_report.py\n-rw-r--r-- 1 root root 14098 Aug 17 22:15 test_basic.py\n-rw-r--r-- 1 root root  3539 Aug 17 22:15 test_check.py\n-rw-r--r-- 1 root root  6191 Aug 17 22:15 test_cli.py\n-rw-r--r-- 1 root root 18569 Aug 17 22:15 test_error.py\n-rw-r--r-- 1 root root   708 Aug 17 22:15 test_fill.py\n-rw-r--r-- 1 root root  3261 Aug 17 22:15 test_grouping.py\n-rw-r--r-- 1 root root 15407 Aug 17 22:15 test_match.py\n-rw-r--r-- 1 root root  9793 Aug 17 22:15 test_mutation.py\n-rw-r--r-- 1 root root 10562 Aug 17 22:15 test_path_and_t.py\n-rw-r--r-- 1 root root  4159 Aug 17 22:15 test_reduction.py\n-rw-r--r-- 1 root root  3431 Aug 17 22:15 test_scope_vars.py\n-rw-r--r-- 1 root root  1478 Aug 17 22:15 test_snippets.py\n-rw-r--r-- 1 root root   745 Aug 17 22:15 test_spec.py\n-rw-r--r-- 1 root root  5664 Aug 17 22:15 test_streaming.py\n-rw-r--r-- 1 root root  7621 Aug 17 22:15 test_target_types.py\n-rw-r--r-- 1 root root   463 Aug 17 22:15 test_tutorial.py\n\n--- stderr ---\n"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.read_file:0",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"glom/test/test_grouping.py\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.read_file:0",
+      "content": "from pytest import raises\n\nfrom glom import glom, T, SKIP, STOP, Auto, BadSpec, Val\nfrom glom.grouping import Group, First, Avg, Max, Min, Sample, Limit\n\nfrom glom.reduction import Merge, Flatten, Sum, Count\n\n\ndef test_bucketing():\n    assert glom(range(4), Group({T % 2: [T]})) == {0: [0, 2], 1: [1, 3]}\n    assert (glom(range(6), Group({T % 3: {T % 2: [T / 10.0]}})) ==\n        {0: {0: [0.0], 1: [0.3]}, 1: {1: [0.1], 0: [0.4]}, 2: {0: [0.2], 1: [0.5]}})\n\n\n\ndef test_corner_cases():\n    target = range(5)\n\n    # immediate stop dict\n    assert glom(target, Group({Val(STOP): [T]})) == {}\n\n    # immediate stop list\n    assert glom(target, Group([Val(STOP)])) == []\n\n    # dict key SKIP\n    assert glom(target, Group({(lambda t: SKIP if t < 3 else t): T})) == {3: 3, 4: 4}\n\n    # dict val SKIP\n    assert glom(target, Group({T: lambda t: t if t % 2 else SKIP})) == {3: 3, 1: 1}\n\n    # list val SKIP\n    assert glom(target, Group([lambda t: t if t % 2 else SKIP])) == [1, 3]\n\n    # embedded auto spec (lol @ 0 being 0 bit length)\n    assert glom(target, Group({Auto(('bit_length', T())): [T]})) == {0: [0], 1: [1], 2: [2, 3], 3: [4]}\n\n    # no dicts inside lists in Group mode\n    with raises(BadSpec):\n        assert glom(target, Group([{T: T}]))\n\n    # check only supported types\n    with raises(BadSpec):\n        assert glom(target, Group('no string support yet'))\n\n    # bucket ints by their bit length and then odd/even, limited to 3 per bucket\n    spec = Group({T.bit_length(): {lambda t: t % 2: Limit(3)}})\n    res = glom(range(20), spec)\n    assert res == {0: {0: [0]},\n                   1: {1: [1]},\n                   2: {0: [2], 1: [3]},\n                   3: {0: [4, 6], 1: [5, 7]},\n                   4: {0: [8, 10, 12], 1: [9, 11, 13]}}\n\n    return\n\n\ndef test_agg():\n    t = list(range(10))\n    assert glom(t, Group(First())) == 0\n    assert glom(t, Group(T)) == 9  # this is basically Last\n\n    assert glom(t, Group(Avg())) == sum(t) / len(t)\n    assert glom(t, Group(Sum())) == sum(t)\n\n    assert glom([0, 1, 0], Group(Max())) == 1\n    assert glom([1, 0, 1], Group(Min())) == 0\n\n    assert repr(Group(First())) == 'Group(First())'\n    assert repr(Avg()) == 'Avg()'\n    assert repr(Max()) == 'Max()'\n    assert repr(Min()) == 'Min()'\n    assert repr(Sum()) == 'Sum()'\n    assert repr(Count()) == 'Count()'\n\n    assert glom(range(10), Group({lambda t: t % 2: Count()})) == {\n\t\t0: 5, 1: 5}\n\n\ndef test_limit():\n    t = list(range(10))\n    assert glom(t, Group(Limit(1, T))) == 0\n    assert glom(t, Group(Limit(3, Max()))) == 2\n    assert glom(t, Group(Limit(3, [T]))) == [0, 1, 2]\n\n    assert repr(Group(Limit(3, Max()))) == 'Group(Limit(3, Max()))'\n\n    with raises(BadSpec):\n        assert glom(t, Limit(1))  # needs to be wrapped in Group for now\n    return\n\n\ndef test_reduce():\n    assert glom([[1], [2, 3]], Group(Flatten())) == [1, 2, 3]\n    assert glom([{'a': 1}, {'b': 2}], Group(Merge())) == {'a': 1, 'b': 2}\n    assert glom([[[1]], [[2, 3], [4]]], Group(Flatten(Flatten()))) == [1, 2, 3, 4]\n\n\ndef test_sample():\n    spec = Group(Sample(5))\n    assert glom([1, 2, 3], spec) == [1, 2, 3]\n\n    assert repr(spec) == 'Group(Sample(5))'\n\n    s = glom([1, 2, 3], Group(Sample(2)))\n    assert s in [[1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]\n"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.run:0",
+          "type": "function",
+          "function": {
+            "name": "run",
+            "arguments": "{\"cmd\": \"ls -la glom/test/generated/\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.run:0",
+      "content": "exit_code=0\n--- stdout ---\ntotal 16\ndrwxr-xr-x 1 root root  160 Aug 17 22:15 .\ndrwxr-xr-x 1 root root  736 Aug 17 22:15 ..\n-rw-r--r-- 1 root root    0 Aug 17 21:45 __init__.py\n-rw-r--r-- 1 root root 9580 Aug 17 22:15 test_glom_cli.py\n-rw-r--r-- 1 root root 2447 Aug 17 22:20 test_glom_streaming.py\n\n--- stderr ---\n"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.grep:0",
+          "type": "function",
+          "function": {
+            "name": "grep",
+            "arguments": "{\"pattern\": \"MODE\\\\s*=\\\\s*GROUP|scope\\\\[MODE\\\\]\\\\s*=\\\\s*GROUP|GROUP\\\\s*in|GROUP\\\\s*,|glom\\\\s*=\\\\s*scope\\\\[glom\\\\]|scope\\\\[glom\\\\]\\\\s*\\\\(\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.grep:0",
+      "content": "docs/custom_spec_types.rst:145:target = scope[glom](target, self.subspec, scope)  # 3\ndocs/modes.rst:55:return scope[glom](target, self.spec, scope)\ndocs/modes.rst:58:recurse = lambda val: scope[glom](target, val, scope)\ndocs/snippets.rst:201:g = lambda spec: scope[glom](target, spec, scope)\ndocs/snippets.rst:230:return [scope[glom](target, spec, scope) for spec in self.subspecs]\nglom/core.py:820:return scope[glom](target, self.spec, scope)\nglom/core.py:926:ret = scope[glom](target, subspec, scope)\nglom/core.py:1019:return scope[glom](target, self.wrapped, scope)\nglom/core.py:1305:recurse = lambda spec: scope[glom](target, spec, scope)\nglom/core.py:1346:return scope[glom](target, subspec, scope)\nglom/core.py:1615:cur = scope[glom](\nglom/core.py:1865:k: scope[glom](target, v, scope) for k, v in self._binding.items()})\nglom/core.py:1886:return scope[glom](target, self.spec, scope)\nglom/core.py:1927:val = scope[glom](target, subspec, scope)\nglom/core.py:1931:field = scope[glom](target, field, scope)\nglom/core.py:1948:val = scope[glom](t, subspec, scope)\nglom/core.py:1961:nxt = scope[glom](res, subspec, scope)\nglom/core.py:2310:scope[glom](target, spec, chain_child(scope))\nglom/core.py:2535:return scope[glom](target, self.spec, scope)\nglom/core.py:2550:recurse = lambda val: scope[glom](target, val, scope)\nglom/core.py:2571:recur = lambda val: scope[glom](target, val, scope)\nglom/core.py:2593:result = scope[glom](target, arg, scope)\nglom/grouping.py:76:scope[MODE] = GROUP\nglom/grouping.py:88:last, ret = ret, scope[glom](t, self.spec, scope)\nglom/grouping.py:102:recurse = lambda spec: scope[glom](target, spec, scope)\nglom/grouping.py:313:return scope[glom](target, self.subspec, scope)\nglom/matching.py:151:ret = scope[glom](target, self.spec, scope)\nglom/matching.py:320:result = scope[glom](target, child, scope)\nglom/matching.py:340:return scope[glom](target, child, scope)\nglom/matching.py:343:return scope[glom](target, self.children[-1], scope)\nglom/matching.py:365:scope[glom](target, self.child, scope)\nglom/matching.py:418:match = scope[glom](target, self.spec, scope)\nglom/matching.py:448:lhs = scope[glom](target, lhs.spec, scope)\nglom/matching.py:450:rhs = scope[glom](target, rhs.spec, scope)\nglom/matching.py:698:key = scope[glom](key, spec_key, scope)\nglom/matching.py:702:result[key] = scope[glom](val, spec[maybe_spec_key], chain_child(scope))\nglom/matching.py:727:result.append(scope[glom](item, child, scope))\nglom/matching.py:748:result.append(scope[glom](sub_target, sub_spec, scope))\nglom/matching.py:851:scope[glom](target, keyspec, scope)\nglom/matching.py:854:return scope[glom](target, valspec, chain_child(scope))\nglom/matching.py:962:target = scope[glom](target, self.spec, scope)\nglom/mutation.py:172:dest = scope[glom](dest_target, dest_path, scope)\nglom/mutation.py:178:val = scope[glom](self.missing(), Assign(remaining_path, val, missing=self.missing), scope)\nglom/mutation.py:182:dest = scope[glom](dest_target, path, scope)\nglom/mutation.py:321:dest = scope[glom](dest_target, dest_path, scope)\nglom/reduction.py:8:from .grouping import GROUP, target_iter, ACC_TREE, CUR_AGG\nglom/reduction.py:75:target = scope[glom](target, self.subspec, scope)\nglom/streaming.py:104:yld = (t if self.subspec is T else scope[glom](t, self.subspec, scope))\nglom/streaming.py:138:lambda t: scope[glom](t, subspec, scope), iterable))\nglom/streaming.py:165:lambda t: scope[glom](t, check_spec, scope) is not SKIP, iterable))\nglom/streaming.py:258:lambda it, scope: unique_iter(it, key=lambda t: scope[glom](t, key, scope)))\nglom/streaming.py:300:lambda t: scope[glom](t, key, scope), it))\nglom/streaming.py:321:lambda t: scope[glom](t, key, scope), it))"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.grep:0",
+          "type": "function",
+          "function": {
+            "name": "grep",
+            "arguments": "{\"pattern\": \"class Val|def Val|MODE\\\\s*=|glom\\\\s*=\\\\s*make_sentinel|glom\\\\s*=\\\\s*make_sentinel|from .core import glom\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.grep:0",
+      "content": "glom/core.py:106:MODE =  make_sentinel('MODE')\nglom/core.py:108:MIN_MODE =  make_sentinel('MIN_MODE')\nglom/core.py:1765:class Val:\nglom/grouping.py:9:from .core import glom, MODE, SKIP, STOP, TargetRegistry, Path, T, BadSpec, _MISSING\nglom/streaming.py:24:from .core import glom, T, STOP, SKIP, _MISSING, Path, TargetRegistry, Call, Spec, Pipe, S, bbrepr, format_invocation"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.grep:0",
+          "type": "function",
+          "function": {
+            "name": "grep",
+            "arguments": "{\"pattern\": \"class Val\\\\b|def __init__.*Val|class Val\\\\(\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.grep:0",
+      "content": "glom/core.py:1765:class Val:"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.read_file:0",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"1765:1800\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.read_file:0",
+      "content": "class Val:\n    \"\"\"Val objects are specs which evaluate to the wrapped *value*.\n\n    >>> target = {'a': {'b': 'c'}}\n    >>> spec = {'a': 'a.b', 'readability': Val('counts')}\n    >>> pprint(glom(target, spec))\n    {'a': 'c', 'readability': 'counts'}\n\n    Instead of accessing ``'counts'`` as a key like it did with\n    ``'a.b'``, :func:`~glom.glom` just unwrapped the Val and\n    included the value.\n\n    :class:`~glom.Val` takes one argument, the value to be returned.\n\n    .. note::\n\n       :class:`Val` was named ``Literal`` in versions of glom before\n       20.7.0. An alias has been preserved for backwards\n       compatibility, but reprs have changed.\n\n    \"\"\"\n    def __init__(self, value):\n        self.value = value\n\n    def glomit(self, target, scope):\n        return self.value\n\n    def __repr__(self):\n        cn = self.__class__.__name__\n        return f'{cn}({bbrepr(self.value)})'\n\n\nLiteral = Val  # backwards compat for pre-20.7.0\n\n\nclass ScopeVars:"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.read_file:0",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"100:130\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.read_file:0",
+      "content": "NO_PYFRAME.__doc__ = \"\"\"\nUsed internally to mark scopes which are no longer wrapped\nin a recursive glom() call, so that they can be cleaned up correctly\nin case of exceptions\n\"\"\"\n\nMODE =  make_sentinel('MODE')\n\nMIN_MODE =  make_sentinel('MIN_MODE')\n\nCHILD_ERRORS = make_sentinel('CHILD_ERRORS')\nCHILD_ERRORS.__doc__ = \"\"\"\n``CHILD_ERRORS`` is used by glom internals to keep track of\nfailed child branches of the current scope.\n\"\"\"\n\nCUR_ERROR = make_sentinel('CUR_ERROR')\nCUR_ERROR.__doc__ = \"\"\"\n``CUR_ERROR`` is used by glom internals to keep track of\nthrown exceptions.\n\"\"\"\n\n_PKG_DIR_PATH = os.path.dirname(os.path.abspath(__file__))\n\nclass GlomError(Exception):\n    \"\"\"The base exception for all the errors that might be raised from\n    :func:`glom` processing logic.\n\n    By default, exceptions raised from within functions passed to glom\n    (e.g., ``len``, ``sum``, any ``lambda``) will not be wrapped in a\n    GlomError."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.grep:0",
+          "type": "function",
+          "function": {
+            "name": "grep",
+            "arguments": "{\"pattern\": \"class Scope|def chain_child|from .core import.*Scope|Scope\\\\(\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.grep:0",
+      "content": "docs/custom_spec_types.rst:84:class ScopeInspectorSpec(object):\nglom/core.py:1800:class ScopeVars:\nglom/core.py:2302:def chain_child(scope):"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.read_file:0",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"2302:2330\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.read_file:0",
+      "content": "def chain_child(scope):\n    \"\"\"\n    used for specs like Auto(tuple), Switch(), etc\n    that want to chain their child scopes together\n\n    returns a new scope that can be passed to\n    the next recursive glom call, e.g.\n\n    scope[glom](target, spec, chain_child(scope))\n    \"\"\"\n    if LAST_CHILD_SCOPE not in scope.maps[0]:\n        return scope  # no children yet, nothing to do\n    # NOTE: an option here is to drill down on LAST_CHILD_SCOPE;\n    # this would have some interesting consequences for scoping\n    # of tuples\n    nxt_in_chain = scope[LAST_CHILD_SCOPE]\n    nxt_in_chain.maps[0][NO_PYFRAME] = True\n    # previous failed branches are forgiven as the\n    # scope is re-wired into a new stack\n    del nxt_in_chain.maps[0][CHILD_ERRORS][:]\n    return nxt_in_chain\n\n\nunbound_methods = {type(str.__len__)} #, type(Ref.glomit)])\n\n\ndef _has_callable_glomit(obj):\n    glomit = getattr(obj, 'glomit', None)\n    return callable(glomit)  and not isinstance(obj, type)"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.grep:0",
+          "type": "function",
+          "function": {
+            "name": "grep",
+            "arguments": "{\"pattern\": \"class.*Scope|def.*scope|Scope\\\\(|scope\\\\s*=.*ChainMap|scope\\\\s*=.*new_child\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.grep:0",
+      "content": "docs/custom_spec_types.rst:45:def glomit(self, target, scope):  # 2\ndocs/custom_spec_types.rst:84:class ScopeInspectorSpec(object):\ndocs/custom_spec_types.rst:85:def glomit(self, target, scope):\ndocs/custom_spec_types.rst:98:<class 'glom.core.Spec'>: <__main__.ScopeInspectorSpec object at 0x7f208bf58690>,\ndocs/custom_spec_types.rst:143:def glomit(self, target, scope):\ndocs/modes.rst:53:def glomit(self, target, scope):\ndocs/modes.rst:57:def _fill(target, spec, scope):\ndocs/snippets.rst:200:def glomit(self, target, scope):\ndocs/snippets.rst:229:def glomit(self, target, scope):\nglom/core.py:150:def _finalize(self, scope):\nglom/core.py:189:def _unpack_stack(scope, only_errors=True):\nglom/core.py:242:def format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):\nglom/core.py:283:def format_oneline_trace(scope):\nglom/core.py:674:def glomit(self, target, scope):\nglom/core.py:807:def __init__(self, spec, scope=None):\nglom/core.py:818:def glomit(self, target, scope):\nglom/core.py:922:def glomit(self, target, scope):\nglom/core.py:935:ret = arg_val(target, self.default, scope)\nglom/core.py:1014:def glomit(self, target, scope):\nglom/core.py:1021:def _trace(self, target, spec, scope):\nglom/core.py:1095:def glomit(self, target, scope):\nglom/core.py:1301:def glomit(self, target, scope):\nglom/core.py:1339:def glomit(self, target, scope):\nglom/core.py:1526:def _s_first_magic(scope, key, _t):\nglom/core.py:1541:def _t_eval(target, _t, scope):\nglom/core.py:1662:def _assign_op(dest, op, arg, val, path, scope):\nglom/core.py:1789:def glomit(self, target, scope):\nglom/core.py:1800:class ScopeVars:\nglom/core.py:1863:def glomit(self, target, scope):\nglom/core.py:1884:def glomit(self, target, scope):\nglom/core.py:1924:def _handle_dict(target, spec, scope):\nglom/core.py:1936:def _handle_list(target, spec, scope):\nglom/core.py:1957:def _handle_tuple(target, spec, scope):\nglom/core.py:1985:def glomit(self, target, scope):\nglom/core.py:2260:scope = _DEFAULT_SCOPE.new_child({\nglom/core.py:2302:def chain_child(scope):\nglom/core.py:2333:def _glom(target, spec, scope):\nglom/core.py:2336:scope = scope.new_child({\nglom/core.py:2367:def AUTO(target, spec, scope):\nglom/core.py:2436:'get', 'iterate', 'keys', 'assign', and 'delete' to the default scope.\nglom/core.py:2473:self.scope = ChainMap(dict(scope))\nglom/core.py:2533:def glomit(self, target, scope):\nglom/core.py:2546:def FILL(target, spec, scope):\nglom/core.py:2566:def mode(self, target, spec, scope):\nglom/core.py:2569:useful for default, scope assignment, call/invoke, etc\nglom/core.py:2586:def arg_val(target, arg, scope):\nglom/grouping.py:32:def target_iter(target, scope):\nglom/grouping.py:75:def glomit(self, target, scope):\nglom/grouping.py:98:def GROUP(target, spec, scope):\nglom/grouping.py:303:def glomit(self, target, scope):\nglom/matching.py:148:def glomit(self, target, scope):\nglom/matching.py:155:ret = arg_val(target, self.default, scope)\nglom/matching.py:234:def glomit(self, target, scope):\nglom/matching.py:282:def glomit(self, target, scope):\nglom/matching.py:287:return arg_val(target, self.default, scope)\nglom/matching.py:316:def _glomit(self, target, scope):\nglom/matching.py:337:def _glomit(self, target, scope):\nglom/matching.py:363:def glomit(self, target, scope):\nglom/matching.py:417:def glomit(self, target, scope):\nglom/matching.py:441:def glomit(self, target, scope):\nglom/matching.py:599:def glomit(self, target, scope):\nglom/matching.py:677:def _handle_dict(target, spec, scope):\nglom/matching.py:708:result[key] = arg_val(target, defaults[key], scope)\nglom/matching.py:714:def _glom_match(target, spec, scope):\nglom/matching.py:848:def glomit(self, target, scope):\nglom/matching.py:856:return arg_val(target, self.default, scope)\nglom/matching.py:958:def glomit(self, target, scope):\nglom/matching.py:965:return arg_val(target, self.default, scope)\nglom/matching.py:973:return arg_val(target, self.default, scope)\nglom/matching.py:1000:return arg_val(target, self.default, scope)\nglom/mutation.py:161:def glomit(self, target, scope):\nglom/mutation.py:291:def _del_one(self, dest, op, arg, scope):\nglom/mutation.py:312:def glomit(self, target, scope):\nglom/reduction.py:68:def glomit(self, target, scope):\nglom/streaming.py:85:def glomit(self, target, scope):\nglom/streaming.py:93:def _iterate(self, target, scope):\nglom/streaming.py:378:def glomit(self, target, scope):\nglom/test/test_basic.py:299:def test_scope():\nglom/test/test_error.py:43:def test_pae_scope_printable():\nglom/test/test_scope_vars.py:8:def test_s_scope_assign():\nglom/test/test_scope_vars.py:65:def test_scoped_vars():\nglom/test/test_spec.py:18:def test_scope_spec():\nglom/test/test_target_types.py:180:def test_default_scope_register():"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.read_file:0",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"2250:2280\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.read_file:0",
+      "content": "         via S inside the glom-spec. Read more: :ref:`scope`.\n\n    It's a small API with big functionality, and glom's power is\n    only surpassed by its intuitiveness. Give it a whirl!\n\n    \"\"\"\n    # TODO: check spec up front\n    default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)\n    skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)\n    glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)\n    scope = _DEFAULT_SCOPE.new_child({\n        Path: kwargs.pop('path', []),\n        Inspect: kwargs.pop('inspector', None),\n        MODE: AUTO,\n        MIN_MODE: None,\n        CHILD_ERRORS: [],\n        'globals': ScopeVars({}, {}),\n    })\n    scope[UP] = scope\n    scope[ROOT] = scope\n    scope[T] = target\n    scope.update(kwargs.pop('scope', {}))\n    err = None\n    if kwargs:\n        raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n    try:\n        try:\n            ret = _glom(target, spec, scope)\n        except skip_exc:\n            if default is _MISSING:\n                raise"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.read_file:0",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"2333:2380\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.read_file:0",
+      "content": "def _glom(target, spec, scope):\n    parent = scope\n    pmap = parent.maps[0]\n    scope = scope.new_child({\n        T: target,\n        Spec: spec,\n        UP: parent,\n        CHILD_ERRORS: [],\n        MODE: pmap[MODE],\n        MIN_MODE: pmap[MIN_MODE],\n    })\n    pmap[LAST_CHILD_SCOPE] = scope\n\n    try:\n        if type(spec) is TType:  # must go first, due to callability\n            scope[MIN_MODE] = None  # None is tombstone\n            return _t_eval(target, spec, scope)\n        elif _has_callable_glomit(spec):\n            scope[MIN_MODE] = None\n            return spec.glomit(target, scope)\n\n        return (scope.maps[0][MIN_MODE] or scope.maps[0][MODE])(target, spec, scope)\n    except Exception as e:\n        scope.maps[1][CHILD_ERRORS].append(scope)\n        scope.maps[0][CUR_ERROR] = e\n        if NO_PYFRAME in scope.maps[1]:\n            cur_scope = scope[UP]\n            while NO_PYFRAME in cur_scope.maps[0]:\n                cur_scope.maps[1][CHILD_ERRORS].append(cur_scope)\n                cur_scope.maps[0][CUR_ERROR] = e\n                cur_scope = cur_scope[UP]\n        raise\n\n\ndef AUTO(target, spec, scope):\n    if type(spec) is str:  # shortcut to make deep-get use case faster\n        return _t_eval(target, Path.from_text(spec).path_t, scope)\n    if isinstance(spec, dict):\n        return _handle_dict(target, spec, scope)\n    elif isinstance(spec, list):\n        return _handle_list(target, spec, scope)\n    elif isinstance(spec, tuple):\n        return _handle_tuple(target, spec, scope)\n    elif isinstance(spec, basestring):\n        return Path.from_text(spec).glomit(target, scope)\n    elif callable(spec):\n        return spec(target)\n"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.grep:0",
+          "type": "function",
+          "function": {
+            "name": "grep",
+            "arguments": "{\"pattern\": \"_DEFAULT_SCOPE\\\\s*=\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.grep:0",
+      "content": "glom/core.py:2186:_DEFAULT_SCOPE = ChainMap({})"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.grep:0",
+          "type": "function",
+          "function": {
+            "name": "grep",
+            "arguments": "{\"pattern\": \"LAST_CHILD_SCOPE|NO_PYFRAME|ROOT|UP|CHILD_ERRORS|_DEFAULT_SCOPE\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.grep:0",
+      "content": "LICENSE:27:SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\ndocs/index.rst:51:.. |changelog| image:: https://img.shields.io/badge/CHANGELOG-UPDATED-b84ad6.svg\nglom/__init__.py:13:UP,\nglom/__init__.py:14:ROOT,\nglom/core.py:91:LAST_CHILD_SCOPE = make_sentinel('LAST_CHILD_SCOPE')\nglom/core.py:92:LAST_CHILD_SCOPE.__doc__ = \"\"\"\nglom/core.py:99:NO_PYFRAME = make_sentinel('NO_PYFRAME')\nglom/core.py:100:NO_PYFRAME.__doc__ = \"\"\"\nglom/core.py:110:CHILD_ERRORS = make_sentinel('CHILD_ERRORS')\nglom/core.py:111:CHILD_ERRORS.__doc__ = \"\"\"\nglom/core.py:112:``CHILD_ERRORS`` is used by glom internals to keep track of\nglom/core.py:203:while LAST_CHILD_SCOPE in scope:\nglom/core.py:204:child = scope[LAST_CHILD_SCOPE]\nglom/core.py:205:branches = scope[CHILD_ERRORS]\nglom/core.py:1714:UP = make_sentinel('UP')\nglom/core.py:1715:ROOT = make_sentinel('ROOT')\nglom/core.py:2186:_DEFAULT_SCOPE = ChainMap({})\nglom/core.py:2260:scope = _DEFAULT_SCOPE.new_child({\nglom/core.py:2265:CHILD_ERRORS: [],\nglom/core.py:2268:scope[UP] = scope\nglom/core.py:2269:scope[ROOT] = scope\nglom/core.py:2293:err._finalize(scope[LAST_CHILD_SCOPE])\nglom/core.py:2312:if LAST_CHILD_SCOPE not in scope.maps[0]:\nglom/core.py:2314:# NOTE: an option here is to drill down on LAST_CHILD_SCOPE;\nglom/core.py:2317:nxt_in_chain = scope[LAST_CHILD_SCOPE]\nglom/core.py:2318:nxt_in_chain.maps[0][NO_PYFRAME] = True\nglom/core.py:2321:del nxt_in_chain.maps[0][CHILD_ERRORS][:]\nglom/core.py:2339:UP: parent,\nglom/core.py:2340:CHILD_ERRORS: [],\nglom/core.py:2344:pmap[LAST_CHILD_SCOPE] = scope\nglom/core.py:2356:scope.maps[1][CHILD_ERRORS].append(scope)\nglom/core.py:2358:if NO_PYFRAME in scope.maps[1]:\nglom/core.py:2359:cur_scope = scope[UP]\nglom/core.py:2360:while NO_PYFRAME in cur_scope.maps[0]:\nglom/core.py:2361:cur_scope.maps[1][CHILD_ERRORS].append(cur_scope)\nglom/core.py:2363:cur_scope = cur_scope[UP]\nglom/core.py:2385:_DEFAULT_SCOPE.update({\nglom/core.py:2430:_DEFAULT_SCOPE[TargetRegistry].register(target_type, **kwargs)\nglom/core.py:2439:_DEFAULT_SCOPE[TargetRegistry].register_op(op_name, **kwargs)\nglom/core.py:2470:scope = kwargs.pop('scope', _DEFAULT_SCOPE)\nglom/grouping.py:76:scope[MODE] = GROUP\nglom/grouping.py:98:def GROUP(target, spec, scope):\nglom/grouping.py:304:if scope[MODE] is not GROUP:\nglom/mutation.py:22:from .core import Path, T, S, Spec, glom, UnregisteredTarget, GlomError, PathAccessError, UP\nglom/mutation.py:166:dest_target = scope[UP]\nglom/mutation.py:315:dest_target = scope[UP]\nglom/reduction.py:8:from .grouping import GROUP, target_iter, ACC_TREE, CUR_AGG\nglom/reduction.py:70:if scope[MODE] is GROUP and scope.get(CUR_AGG) is None:\nglom/test/test_basic.py:10:from glom.core import UP, ROOT, bbformat, bbrepr\nglom/test/test_basic.py:204:assert glom([[1]], S[UP][Val(T)][0][0]) == 1\nglom/test/test_basic.py:205:assert glom([[1]], S[UP][UP][UP][Val(T)]) == [[1]]  # tops out\nglom/test/test_error.py:9:from glom.core import format_oneline_trace, format_target_spec_trace, bbrepr, ROOT, LAST_CHILD_SCOPE\nglom/test/test_error.py:80:scope = glom([1], stacklifier)[0]['data'][ROOT][LAST_CHILD_SCOPE]\nglom/test/test_scope_vars.py:5:from glom.core import ROOT, Let\nglom/test/test_scope_vars.py:12:assert glom(data, ('b', [{'a': S[ROOT][Val(T)]['a'], 'c': 'c'}])) == output\nglom/test/test_scope_vars.py:87:assert glom(data, ('b', [{'a': S[ROOT][Val(T)]['a'], 'c': 'c'}])) == output"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.read_file:0",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"2186:2200\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.read_file:0",
+      "content": "_DEFAULT_SCOPE = ChainMap({})\n\n\ndef glom(target, spec, **kwargs):\n    \"\"\"Access or construct a value from a given *target* based on the\n    specification declared by *spec*.\n\n    Accessing nested data, aka deep-get:\n\n    >>> target = {'a': {'b': 'c'}}\n    >>> glom(target, 'a.b')\n    'c'\n\n    Here the *spec* was just a string denoting a path,\n    ``'a.b'``. As simple as it should be. You can also use "
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.grep:0",
+          "type": "function",
+          "function": {
+            "name": "grep",
+            "arguments": "{\"pattern\": \"glom\\\\s*=\\\\s*make_sentinel|glom\\\\s*=\\\\s*'glom|\\\"glom\\\"|'glom'\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.grep:0",
+      "content": "docs/conf.py:34:project = u'glom'\ndocs/conf.py:180:(master_doc, 'glom', u'glom Documentation',\ndocs/conf.py:191:(master_doc, 'glom', u'glom Documentation',\ndocs/conf.py:192:author, 'glom', 'One line description of project.',\ndocs/faq.rst:9:What does \"glom\" mean?\ndocs/faq.rst:12:\"glom\" is short for \"conglomerate\", which means \"gather into a compact\nglom/test/generated/test_glom_cli.py:80:monkeypatch.setattr(sys, 'argv', ['glom', 'test'])\nglom/test/generated/test_glom_cli.py:84:assert \"['glom', 'test']\" in captured.out\nglom/test/test_cli.py:36:res = cc.run(['glom'])\nglom/test/test_cli.py:41:res = cc.run(['glom', '--indent', '0', BASIC_SPEC, BASIC_TARGET])\nglom/test/test_cli.py:45:res = cc.run(['glom', '--indent', '0', '--spec-format', 'json', BASIC_SPEC, BASIC_TARGET])\nglom/test/test_cli.py:50:res = cc.run(['glom', '--indent', '0', BASIC_SPEC],\nglom/test/test_cli.py:54:res = cc.run(['glom', '--indent', '0', BASIC_SPEC, '-'],\nglom/test/test_cli.py:58:res = cc.run(['glom', '--indent', '0', '--target-file', '-', BASIC_SPEC],\nglom/test/test_cli.py:64:res = cc.run(['glom', 'a.b.c', '{\"a\": {\"b\": {\"c\": \"d\"}}}'])\nglom/test/test_cli.py:67:res = cc.run(['glom', '--scalar', 'a.b.c', '{\"a\": {\"b\": {\"c\": \"d\"}}}'])\nglom/test/test_cli.py:72:res = cc.run(['glom', '--indent', '0', '--target-file',\nglom/test/test_cli.py:79:res = cc.fail_1(['glom', BASIC_SPEC, '{' + BASIC_TARGET])\nglom/test/test_cli.py:83:res = cc.fail_1(['glom', '--target-format', 'yaml', BASIC_SPEC, '{' + BASIC_TARGET])\nglom/test/test_cli.py:87:res = cc.fail_1(['glom', '--target-format', 'toml', BASIC_SPEC, '{' + BASIC_TARGET])\nglom/test/test_cli.py:93:res = cc.fail_1(['glom', '--target-format', 'lol', BASIC_SPEC, BASIC_TARGET])\nglom/test/test_cli.py:97:res = cc.fail_1(['glom', '--spec-format', 'lol', BASIC_SPEC, BASIC_TARGET])\nglom/test/test_cli.py:101:res = cc.fail_1(['glom', '--spec-file', basic_spec_path, BASIC_SPEC, BASIC_TARGET])\nglom/test/test_cli.py:106:res = cc.fail_1(['glom', '--target-file', basic_target_path, BASIC_SPEC, BASIC_TARGET])\nglom/test/test_cli.py:112:res = cc.fail_1(['glom', '--spec-file', basic_spec_path + 'abra', '--target-file', basic_target_path])\nglom/test/test_cli.py:115:res = cc.fail_1(['glom', '--spec-file', basic_spec_path, '--target-file', basic_target_path + 'abra'])\nglom/test/test_cli.py:173:res = subprocess.check_output(['glom', 'a', '{\"a\": 3}'])\nsetup.py:19:_version_mod_path = os.path.join(CUR_PATH, 'glom', '_version.py')\nsetup.py:29:setup(name='glom',\nsetup.py:40:packages=['glom', 'glom.test'],"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.grep:0",
+          "type": "function",
+          "function": {
+            "name": "grep",
+            "arguments": "{\"pattern\": \"scope\\\\[glom\\\\]|scope\\\\[.*glom.*\\\\]|\\\\[glom\\\\]\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.grep:0",
+      "content": "docs/custom_spec_types.rst:145:target = scope[glom](target, self.subspec, scope)  # 3\ndocs/modes.rst:55:return scope[glom](target, self.spec, scope)\ndocs/modes.rst:58:recurse = lambda val: scope[glom](target, val, scope)\ndocs/snippets.rst:201:g = lambda spec: scope[glom](target, spec, scope)\ndocs/snippets.rst:230:return [scope[glom](target, spec, scope) for spec in self.subspecs]\nglom/core.py:820:return scope[glom](target, self.spec, scope)\nglom/core.py:926:ret = scope[glom](target, subspec, scope)\nglom/core.py:1017:scope[Inspect] = scope[glom]\nglom/core.py:1018:scope[glom] = self._trace\nglom/core.py:1019:return scope[glom](target, self.wrapped, scope)\nglom/core.py:1023:scope[glom] = scope[Inspect]\nglom/core.py:1305:recurse = lambda spec: scope[glom](target, spec, scope)\nglom/core.py:1346:return scope[glom](target, subspec, scope)\nglom/core.py:1615:cur = scope[glom](\nglom/core.py:1865:k: scope[glom](target, v, scope) for k, v in self._binding.items()})\nglom/core.py:1886:return scope[glom](target, self.spec, scope)\nglom/core.py:1927:val = scope[glom](target, subspec, scope)\nglom/core.py:1931:field = scope[glom](target, field, scope)\nglom/core.py:1948:val = scope[glom](t, subspec, scope)\nglom/core.py:1961:nxt = scope[glom](res, subspec, scope)\nglom/core.py:2310:scope[glom](target, spec, chain_child(scope))\nglom/core.py:2535:return scope[glom](target, self.spec, scope)\nglom/core.py:2550:recurse = lambda val: scope[glom](target, val, scope)\nglom/core.py:2571:recur = lambda val: scope[glom](target, val, scope)\nglom/core.py:2593:result = scope[glom](target, arg, scope)\nglom/grouping.py:88:last, ret = ret, scope[glom](t, self.spec, scope)\nglom/grouping.py:102:recurse = lambda spec: scope[glom](target, spec, scope)\nglom/grouping.py:313:return scope[glom](target, self.subspec, scope)\nglom/matching.py:151:ret = scope[glom](target, self.spec, scope)\nglom/matching.py:320:result = scope[glom](target, child, scope)\nglom/matching.py:340:return scope[glom](target, child, scope)\nglom/matching.py:343:return scope[glom](target, self.children[-1], scope)\nglom/matching.py:365:scope[glom](target, self.child, scope)\nglom/matching.py:418:match = scope[glom](target, self.spec, scope)\nglom/matching.py:448:lhs = scope[glom](target, lhs.spec, scope)\nglom/matching.py:450:rhs = scope[glom](target, rhs.spec, scope)\nglom/matching.py:698:key = scope[glom](key, spec_key, scope)\nglom/matching.py:702:result[key] = scope[glom](val, spec[maybe_spec_key], chain_child(scope))\nglom/matching.py:727:result.append(scope[glom](item, child, scope))\nglom/matching.py:748:result.append(scope[glom](sub_target, sub_spec, scope))\nglom/matching.py:851:scope[glom](target, keyspec, scope)\nglom/matching.py:854:return scope[glom](target, valspec, chain_child(scope))\nglom/matching.py:962:target = scope[glom](target, self.spec, scope)\nglom/mutation.py:172:dest = scope[glom](dest_target, dest_path, scope)\nglom/mutation.py:178:val = scope[glom](self.missing(), Assign(remaining_path, val, missing=self.missing), scope)\nglom/mutation.py:182:dest = scope[glom](dest_target, path, scope)\nglom/mutation.py:321:dest = scope[glom](dest_target, dest_path, scope)\nglom/reduction.py:75:target = scope[glom](target, self.subspec, scope)\nglom/streaming.py:104:yld = (t if self.subspec is T else scope[glom](t, self.subspec, scope))\nglom/streaming.py:138:lambda t: scope[glom](t, subspec, scope), iterable))\nglom/streaming.py:165:lambda t: scope[glom](t, check_spec, scope) is not SKIP, iterable))\nglom/streaming.py:258:lambda it, scope: unique_iter(it, key=lambda t: scope[glom](t, key, scope)))\nglom/streaming.py:300:lambda t: scope[glom](t, key, scope), it))\nglom/streaming.py:321:lambda t: scope[glom](t, key, scope), it))"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.grep:0",
+          "type": "function",
+          "function": {
+            "name": "grep",
+            "arguments": "{\"pattern\": \"_DEFAULT_SCOPE\\\\[glom\\\\]|_DEFAULT_SCOPE\\\\.update|_DEFAULT_SCOPE\\\\[\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.grep:0",
+      "content": "glom/core.py:2385:_DEFAULT_SCOPE.update({\nglom/core.py:2430:_DEFAULT_SCOPE[TargetRegistry].register(target_type, **kwargs)\nglom/core.py:2439:_DEFAULT_SCOPE[TargetRegistry].register_op(op_name, **kwargs)"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.read_file:0",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"2385:2420\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.read_file:0",
+      "content": "_DEFAULT_SCOPE.update({\n    glom: _glom,\n    TargetRegistry: TargetRegistry(register_default_types=True),\n})\n\n\ndef register(target_type, **kwargs):\n    \"\"\"Register *target_type* so :meth:`~Glommer.glom()` will\n    know how to handle instances of that type as targets.\n\n    Here's an example of adding basic iterabile support for Django's ORM:\n\n    .. code-block:: python\n\n        import glom\n        import django.db.models\n\n        glom.register(django.db.models.Manager, iterate=lambda m: m.all())\n        glom.register(django.db.models.QuerySet, iterate=lambda qs: qs.all())\n\n\n\n    Args:\n       target_type (type): A type expected to appear in a glom()\n          call target\n       get (callable): A function which takes a target object and\n          a name, acting as a default accessor. Defaults to\n          :func:`getattr`.\n       iterate (callable): A function which takes a target object\n          and returns an iterator. Defaults to :func:`iter` if\n          *target_type* appears to be iterable.\n       exact (bool): Whether or not to match instances of subtypes\n          of *target_type*.\n\n    .. note::\n"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.read_file:0",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"glom/__init__.py\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.read_file:0",
+      "content": "from glom.core import (glom,\n                       Fill,\n                       Auto,\n                       register,\n                       register_op,\n                       Glommer,\n                       Call,\n                       Invoke,\n                       Spec,\n                       Ref,\n                       SKIP,\n                       STOP,\n                       UP,\n                       ROOT,\n                       MODE,\n                       Path,\n                       Vars,\n                       Val,\n                       Coalesce,\n                       Inspect,\n                       Pipe,\n                       GlomError,\n                       BadSpec,\n                       PathAccessError,\n                       PathAssignError,\n                       CoalesceError,\n                       UnregisteredTarget,\n                       T, S, A)\n\nfrom glom.reduction import Sum, Fold, Flatten, flatten, FoldError, Merge, merge\nfrom glom.matching import (M,\n                           Or,\n                           And,\n                           Not,\n                           Match,\n                           MatchError,\n                           TypeMatchError,\n                           Regex,\n                           Optional,\n                           Required,\n                           Switch,\n                           Check,\n                           CheckError)\nfrom glom.mutation import Assign, Delete, assign, delete, PathDeleteError\n\n# there's no -ion word that really fits what \"streaming\" means.\n# generation, production, iteration, all have more relevant meanings\n# elsewhere. (maybe procrastination :P)\nfrom glom.streaming import Iter\n\nfrom glom._version import __version__\n"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.grep:0",
+          "type": "function",
+          "function": {
+            "name": "grep",
+            "arguments": "{\"pattern\": \"^T\\\\s*=|^T\\\\b\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.grep:0",
+      "content": "glom/core.py:1703:T = TType()  # target aka Mr. T aka \"this\"\nglom/core.py:1707:T.__ops__ = (T,)"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "functions.read_file:0",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"glom/test/test_grouping.py\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "functions.read_file:0",
+      "content": "from pytest import raises\n\nfrom glom import glom, T, SKIP, STOP, Auto, BadSpec, Val\nfrom glom.grouping import Group, First, Avg, Max, Min, Sample, Limit\n\nfrom glom.reduction import Merge, Flatten, Sum, Count\n\n\ndef test_bucketing():\n    assert glom(range(4), Group({T % 2: [T]})) == {0: [0, 2], 1: [1, 3]}\n    assert (glom(range(6), Group({T % 3: {T % 2: [T / 10.0]}})) ==\n        {0: {0: [0.0], 1: [0.3]}, 1: {1: [0.1], 0: [0.4]}, 2: {0: [0.2], 1: [0.5]}})\n\n\n\ndef test_corner_cases():\n    target = range(5)\n\n    # immediate stop dict\n    assert glom(target, Group({Val(STOP): [T]})) == {}\n\n    # immediate stop list\n    assert glom(target, Group([Val(STOP)])) == []\n\n    # dict key SKIP\n    assert glom(target, Group({(lambda t: SKIP if t < 3 else t): T})) == {3: 3, 4: 4}\n\n    # dict val SKIP\n    assert glom(target, Group({T: lambda t: t if t % 2 else SKIP})) == {3: 3, 1: 1}\n\n    # list val SKIP\n    assert glom(target, Group([lambda t: t if t % 2 else SKIP])) == [1, 3]\n\n    # embedded auto spec (lol @ 0 being 0 bit length)\n    assert glom(target, Group({Auto(('bit_length', T())): [T]})) == {0: [0], 1: [1], 2: [2, 3], 3: [4]}\n\n    # no dicts inside lists in Group mode\n    with raises(BadSpec):\n        assert glom(target, Group([{T: T}]))\n\n    # check only supported types\n    with raises(BadSpec):\n        assert glom(target, Group('no string support yet'))\n\n    # bucket ints by their bit length and then odd/even, limited to 3 per bucket\n    spec = Group({T.bit_length(): {lambda t: t % 2: Limit(3)}})\n    res = glom(range(20), spec)\n    assert res == {0: {0: [0]},\n                   1: {1: [1]},\n                   2: {0: [2], 1: [3]},\n                   3: {0: [4, 6], 1: [5, 7]},\n                   4: {0: [8, 10, 12], 1: [9, 11, 13]}}\n\n    return\n\n\ndef test_agg():\n    t = list(range(10))\n    assert glom(t, Group(First())) == 0\n    assert glom(t, Group(T)) == 9  # this is basically Last\n\n    assert glom(t, Group(Avg())) == sum(t) / len(t)\n    assert glom(t, Group(Sum())) == sum(t)\n\n    assert glom([0, 1, 0], Group(Max())) == 1\n    assert glom([1, 0, 1], Group(Min())) == 0\n\n    assert repr(Group(First())) == 'Group(First())'\n    assert repr(Avg()) == 'Avg()'\n    assert repr(Max()) == 'Max()'\n    assert repr(Min()) == 'Min()'\n    assert repr(Sum()) == 'Sum()'\n    assert repr(Count()) == 'Count()'\n\n    assert glom(range(10), Group({lambda t: t % 2: Count()})) == {\n\t\t0: 5, 1: 5}\n\n\ndef test_limit():\n    t = list(range(10))\n    assert glom(t, Group(Limit(1, T))) == 0\n    assert glom(t, Group(Limit(3, Max()))) == 2\n    assert glom(t, Group(Limit(3, [T]))) == [0, 1, 2]\n\n    assert repr(Group(Limit(3, Max()))) == 'Group(Limit(3, Max()))'\n\n    with raises(BadSpec):\n        assert glom(t, Limit(1))  # needs to be wrapped in Group for now\n    return\n\n\ndef test_reduce():\n    assert glom([[1], [2, 3]], Group(Flatten())) == [1, 2, 3]\n    assert glom([{'a': 1}, {'b': 2}], Group(Merge())) == {'a': 1, 'b': 2}\n    assert glom([[[1]], [[2, 3], [4]]], Group(Flatten(Flatten()))) == [1, 2, 3, 4]\n\n\ndef test_sample():\n    spec = Group(Sample(5))\n    assert glom([1, 2, 3], spec) == [1, 2, 3]\n\n    assert repr(spec) == 'Group(Sample(5))'\n\n    s = glom([1, 2, 3], Group(Sample(2)))\n    assert s in [[1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]\n"
+    },
+    {
+      "role": "assistant",
+      "content": ""
+    }
+  ]
+}

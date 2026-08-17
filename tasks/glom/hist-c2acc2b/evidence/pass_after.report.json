@@ -1,0 +1,52 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 28,
+          "nodeid": "glom/test/test_path_and_t.py::test_path_t_roundtrip",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787006024.6413748,
+  "duration": 0.0922236442565918,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "passed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00023053999757394195,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_path_t_roundtrip",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 28,
+      "nodeid": "glom/test/test_path_and_t.py::test_path_t_roundtrip",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00037624900141963735,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.858299795771018e-05,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

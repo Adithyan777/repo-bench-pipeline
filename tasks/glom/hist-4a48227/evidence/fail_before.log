@@ -1,0 +1,103 @@
+$ python -m pytest -q glom/test/test_check.py::test_check_basic -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______________________________ test_check_basic _______________________________
+
+    def test_check_basic():
+        assert glom([0, OMIT], [T]) == [0]  # sanity check OMIT
+    
+        target = [{'id': 0}, {'id': 1}, {'id': 2}]
+    
+        # check that skipping non-passing values works
+        assert glom(target, ([Coalesce(Check('id', equal_to=0), default=OMIT)], T[0])) == {'id': 0}
+        assert glom(target, ([Check('id', equal_to=0, default=OMIT)], T[0])) == {'id': 0}
+    
+        # check that stopping iteration on non-passing values works
+        assert glom(target, [Check('id', equal_to=0, default=STOP)]) == [{'id': 0}]
+    
+        # check that stopping chain execution on non-passing values works
+        spec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])
+        assert glom('hello', spec) == 'h'
+>       assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work
+               ^^^^^^^^^^^^^^
+
+glom/test/test_check.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/core.py:1408: in glom
+    ret = _glom(target, spec, scope)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+glom/core.py:1429: in _glom
+    return _handle_tuple(target, spec, scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+glom/core.py:1153: in _handle_tuple
+    nxt = scope[glom](res, subspec, scope)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+glom/core.py:1423: in _glom
+    return spec.glomit(target, scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <glom.core.Check object at 0xffff8e742b70>, target = ''
+scope = ChainMap({T: ''}, {T: ''}, {<class 'glom.core.Path'>: [], <class 'glom.core.Inspect'>: None}, {<function glom at 0xfff...ion _glom at 0xffff8e657b00>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffff8e93fd40>})
+
+    def glomit(self, target, scope):
+        ret = target
+        errs = []
+        if self.spec is not T:
+            target = scope[glom](target, self.spec, scope)
+        if self.types and type(target) not in self.types:
+            if self.default is not RAISE:
+                return self.default
+            errs.append('expected type to be %r, found type %r' %
+                        (self.types[0].__name__ if len(self.types) == 1
+                         else tuple([t.__name__ for t in self.types]),
+                         type(target).__name__))
+    
+        if self.vals and target not in self.vals:
+            if self.default is not RAISE:
+                return self.default
+            if len(self.vals) == 1:
+                errs.append("expected {}, found {}".format(self.vals[0], target))
+            else:
+                errs.append('expected one of {}, found {}'.format(self.vals, target))
+    
+        if self.validators:
+            for i, validator in enumerate(self.validators):
+                try:
+                    res = validator(target)
+                    if res is False:
+                        raise self._ValidationError
+                except Exception as e:
+                    msg = ('expected %r check to validate target'
+                           % getattr(validator, '__name__', None) or ('#%s' % i))
+                    if type(e) is not self._ValidationError:
+                        msg += ' (got exception: %r)' % e
+                    errs.append(msg)
+    
+        if self.instance_of and not isinstance(target, self.instance_of):
+            # TODO: can these early returns be done without so much copy-paste?
+            # (early return to avoid potentially expensive or even error-causeing
+            # string formats)
+            if self.default is not RAISE:
+                return self.default
+            errs.append('expected instance of %r, found instance of %r' %
+                        (self.instance_of[0].__name__ if len(self.instance_of) == 1
+                         else tuple([t.__name__ for t in self.instance_of]),
+                         type(target).__name__))
+    
+        if errs:
+            # TODO: due to the usage of basic path (not a Path
+            # object), the format can be a bit inconsistent here
+            # (e.g., 'a.b' and ['a', 'b'])
+>           raise CheckError(errs, self, scope[Path])
+E           glom.core.CheckError: target at path [] failed check, got error: "expected '<lambda>' check to validate target"
+
+glom/core.py:1097: CheckError
+=========================== short test summary info ============================
+FAILED glom/test/test_check.py::test_check_basic - glom.core.CheckError: targ...
+1 failed in 0.07s
+
+--- stderr ---
+

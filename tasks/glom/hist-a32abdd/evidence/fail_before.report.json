@@ -1,0 +1,70 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 24,
+          "nodeid": "glom/test/test_match.py::test_basic",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787006016.660617,
+  "duration": 0.13363909721374512,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "failed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 1790,
+          "message": "glom.core.GlomError.wrap(TypeError): error raised while processing.\n Target-spec trace, with error detail (most recent last):\n - Target: None\n - Spec: Match(len)\n - Spec: len\n       ^^^^^^^^^^^^\nTypeError: object of type 'NoneType' has no len()",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.0026841560029424727,
+        "longrepr": "def test_basic():\n        _chk(Match(1), 1, 2)\n        _chk(Match(int), 1, 1.0)\n        # test unordered sequence comparisons\n        _chk(Match([int]), [1], [\"1\"])\n        _chk(Match({int}), {1}, [1])\n        _chk(Match(frozenset({float})), frozenset({}), frozenset({\"1\"}))\n        _chk(Match(len), [1], [])\n        with pytest.raises(MatchError):\n>           glom(None, Match(len))\n\nglom/test/test_match.py:34: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntarget = None, spec = Match(len), kwargs = {}\n\n    def glom(target, spec, **kwargs):\n        \"\"\"Access or construct a value from a given *target* based on the\n        specification declared by *spec*.\n    \n        Accessing nested data, aka deep-get:\n    \n        >>> target = {'a': {'b': 'c'}}\n        >>> glom(target, 'a.b')\n        'c'\n    \n        Here the *spec* was just a string denoting a path,\n        ``'a.b.``. As simple as it should be. The next example shows\n        how to use nested data to access many fields at once, and make\n        a new nested structure.\n    \n        Constructing, or restructuring more-complicated nested data:\n    \n        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n        >>> output = glom(target, spec)\n        >>> pprint(output)\n        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n    \n        ``glom`` also takes a keyword-argument, *default*. When set,\n        if a ``glom`` operation fails with a :exc:`GlomError`, the\n        *default* will be returned, very much like\n        :meth:`dict.get()`:\n    \n        >>> glom(target, 'a.xx', default='nada')\n        'nada'\n    \n        The *skip_exc* keyword argument controls which errors should\n        be ignored.\n    \n        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n        0.0\n    \n        Args:\n           target (object): the object on which the glom will operate.\n           spec (object): Specification of the output object in the form\n             of a dict, list, tuple, string, other glom construct, or\n             any composition of these.\n           default (object): An optional default to return in the case\n             an exception, specified by *skip_exc*, is raised.\n           skip_exc (Exception): An optional exception or tuple of\n             exceptions to ignore and return *default* (None if\n             omitted). If *skip_exc* and *default* are both not set,\n             glom raises errors through.\n           scope (dict): Additional data that can be accessed\n             via S inside the glom-spec.\n    \n        It's a small API with big functionality, and glom's power is\n        only surpassed by its intuitiveness. Give it a whirl!\n    \n        \"\"\"\n        # TODO: check spec up front\n        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)\n        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)\n        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)\n        scope = _DEFAULT_SCOPE.new_child({\n            Path: kwargs.pop('path', []),\n            Inspect: kwargs.pop('inspector', None),\n            MODE: AUTO,\n        })\n        scope[UP] = scope\n        scope[ROOT] = scope\n        scope[T] = target\n        scope.update(kwargs.pop('scope', {}))\n        err = None\n        if kwargs:\n            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n        try:\n            try:\n                ret = _glom(target, spec, scope)\n            except skip_exc:\n                if default is _MISSING:\n                    raise\n                ret = default\n        except Exception as e:\n            if glom_debug:\n                raise\n            if isinstance(e, GlomError):\n                # need to change id or else py3 seems to not let us truncate the\n                # stack trace with the explicit \"raise err\" below\n                err = copy.copy(e)\n            else:\n                err = GlomError.wrap(e)\n            if isinstance(err, GlomError):\n                err._finalize(scope[ERROR_SCOPE])\n            else:  # wrapping failed, fall back to default behavior\n                raise\n    \n        if err:\n>           raise err\nE           glom.core.GlomError.wrap(TypeError): error raised while processing.\nE            Target-spec trace, with error detail (most recent last):\nE            - Target: None\nE            - Spec: Match(len)\nE            - Spec: len\nE                  ^^^^^^^^^^^^\nE           TypeError: object of type 'NoneType' has no len()\n\nglom/core.py:1790: GlomError.wrap(TypeError)",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 34,
+            "message": "",
+            "path": "glom/test/test_match.py"
+          },
+          {
+            "lineno": 1790,
+            "message": "GlomError.wrap(TypeError)",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_basic",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 24,
+      "nodeid": "glom/test/test_match.py::test_basic",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0003703320035128854,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001446659953217022,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

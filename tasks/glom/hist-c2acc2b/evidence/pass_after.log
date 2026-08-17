@@ -1,0 +1,8 @@
+$ python -m pytest -q glom/test/test_path_and_t.py::test_path_t_roundtrip -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=0
+--- stdout ---
+.                                                                        [100%]
+1 passed in 0.09s
+
+--- stderr ---
+

@@ -1,0 +1,99 @@
+{
+  "step": "p2.okf.module_purpose",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Summarize the PURPOSE of the Python module `glom.matching` in 1-3 sentences for an engineer navigating the codebase. Module docstring: .. versionadded:: 20.7.0\n\nSometimes you want to confirm that your target data matches your\ncode's assumptions. With glom, you don't need a separate validation\nstep, you can do these checks inline with your glom spec, using\n:class:`~glom.Match` and friends.\nPublic API:\n- And:  Applies child specs one after the other to the target; if none of the\nspecs raises `GlomError`, returns the last result.\n- Check:  Check objects are used to make assertions about the target data,\nand either pass through the data or raise exceptions if\n- glomit: glomit(self, target, scope) \n- CheckError:  This :exc:`GlomError` subtype is raised when target data fails to\npass a :class:`Check`'s specified validation.\n\nAn unca\n- get_message: get_message(self) \n- Match:  glom's ``Match`` specifier type enables a new mode of glom usage:\npattern matching.  In particular, this mode has been d\n- glomit: glomit(self, target, scope) \n- matches: matches(self, target) A convenience method on a :class:`Match` instance, returns\n``True`` if the *target* matches, ``False`` if not.\n\n>>> Matc\n- verify: verify(self, target) A convenience function a :class:`Match` instance which returns the\nmatched value when *target* matches, or raises a\n:exc\n- MatchError:  Raised when a :class:`Match` or :data:`M` check fails.\n\n>>> glom({123: 'a'}, Match({'id': int}))\nTraceback (most recent \n- get_message: get_message(self) \n- Not:  Inverts the *child*. Child spec will be expected to raise\n:exc:`GlomError` (or subtype), in which case the target will b\n- glomit: glomit(self, target, scope) \n- Optional:  Used as a :class:`dict` key in a :class:`~glom.Match()` spec,\nmarks that a value match key which would otherwise be requ\n- glomit: glomit(self, target, scope) \n- Or:  Tries to apply the first child spec to the target, and return the result.\nIf `GlomError` is raised, try the next child s\n- Regex:  checks that target is a string which matches the passed regex pattern\n\nraises MatchError if there isn't a match; returns\n- glomit: glomit(self, target, scope) \n- Required:  Used as a :class:`dict` key in :class:`~glom.Match()` mode, marks\nthat a key which might otherwise not be required shoul\n- Switch:  The :class:`Switch` specifier type routes data processing based on\nmatching keys, much like the classic switch statement\n- glomit: glomit(self, target, scope) \n- TypeMatchError:  :exc:`MatchError` subtype raised when a\n:class:`Match` fails a type check.\n\n>>> glom({'id': 'a'}, Match({'id': int}))\nTr\n- glomit: glomit(self, target, scope) \n- glomit: glomit(self, target, scope) \n- glomit: glomit(self, target, scope) \n- glomit: glomit(self, target, spec) \nDescribe what the module is for, not each function. No code. Ground every statement in the docstring and the listed API ONLY; do NOT infer the purpose from the module name. If the module exposes no meaningful public API or the source does not support a specific claim, say so briefly (e.g. 'internal helpers with no public API')."
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "purpose": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "purpose"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-1c607193155a4a65a852485976e95c9c",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"purpose\": \"The `glom.matching` module provides inline data validation and pattern matching capabilities within glom specs, allowing engineers to confirm target data matches their assumptions without a separate validation step. It exposes specifiers like `Match`, `Check`, `And`, `Or`, `Not`, `Switch`, and `Regex` for asserting conditions, matching structures, and routing processing based on data shape, with corresponding error types (`CheckError`, `MatchError`, `TypeMatchError`) raised when checks fail.\"}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787003682,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 113,
+      "prompt_tokens": 859,
+      "total_tokens": 972,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 71,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 97,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 32,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

@@ -1,0 +1,309 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 284,
+          "nodeid": "glom/test/test_basic.py::test_spec_and_recursion",
+          "type": "Function"
+        },
+        {
+          "lineno": 101,
+          "nodeid": "glom/test/test_match.py::test_match_default",
+          "type": "Function"
+        },
+        {
+          "lineno": 489,
+          "nodeid": "glom/test/test_match.py::test_switch",
+          "type": "Function"
+        },
+        {
+          "lineno": 45,
+          "nodeid": "glom/test/test_mutation.py::test_assign_spec_val",
+          "type": "Function"
+        },
+        {
+          "lineno": 106,
+          "nodeid": "glom/test/test_path_and_t.py::test_t_subspec",
+          "type": "Function"
+        },
+        {
+          "lineno": 8,
+          "nodeid": "glom/test/test_scope_vars.py::test_s_scope_assign",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787005987.7733912,
+  "duration": 0.42400527000427246,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 6,
+    "failed": 6,
+    "total": 6
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 2294,
+          "message": "glom.core.GlomError.wrap(TypeError): <exception str() failed>",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.0007846640000934713,
+        "longrepr": "def test_spec_and_recursion():\n        assert repr(Spec('a.b.c')) == \"Spec('a.b.c')\"\n    \n        # Call doesn't normally recurse, but Spec can make it do so\n        assert glom(\n            ['a', 'b', 'c'],\n            Call(list, args=(\n                Spec(Call(reversed, args=(Spec(T),))),)\n            )) == ['c', 'b', 'a']\n        assert glom(['cat', {'cat': 1}], T[1][T[0]]) == 1\n>       assert glom(\n            [['ab', 'cd', 'ef'], ''.join],\n            Call(T[1], args=(Auto((T[0], [T[1:]])),))) == 'bdf'\n\nglom/test/test_basic.py:295: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntarget = [['ab', 'cd', 'ef'], <built-in method join of str object at 0xffffb5ec3868>]\nspec = Call(T[1], args=(Auto((\n                                                                                              ...                                                                                                    ],\n)),), kwargs={})\nkwargs = {}\n\n    def glom(target, spec, **kwargs):\n        \"\"\"Access or construct a value from a given *target* based on the\n        specification declared by *spec*.\n    \n        Accessing nested data, aka deep-get:\n    \n        >>> target = {'a': {'b': 'c'}}\n        >>> glom(target, 'a.b')\n        'c'\n    \n        Here the *spec* was just a string denoting a path,\n        ``'a.b.``. As simple as it should be. The next example shows\n        how to use nested data to access many fields at once, and make\n        a new nested structure.\n    \n        Constructing, or restructuring more-complicated nested data:\n    \n        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n        >>> output = glom(target, spec)\n        >>> pprint(output)\n        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n    \n        ``glom`` also takes a keyword-argument, *default*. When set,\n        if a ``glom`` operation fails with a :exc:`GlomError`, the\n        *default* will be returned, very much like\n        :meth:`dict.get()`:\n    \n        >>> glom(target, 'a.xx', default='nada')\n        'nada'\n    \n        The *skip_exc* keyword argument controls which errors should\n        be ignored.\n    \n        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n        0.0\n    \n        Args:\n           target (object): the object on which the glom will operate.\n           spec (object): Specification of the output object in the form\n             of a dict, list, tuple, string, other glom construct, or\n             any composition of these.\n           default (object): An optional default to return in the case\n             an exception, specified by *skip_exc*, is raised.\n           skip_exc (Exception): An optional exception or tuple of\n             exceptions to ignore and return *default* (None if\n             omitted). If *skip_exc* and *default* are both not set,\n             glom raises errors through.\n           scope (dict): Additional data that can be accessed\n             via S inside the glom-spec. Read more: :ref:`scope`.\n    \n        It's a small API with big functionality, and glom's power is\n        only surpassed by its intuitiveness. Give it a whirl!\n    \n        \"\"\"\n        # TODO: check spec up front\n        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)\n        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)\n        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)\n        scope = _DEFAULT_SCOPE.new_child({\n            Path: kwargs.pop('path', []),\n            Inspect: kwargs.pop('inspector', None),\n            MODE: AUTO,\n            CHILD_ERRORS: [],\n            'globals': ScopeVars({}, {}),\n        })\n        scope[UP] = scope\n        scope[ROOT] = scope\n        scope[T] = target\n        scope.update(kwargs.pop('scope', {}))\n        err = None\n        if kwargs:\n            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n        try:\n            try:\n                ret = _glom(target, spec, scope)\n            except skip_exc:\n                if default is _MISSING:\n                    raise\n                ret = default\n        except Exception as e:\n            if glom_debug:\n                raise\n            if isinstance(e, GlomError):\n                # need to change id or else py3 seems to not let us truncate the\n                # stack trace with the explicit \"raise err\" below\n                err = copy.copy(e)\n                err._set_wrapped(e)\n            else:\n                err = GlomError.wrap(e)\n            if isinstance(err, GlomError):\n                err._finalize(scope[LAST_CHILD_SCOPE])\n            else:  # wrapping failed, fall back to default behavior\n                raise\n    \n        if err:\n>           raise err\nE           glom.core.GlomError.wrap(TypeError): <exception str() failed>\n\nglom/core.py:2294: GlomError.wrap(TypeError)",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 295,
+            "message": "",
+            "path": "glom/test/test_basic.py"
+          },
+          {
+            "lineno": 2294,
+            "message": "GlomError.wrap(TypeError)",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_spec_and_recursion",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 284,
+      "nodeid": "glom/test/test_basic.py::test_spec_and_recursion",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0003381649949005805,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00014862399984849617,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 108,
+          "message": "assert Val([]) is []",
+          "path": "/repo/glom/test/test_match.py"
+        },
+        "duration": 0.00020824899547733366,
+        "longrepr": "def test_match_default():\n        default = []\n        res = glom(None, Match(list, default=default))\n        assert res == default\n        default = []\n        res = glom(None, Match(list, default=Val(default)))\n>       assert res is default\nE       assert Val([]) is []\n\nglom/test/test_match.py:108: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 108,
+            "message": "AssertionError",
+            "path": "glom/test/test_match.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_match_default",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 101,
+      "nodeid": "glom/test/test_match.py::test_match_default",
+      "outcome": "failed",
+      "setup": {
+        "duration": 8.083300053840503e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.454099927097559e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 2294,
+          "message": "glom.core.GlomError.wrap(TypeError): <exception str() failed>",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.0009204130037687719,
+        "longrepr": "def test_switch():\n        data = {'a': 1, 'b': 2}\n        cases = [('c', lambda t: 3), ('a', 'a')]\n        cases2 = dict(cases)\n        assert glom(data, Switch(cases)) == 1\n        assert glom(data, Switch(cases2)) == 1\n        assert glom({'c': None}, Switch(cases)) == 3\n        assert glom({'c': None}, Switch(cases2)) == 3\n        assert glom(None, Switch(cases, default=4)) == 4\n        assert glom(None, Switch({'z': 26}, default=4)) == 4\n        with pytest.raises(MatchError):\n        \tglom(None, Switch(cases))\n        with pytest.raises(ValueError):\n        \tSwitch({})\n        with pytest.raises(TypeError):\n        \tSwitch(\"wrong type\")\n>       assert glom(None, Switch({S(a=1): S['a']})) == 1\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nglom/test/test_match.py:506: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntarget = None\nspec = Switch([\n                                                                                                             ...                                                                                                                  ),\n])\nkwargs = {}\n\n    def glom(target, spec, **kwargs):\n        \"\"\"Access or construct a value from a given *target* based on the\n        specification declared by *spec*.\n    \n        Accessing nested data, aka deep-get:\n    \n        >>> target = {'a': {'b': 'c'}}\n        >>> glom(target, 'a.b')\n        'c'\n    \n        Here the *spec* was just a string denoting a path,\n        ``'a.b.``. As simple as it should be. The next example shows\n        how to use nested data to access many fields at once, and make\n        a new nested structure.\n    \n        Constructing, or restructuring more-complicated nested data:\n    \n        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n        >>> output = glom(target, spec)\n        >>> pprint(output)\n        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n    \n        ``glom`` also takes a keyword-argument, *default*. When set,\n        if a ``glom`` operation fails with a :exc:`GlomError`, the\n        *default* will be returned, very much like\n        :meth:`dict.get()`:\n    \n        >>> glom(target, 'a.xx', default='nada')\n        'nada'\n    \n        The *skip_exc* keyword argument controls which errors should\n        be ignored.\n    \n        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n        0.0\n    \n        Args:\n           target (object): the object on which the glom will operate.\n           spec (object): Specification of the output object in the form\n             of a dict, list, tuple, string, other glom construct, or\n             any composition of these.\n           default (object): An optional default to return in the case\n             an exception, specified by *skip_exc*, is raised.\n           skip_exc (Exception): An optional exception or tuple of\n             exceptions to ignore and return *default* (None if\n             omitted). If *skip_exc* and *default* are both not set,\n             glom raises errors through.\n           scope (dict): Additional data that can be accessed\n             via S inside the glom-spec. Read more: :ref:`scope`.\n    \n        It's a small API with big functionality, and glom's power is\n        only surpassed by its intuitiveness. Give it a whirl!\n    \n        \"\"\"\n        # TODO: check spec up front\n        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)\n        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)\n        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)\n        scope = _DEFAULT_SCOPE.new_child({\n            Path: kwargs.pop('path', []),\n            Inspect: kwargs.pop('inspector', None),\n            MODE: AUTO,\n            CHILD_ERRORS: [],\n            'globals': ScopeVars({}, {}),\n        })\n        scope[UP] = scope\n        scope[ROOT] = scope\n        scope[T] = target\n        scope.update(kwargs.pop('scope', {}))\n        err = None\n        if kwargs:\n            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n        try:\n            try:\n                ret = _glom(target, spec, scope)\n            except skip_exc:\n                if default is _MISSING:\n                    raise\n                ret = default\n        except Exception as e:\n            if glom_debug:\n                raise\n            if isinstance(e, GlomError):\n                # need to change id or else py3 seems to not let us truncate the\n                # stack trace with the explicit \"raise err\" below\n                err = copy.copy(e)\n                err._set_wrapped(e)\n            else:\n                err = GlomError.wrap(e)\n            if isinstance(err, GlomError):\n                err._finalize(scope[LAST_CHILD_SCOPE])\n            else:  # wrapping failed, fall back to default behavior\n                raise\n    \n        if err:\n>           raise err\nE           glom.core.GlomError.wrap(TypeError): <exception str() failed>\n\nglom/core.py:2294: GlomError.wrap(TypeError)",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 506,
+            "message": "",
+            "path": "glom/test/test_match.py"
+          },
+          {
+            "lineno": 2294,
+            "message": "GlomError.wrap(TypeError)",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_switch",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 489,
+      "nodeid": "glom/test/test_match.py::test_switch",
+      "outcome": "failed",
+      "setup": {
+        "duration": 6.779099931009114e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011379100033082068,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 50,
+          "message": "AssertionError: assert Or('d', 'b') == 'c'",
+          "path": "/repo/glom/test/test_mutation.py"
+        },
+        "duration": 0.00027212400163989514,
+        "longrepr": "def test_assign_spec_val():\n        output = glom({'b': 'c'}, Assign('a', Spec('b')))\n        assert output['a'] == output['b'] == 'c'\n        output = glom({'b': 'c'}, Assign('a', Or('d', 'b')))\n>       assert output['a'] == output['b'] == 'c'\nE       AssertionError: assert Or('d', 'b') == 'c'\n\nglom/test/test_mutation.py:50: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 50,
+            "message": "AssertionError",
+            "path": "glom/test/test_mutation.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_assign_spec_val",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 45,
+      "nodeid": "glom/test/test_mutation.py::test_assign_spec_val",
+      "outcome": "failed",
+      "setup": {
+        "duration": 8.90829978743568e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.787499973550439e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 2294,
+          "message": "glom.core.GlomError.wrap(TypeError): error raised while processing, details below.\n Target-spec trace (most recent last):\n - Target: [\n                                                      ... (len=2)\n - Spec: (\n                                                        ... (len=2)\n - Spec: S(id_type=int)\n - Spec: int\n           ^^^^^^^^^^^^\nTypeError: int() argument must be a string, a bytes-like object or a real number, not 'list'",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.0005188310024095699,
+        "longrepr": "def test_t_subspec():\n        # tests that arg-mode is a min-mode, allowing for\n        # other specs to be embedded inside T calls\n        data = [\n            {'id': 1},\n            {'pk': 1}]\n    \n        get_ids = (\n            S(id_type=int),\n            [S.id_type(Or('id', 'pk'))])\n    \n>       assert glom(data, get_ids) == [1, 1]\n               ^^^^^^^^^^^^^^^^^^^\n\nglom/test/test_path_and_t.py:118: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntarget = [{'id': 1}, {'pk': 1}]\nspec = (S(id_type=int), [S.id_type(Or('id', 'pk'))]), kwargs = {}\n\n    def glom(target, spec, **kwargs):\n        \"\"\"Access or construct a value from a given *target* based on the\n        specification declared by *spec*.\n    \n        Accessing nested data, aka deep-get:\n    \n        >>> target = {'a': {'b': 'c'}}\n        >>> glom(target, 'a.b')\n        'c'\n    \n        Here the *spec* was just a string denoting a path,\n        ``'a.b.``. As simple as it should be. The next example shows\n        how to use nested data to access many fields at once, and make\n        a new nested structure.\n    \n        Constructing, or restructuring more-complicated nested data:\n    \n        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n        >>> output = glom(target, spec)\n        >>> pprint(output)\n        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n    \n        ``glom`` also takes a keyword-argument, *default*. When set,\n        if a ``glom`` operation fails with a :exc:`GlomError`, the\n        *default* will be returned, very much like\n        :meth:`dict.get()`:\n    \n        >>> glom(target, 'a.xx', default='nada')\n        'nada'\n    \n        The *skip_exc* keyword argument controls which errors should\n        be ignored.\n    \n        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n        0.0\n    \n        Args:\n           target (object): the object on which the glom will operate.\n           spec (object): Specification of the output object in the form\n             of a dict, list, tuple, string, other glom construct, or\n             any composition of these.\n           default (object): An optional default to return in the case\n             an exception, specified by *skip_exc*, is raised.\n           skip_exc (Exception): An optional exception or tuple of\n             exceptions to ignore and return *default* (None if\n             omitted). If *skip_exc* and *default* are both not set,\n             glom raises errors through.\n           scope (dict): Additional data that can be accessed\n             via S inside the glom-spec. Read more: :ref:`scope`.\n    \n        It's a small API with big functionality, and glom's power is\n        only surpassed by its intuitiveness. Give it a whirl!\n    \n        \"\"\"\n        # TODO: check spec up front\n        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)\n        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)\n        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)\n        scope = _DEFAULT_SCOPE.new_child({\n            Path: kwargs.pop('path', []),\n            Inspect: kwargs.pop('inspector', None),\n            MODE: AUTO,\n            CHILD_ERRORS: [],\n            'globals': ScopeVars({}, {}),\n        })\n        scope[UP] = scope\n        scope[ROOT] = scope\n        scope[T] = target\n        scope.update(kwargs.pop('scope', {}))\n        err = None\n        if kwargs:\n            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n        try:\n            try:\n                ret = _glom(target, spec, scope)\n            except skip_exc:\n                if default is _MISSING:\n                    raise\n                ret = default\n        except Exception as e:\n            if glom_debug:\n                raise\n            if isinstance(e, GlomError):\n                # need to change id or else py3 seems to not let us truncate the\n                # stack trace with the explicit \"raise err\" below\n                err = copy.copy(e)\n                err._set_wrapped(e)\n            else:\n                err = GlomError.wrap(e)\n            if isinstance(err, GlomError):\n                err._finalize(scope[LAST_CHILD_SCOPE])\n            else:  # wrapping failed, fall back to default behavior\n                raise\n    \n        if err:\n>           raise err\nE           glom.core.GlomError.wrap(TypeError): error raised while processing, details below.\nE            Target-spec trace (most recent last):\nE            - Target: [\nE                                                                 ... (len=2)\nE            - Spec: (\nE                                                                   ... (len=2)\nE            - Spec: S(id_type=int)\nE            - Spec: int\nE                      ^^^^^^^^^^^^\nE           TypeError: int() argument must be a string, a bytes-like object or a real number, not 'list'\n\nglom/core.py:2294: GlomError.wrap(TypeError)",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 118,
+            "message": "",
+            "path": "glom/test/test_path_and_t.py"
+          },
+          {
+            "lineno": 2294,
+            "message": "GlomError.wrap(TypeError)",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_t_subspec",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 106,
+      "nodeid": "glom/test/test_path_and_t.py::test_t_subspec",
+      "outcome": "failed",
+      "setup": {
+        "duration": 6.562499766005203e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011666700447676703,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 2294,
+          "message": "glom.core.GlomError.wrap(TypeError): error raised while processing, details below.\n Target-spec trace (most recent last):\n - Target: 1\n - Spec: (\n                                                        ... (len=2)\n - Spec: S(v=<glom.test.test_scope_vars.test_s_scope_assign.<locals>.FailAs...\n - Spec: <glom.test.test_scope_vars.test_s_scope_assign.<locals>.FailAssign...\nTypeError: expected spec to be dict, list, tuple, callable, string, or other Spec-like type, not: <glom.test.test_scope_vars.test_s_scope_assign.<locals>.FailAssign object at 0xffffb3fc3fb0>",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.0013039110053796321,
+        "longrepr": "def test_s_scope_assign():\n        data = {'a': 1, 'b': [{'c': 2}, {'c': 3}]}\n        output = [{'a': 1, 'c': 2}, {'a': 1, 'c': 3}]\n        assert glom(data, (S(a=T['a']), ('b', [{'a': S['a'], 'c': 'c'}]))) == output\n        assert glom(data, ('b', [{'a': S[ROOT][Val(T)]['a'], 'c': 'c'}])) == output\n    \n        with pytest.raises(TypeError):\n            S('posarg')\n        with pytest.raises(TypeError):\n            S()\n    \n        assert glom([[1]], (S(v=Vars()), [[A.v.a]], S.v.a)) == 1\n        assert glom(1, (S(v={}), A.v['a'], S.v['a'])) == 1\n        with pytest.raises(GlomError):\n            glom(1, (S(v=1), A.v.a))\n    \n        class FailAssign(object):\n            def __setattr__(self, name, val):\n                raise Exception('nope')\n    \n        with pytest.raises(PathAssignError):\n>           glom(1, (S(v=FailAssign()), Path(A.v, 'a')))\n\nglom/test/test_scope_vars.py:30: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntarget = 1\nspec = (S(v=<glom.test.test_scope_vars.test_s_scope_assign.<locals>.FailAssign object at 0xffffb3fc3fb0>), Path(T.v, 'a'))\nkwargs = {}\n\n    def glom(target, spec, **kwargs):\n        \"\"\"Access or construct a value from a given *target* based on the\n        specification declared by *spec*.\n    \n        Accessing nested data, aka deep-get:\n    \n        >>> target = {'a': {'b': 'c'}}\n        >>> glom(target, 'a.b')\n        'c'\n    \n        Here the *spec* was just a string denoting a path,\n        ``'a.b.``. As simple as it should be. The next example shows\n        how to use nested data to access many fields at once, and make\n        a new nested structure.\n    \n        Constructing, or restructuring more-complicated nested data:\n    \n        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n        >>> output = glom(target, spec)\n        >>> pprint(output)\n        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n    \n        ``glom`` also takes a keyword-argument, *default*. When set,\n        if a ``glom`` operation fails with a :exc:`GlomError`, the\n        *default* will be returned, very much like\n        :meth:`dict.get()`:\n    \n        >>> glom(target, 'a.xx', default='nada')\n        'nada'\n    \n        The *skip_exc* keyword argument controls which errors should\n        be ignored.\n    \n        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n        0.0\n    \n        Args:\n           target (object): the object on which the glom will operate.\n           spec (object): Specification of the output object in the form\n             of a dict, list, tuple, string, other glom construct, or\n             any composition of these.\n           default (object): An optional default to return in the case\n             an exception, specified by *skip_exc*, is raised.\n           skip_exc (Exception): An optional exception or tuple of\n             exceptions to ignore and return *default* (None if\n             omitted). If *skip_exc* and *default* are both not set,\n             glom raises errors through.\n           scope (dict): Additional data that can be accessed\n             via S inside the glom-spec. Read more: :ref:`scope`.\n    \n        It's a small API with big functionality, and glom's power is\n        only surpassed by its intuitiveness. Give it a whirl!\n    \n        \"\"\"\n        # TODO: check spec up front\n        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)\n        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)\n        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)\n        scope = _DEFAULT_SCOPE.new_child({\n            Path: kwargs.pop('path', []),\n            Inspect: kwargs.pop('inspector', None),\n            MODE: AUTO,\n            CHILD_ERRORS: [],\n            'globals': ScopeVars({}, {}),\n        })\n        scope[UP] = scope\n        scope[ROOT] = scope\n        scope[T] = target\n        scope.update(kwargs.pop('scope', {}))\n        err = None\n        if kwargs:\n            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n        try:\n            try:\n                ret = _glom(target, spec, scope)\n            except skip_exc:\n                if default is _MISSING:\n                    raise\n                ret = default\n        except Exception as e:\n            if glom_debug:\n                raise\n            if isinstance(e, GlomError):\n                # need to change id or else py3 seems to not let us truncate the\n                # stack trace with the explicit \"raise err\" below\n                err = copy.copy(e)\n                err._set_wrapped(e)\n            else:\n                err = GlomError.wrap(e)\n            if isinstance(err, GlomError):\n                err._finalize(scope[LAST_CHILD_SCOPE])\n            else:  # wrapping failed, fall back to default behavior\n                raise\n    \n        if err:\n>           raise err\nE           glom.core.GlomError.wrap(TypeError): error raised while processing, details below.\nE            Target-spec trace (most recent last):\nE            - Target: 1\nE            - Spec: (\nE                                                                   ... (len=2)\nE            - Spec: S(v=<glom.test.test_scope_vars.test_s_scope_assign.<locals>.FailAs...\nE            - Spec: <glom.test.test_scope_vars.test_s_scope_assign.<locals>.FailAssign...\nE           TypeError: expected spec to be dict, list, tuple, callable, string, or other Spec-like type, not: <glom.test.test_scope_vars.test_s_scope_assign.<locals>.FailAssign object at 0xffffb3fc3fb0>\n\nglom/core.py:2294: GlomError.wrap(TypeError)",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 30,
+            "message": "",
+            "path": "glom/test/test_scope_vars.py"
+          },
+          {
+            "lineno": 2294,
+            "message": "GlomError.wrap(TypeError)",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_s_scope_assign",
+        "test_scope_vars.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 8,
+      "nodeid": "glom/test/test_scope_vars.py::test_s_scope_assign",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.416600419674069e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010079099592985585,
+        "outcome": "passed"
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "category": "SyntaxWarning",
+      "filename": "/repo/glom/matching.py",
+      "lineno": 797,
+      "message": "invalid escape sequence '\\ '",
+      "when": "collect"
+    }
+  ]
+}

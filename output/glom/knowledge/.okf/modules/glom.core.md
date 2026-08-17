@@ -1,0 +1,365 @@
+---
+type: "python-module"
+title: "glom.core"
+description: "glom.core is the heart of the glom package, built around the central glom() function for accessing and transforming nested data. It defines the core specifier types (e.g., Spec, Path, Call, Coalesce, "
+resource: "/glom/core.py#L1"
+tags: ["core", "glom"]
+sources: [{"resource": "/glom/core.py#L1"}]
+generated: {"by": "pipeline/moonshotai/Kimi-K2.6", "at": "2026-08-18T03:15:17+05:30"}
+verified: []
+status: "draft"
+---
+# Module `glom.core`
+
+## Purpose
+glom.core is the heart of the glom package, built around the central glom() function for accessing and transforming nested data. It defines the core specifier types (e.g., Spec, Path, Call, Coalesce, Fill, Inspect, Invoke, Pipe, Ref, Val, Vars), the Glommer class for type registration, and the base GlomError exception hierarchy, all revolving around evaluating a *spec* against a *target*. It also provides internal runtime machinery like scope chaining, tracing, and target registry operations that power the public API.
+
+## API
+
+- [glom.core.AUTO](../functions/glom.core/glom.core.AUTO.md) — `AUTO(target, spec, scope)`
+- [glom.core.Auto.glomit](../functions/glom.core/glom.core.Auto.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.Call.__init__](../functions/glom.core/glom.core.Call.__init__.md) — `__init__(self, func=None, args=None, kwargs=None)`
+- [glom.core.Call.glomit](../functions/glom.core/glom.core.Call.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.Coalesce.__init__](../functions/glom.core/glom.core.Coalesce.__init__.md) — `__init__(self, *subspecs, **kwargs)`
+- [glom.core.Coalesce.glomit](../functions/glom.core/glom.core.Coalesce.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.CoalesceError.get_message](../functions/glom.core/glom.core.CoalesceError.get_message.md) — `get_message(self)`
+- [glom.core.FILL](../functions/glom.core/glom.core.FILL.md) — `FILL(target, spec, scope)`
+- [glom.core.Fill.fill](../functions/glom.core/glom.core.Fill.fill.md) — `fill(self, target)`
+- [glom.core.Fill.glomit](../functions/glom.core/glom.core.Fill.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.GlomError.__str__](../functions/glom.core/glom.core.GlomError.__str__.md) — `__str__(self)`
+- [glom.core.GlomError._finalize](../functions/glom.core/glom.core.GlomError._finalize.md) — `_finalize(self, scope)`
+- [glom.core.GlomError.wrap](../functions/glom.core/glom.core.GlomError.wrap.md) — `wrap(cls, exc)`
+- [glom.core.Glommer.glom](../functions/glom.core/glom.core.Glommer.glom.md) — `glom(self, target, spec, **kwargs)`
+- [glom.core.Glommer.register](../functions/glom.core/glom.core.Glommer.register.md) — `register(self, target_type, **kwargs)`
+- [glom.core.Inspect.__init__](../functions/glom.core/glom.core.Inspect.__init__.md) — `__init__(self, *a, **kw)`
+- [glom.core.Inspect._trace](../functions/glom.core/glom.core.Inspect._trace.md) — `_trace(self, target, spec, scope)`
+- [glom.core.Inspect.glomit](../functions/glom.core/glom.core.Inspect.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.Invoke.__init__](../functions/glom.core/glom.core.Invoke.__init__.md) — `__init__(self, func)`
+- [glom.core.Invoke.__repr__](../functions/glom.core/glom.core.Invoke.__repr__.md) — `__repr__(self)`
+- [glom.core.Invoke.constants](../functions/glom.core/glom.core.Invoke.constants.md) — `constants(self, *a, **kw)`
+- [glom.core.Invoke.glomit](../functions/glom.core/glom.core.Invoke.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.Invoke.specfunc](../functions/glom.core/glom.core.Invoke.specfunc.md) — `specfunc(cls, spec)`
+- [glom.core.Invoke.specs](../functions/glom.core/glom.core.Invoke.specs.md) — `specs(self, *a, **kw)`
+- [glom.core.Invoke.star](../functions/glom.core/glom.core.Invoke.star.md) — `star(self, args=None, kwargs=None)`
+- [glom.core.Let.glomit](../functions/glom.core/glom.core.Let.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.Path.__eq__](../functions/glom.core/glom.core.Path.__eq__.md) — `__eq__(self, other)`
+- [glom.core.Path.__getitem__](../functions/glom.core/glom.core.Path.__getitem__.md) — `__getitem__(self, i)`
+- [glom.core.Path.__init__](../functions/glom.core/glom.core.Path.__init__.md) — `__init__(self, *path_parts)`
+- [glom.core.Path.from_t](../functions/glom.core/glom.core.Path.from_t.md) — `from_t(self)`
+- [glom.core.Path.from_text](../functions/glom.core/glom.core.Path.from_text.md) — `from_text(cls, text)`
+- [glom.core.Path.glomit](../functions/glom.core/glom.core.Path.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.Path.items](../functions/glom.core/glom.core.Path.items.md) — `items(self)`
+- [glom.core.Path.startswith](../functions/glom.core/glom.core.Path.startswith.md) — `startswith(self, other)`
+- [glom.core.Path.values](../functions/glom.core/glom.core.Path.values.md) — `values(self)`
+- [glom.core.PathAccessError.get_message](../functions/glom.core/glom.core.PathAccessError.get_message.md) — `get_message(self)`
+- [glom.core.PathAssignError.get_message](../functions/glom.core/glom.core.PathAssignError.get_message.md) — `get_message(self)`
+- [glom.core.Pipe.glomit](../functions/glom.core/glom.core.Pipe.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.Ref.glomit](../functions/glom.core/glom.core.Ref.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.Spec.glom](../functions/glom.core/glom.core.Spec.glom.md) — `glom(self, target, **kw)`
+- [glom.core.Spec.glomit](../functions/glom.core/glom.core.Spec.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.TType.__call__](../functions/glom.core/glom.core.TType.__call__.md) — `__call__(self, *args, **kwargs)`
+- [glom.core.TargetRegistry._get_closest_type](../functions/glom.core/glom.core.TargetRegistry._get_closest_type.md) — `_get_closest_type(self, obj, type_tree)`
+- [glom.core.TargetRegistry._register_fuzzy_type](../functions/glom.core/glom.core.TargetRegistry._register_fuzzy_type.md) — `_register_fuzzy_type(self, op, new_type, _type_tree=None)`
+- [glom.core.TargetRegistry.get_handler](../functions/glom.core/glom.core.TargetRegistry.get_handler.md) — `get_handler(self, op, obj, path=None, raise_exc=True)`
+- [glom.core.TargetRegistry.get_type_map](../functions/glom.core/glom.core.TargetRegistry.get_type_map.md) — `get_type_map(self, op)`
+- [glom.core.TargetRegistry.register](../functions/glom.core/glom.core.TargetRegistry.register.md) — `register(self, target_type, **kwargs)`
+- [glom.core.TargetRegistry.register_op](../functions/glom.core/glom.core.TargetRegistry.register_op.md) — `register_op(self, op_name, auto_func=None, exact=False)`
+- [glom.core.UnregisteredTarget.get_message](../functions/glom.core/glom.core.UnregisteredTarget.get_message.md) — `get_message(self)`
+- [glom.core.Val.glomit](../functions/glom.core/glom.core.Val.glomit.md) — `glomit(self, target, scope)`
+- [glom.core.Vars.glomit](../functions/glom.core/glom.core.Vars.glomit.md) — `glomit(self, target, spec)`
+- [glom.core._ArgValuator.mode](../functions/glom.core/glom.core._ArgValuator.mode.md) — `mode(self, target, spec, scope)`
+- [glom.core._BBRepr.__init__](../functions/glom.core/glom.core._BBRepr.__init__.md) — `__init__(self)`
+- [glom.core._BBRepr.repr1](../functions/glom.core/glom.core._BBRepr.repr1.md) — `repr1(self, x, level)`
+- [glom.core._BBReprFormatter.convert_field](../functions/glom.core/glom.core._BBReprFormatter.convert_field.md) — `convert_field(self, value, conversion)`
+- [glom.core._ObjStyleKeys.get_keys](../functions/glom.core/glom.core._ObjStyleKeys.get_keys.md) — `get_keys(obj)`
+- [glom.core._assign_op](../functions/glom.core/glom.core._assign_op.md) — `_assign_op(dest, op, arg, val, path, scope)`
+- [glom.core._extend_children](../functions/glom.core/glom.core._extend_children.md) — `_extend_children(children, item, get_handler)`
+- [glom.core._format_path](../functions/glom.core/glom.core._format_path.md) — `_format_path(t_path)`
+- [glom.core._format_slice](../functions/glom.core/glom.core._format_slice.md) — `_format_slice(x)`
+- [glom.core._format_t](../functions/glom.core/glom.core._format_t.md) — `_format_t(path, root=T)`
+- [glom.core._glom](../functions/glom.core/glom.core._glom.md) — `_glom(target, spec, scope)`
+- [glom.core._handle_dict](../functions/glom.core/glom.core._handle_dict.md) — `_handle_dict(target, spec, scope)`
+- [glom.core._handle_list](../functions/glom.core/glom.core._handle_list.md) — `_handle_list(target, spec, scope)`
+- [glom.core._handle_tuple](../functions/glom.core/glom.core._handle_tuple.md) — `_handle_tuple(target, spec, scope)`
+- [glom.core._t_eval](../functions/glom.core/glom.core._t_eval.md) — `_t_eval(target, _t, scope)`
+- [glom.core._unpack_stack](../functions/glom.core/glom.core._unpack_stack.md) — `_unpack_stack(scope, only_errors=True)`
+- [glom.core.arg_val](../functions/glom.core/glom.core.arg_val.md) — `arg_val(target, arg, scope)`
+- [glom.core.chain_child](../functions/glom.core/glom.core.chain_child.md) — `chain_child(scope)`
+- [glom.core.format_invocation](../functions/glom.core/glom.core.format_invocation.md) — `format_invocation(name='', args=(), kwargs=None, **kw)`
+- [glom.core.format_oneline_trace](../functions/glom.core/glom.core.format_oneline_trace.md) — `format_oneline_trace(scope)`
+- [glom.core.format_target_spec_trace](../functions/glom.core/glom.core.format_target_spec_trace.md) — `format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True)`
+- [glom.core.glom](../functions/glom.core/glom.core.glom.md) — `glom(target, spec, **kwargs)`
+- [glom.core.register](../functions/glom.core/glom.core.register.md) — `register(target_type, **kwargs)`
+- [glom.core.register_op](../functions/glom.core/glom.core.register_op.md) — `register_op(op_name, **kwargs)`
+
+## Internal helpers
+
+- `__init__(self, spec=None)`
+- `__repr__(self)`
+- `__repr__(self)`
+- `__repr__(self)`
+- `__init__(self, coal_obj, skipped, path)`
+- `__repr__(self)`
+- `__init__(self, spec=None)`
+- `__repr__(self)`
+- `_set_wrapped(self, exc)`
+- `__init__(self, **kwargs)`
+- `__repr__(self)`
+- `__init__(self, **kw)`
+- `__repr__(self)`
+- `__len__(self)`
+- `__ne__(self, other)`
+- `__repr__(self)`
+- `__init__(self, exc, path, part_idx)`
+- `__repr__(self)`
+- `__init__(self, exc, path, dest_name)`
+- `__repr__(self)`
+- `__init__(self, *steps)`
+- `__repr__(self)`
+- `__init__(self, name, subspec=_MISSING)`
+- `__repr__(self)`
+- `__init__(self, base, defaults)`
+- `__iter__(self)`
+- `__repr__(self)`
+- `__init__(self, spec, scope=None)`
+- `__repr__(self)`
+- `__(self, name)`
+- `__add__(self, arg)`
+- `__and__(self, arg)`
+- `__floordiv__(self, arg)`
+- `__getattr__(self, name)`
+- `__getitem__(self, item)`
+- `__getstate__(self)`
+- `__invert__(self)`
+- `__mod__(self, arg)`
+- `__mul__(self, arg)`
+- `__neg__(self)`
+- `__or__(self, arg)`
+- `__pow__(self, arg)`
+- `__repr__(self)`
+- `__setstate__(self, state)`
+- `__star__(self)`
+- `__stars__(self)`
+- `__starstar__(self)`
+- `__sub__(self, arg)`
+- `__truediv__(self, arg)`
+- `__xor__(self, arg)`
+- `__init__(self, register_default_types=True)`
+- `_register_builtin_ops(self)`
+- `_register_default_types(self)`
+- `__init__(self, op, target_type, type_map, path)`
+- `__repr__(self)`
+- `__init__(self, value)`
+- `__repr__(self)`
+- `__init__(self, base=(), **kw)`
+- `__repr__(self)`
+- `__subclasshook__(cls, C)`
+- `__init__(self)`
+- `__instancecheck__(cls, C)`
+- `_format_trace_value(value, maxlen)`
+- `_get_sequence_item(target, index)`
+- `_has_callable_glomit(obj)`
+- `_is_spec(obj, strict=False)`
+- `_s_first_magic(scope, key, _t)`
+- `_t_child(parent, operation, arg)`
+
+## Calls
+`glom.core.BadSpec`, `glom.core.Call`, `glom.core.CoalesceError`, `glom.core.Path`, `glom.core.PathAccessError`, `glom.core.PathAssignError`, `glom.core.ScopeVars`, `glom.core.Spec`, `glom.core.TType`, `glom.core.TargetRegistry`, `glom.core.TargetRegistry._get_closest_type`, `glom.core.TargetRegistry._register_builtin_ops`, `glom.core.TargetRegistry._register_default_types`, `glom.core.TargetRegistry._register_fuzzy_type`, `glom.core.TargetRegistry.get_type_map`, `glom.core.TargetRegistry.register`, `glom.core.TargetRegistry.register_op`, `glom.core.UnregisteredTarget`, `glom.core._ArgValuator`, `glom.core._assign_op`, `glom.core._extend_children`, `glom.core._format_path`, `glom.core._format_slice`, `glom.core._format_t`, `glom.core._glom`, `glom.core._handle_dict`, `glom.core._handle_list`, `glom.core._handle_tuple`, `glom.core._has_callable_glomit`, `glom.core._is_spec`, `glom.core._s_first_magic`, `glom.core._t_child`, `glom.core._t_eval`, `glom.core._unpack_stack`, `glom.core.arg_val`, `glom.core.chain_child`, `glom.core.format_invocation`, `glom.core.format_target_spec_trace`, `glom.core.glom`
+
+## Tested by
+- `glom/test/generated/test_glom_cli.py::TestGlomCli::test_basic_glom`
+- `glom/test/generated/test_glom_cli.py::TestGlomCli::test_debug_and_inspect_with_closed_stdin`
+- `glom/test/generated/test_glom_cli.py::TestGlomCli::test_debug_wraps_spec`
+- `glom/test/generated/test_glom_cli.py::TestGlomCli::test_glom_dict_result`
+- `glom/test/generated/test_glom_cli.py::TestGlomCli::test_glom_error_returns_one`
+- `glom/test/generated/test_glom_cli.py::TestGlomCli::test_indent_zero_disables_pretty`
+- `glom/test/generated/test_glom_cli.py::TestGlomCli::test_inspect_wraps_spec`
+- `glom/test/generated/test_glom_cli.py::TestGlomCli::test_scalar_non_scalar`
+- `glom/test/generated/test_glom_cli.py::TestGlomCli::test_scalar_output`
+- `glom/test/generated/test_glom_cli.py::TestGlomCli::test_sort_keys`
+- `glom/test/generated/test_glom_streaming.py::test_chunked_basic_exact_division`
+- `glom/test/generated/test_glom_streaming.py::test_chunked_empty_iterable`
+- `glom/test/generated/test_glom_streaming.py::test_chunked_repr`
+- `glom/test/generated/test_glom_streaming.py::test_chunked_repr_with_fill`
+- `glom/test/generated/test_glom_streaming.py::test_chunked_single_element`
+- `glom/test/generated/test_glom_streaming.py::test_chunked_size_larger_than_iterable`
+- `glom/test/generated/test_glom_streaming.py::test_chunked_size_larger_with_fill`
+- `glom/test/generated/test_glom_streaming.py::test_chunked_size_one`
+- `glom/test/generated/test_glom_streaming.py::test_chunked_with_fill`
+- `glom/test/generated/test_glom_streaming.py::test_chunked_with_remainder_no_fill`
+- `glom/test/test_basic.py::test_abstract_iterable`
+- `glom/test/test_basic.py::test_api_repr`
+- `glom/test/test_basic.py::test_bbformat`
+- `glom/test/test_basic.py::test_bbrepr`
+- `glom/test/test_basic.py::test_beyond_access`
+- `glom/test/test_basic.py::test_call_and_target`
+- `glom/test/test_basic.py::test_coalesce`
+- `glom/test/test_basic.py::test_glom_extra_kwargs`
+- `glom/test/test_basic.py::test_initial_integration`
+- `glom/test/test_basic.py::test_inspect`
+- `glom/test/test_basic.py::test_invoke`
+- `glom/test/test_basic.py::test_list_item_lift_and_access`
+- `glom/test/test_basic.py::test_pipe`
+- `glom/test/test_basic.py::test_python_native`
+- `glom/test/test_basic.py::test_ref`
+- `glom/test/test_basic.py::test_scope`
+- `glom/test/test_basic.py::test_seq_getitem`
+- `glom/test/test_basic.py::test_skip`
+- `glom/test/test_basic.py::test_spec_and_recursion`
+- `glom/test/test_basic.py::test_stop`
+- `glom/test/test_basic.py::test_top_level_default`
+- `glom/test/test_basic.py::test_val`
+- `glom/test/test_check.py::test_check_basic`
+- `glom/test/test_check.py::test_check_multi`
+- `glom/test/test_cli.py::test_cli_blank`
+- `glom/test/test_cli.py::test_cli_scalar`
+- `glom/test/test_cli.py::test_cli_spec_argv_target_stdin_basic`
+- `glom/test/test_cli.py::test_cli_spec_target_argv_basic`
+- `glom/test/test_cli.py::test_cli_spec_target_files_basic`
+- `glom/test/test_cli.py::test_main_basic`
+- `glom/test/test_cli.py::test_main_python_full_spec_python_target`
+- `glom/test/test_cli.py::test_main_toml_target`
+- `glom/test/test_cli.py::test_main_yaml_target`
+- `glom/test/test_error.py::test_3_11_byte_code_caret`
+- `glom/test/test_error.py::test_all_public_errors`
+- `glom/test/test_error.py::test_branching_stack`
+- `glom/test/test_error.py::test_coalesce_stack`
+- `glom/test/test_error.py::test_error`
+- `glom/test/test_error.py::test_error_types`
+- `glom/test/test_error.py::test_fallback`
+- `glom/test/test_error.py::test_glom_dev_debug`
+- `glom/test/test_error.py::test_glom_error_double_stack`
+- `glom/test/test_error.py::test_glom_error_stack`
+- `glom/test/test_error.py::test_good_error`
+- `glom/test/test_error.py::test_line_trace`
+- `glom/test/test_error.py::test_long_target_repr`
+- `glom/test/test_error.py::test_midway_branch`
+- `glom/test/test_error.py::test_nesting_stack`
+- `glom/test/test_error.py::test_pae_api`
+- `glom/test/test_error.py::test_pae_fallback_for_non_path`
+- `glom/test/test_error.py::test_pae_scope_printable`
+- `glom/test/test_error.py::test_partially_failing_branch`
+- `glom/test/test_error.py::test_regular_error_stack`
+- `glom/test/test_error.py::test_unicode_stack`
+- `glom/test/test_fill.py::test`
+- `glom/test/test_grouping.py::test_agg`
+- `glom/test/test_grouping.py::test_bucketing`
+- `glom/test/test_grouping.py::test_corner_cases`
+- `glom/test/test_grouping.py::test_limit`
+- `glom/test/test_grouping.py::test_reduce`
+- `glom/test/test_grouping.py::test_sample`
+- `glom/test/test_match.py::test_and_or_reduction`
+- `glom/test/test_match.py::test_basic`
+- `glom/test/test_match.py::test_check_ported_tests`
+- `glom/test/test_match.py::test_clamp`
+- `glom/test/test_match.py::test_cruddy_json`
+- `glom/test/test_match.py::test_defaults`
+- `glom/test/test_match.py::test_double_wrapping`
+- `glom/test/test_match.py::test_examples`
+- `glom/test/test_match.py::test_json_ref`
+- `glom/test/test_match.py::test_m_call_match`
+- `glom/test/test_match.py::test_match_default`
+- `glom/test/test_match.py::test_match_expressions`
+- `glom/test/test_match.py::test_nested_dict`
+- `glom/test/test_match.py::test_nested_struct`
+- `glom/test/test_match.py::test_pattern_matching`
+- `glom/test/test_match.py::test_precedence`
+- `glom/test/test_match.py::test_regex`
+- `glom/test/test_match.py::test_reprs`
+- `glom/test/test_match.py::test_sample`
+- `glom/test/test_match.py::test_sets`
+- `glom/test/test_match.py::test_shortcircuit`
+- `glom/test/test_match.py::test_sky`
+- `glom/test/test_match.py::test_switch`
+- `glom/test/test_match.py::test_ternary`
+- `glom/test/test_mutation.py::test_assign`
+- `glom/test/test_mutation.py::test_assign_missing_dict`
+- `glom/test/test_mutation.py::test_assign_missing_object`
+- `glom/test/test_mutation.py::test_assign_missing_signature`
+- `glom/test/test_mutation.py::test_assign_missing_unassignable`
+- `glom/test/test_mutation.py::test_assign_missing_with_extant_keys`
+- `glom/test/test_mutation.py::test_assign_recursive`
+- `glom/test/test_mutation.py::test_assign_spec_val`
+- `glom/test/test_mutation.py::test_bad_assign_target`
+- `glom/test/test_mutation.py::test_bad_delete_target`
+- `glom/test/test_mutation.py::test_delete`
+- `glom/test/test_mutation.py::test_delete_ignore_missing`
+- `glom/test/test_mutation.py::test_invalid_assign_op_target`
+- `glom/test/test_mutation.py::test_invalid_delete_op_target`
+- `glom/test/test_mutation.py::test_s_assign`
+- `glom/test/test_mutation.py::test_sequence_assign`
+- `glom/test/test_mutation.py::test_sequence_delete`
+- `glom/test/test_mutation.py::test_star_broadcast`
+- `glom/test/test_mutation.py::test_unregistered_assign`
+- `glom/test/test_mutation.py::test_unregistered_delete`
+- `glom/test/test_path_and_t.py::test_a_forbidden`
+- `glom/test/test_path_and_t.py::test_empty_path_access`
+- `glom/test/test_path_and_t.py::test_from_t_identity`
+- `glom/test/test_path_and_t.py::test_list_path_access`
+- `glom/test/test_path_and_t.py::test_path`
+- `glom/test/test_path_and_t.py::test_path_access_error_message`
+- `glom/test/test_path_and_t.py::test_path_cache`
+- `glom/test/test_path_and_t.py::test_path_eq`
+- `glom/test/test_path_and_t.py::test_path_eq_t`
+- `glom/test/test_path_and_t.py::test_path_getitem`
+- `glom/test/test_path_and_t.py::test_path_items`
+- `glom/test/test_path_and_t.py::test_path_len`
+- `glom/test/test_path_and_t.py::test_path_slices`
+- `glom/test/test_path_and_t.py::test_path_star`
+- `glom/test/test_path_and_t.py::test_path_t_roundtrip`
+- `glom/test/test_path_and_t.py::test_path_values`
+- `glom/test/test_path_and_t.py::test_s_magic`
+- `glom/test/test_path_and_t.py::test_star_broadcast`
+- `glom/test/test_path_and_t.py::test_star_warning`
+- `glom/test/test_path_and_t.py::test_startswith`
+- `glom/test/test_path_and_t.py::test_t_arithmetic`
+- `glom/test/test_path_and_t.py::test_t_arithmetic_errors`
+- `glom/test/test_path_and_t.py::test_t_arithmetic_reprs`
+- `glom/test/test_path_and_t.py::test_t_dict_key`
+- `glom/test/test_path_and_t.py::test_t_dunders`
+- `glom/test/test_path_and_t.py::test_t_picklability`
+- `glom/test/test_path_and_t.py::test_t_subspec`
+- `glom/test/test_reduction.py::test_flatten`
+- `glom/test/test_reduction.py::test_flatten_func`
+- `glom/test/test_reduction.py::test_fold`
+- `glom/test/test_reduction.py::test_fold_bad_iter`
+- `glom/test/test_reduction.py::test_merge`
+- `glom/test/test_reduction.py::test_merge_func`
+- `glom/test/test_reduction.py::test_merge_omd`
+- `glom/test/test_reduction.py::test_sum_integers`
+- `glom/test/test_reduction.py::test_sum_seqs`
+- `glom/test/test_scope_vars.py::test_globals`
+- `glom/test/test_scope_vars.py::test_let`
+- `glom/test/test_scope_vars.py::test_max_skip`
+- `glom/test/test_scope_vars.py::test_s_scope_assign`
+- `glom/test/test_scope_vars.py::test_scoped_vars`
+- `glom/test/test_scope_vars.py::test_vars`
+- `glom/test/test_snippets.py::test_snippet`
+- `glom/test/test_spec.py::test_scope_spec`
+- `glom/test/test_spec.py::test_spec`
+- `glom/test/test_streaming.py::test_all`
+- `glom/test/test_streaming.py::test_chunked`
+- `glom/test/test_streaming.py::test_faulty_iterate`
+- `glom/test/test_streaming.py::test_filter`
+- `glom/test/test_streaming.py::test_first`
+- `glom/test/test_streaming.py::test_iter`
+- `glom/test/test_streaming.py::test_iter_composition`
+- `glom/test/test_streaming.py::test_map`
+- `glom/test/test_streaming.py::test_slice`
+- `glom/test/test_streaming.py::test_split_flatten`
+- `glom/test/test_streaming.py::test_unique`
+- `glom/test/test_streaming.py::test_while`
+- `glom/test/test_streaming.py::test_windowed`
+- `glom/test/test_target_types.py::test_bypass_getitem`
+- `glom/test/test_target_types.py::test_default_scope_register`
+- `glom/test/test_target_types.py::test_duck_register`
+- `glom/test/test_target_types.py::test_exact_register`
+- `glom/test/test_target_types.py::test_faulty_iterate`
+- `glom/test/test_target_types.py::test_faulty_op_registration`
+- `glom/test/test_target_types.py::test_invalid_register`
+- `glom/test/test_target_types.py::test_iter_set`
+- `glom/test/test_target_types.py::test_iter_str`
+- `glom/test/test_target_types.py::test_reregister_type`
+- `glom/test/test_target_types.py::test_types_bare`
+- `glom/test/test_target_types.py::test_types_leave_one_out`
+- `glom/test/test_tutorial.py::test_tutorial`

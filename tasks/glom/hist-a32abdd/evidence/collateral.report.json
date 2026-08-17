@@ -1,0 +1,4983 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": "docs/_static",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "docs/_templates",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "docs",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "docs/_static",
+          "type": "Dir"
+        },
+        {
+          "nodeid": "docs/_templates",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/data",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "glom/test/generated/test_glom_streaming.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 5,
+          "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_basic_exact_division",
+          "type": "Function"
+        },
+        {
+          "lineno": 13,
+          "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_with_remainder_no_fill",
+          "type": "Function"
+        },
+        {
+          "lineno": 21,
+          "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_with_fill",
+          "type": "Function"
+        },
+        {
+          "lineno": 29,
+          "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_empty_iterable",
+          "type": "Function"
+        },
+        {
+          "lineno": 37,
+          "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_single_element",
+          "type": "Function"
+        },
+        {
+          "lineno": 45,
+          "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_size_larger_than_iterable",
+          "type": "Function"
+        },
+        {
+          "lineno": 53,
+          "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_size_larger_with_fill",
+          "type": "Function"
+        },
+        {
+          "lineno": 61,
+          "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_size_one",
+          "type": "Function"
+        },
+        {
+          "lineno": 69,
+          "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_returns_iter_spec",
+          "type": "Function"
+        },
+        {
+          "lineno": 75,
+          "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_repr",
+          "type": "Function"
+        },
+        {
+          "lineno": 81,
+          "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_repr_with_fill",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/generated",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "glom/test/generated/test_glom_streaming.py",
+          "type": "Module"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_basic.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 15,
+          "nodeid": "glom/test/test_basic.py::test_initial_integration",
+          "type": "Function"
+        },
+        {
+          "lineno": 55,
+          "nodeid": "glom/test/test_basic.py::test_list_item_lift_and_access",
+          "type": "Function"
+        },
+        {
+          "lineno": 62,
+          "nodeid": "glom/test/test_basic.py::test_coalesce",
+          "type": "Function"
+        },
+        {
+          "lineno": 104,
+          "nodeid": "glom/test/test_basic.py::test_skip",
+          "type": "Function"
+        },
+        {
+          "lineno": 133,
+          "nodeid": "glom/test/test_basic.py::test_stop",
+          "type": "Function"
+        },
+        {
+          "lineno": 146,
+          "nodeid": "glom/test/test_basic.py::test_top_level_default",
+          "type": "Function"
+        },
+        {
+          "lineno": 164,
+          "nodeid": "glom/test/test_basic.py::test_literal",
+          "type": "Function"
+        },
+        {
+          "lineno": 177,
+          "nodeid": "glom/test/test_basic.py::test_abstract_iterable",
+          "type": "Function"
+        },
+        {
+          "lineno": 189,
+          "nodeid": "glom/test/test_basic.py::test_call_and_target",
+          "type": "Function"
+        },
+        {
+          "lineno": 217,
+          "nodeid": "glom/test/test_basic.py::test_invoke",
+          "type": "Function"
+        },
+        {
+          "lineno": 282,
+          "nodeid": "glom/test/test_basic.py::test_spec_and_recursion",
+          "type": "Function"
+        },
+        {
+          "lineno": 300,
+          "nodeid": "glom/test/test_basic.py::test_scope",
+          "type": "Function"
+        },
+        {
+          "lineno": 311,
+          "nodeid": "glom/test/test_basic.py::test_seq_getitem",
+          "type": "Function"
+        },
+        {
+          "lineno": 321,
+          "nodeid": "glom/test/test_basic.py::test_beyond_access",
+          "type": "Function"
+        },
+        {
+          "lineno": 345,
+          "nodeid": "glom/test/test_basic.py::test_python_native",
+          "type": "Function"
+        },
+        {
+          "lineno": 365,
+          "nodeid": "glom/test/test_basic.py::test_glom_extra_kwargs",
+          "type": "Function"
+        },
+        {
+          "lineno": 371,
+          "nodeid": "glom/test/test_basic.py::test_inspect",
+          "type": "Function"
+        },
+        {
+          "lineno": 402,
+          "nodeid": "glom/test/test_basic.py::test_let",
+          "type": "Function"
+        },
+        {
+          "lineno": 416,
+          "nodeid": "glom/test/test_basic.py::test_ref",
+          "type": "Function"
+        },
+        {
+          "lineno": 439,
+          "nodeid": "glom/test/test_basic.py::test_api_repr",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_check.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 11,
+          "nodeid": "glom/test/test_check.py::test_check_basic",
+          "type": "Function"
+        },
+        {
+          "lineno": 72,
+          "nodeid": "glom/test/test_check.py::test_check_signature",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_cli.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 37,
+          "nodeid": "glom/test/test_cli.py::test_cli_blank",
+          "type": "Function"
+        },
+        {
+          "lineno": 42,
+          "nodeid": "glom/test/test_cli.py::test_cli_spec_target_argv_basic",
+          "type": "Function"
+        },
+        {
+          "lineno": 51,
+          "nodeid": "glom/test/test_cli.py::test_cli_spec_argv_target_stdin_basic",
+          "type": "Function"
+        },
+        {
+          "lineno": 65,
+          "nodeid": "glom/test/test_cli.py::test_cli_spec_target_files_basic",
+          "type": "Function"
+        },
+        {
+          "lineno": 71,
+          "nodeid": "glom/test/test_cli.py::test_usage_errors",
+          "type": "Function"
+        },
+        {
+          "lineno": 109,
+          "nodeid": "glom/test/test_cli.py::test_main_basic",
+          "type": "Function"
+        },
+        {
+          "lineno": 117,
+          "nodeid": "glom/test/test_cli.py::test_main_yaml_target",
+          "type": "Function"
+        },
+        {
+          "lineno": 134,
+          "nodeid": "glom/test/test_cli.py::test_main_python_full_spec_python_target",
+          "type": "Function"
+        },
+        {
+          "lineno": 142,
+          "nodeid": "glom/test/test_cli.py::test_main",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_error.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 18,
+          "nodeid": "glom/test/test_error.py::test_good_error",
+          "type": "Function"
+        },
+        {
+          "lineno": 25,
+          "nodeid": "glom/test/test_error.py::test_error",
+          "type": "Function"
+        },
+        {
+          "lineno": 34,
+          "nodeid": "glom/test/test_error.py::test_unfinalized_glomerror_repr",
+          "type": "Function"
+        },
+        {
+          "lineno": 40,
+          "nodeid": "glom/test/test_error.py::test_line_trace",
+          "type": "Function"
+        },
+        {
+          "lineno": 47,
+          "nodeid": "glom/test/test_error.py::test_short_trace",
+          "type": "Function"
+        },
+        {
+          "lineno": 124,
+          "nodeid": "glom/test/test_error.py::test_regular_error_stack",
+          "type": "Function"
+        },
+        {
+          "lineno": 149,
+          "nodeid": "glom/test/test_error.py::test_glom_error_stack",
+          "type": "Function"
+        },
+        {
+          "lineno": 189,
+          "nodeid": "glom/test/test_error.py::test_glom_error_double_stack",
+          "type": "Function"
+        },
+        {
+          "lineno": 217,
+          "nodeid": "glom/test/test_error.py::test_long_target_repr",
+          "type": "Function"
+        },
+        {
+          "lineno": 236,
+          "nodeid": "glom/test/test_error.py::test_error_types",
+          "type": "Function"
+        },
+        {
+          "lineno": 245,
+          "nodeid": "glom/test/test_error.py::test_fallback",
+          "type": "Function"
+        },
+        {
+          "lineno": 269,
+          "nodeid": "glom/test/test_error.py::test_all_public_errors",
+          "type": "Function"
+        },
+        {
+          "lineno": 332,
+          "nodeid": "glom/test/test_error.py::test_glom_dev_debug",
+          "type": "Function"
+        },
+        {
+          "lineno": 347,
+          "nodeid": "glom/test/test_error.py::test_unicode_stack",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_fill.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 2,
+          "nodeid": "glom/test/test_fill.py::test",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_grouping.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 10,
+          "nodeid": "glom/test/test_grouping.py::test_bucketing",
+          "type": "Function"
+        },
+        {
+          "lineno": 17,
+          "nodeid": "glom/test/test_grouping.py::test_corner_cases",
+          "type": "Function"
+        },
+        {
+          "lineno": 58,
+          "nodeid": "glom/test/test_grouping.py::test_agg",
+          "type": "Function"
+        },
+        {
+          "lineno": 80,
+          "nodeid": "glom/test/test_grouping.py::test_limit",
+          "type": "Function"
+        },
+        {
+          "lineno": 93,
+          "nodeid": "glom/test/test_grouping.py::test_reduce",
+          "type": "Function"
+        },
+        {
+          "lineno": 99,
+          "nodeid": "glom/test/test_grouping.py::test_sample",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_match.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 24,
+          "nodeid": "glom/test/test_match.py::test_basic",
+          "type": "Function"
+        },
+        {
+          "lineno": 74,
+          "nodeid": "glom/test/test_match.py::test_match_expressions",
+          "type": "Function"
+        },
+        {
+          "lineno": 87,
+          "nodeid": "glom/test/test_match.py::test_match_default",
+          "type": "Function"
+        },
+        {
+          "lineno": 93,
+          "nodeid": "glom/test/test_match.py::test_double_wrapping",
+          "type": "Function"
+        },
+        {
+          "lineno": 104,
+          "nodeid": "glom/test/test_match.py::test_sets",
+          "type": "Function"
+        },
+        {
+          "lineno": 111,
+          "nodeid": "glom/test/test_match.py::test_spec_match",
+          "type": "Function"
+        },
+        {
+          "lineno": 119,
+          "nodeid": "glom/test/test_match.py::test_precedence",
+          "type": "Function"
+        },
+        {
+          "lineno": 132,
+          "nodeid": "glom/test/test_match.py::test_cruddy_json",
+          "type": "Function"
+        },
+        {
+          "lineno": 146,
+          "nodeid": "glom/test/test_match.py::test_pattern_matching",
+          "type": "Function"
+        },
+        {
+          "lineno": 171,
+          "nodeid": "glom/test/test_match.py::test_examples",
+          "type": "Function"
+        },
+        {
+          "lineno": 177,
+          "nodeid": "glom/test/test_match.py::test_reprs",
+          "type": "Function"
+        },
+        {
+          "lineno": 201,
+          "nodeid": "glom/test/test_match.py::test_shortcircuit",
+          "type": "Function"
+        },
+        {
+          "lineno": 211,
+          "nodeid": "glom/test/test_match.py::test_sample",
+          "type": "Function"
+        },
+        {
+          "lineno": 262,
+          "nodeid": "glom/test/test_match.py::test_regex",
+          "type": "Function"
+        },
+        {
+          "lineno": 275,
+          "nodeid": "glom/test/test_match.py::test_ternary",
+          "type": "Function"
+        },
+        {
+          "lineno": 279,
+          "nodeid": "glom/test/test_match.py::test_sky",
+          "type": "Function"
+        },
+        {
+          "lineno": 322,
+          "nodeid": "glom/test/test_match.py::test_clamp",
+          "type": "Function"
+        },
+        {
+          "lineno": 327,
+          "nodeid": "glom/test/test_match.py::test_json_ref",
+          "type": "Function"
+        },
+        {
+          "lineno": 338,
+          "nodeid": "glom/test/test_match.py::test_nested_struct",
+          "type": "Function"
+        },
+        {
+          "lineno": 381,
+          "nodeid": "glom/test/test_match.py::test_check_ported_tests",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_mutation.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 7,
+          "nodeid": "glom/test/test_mutation.py::test_assign",
+          "type": "Function"
+        },
+        {
+          "lineno": 37,
+          "nodeid": "glom/test/test_mutation.py::test_assign_spec_val",
+          "type": "Function"
+        },
+        {
+          "lineno": 42,
+          "nodeid": "glom/test/test_mutation.py::test_unregistered_assign",
+          "type": "Function"
+        },
+        {
+          "lineno": 54,
+          "nodeid": "glom/test/test_mutation.py::test_bad_assign_target",
+          "type": "Function"
+        },
+        {
+          "lineno": 73,
+          "nodeid": "glom/test/test_mutation.py::test_sequence_assign",
+          "type": "Function"
+        },
+        {
+          "lineno": 92,
+          "nodeid": "glom/test/test_mutation.py::test_invalid_assign_op_target",
+          "type": "Function"
+        },
+        {
+          "lineno": 101,
+          "nodeid": "glom/test/test_mutation.py::test_assign_missing_signature",
+          "type": "Function"
+        },
+        {
+          "lineno": 108,
+          "nodeid": "glom/test/test_mutation.py::test_assign_missing_dict",
+          "type": "Function"
+        },
+        {
+          "lineno": 125,
+          "nodeid": "glom/test/test_mutation.py::test_assign_missing_object",
+          "type": "Function"
+        },
+        {
+          "lineno": 138,
+          "nodeid": "glom/test/test_mutation.py::test_assign_missing_with_extant_keys",
+          "type": "Function"
+        },
+        {
+          "lineno": 162,
+          "nodeid": "glom/test/test_mutation.py::test_assign_missing_unassignable",
+          "type": "Function"
+        },
+        {
+          "lineno": 193,
+          "nodeid": "glom/test/test_mutation.py::test_s_assign",
+          "type": "Function"
+        },
+        {
+          "lineno": 200,
+          "nodeid": "glom/test/test_mutation.py::test_delete",
+          "type": "Function"
+        },
+        {
+          "lineno": 252,
+          "nodeid": "glom/test/test_mutation.py::test_unregistered_delete",
+          "type": "Function"
+        },
+        {
+          "lineno": 262,
+          "nodeid": "glom/test/test_mutation.py::test_bad_delete_target",
+          "type": "Function"
+        },
+        {
+          "lineno": 281,
+          "nodeid": "glom/test/test_mutation.py::test_sequence_delete",
+          "type": "Function"
+        },
+        {
+          "lineno": 295,
+          "nodeid": "glom/test/test_mutation.py::test_invalid_delete_op_target",
+          "type": "Function"
+        },
+        {
+          "lineno": 304,
+          "nodeid": "glom/test/test_mutation.py::test_delete_ignore_missing",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_path_and_t.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 5,
+          "nodeid": "glom/test/test_path_and_t.py::test_list_path_access",
+          "type": "Function"
+        },
+        {
+          "lineno": 9,
+          "nodeid": "glom/test/test_path_and_t.py::test_path",
+          "type": "Function"
+        },
+        {
+          "lineno": 16,
+          "nodeid": "glom/test/test_path_and_t.py::test_empty_path_access",
+          "type": "Function"
+        },
+        {
+          "lineno": 28,
+          "nodeid": "glom/test/test_path_and_t.py::test_path_t_roundtrip",
+          "type": "Function"
+        },
+        {
+          "lineno": 52,
+          "nodeid": "glom/test/test_path_and_t.py::test_path_access_error_message",
+          "type": "Function"
+        },
+        {
+          "lineno": 80,
+          "nodeid": "glom/test/test_path_and_t.py::test_t_picklability",
+          "type": "Function"
+        },
+        {
+          "lineno": 99,
+          "nodeid": "glom/test/test_path_and_t.py::test_path_len",
+          "type": "Function"
+        },
+        {
+          "lineno": 110,
+          "nodeid": "glom/test/test_path_and_t.py::test_path_getitem",
+          "type": "Function"
+        },
+        {
+          "lineno": 127,
+          "nodeid": "glom/test/test_path_and_t.py::test_path_slices",
+          "type": "Function"
+        },
+        {
+          "lineno": 152,
+          "nodeid": "glom/test/test_path_and_t.py::test_path_values",
+          "type": "Function"
+        },
+        {
+          "lineno": 160,
+          "nodeid": "glom/test/test_path_and_t.py::test_path_items",
+          "type": "Function"
+        },
+        {
+          "lineno": 170,
+          "nodeid": "glom/test/test_path_and_t.py::test_path_eq",
+          "type": "Function"
+        },
+        {
+          "lineno": 177,
+          "nodeid": "glom/test/test_path_and_t.py::test_path_eq_t",
+          "type": "Function"
+        },
+        {
+          "lineno": 182,
+          "nodeid": "glom/test/test_path_and_t.py::test_startswith",
+          "type": "Function"
+        },
+        {
+          "lineno": 199,
+          "nodeid": "glom/test/test_path_and_t.py::test_from_t_identity",
+          "type": "Function"
+        },
+        {
+          "lineno": 205,
+          "nodeid": "glom/test/test_path_and_t.py::test_t_dict_key",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_reduction.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 9,
+          "nodeid": "glom/test/test_reduction.py::test_sum_integers",
+          "type": "Function"
+        },
+        {
+          "lineno": 30,
+          "nodeid": "glom/test/test_reduction.py::test_sum_seqs",
+          "type": "Function"
+        },
+        {
+          "lineno": 46,
+          "nodeid": "glom/test/test_reduction.py::test_fold",
+          "type": "Function"
+        },
+        {
+          "lineno": 64,
+          "nodeid": "glom/test/test_reduction.py::test_fold_bad_iter",
+          "type": "Function"
+        },
+        {
+          "lineno": 77,
+          "nodeid": "glom/test/test_reduction.py::test_flatten",
+          "type": "Function"
+        },
+        {
+          "lineno": 93,
+          "nodeid": "glom/test/test_reduction.py::test_flatten_func",
+          "type": "Function"
+        },
+        {
+          "lineno": 123,
+          "nodeid": "glom/test/test_reduction.py::test_merge",
+          "type": "Function"
+        },
+        {
+          "lineno": 138,
+          "nodeid": "glom/test/test_reduction.py::test_merge_omd",
+          "type": "Function"
+        },
+        {
+          "lineno": 145,
+          "nodeid": "glom/test/test_reduction.py::test_merge_func",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_spec.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 6,
+          "nodeid": "glom/test/test_spec.py::test_spec",
+          "type": "Function"
+        },
+        {
+          "lineno": 18,
+          "nodeid": "glom/test/test_spec.py::test_scope_spec",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_streaming.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 12,
+          "nodeid": "glom/test/test_streaming.py::test_iter",
+          "type": "Function"
+        },
+        {
+          "lineno": 28,
+          "nodeid": "glom/test/test_streaming.py::test_filter",
+          "type": "Function"
+        },
+        {
+          "lineno": 57,
+          "nodeid": "glom/test/test_streaming.py::test_map",
+          "type": "Function"
+        },
+        {
+          "lineno": 64,
+          "nodeid": "glom/test/test_streaming.py::test_split_flatten",
+          "type": "Function"
+        },
+        {
+          "lineno": 78,
+          "nodeid": "glom/test/test_streaming.py::test_chunked",
+          "type": "Function"
+        },
+        {
+          "lineno": 90,
+          "nodeid": "glom/test/test_streaming.py::test_windowed",
+          "type": "Function"
+        },
+        {
+          "lineno": 106,
+          "nodeid": "glom/test/test_streaming.py::test_unique",
+          "type": "Function"
+        },
+        {
+          "lineno": 119,
+          "nodeid": "glom/test/test_streaming.py::test_slice",
+          "type": "Function"
+        },
+        {
+          "lineno": 147,
+          "nodeid": "glom/test/test_streaming.py::test_while",
+          "type": "Function"
+        },
+        {
+          "lineno": 166,
+          "nodeid": "glom/test/test_streaming.py::test_iter_composition",
+          "type": "Function"
+        },
+        {
+          "lineno": 175,
+          "nodeid": "glom/test/test_streaming.py::test_faulty_iterate",
+          "type": "Function"
+        },
+        {
+          "lineno": 187,
+          "nodeid": "glom/test/test_streaming.py::test_first",
+          "type": "Function"
+        },
+        {
+          "lineno": 203,
+          "nodeid": "glom/test/test_streaming.py::test_all",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_target_types.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 29,
+          "nodeid": "glom/test/test_target_types.py::test_types_leave_one_out",
+          "type": "Function"
+        },
+        {
+          "lineno": 49,
+          "nodeid": "glom/test/test_target_types.py::test_types_bare",
+          "type": "Function"
+        },
+        {
+          "lineno": 81,
+          "nodeid": "glom/test/test_target_types.py::test_invalid_register",
+          "type": "Function"
+        },
+        {
+          "lineno": 88,
+          "nodeid": "glom/test/test_target_types.py::test_exact_register",
+          "type": "Function"
+        },
+        {
+          "lineno": 106,
+          "nodeid": "glom/test/test_target_types.py::test_duck_register",
+          "type": "Function"
+        },
+        {
+          "lineno": 132,
+          "nodeid": "glom/test/test_target_types.py::test_bypass_getitem",
+          "type": "Function"
+        },
+        {
+          "lineno": 143,
+          "nodeid": "glom/test/test_target_types.py::test_iter_set",
+          "type": "Function"
+        },
+        {
+          "lineno": 157,
+          "nodeid": "glom/test/test_target_types.py::test_iter_str",
+          "type": "Function"
+        },
+        {
+          "lineno": 181,
+          "nodeid": "glom/test/test_target_types.py::test_default_scope_register",
+          "type": "Function"
+        },
+        {
+          "lineno": 186,
+          "nodeid": "glom/test/test_target_types.py::test_faulty_iterate",
+          "type": "Function"
+        },
+        {
+          "lineno": 198,
+          "nodeid": "glom/test/test_target_types.py::test_faulty_op_registration",
+          "type": "Function"
+        },
+        {
+          "lineno": 252,
+          "nodeid": "glom/test/test_target_types.py::test_reregister_type",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test/test_tutorial.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 4,
+          "nodeid": "glom/test/test_tutorial.py::test_tutorial_data",
+          "type": "Function"
+        },
+        {
+          "lineno": 8,
+          "nodeid": "glom/test/test_tutorial.py::test_tutorial",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom/test",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "glom/test/data",
+          "type": "Dir"
+        },
+        {
+          "nodeid": "glom/test/generated",
+          "type": "Dir"
+        },
+        {
+          "nodeid": "glom/test/test_basic.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_check.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_cli.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_error.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_fill.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_grouping.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_match.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_mutation.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_path_and_t.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_reduction.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_spec.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_streaming.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_target_types.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "glom/test/test_tutorial.py",
+          "type": "Module"
+        }
+      ]
+    },
+    {
+      "nodeid": "glom",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "glom/test",
+          "type": "Package"
+        }
+      ]
+    },
+    {
+      "nodeid": ".",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "docs",
+          "type": "Dir"
+        },
+        {
+          "nodeid": "glom",
+          "type": "Package"
+        }
+      ]
+    }
+  ],
+  "created": 1787006022.615419,
+  "duration": 0.8855140209197998,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 155,
+    "failed": 2,
+    "passed": 153,
+    "total": 155
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00014087500312598422,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked_basic_exact_division",
+        "test_glom_streaming.py",
+        "generated",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 5,
+      "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_basic_exact_division",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00035012399894185364,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.470799755537882e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011679100134642795,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked_with_remainder_no_fill",
+        "test_glom_streaming.py",
+        "generated",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 13,
+      "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_with_remainder_no_fill",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001435410013073124,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.508300041081384e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.558299643686041e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked_with_fill",
+        "test_glom_streaming.py",
+        "generated",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 21,
+      "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_with_fill",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.099899762077257e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.916599911870435e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.983300019986928e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked_empty_iterable",
+        "test_glom_streaming.py",
+        "generated",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 29,
+      "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_empty_iterable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.699900404782966e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.908300227019936e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.199900184990838e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked_single_element",
+        "test_glom_streaming.py",
+        "generated",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 37,
+      "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_single_element",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.8457997511141e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.408300057752058e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.270800026366487e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked_size_larger_than_iterable",
+        "test_glom_streaming.py",
+        "generated",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 45,
+      "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_size_larger_than_iterable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.791599687654525e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.370900180423632e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.100000559352338e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked_size_larger_with_fill",
+        "test_glom_streaming.py",
+        "generated",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 53,
+      "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_size_larger_with_fill",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.80830019316636e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.4499003454111516e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.766600174363703e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked_size_one",
+        "test_glom_streaming.py",
+        "generated",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 61,
+      "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_size_one",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.708300159312785e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.5999997130129486e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 6.254099571378902e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked_returns_iter_spec",
+        "test_glom_streaming.py",
+        "generated",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 69,
+      "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_returns_iter_spec",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.433300248114392e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.4124997404869646e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012979099847143516,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked_repr",
+        "test_glom_streaming.py",
+        "generated",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 75,
+      "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_repr",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.2833005611319095e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.4873999033588916e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010895799641730264,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked_repr_with_fill",
+        "test_glom_streaming.py",
+        "generated",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 81,
+      "nodeid": "glom/test/generated/test_glom_streaming.py::test_chunked_repr_with_fill",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.387500277720392e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.362499698298052e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000570914002310019,
+        "outcome": "passed",
+        "stdout": "---\npath:   [Path()]\ntarget: {'a': {'b': 'c'}, 'example': <glom.test.test_basic.test_initial_integration.<locals>.Example object at 0xffffb792f140>, 'd': {'e': ['f'], 'g': 'h'}, 'i': [{'j': 'k', 'l': 'm'}], 'n': 'o'}\noutput: {'a': {'b': 'c'}, 'example': <glom.test.test_basic.test_initial_integration.<locals>.Example object at 0xffffb792f140>, 'd': {'e': ['f'], 'g': 'h'}, 'i': [{'j': 'k', 'l': 'm'}], 'n': 'o'}\n---\n---\npath:   [<INSPECT>, 'a']\ntarget: {'a': {'b': 'c'}, 'example': <glom.test.test_basic.test_initial_integration.<locals>.Example object at 0xffffb792f140>, 'd': {'e': ['f'], 'g': 'h'}, 'i': [{'j': 'k', 'l': 'm'}], 'n': 'o'}\noutput: {'b': 'c'}\n---\n---\npath:   [<INSPECT>, 'a', 'b']\ntarget: {'b': 'c'}\noutput: c\n---\nin:  {'a': {'b': 'c'}, 'example': <glom.test.test_basic.test_initial_integration.<locals>.Example object at 0xffffb792f140>, 'd': {'e': ['f'], 'g': 'h'}, 'i': [{'j': 'k', 'l': 'm'}], 'n': 'o'}\ngot: {'a': 'c', 'name': 'good_name', 'e': ['f'], 'i': [{'j': 'k'}], 'n': 'O', 'p': 'zzz'}\nexp: {'a': 'c', 'name': 'good_name', 'e': ['f'], 'i': [{'j': 'k'}], 'n': 'O', 'p': 'zzz'}\n"
+      },
+      "keywords": [
+        "test_initial_integration",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 15,
+      "nodeid": "glom/test/test_basic.py::test_initial_integration",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.520799459191039e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.099900201661512e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001259159980691038,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_list_item_lift_and_access",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 55,
+      "nodeid": "glom/test/test_basic.py::test_list_item_lift_and_access",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.666699871653691e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.474999488797039e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0008542470022803172,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_coalesce",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 62,
+      "nodeid": "glom/test/test_basic.py::test_coalesce",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.7124998420476913e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.616600148845464e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00067974699777551,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_skip",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 104,
+      "nodeid": "glom/test/test_basic.py::test_skip",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.8915997215081006e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.987500480841845e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00015720800001872703,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_stop",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 133,
+      "nodeid": "glom/test/test_basic.py::test_stop",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.9124999097548425e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.270800076890737e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00039570600347360596,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_top_level_default",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 146,
+      "nodeid": "glom/test/test_basic.py::test_top_level_default",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.5040996812749654e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.991700163576752e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010016600572271273,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_literal",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 164,
+      "nodeid": "glom/test/test_basic.py::test_literal",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.8416000683791935e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.450000026030466e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.912499859230593e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_abstract_iterable",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 177,
+      "nodeid": "glom/test/test_basic.py::test_abstract_iterable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.7207995268981904e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.7332996220793575e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00030233200232032686,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_call_and_target",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 189,
+      "nodeid": "glom/test/test_basic.py::test_call_and_target",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.608300125459209e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.933299689786509e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005020390017307363,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_invoke",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 217,
+      "nodeid": "glom/test/test_basic.py::test_invoke",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.504100408870727e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.770799907622859e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00033266500395257026,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_spec_and_recursion",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 282,
+      "nodeid": "glom/test/test_basic.py::test_spec_and_recursion",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.962399882264435e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010854099673451856,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001819989993236959,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_scope",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 300,
+      "nodeid": "glom/test/test_basic.py::test_scope",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.94160005170852e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.504199700430036e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004166229991824366,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_seq_getitem",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 311,
+      "nodeid": "glom/test/test_basic.py::test_seq_getitem",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.879100353922695e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.354099943768233e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00019241600239183754,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_beyond_access",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 321,
+      "nodeid": "glom/test/test_basic.py::test_beyond_access",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.154100265121087e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.0040998505428433e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00035766500514000654,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_python_native",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 345,
+      "nodeid": "glom/test/test_basic.py::test_python_native",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.624999903375283e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.9499994677025825e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.854199793655425e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_glom_extra_kwargs",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 365,
+      "nodeid": "glom/test/test_basic.py::test_glom_extra_kwargs",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.7124998420476913e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.249999958323315e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00018079099390888587,
+        "outcome": "passed",
+        "stdout": "---\npath:   ['nope.nope']\ntarget: {'a': {'b': 'c'}}\n"
+      },
+      "keywords": [
+        "test_inspect",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 371,
+      "nodeid": "glom/test/test_basic.py::test_inspect",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.645799683406949e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.025000038789585e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004134979972150177,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_let",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 402,
+      "nodeid": "glom/test/test_basic.py::test_let",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.525000546593219e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.083300104364753e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0013799109947285615,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_ref",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 416,
+      "nodeid": "glom/test/test_basic.py::test_ref",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.333300163736567e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.524999480461702e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.408299956703559e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_api_repr",
+        "skipif",
+        "pytestmark",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 439,
+      "nodeid": "glom/test/test_basic.py::test_api_repr",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.195799505803734e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.758299812441692e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0035287770006107166,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_check_basic",
+        "test_check.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 11,
+      "nodeid": "glom/test/test_check.py::test_check_basic",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.962399882264435e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.9500005338341e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011341600475134328,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_check_signature",
+        "test_check.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 72,
+      "nodeid": "glom/test/test_check.py::test_check_signature",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.720900273649022e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.9167003200855106e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0008577039989177138,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_cli_blank",
+        "test_cli.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 37,
+      "nodeid": "glom/test/test_cli.py::test_cli_blank",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002788319980027154,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.774899859214202e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0013987029960844666,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_cli_spec_target_argv_basic",
+        "test_cli.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 42,
+      "nodeid": "glom/test/test_cli.py::test_cli_spec_target_argv_basic",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00023037399660097435,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.524999818997458e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.001873117005743552,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_cli_spec_argv_target_stdin_basic",
+        "test_cli.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 51,
+      "nodeid": "glom/test/test_cli.py::test_cli_spec_argv_target_stdin_basic",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002022909975494258,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.866599819157273e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0009721210008137859,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_cli_spec_target_files_basic",
+        "test_cli.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 65,
+      "nodeid": "glom/test/test_cli.py::test_cli_spec_target_files_basic",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0012601199996424839,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.012500231619924e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.016587095997238066,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_usage_errors",
+        "test_cli.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 71,
+      "nodeid": "glom/test/test_cli.py::test_usage_errors",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0006296639985521324,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010408300295239314,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0019535749961505644,
+        "outcome": "passed",
+        "stdout": "PathAccessError: error raised while processing.\n Target-spec trace, with error detail (most recent last):\n - Target: {'a': {'b': 'c'}}\n - Spec: 'a.b.fail'\nglom.core.PathAccessError: could not access 'fail', part 2 of Path('a', 'b', 'fail'), got error: AttributeError(\"'str' object has no attribute 'fail'\")\n\"d\"\n"
+      },
+      "keywords": [
+        "test_main_basic",
+        "test_cli.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 109,
+      "nodeid": "glom/test/test_cli.py::test_main_basic",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.579099863301963e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.329200161620975e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 142,
+          "message": "face.errors.UsageError: could not load target data, got: TypeError: load() missing 1 required positional argument: 'Loader'",
+          "path": "/repo/glom/cli.py"
+        },
+        "duration": 0.0009460369983571582,
+        "longrepr": "target_text = '--- \\nHello: \\n  - World\\n', target_format = 'yml'\n\n    def mw_handle_target(target_text, target_format):\n        \"\"\" Handles reading in a file specified in cli command.\n    \n        Args:\n            target_text (str): String that specifies where 6\n            target_format (str): Valid formats include `.json` and `.yml` or `.yaml`\n        Returns:\n            The content of the file that you specified\n        Raises:\n            CommandLineError: Issue with file format or appropriate file reading package not installed.\n        \"\"\"\n        if not target_text:\n            return {}\n        target = {}\n        if target_format == 'json':\n            load_func = json.loads\n        elif target_format in ('yaml', 'yml'):\n            try:\n                import yaml\n                load_func = yaml.load\n            except ImportError:\n                raise UsageError('No YAML package found. To process yaml files, run: pip install PyYAML')\n        elif target_format == 'python':\n            load_func = ast.literal_eval\n        else:\n            raise UsageError('expected target-format to be one of python, json, or yaml')\n    \n    \n        try:\n>           target = load_func(target_text)\n                     ^^^^^^^^^^^^^^^^^^^^^^\nE           TypeError: load() missing 1 required positional argument: 'Loader'\n\nglom/cli.py:140: TypeError\n\nDuring handling of the above exception, another exception occurred:\n\n    def test_main_yaml_target():\n        cwd = os.path.dirname(os.path.abspath(__file__))\n        # Handles the filepath if running tox\n        if '.tox' in cwd:\n            cwd = os.path.join(cwd.split('.tox')[0] + '/glom/test/')\n        path = os.path.join(cwd, 'data/test_valid.yaml')\n        argv = ['__', '--target-file', path, '--target-format', 'yml', 'Hello']\n>       assert cli.main(argv) == 0\n               ^^^^^^^^^^^^^^\n\nglom/test/test_cli.py:125: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nglom/cli.py:96: in main\n    return cmd.run(argv) or 0\n           ^^^^^^^^^^^^^\n/usr/local/lib/python3.12/site-packages/face/command.py:478: in run\n    ret = inject(wrapped, kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/site-packages/face/sinter.py:55: in inject\n    return f(**kwargs)\n           ^^^^^^^^^^^\n<sinter generated next_ edaff0d4b1f86b6b>:6: in next_\n    return funcs[0](next_=next_, posargs_=posargs_, spec_file=spec_file, spec_format=spec_format, target_file=target_file, target_format=target_format)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nglom/cli.py:192: in mw_get_target\n    target = mw_handle_target(target_text, target_format)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntarget_text = '--- \\nHello: \\n  - World\\n', target_format = 'yml'\n\n    def mw_handle_target(target_text, target_format):\n        \"\"\" Handles reading in a file specified in cli command.\n    \n        Args:\n            target_text (str): String that specifies where 6\n            target_format (str): Valid formats include `.json` and `.yml` or `.yaml`\n        Returns:\n            The content of the file that you specified\n        Raises:\n            CommandLineError: Issue with file format or appropriate file reading package not installed.\n        \"\"\"\n        if not target_text:\n            return {}\n        target = {}\n        if target_format == 'json':\n            load_func = json.loads\n        elif target_format in ('yaml', 'yml'):\n            try:\n                import yaml\n                load_func = yaml.load\n            except ImportError:\n                raise UsageError('No YAML package found. To process yaml files, run: pip install PyYAML')\n        elif target_format == 'python':\n            load_func = ast.literal_eval\n        else:\n            raise UsageError('expected target-format to be one of python, json, or yaml')\n    \n    \n        try:\n            target = load_func(target_text)\n        except Exception as e:\n>           raise UsageError('could not load target data, got: %s: %s'\n                             % (e.__class__.__name__, e))\nE           face.errors.UsageError: could not load target data, got: TypeError: load() missing 1 required positional argument: 'Loader'\n\nglom/cli.py:142: UsageError",
+        "outcome": "failed",
+        "stderr": "error: could not load target data, got: TypeError: load() missing 1 required positional argument: 'Loader'\n",
+        "traceback": [
+          {
+            "lineno": 125,
+            "message": "",
+            "path": "glom/test/test_cli.py"
+          },
+          {
+            "lineno": 96,
+            "message": "in main",
+            "path": "glom/cli.py"
+          },
+          {
+            "lineno": 478,
+            "message": "in run",
+            "path": "/usr/local/lib/python3.12/site-packages/face/command.py"
+          },
+          {
+            "lineno": 55,
+            "message": "in inject",
+            "path": "/usr/local/lib/python3.12/site-packages/face/sinter.py"
+          },
+          {
+            "lineno": 6,
+            "message": "in next_",
+            "path": "<sinter generated next_ edaff0d4b1f86b6b>"
+          },
+          {
+            "lineno": 192,
+            "message": "in mw_get_target",
+            "path": "glom/cli.py"
+          },
+          {
+            "lineno": 142,
+            "message": "UsageError",
+            "path": "glom/cli.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_main_yaml_target",
+        "test_cli.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 117,
+      "nodeid": "glom/test/test_cli.py::test_main_yaml_target",
+      "outcome": "failed",
+      "setup": {
+        "duration": 6.187499820953235e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.487500210525468e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.001731201002257876,
+        "outcome": "passed",
+        "stdout": "4\n[\n  2,\n  3,\n  4\n]\n"
+      },
+      "keywords": [
+        "test_main_python_full_spec_python_target",
+        "test_cli.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 134,
+      "nodeid": "glom/test/test_cli.py::test_main_python_full_spec_python_target",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.891600060043857e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.083300442900509e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.31490642100106925,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_main",
+        "test_cli.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 142,
+      "nodeid": "glom/test/test_cli.py::test_main",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0003755810030270368,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011479100066935644,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004946230037603527,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_good_error",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 18,
+      "nodeid": "glom/test/test_error.py::test_good_error",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012616599997272715,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.804100121371448e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0009783290006453171,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_error",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 25,
+      "nodeid": "glom/test/test_error.py::test_error",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.0040998505428433e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.549899990204722e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.841599628794938e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_unfinalized_glomerror_repr",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 34,
+      "nodeid": "glom/test/test_error.py::test_unfinalized_glomerror_repr",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.0165999457240105e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.8457997511141e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010237399692414328,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_line_trace",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 40,
+      "nodeid": "glom/test/test_error.py::test_line_trace",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.716600571759045e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.8915997215081006e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.808300092117861e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_short_trace",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 47,
+      "nodeid": "glom/test/test_error.py::test_short_trace",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.658299778588116e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.687499651685357e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 147,
+          "message": "assert 'Traceback (m...que message\\n' == 'Traceback (m...que message\\n'\n  \n  Skipping 485 identical leading characters in diff, use -v to show\n    _exc at\n  -            ^^^^^^^^^^^^\n      File \"<boltons.funcutils.FunctionBuilder-0>\", line ___, in _raise_exc\n    Exception: unique message",
+          "path": "/repo/glom/test/test_error.py"
+        },
+        "duration": 0.0012944109985255636,
+        "longrepr": "def test_regular_error_stack():\n        actual = _make_stack({'results': [{'value': _raise_exc}]})\n        expected = \"\"\"\\\n    Traceback (most recent call last):\n      File \"test_error.py\", line ___, in _make_stack\n        glom(target, spec)\n      File \"core.py\", line ___, in glom\n        raise err\n    glom.core.GlomError.wrap(Exception): error raised while processing.\n     Target-spec trace, with error detail (most recent last):\n     - Target: [None]\n     - Spec: {'results': [{'value': <function _raise_exc at\n     - Spec: [{'value': <function _raise_exc at\n     - Target: None\n     - Spec: {'value': <function _raise_exc at\n     - Spec: <function _raise_exc at\n      File \"<boltons.funcutils.FunctionBuilder-0>\", line ___, in _raise_exc\n    Exception: unique message\n    \"\"\"\n        # _raise_exc being present in the second-to-last line above tests\n        # that errors in user-defined functions result in frames being\n        # visible\n>       assert expected == actual\nE       assert 'Traceback (m...que message\\n' == 'Traceback (m...que message\\n'\nE         \nE         Skipping 485 identical leading characters in diff, use -v to show\nE           _exc at\nE         -            ^^^^^^^^^^^^\nE             File \"<boltons.funcutils.FunctionBuilder-0>\", line ___, in _raise_exc\nE           Exception: unique message\n\n/repo/glom/test/test_error.py:147: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 147,
+            "message": "AssertionError",
+            "path": "/repo/glom/test/test_error.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_regular_error_stack",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 124,
+      "nodeid": "glom/test/test_error.py::test_regular_error_stack",
+      "outcome": "failed",
+      "setup": {
+        "duration": 5.541699647437781e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.162499918602407e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0008092880016192794,
+        "outcome": "passed",
+        "stdout": "Traceback (most recent call last):\n  File \"test_error.py\", line ___, in _make_stack\n    glom(target, spec)\n  File \"core.py\", line ___, in glom\n    raise err\nglom.core.PathAccessError: error raised while processing.\n Target-spec trace, with error detail (most recent last):\n - Target: [None]\n - Spec: {'results': [{'valu\u00e9': 'value'}]}\n - Spec: [{'valu\u00e9': 'value'}]\n - Target: None\n - Spec: {'valu\u00e9': 'value'}\n - Spec: 'value'\nglom.core.PathAccessError: could not access 'value', part 0 of Path('value'), got error: AttributeError(\"'NoneType' object has no attribute 'value'\")\n\n"
+      },
+      "keywords": [
+        "test_glom_error_stack",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 149,
+      "nodeid": "glom/test/test_error.py::test_glom_error_stack",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.824999920558184e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.504199700430036e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0011659529991447926,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_glom_error_double_stack",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 189,
+      "nodeid": "glom/test/test_error.py::test_glom_error_double_stack",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.9250000049360096e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.345799920381978e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0008584130046074279,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_long_target_repr",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 217,
+      "nodeid": "glom/test/test_error.py::test_long_target_repr",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.7541998103260994e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.974999996600673e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0012167029999545775,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_error_types",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 236,
+      "nodeid": "glom/test/test_error.py::test_error_types",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.904099816689268e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.320799730019644e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011516599624883384,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_fallback",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 245,
+      "nodeid": "glom/test/test_error.py::test_fallback",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.641699681291357e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00023495699861086905,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.003070904000196606,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_all_public_errors",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 269,
+      "nodeid": "glom/test/test_error.py::test_all_public_errors",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.995800165692344e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.312399975489825e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003926230056094937,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_glom_dev_debug",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 332,
+      "nodeid": "glom/test/test_error.py::test_glom_dev_debug",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.987499753246084e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.245799886528403e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004492900043260306,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_unicode_stack",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 347,
+      "nodeid": "glom/test/test_error.py::test_unicode_stack",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.6875003792811185e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.154100265121087e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00036645700311055407,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test",
+        "test_fill.py",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 2,
+      "nodeid": "glom/test/test_fill.py::test",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.641699681291357e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.154100265121087e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00027979099832009524,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_bucketing",
+        "test_grouping.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 10,
+      "nodeid": "glom/test/test_grouping.py::test_bucketing",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.6498996855225414e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.687499651685357e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0013696610039914958,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_corner_cases",
+        "test_grouping.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 17,
+      "nodeid": "glom/test/test_grouping.py::test_corner_cases",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.9207995946053416e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013566700363298878,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00036141600139671937,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_agg",
+        "test_grouping.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 58,
+      "nodeid": "glom/test/test_grouping.py::test_agg",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.533300231443718e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.466600072802976e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00036195699794916436,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_limit",
+        "test_grouping.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 80,
+      "nodeid": "glom/test/test_grouping.py::test_limit",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.0957994719501585e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.675000622635707e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014129099872661754,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_reduce",
+        "test_grouping.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 93,
+      "nodeid": "glom/test/test_grouping.py::test_reduce",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.670800601365045e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.570800567511469e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010804199700942263,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sample",
+        "test_grouping.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 99,
+      "nodeid": "glom/test/test_grouping.py::test_sample",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.733300349675119e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.6458004110027105e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.005192352997255512,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_basic",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 24,
+      "nodeid": "glom/test/test_match.py::test_basic",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.791700095869601e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.737399962730706e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0008192879977286793,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_match_expressions",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 74,
+      "nodeid": "glom/test/test_match.py::test_match_expressions",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.033299723640084e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.387499888660386e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.67499950597994e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_match_default",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 87,
+      "nodeid": "glom/test/test_match.py::test_match_default",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.8416000683791935e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.63749999855645e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.570800127927214e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_double_wrapping",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 93,
+      "nodeid": "glom/test/test_match.py::test_double_wrapping",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.470799806062132e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.108299567131326e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005649980012094602,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sets",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 104,
+      "nodeid": "glom/test/test_match.py::test_sets",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.554199742618948e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.312399636954069e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.466700430493802e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_spec_match",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 111,
+      "nodeid": "glom/test/test_match.py::test_spec_match",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.650000093737617e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.3125004342291504e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010408300295239314,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_precedence",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 119,
+      "nodeid": "glom/test/test_match.py::test_precedence",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.6041004427243024e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.520799459191039e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0007167879957705736,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_cruddy_json",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 132,
+      "nodeid": "glom/test/test_match.py::test_cruddy_json",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.704200157197192e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.987499753246084e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0007196220030891709,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_pattern_matching",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 146,
+      "nodeid": "glom/test/test_match.py::test_pattern_matching",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.624999903375283e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.904099816689268e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002927069945144467,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_examples",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 171,
+      "nodeid": "glom/test/test_match.py::test_examples",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.654199776472524e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.670799873769283e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000292456999886781,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_reprs",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 177,
+      "nodeid": "glom/test/test_match.py::test_reprs",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.424999835668132e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.591699639102444e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00045295599556993693,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_shortcircuit",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 201,
+      "nodeid": "glom/test/test_match.py::test_shortcircuit",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.237500201677904e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.362500425893813e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0019305749956401996,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sample",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 211,
+      "nodeid": "glom/test/test_match.py::test_sample",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.504200089490041e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.25000029685907e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004966649939888157,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_regex",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 262,
+      "nodeid": "glom/test/test_match.py::test_regex",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.524999869521707e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.904100155225024e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.216599962906912e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_ternary",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 275,
+      "nodeid": "glom/test/test_match.py::test_ternary",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.4750002163928e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.3165997087489814e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0012579120011650957,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sky",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 279,
+      "nodeid": "glom/test/test_match.py::test_sky",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.262500053504482e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.091599789215252e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000352205999661237,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_clamp",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 322,
+      "nodeid": "glom/test/test_match.py::test_clamp",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.424899765988812e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.958400288363919e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003861239965772256,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_json_ref",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 327,
+      "nodeid": "glom/test/test_match.py::test_json_ref",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.6750002840999514e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.766599497292191e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0037067340017529204,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_nested_struct",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 338,
+      "nodeid": "glom/test/test_match.py::test_nested_struct",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.5374999647028744e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.220799696166068e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0025108230038313195,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_check_ported_tests",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 381,
+      "nodeid": "glom/test/test_match.py::test_check_ported_tests",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.0708000091835856e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.725000275764614e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0006440389988711104,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assign",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 7,
+      "nodeid": "glom/test/test_mutation.py::test_assign",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.0375001339707524e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.520799797726795e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.783299901755527e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assign_spec_val",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 37,
+      "nodeid": "glom/test/test_mutation.py::test_assign_spec_val",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.895800131838769e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.991600093897432e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0006753729976480827,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_unregistered_assign",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 42,
+      "nodeid": "glom/test/test_mutation.py::test_unregistered_assign",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.0708000091835856e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.73749964335002e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0010332040037610568,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_bad_assign_target",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 54,
+      "nodeid": "glom/test/test_mutation.py::test_bad_assign_target",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.216600351966918e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.341699918266386e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00044587299635168165,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sequence_assign",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 73,
+      "nodeid": "glom/test/test_mutation.py::test_sequence_assign",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.854099435964599e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.649900024058297e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.408300345763564e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_invalid_assign_op_target",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 92,
+      "nodeid": "glom/test/test_mutation.py::test_invalid_assign_op_target",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.570899520535022e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.3874005971010774e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012033299572067335,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assign_missing_signature",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 101,
+      "nodeid": "glom/test/test_mutation.py::test_assign_missing_signature",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.50419936189428e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.379199865274131e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00033183199411723763,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assign_missing_dict",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 108,
+      "nodeid": "glom/test/test_mutation.py::test_assign_missing_dict",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.3415998991113156e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.679199966834858e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000186498997209128,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assign_missing_object",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 125,
+      "nodeid": "glom/test/test_mutation.py::test_assign_missing_object",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.450000026030466e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.8208002883475274e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011658300354611129,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assign_missing_with_extant_keys",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 138,
+      "nodeid": "glom/test/test_mutation.py::test_assign_missing_with_extant_keys",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.525000597117469e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.704200157197192e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0007357889990089461,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assign_missing_unassignable",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 162,
+      "nodeid": "glom/test/test_mutation.py::test_assign_missing_unassignable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.458299710880965e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.729099939344451e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.362499986309558e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_s_assign",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 193,
+      "nodeid": "glom/test/test_mutation.py::test_s_assign",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.8582998462952673e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.5208001867868006e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.001601410003786441,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_delete",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 200,
+      "nodeid": "glom/test/test_mutation.py::test_delete",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.662499461323023e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.38330020592548e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0006232469968381338,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_unregistered_delete",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 252,
+      "nodeid": "glom/test/test_mutation.py::test_unregistered_delete",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.933299689786509e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.34989992249757e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0006922880056663416,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_bad_delete_target",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 262,
+      "nodeid": "glom/test/test_mutation.py::test_bad_delete_target",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.7207995268981904e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.929100007051602e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004227070021443069,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sequence_delete",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 281,
+      "nodeid": "glom/test/test_mutation.py::test_sequence_delete",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.699999746866524e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.05830064159818e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.566600445192307e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_invalid_delete_op_target",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 295,
+      "nodeid": "glom/test/test_mutation.py::test_invalid_delete_op_target",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00022962400544201955,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.604200123343617e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010362500324845314,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_delete_ignore_missing",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 304,
+      "nodeid": "glom/test/test_mutation.py::test_delete_ignore_missing",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.7040997489821166e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.8917001297231764e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.19579984433949e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_list_path_access",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 5,
+      "nodeid": "glom/test/test_path_and_t.py::test_list_path_access",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.8457997511141e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.595800030278042e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.329100091941655e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_path",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 9,
+      "nodeid": "glom/test/test_path_and_t.py::test_path",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.4957999964244664e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.020799628458917e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.095800487557426e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_empty_path_access",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 16,
+      "nodeid": "glom/test/test_path_and_t.py::test_empty_path_access",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.595800030278042e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.5208001867868006e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014475000352831557,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_path_t_roundtrip",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 28,
+      "nodeid": "glom/test/test_path_and_t.py::test_path_t_roundtrip",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.6416000006720424e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.7124998420476913e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0008181220036931336,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_path_access_error_message",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 52,
+      "nodeid": "glom/test/test_path_and_t.py::test_path_access_error_message",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.504100408870727e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.7999997807201e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.01226961499924073,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_t_picklability",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 80,
+      "nodeid": "glom/test/test_path_and_t.py::test_t_picklability",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.666699871653691e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.837500015739352e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.487399802310392e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_path_len",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 99,
+      "nodeid": "glom/test/test_path_and_t.py::test_path_len",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.133300485089421e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.587499956367537e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001744580004015006,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_path_getitem",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 110,
+      "nodeid": "glom/test/test_path_and_t.py::test_path_getitem",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.616700218524784e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.6583005061838776e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011754099978134036,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_path_slices",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 127,
+      "nodeid": "glom/test/test_path_and_t.py::test_path_slices",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.7000004744622856e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.379200592869893e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.037499744910747e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_path_values",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 152,
+      "nodeid": "glom/test/test_path_and_t.py::test_path_values",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.9042005634401e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.924900273792446e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.199999865610152e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_path_items",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 160,
+      "nodeid": "glom/test/test_path_and_t.py::test_path_items",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.212500349851325e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.041600136086345e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.974899926921353e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_path_eq",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 170,
+      "nodeid": "glom/test/test_path_and_t.py::test_path_eq",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.854199844179675e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.5208001867868006e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.270800415426493e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_path_eq_t",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 177,
+      "nodeid": "glom/test/test_path_and_t.py::test_path_eq_t",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.6416000006720424e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.591599619947374e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.341700206277892e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_startswith",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 182,
+      "nodeid": "glom/test/test_path_and_t.py::test_startswith",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.629099905490875e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.437499930849299e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 6.379100523190573e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_from_t_identity",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 199,
+      "nodeid": "glom/test/test_path_and_t.py::test_from_t_identity",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.379199814749882e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.3417003073263913e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.204099867725745e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_t_dict_key",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 205,
+      "nodeid": "glom/test/test_path_and_t.py::test_t_dict_key",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.483300628839061e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.570799839915708e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00018870799976866692,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sum_integers",
+        "test_reduction.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 9,
+      "nodeid": "glom/test/test_reduction.py::test_sum_integers",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.733300349675119e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.962500290479511e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.370799671160057e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sum_seqs",
+        "test_reduction.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 30,
+      "nodeid": "glom/test/test_reduction.py::test_sum_seqs",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.520799459191039e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.658299778588116e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001271660003112629,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_fold",
+        "test_reduction.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 46,
+      "nodeid": "glom/test/test_reduction.py::test_fold",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.362499359762296e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.408300057752058e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000674580005579628,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_fold_bad_iter",
+        "test_reduction.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 64,
+      "nodeid": "glom/test/test_reduction.py::test_fold_bad_iter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.7249999372288585e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.379099795594811e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001067080011125654,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_flatten",
+        "test_reduction.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 77,
+      "nodeid": "glom/test/test_reduction.py::test_flatten",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.0625003243330866e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.8458004787098616e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0006149559994810261,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_flatten_func",
+        "test_reduction.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 93,
+      "nodeid": "glom/test/test_reduction.py::test_flatten_func",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.5582997447345406e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.979099660180509e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.895699622575194e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge",
+        "test_reduction.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 123,
+      "nodeid": "glom/test/test_reduction.py::test_merge",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.6541000958532095e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.63749999855645e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00015558300219709054,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_omd",
+        "test_reduction.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 138,
+      "nodeid": "glom/test/test_reduction.py::test_merge_omd",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.616599810309708e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.908300227019936e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.183299698634073e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_func",
+        "test_reduction.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 145,
+      "nodeid": "glom/test/test_reduction.py::test_merge_func",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.795800097985193e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.5582997447345406e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003704979972098954,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_spec",
+        "test_spec.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 6,
+      "nodeid": "glom/test/test_spec.py::test_spec",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.7040997489821166e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.28749985480681e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001017500035231933,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_scope_spec",
+        "test_spec.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 18,
+      "nodeid": "glom/test/test_spec.py::test_scope_spec",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.6291995861101896e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.69990006624721e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001552500034449622,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_iter",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 12,
+      "nodeid": "glom/test/test_streaming.py::test_iter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.5917000281624496e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.629200313705951e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005128730044816621,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_filter",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 28,
+      "nodeid": "glom/test/test_streaming.py::test_filter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.420800152933225e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.391599890775979e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001617499947315082,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_map",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 57,
+      "nodeid": "glom/test/test_streaming.py::test_map",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.42910017631948e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.0708000091835856e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00017816600302467123,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_split_flatten",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 64,
+      "nodeid": "glom/test/test_streaming.py::test_split_flatten",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.666599463438615e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.866600258741528e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010862400085898116,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_chunked",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 78,
+      "nodeid": "glom/test/test_streaming.py::test_chunked",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.241700612008572e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.562500155065209e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00021045700123067945,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_windowed",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 90,
+      "nodeid": "glom/test/test_streaming.py::test_windowed",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.474999488797039e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.945799784967676e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00019012400298379362,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_unique",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 106,
+      "nodeid": "glom/test/test_streaming.py::test_unique",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.524999869521707e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.6623997807037085e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00019687399617396295,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_slice",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 119,
+      "nodeid": "glom/test/test_streaming.py::test_slice",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.424999835668132e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.554199742618948e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002556649997131899,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_while",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 147,
+      "nodeid": "glom/test/test_streaming.py::test_while",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.5749005696270615e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.041600136086345e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003890820007654838,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_iter_composition",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 166,
+      "nodeid": "glom/test/test_streaming.py::test_iter_composition",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.420800152933225e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.775000317953527e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0007562889950349927,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_faulty_iterate",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 175,
+      "nodeid": "glom/test/test_streaming.py::test_faulty_iterate",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.36660008947365e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.395799573510885e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002548319971538149,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_first",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 187,
+      "nodeid": "glom/test/test_streaming.py::test_first",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.704100476577878e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.11250031599775e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010070700227515772,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_all",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 203,
+      "nodeid": "glom/test/test_streaming.py::test_all",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.5500000598840415e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.616700218524784e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005030390020692721,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_types_leave_one_out",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 29,
+      "nodeid": "glom/test/test_target_types.py::test_types_leave_one_out",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.9207995946053416e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.9416997828520834e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0011744119983632118,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_types_bare",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 49,
+      "nodeid": "glom/test/test_target_types.py::test_types_bare",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.641700408887118e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.233300518942997e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011404199904063717,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_invalid_register",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 81,
+      "nodeid": "glom/test/test_target_types.py::test_invalid_register",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.6541000958532095e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.8999998145736754e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00035633199877338484,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_exact_register",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 88,
+      "nodeid": "glom/test/test_target_types.py::test_exact_register",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.029200449120253e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.620800220640376e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005813720053993165,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_duck_register",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 106,
+      "nodeid": "glom/test/test_target_types.py::test_duck_register",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.4666001233272254e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.083300104364753e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003354979999130592,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_bypass_getitem",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 132,
+      "nodeid": "glom/test/test_target_types.py::test_bypass_getitem",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.554100061999634e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.7249999372288585e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012708300346275792,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_iter_set",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 143,
+      "nodeid": "glom/test/test_target_types.py::test_iter_set",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.3208001190796494e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.66240050829947e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004768309954670258,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_iter_str",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 157,
+      "nodeid": "glom/test/test_target_types.py::test_iter_str",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.433300248114392e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.708300159312785e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.004099800018594e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_default_scope_register",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 181,
+      "nodeid": "glom/test/test_target_types.py::test_default_scope_register",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.4748998081777245e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.279199831420556e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0007205389993032441,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_faulty_iterate",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 186,
+      "nodeid": "glom/test/test_target_types.py::test_faulty_iterate",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.5040996812749654e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.8333003835286945e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00044816499575972557,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_faulty_op_registration",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 198,
+      "nodeid": "glom/test/test_target_types.py::test_faulty_op_registration",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.637400317937136e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.0708000091835856e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00015987400547601283,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_reregister_type",
+        "test_target_types.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 252,
+      "nodeid": "glom/test/test_target_types.py::test_reregister_type",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.7000004744622856e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.733300349675119e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 6.075000419514254e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_tutorial_data",
+        "test_tutorial.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 4,
+      "nodeid": "glom/test/test_tutorial.py::test_tutorial_data",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.36670010862872e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.187499482417479e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.32910043047741e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_tutorial",
+        "test_tutorial.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 8,
+      "nodeid": "glom/test/test_tutorial.py::test_tutorial",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.570800567511469e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.341599848587066e-05,
+        "outcome": "passed"
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "category": "DeprecationWarning",
+      "filename": "/usr/local/lib/python3.12/re/__init__.py",
+      "lineno": 302,
+      "message": "The re.TEMPLATE/re.T flag is deprecated as it is an undocumented flag without an obvious purpose. Don't use it.",
+      "when": "runtest"
+    }
+  ]
+}

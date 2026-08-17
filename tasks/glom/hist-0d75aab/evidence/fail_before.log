@@ -1,0 +1,23 @@
+$ python -m pytest -q glom/test/test_path_and_t.py::test_t_dunders -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________________________ test_t_dunders ________________________________
+
+    def test_t_dunders():
+        with raises(AttributeError) as exc_info:
+            T.__name__
+    
+>       assert 'use T.__("name__")' in str(exc_info.value)
+E       assert 'use T.__("name__")' in 'T instances reserve dunder attributes, use T.__()'
+E        +  where 'T instances reserve dunder attributes, use T.__()' = str(AttributeError('T instances reserve dunder attributes, use T.__()'))
+E        +    where AttributeError('T instances reserve dunder attributes, use T.__()') = <ExceptionInfo AttributeError('T instances reserve dunder attributes, use T.__()') tblen=2>.value
+
+glom/test/test_path_and_t.py:236: AssertionError
+=========================== short test summary info ============================
+FAILED glom/test/test_path_and_t.py::test_t_dunders - assert 'use T.__("name_...
+1 failed in 0.11s
+
+--- stderr ---
+

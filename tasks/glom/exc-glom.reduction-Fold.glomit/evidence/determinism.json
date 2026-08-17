@@ -1,0 +1,110 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "failed",
+        "glom/test/test_grouping.py::test_agg": "failed",
+        "glom/test/test_grouping.py::test_reduce": "failed",
+        "glom/test/test_reduction.py::test_flatten": "failed",
+        "glom/test/test_reduction.py::test_flatten_func": "failed",
+        "glom/test/test_reduction.py::test_fold": "failed",
+        "glom/test/test_reduction.py::test_fold_bad_iter": "failed",
+        "glom/test/test_reduction.py::test_merge": "failed",
+        "glom/test/test_reduction.py::test_merge_func": "failed",
+        "glom/test/test_reduction.py::test_merge_omd": "failed",
+        "glom/test/test_reduction.py::test_sum_integers": "failed",
+        "glom/test/test_reduction.py::test_sum_seqs": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "failed",
+        "glom/test/test_grouping.py::test_agg": "failed",
+        "glom/test/test_grouping.py::test_reduce": "failed",
+        "glom/test/test_reduction.py::test_flatten": "failed",
+        "glom/test/test_reduction.py::test_flatten_func": "failed",
+        "glom/test/test_reduction.py::test_fold": "failed",
+        "glom/test/test_reduction.py::test_fold_bad_iter": "failed",
+        "glom/test/test_reduction.py::test_merge": "failed",
+        "glom/test/test_reduction.py::test_merge_func": "failed",
+        "glom/test/test_reduction.py::test_merge_omd": "failed",
+        "glom/test/test_reduction.py::test_sum_integers": "failed",
+        "glom/test/test_reduction.py::test_sum_seqs": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "failed",
+        "glom/test/test_grouping.py::test_agg": "failed",
+        "glom/test/test_grouping.py::test_reduce": "failed",
+        "glom/test/test_reduction.py::test_flatten": "failed",
+        "glom/test/test_reduction.py::test_flatten_func": "failed",
+        "glom/test/test_reduction.py::test_fold": "failed",
+        "glom/test/test_reduction.py::test_fold_bad_iter": "failed",
+        "glom/test/test_reduction.py::test_merge": "failed",
+        "glom/test/test_reduction.py::test_merge_func": "failed",
+        "glom/test/test_reduction.py::test_merge_omd": "failed",
+        "glom/test/test_reduction.py::test_sum_integers": "failed",
+        "glom/test/test_reduction.py::test_sum_seqs": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "passed",
+        "glom/test/test_grouping.py::test_agg": "passed",
+        "glom/test/test_grouping.py::test_reduce": "passed",
+        "glom/test/test_reduction.py::test_flatten": "passed",
+        "glom/test/test_reduction.py::test_flatten_func": "passed",
+        "glom/test/test_reduction.py::test_fold": "passed",
+        "glom/test/test_reduction.py::test_fold_bad_iter": "passed",
+        "glom/test/test_reduction.py::test_merge": "passed",
+        "glom/test/test_reduction.py::test_merge_func": "passed",
+        "glom/test/test_reduction.py::test_merge_omd": "passed",
+        "glom/test/test_reduction.py::test_sum_integers": "passed",
+        "glom/test/test_reduction.py::test_sum_seqs": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "passed",
+        "glom/test/test_grouping.py::test_agg": "passed",
+        "glom/test/test_grouping.py::test_reduce": "passed",
+        "glom/test/test_reduction.py::test_flatten": "passed",
+        "glom/test/test_reduction.py::test_flatten_func": "passed",
+        "glom/test/test_reduction.py::test_fold": "passed",
+        "glom/test/test_reduction.py::test_fold_bad_iter": "passed",
+        "glom/test/test_reduction.py::test_merge": "passed",
+        "glom/test/test_reduction.py::test_merge_func": "passed",
+        "glom/test/test_reduction.py::test_merge_omd": "passed",
+        "glom/test/test_reduction.py::test_sum_integers": "passed",
+        "glom/test/test_reduction.py::test_sum_seqs": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "passed",
+        "glom/test/test_grouping.py::test_agg": "passed",
+        "glom/test/test_grouping.py::test_reduce": "passed",
+        "glom/test/test_reduction.py::test_flatten": "passed",
+        "glom/test/test_reduction.py::test_flatten_func": "passed",
+        "glom/test/test_reduction.py::test_fold": "passed",
+        "glom/test/test_reduction.py::test_fold_bad_iter": "passed",
+        "glom/test/test_reduction.py::test_merge": "passed",
+        "glom/test/test_reduction.py::test_merge_func": "passed",
+        "glom/test/test_reduction.py::test_merge_omd": "passed",
+        "glom/test/test_reduction.py::test_sum_integers": "passed",
+        "glom/test/test_reduction.py::test_sum_seqs": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

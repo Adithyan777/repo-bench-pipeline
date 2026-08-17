@@ -1,0 +1,132 @@
+{
+  "step": "p2.okf.function_contracts",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "For each function of module `glom.reduction` below, write a behavioral contract: inputs (what each parameter means), outputs (what is returned), raises (list of exception TYPE NAMES it can raise, [] if none), side_effects (\"none\" or a short phrase), invariants (a property that always holds, or \"\"). Base every field ONLY on the code shown. Return one entry per qualname.\n\n### glom.reduction.Flatten.__repr__\nsignature: __repr__(self)\n    def __repr__(self):\n        cn = self.__class__.__name__\n        args = () if self.subspec is T else (self.subspec,)\n        kwargs = {}\n        if self.lazy:\n            kwargs['init'] = 'lazy'\n        elif self.init is not list:\n            kwargs['init'] = self.init\n        return format_invocation(cn, args, kwargs, repr=bbrepr)\n\n### glom.reduction.Fold.glomit\nsignature: glomit(self, target, scope)\n    def glomit(self, target, scope):\n        is_agg = False\n        if scope[MODE] is GROUP and scope.get(CUR_AGG) is None:\n            scope[CUR_AGG] = self\n            is_agg = True\n\n        if self.subspec is not T:\n            target = scope[glom](target, self.subspec, scope)\n\n        if is_agg:\n            return self._agg(target, scope[ACC_TREE])\n        try:\n            return self._fold(target_iter(target, scope))\n        except UnregisteredTarget as ut:\n            raise FoldError('can only %s on iterable targets, not %s type (%s)'\n                            % (self.__class__.__name__, type(target).__name__, ut))\n\n### glom.reduction.Merge.__init__\nsignature: __init__(self, subspec=T, init=dict, op=None)\n    def __init__(self, subspec=T, init=dict, op=None):\n        if op is None:\n            op = 'update'\n        if isinstance(op, basestring):\n            test_init = init()\n            op = getattr(type(test_init), op, None)\n        if not callable(op):\n            raise ValueError('expected callable \"op\" arg or an \"init\" with an .update()'\n                             ' method not %r and %r' % (op, init))\n        super().__init__(subspec=subspec, init=init, op=op)\n\n### glom.reduction.flatten\nsignature: flatten(target, **kwargs)\ndef flatten(target, **kwargs):\n    \"\"\"At its most basic, ``flatten()`` turns an iterable of iterables\n    into a single list. But it has a few arguments which give it more\n    power:\n\n    Args:\n\n       init (callable): A function or type which gives the initial\n          value of the return. The value must support addition. Common\n          values might be :class:`list` (the default), :class:`tuple`,\n          or even :class:`int`. You can also pass ``init=\"lazy\"`` to\n          get a generator.\n       levels (int): A positive integer representing the number of\n          nested levels to flatten. Defaults to 1.\n       spec: The glomspec to fetch before flattening. This defaults to the\n          the root level of the object.\n\n    Usage is straightforward.\n\n      >>> target = [[1, 2], [3], [4]]\n      >>> flatten(target)\n      [1, 2, 3, 4]\n\n    Because integers themselves support addition, we actually have two\n    levels of flattening possible, to get back a single integer sum:\n\n      >>> flatten(target, init=int, levels=2)\n      10\n\n    However, flattening a non-iterable like an integer will raise an\n    exception:\n\n      >>> target = 10\n      >>> flatten(target)\n      Traceback (most recent call last):\n      ...\n      FoldError: can only Flatten on iterable targets, not int type (...)\n\n    By default, ``flatten()`` will add a mix of iterables together,\n    making it a more-robust alternative to the built-in\n    ``sum(list_of_lists, list())`` trick most experienced Python\n    programmers are familiar with using:\n\n      >>> list_of_iterables = [range(2), [2, 3], (4, 5)]\n      >>> sum(list_of_iterables, [])\n      Traceback (most recent call last):\n      ...\n      TypeError: can only concatenate list (not \"tuple\") to list\n\n    Whereas flatten() handles this just fine:\n\n      >>> flatten(list_of_iterables)\n      [0, 1, 2, 3, 4, 5]\n\n    The ``flatten()`` function is a convenient wrapper around the\n    :class:`Flatten` specifier type. For embedding in larger specs,\n    and more involved flattening, see :class:`Flatten` and its base,\n    :class:`Fold`.\n\n    \"\"\"\n    subspec = kwargs.pop('spec', T)\n    init = kwargs.pop('init', list)\n    levels = kwargs.pop('levels', 1)\n    if kwargs:\n        raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n\n    if levels == 0:\n        return target\n    if levels < 0:\n        raise ValueError('expected levels >= 0, not %r' % levels)\n    spec = (subspec,)\n    spec += (Flatten(init=\"lazy\"),) * (levels - 1)\n    spec += (Flatten(init=init),)\n\n    return glom(target, spec)\n\n### glom.reduction.merge\nsignature: merge(target, **kwargs)\ndef merge(target, **kwargs):\n    \"\"\"By default, ``merge()`` turns an iterable of mappings into a\n    single, merged :class:`dict`, leveraging the behavior of the\n    :meth:`~dict.update` method. A new mapping is created and none of\n    the passed mappings are modified.\n\n    >>> target = [{'a': 'alpha'}, {'b': 'B'}, {'a': 'A'}]\n    >>> res = merge(target)\n    >>> pprint(res)\n    {'a': 'A', 'b': 'B'}\n\n    Args:\n       target: The list of dicts, or some other iterable of mappings.\n\n    The start state can be customized with the *init* keyword\n    argument, as well as the update operation, with the *op* keyword\n    argument. For more on those customizations, see the :class:`Merge`\n    spec.\n\n    \"\"\"\n    subspec = kwargs.pop('spec', T)\n    init = kwargs.pop('init', dict)\n    op = kwargs.pop('op', None)\n    if kwargs:\n        raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n    spec = Merge(subspec, init, op)\n    return glom(target, spec)"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "contracts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "inputs": {
+                      "type": "string"
+                    },
+                    "outputs": {
+                      "type": "string"
+                    },
+                    "raises": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "side_effects": {
+                      "type": "string"
+                    },
+                    "invariants": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "inputs",
+                    "outputs",
+                    "raises",
+                    "side_effects"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "contracts"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-c6091eb5198241a4acca95e0d0d0744f",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"contracts\": [{\"qualname\":\"glom.reduction.Flatten.__repr__\",\"inputs\":\"self: the Flatten instance\",\"outputs\":\"A string representation formatted by format_invocation using the class name, positional args (subspec if not T), and keyword args (init if lazy or not list)\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"The returned string always starts with the class name and reflects the current subspec, lazy, and init state\"},{\"qualname\":\"glom.reduction.Fold.glomit\",\"inputs\":\"self: the Fold instance; target: the value to fold/aggregate; scope: the current glom scope dict\",\"outputs\":\"The folded or aggregated result value\",\"raises\":[\"FoldError\"],\"side_effects\":\"May mutate scope by setting scope[CUR_AGG] to self when in GROUP mode and CUR_AGG is None\",\"invariants\":\"If scope[MODE] is GROUP and no CUR_AGG exists, self is stored as the current aggregator before proceeding\"},{\"qualname\":\"glom.reduction.Merge.__init__\",\"inputs\":\"self: the Merge instance; subspec: glomspec to fetch values from target (default T); init: callable to create the initial accumulator value (default dict); op: callable or string naming a method to use for combining values (default None, treated as 'update')\",\"outputs\":\"None\",\"raises\":[\"ValueError\"],\"side_effects\":\"Initializes the Merge instance by setting subspec, init, and op attributes, calling super().__init__ with resolved values\",\"invariants\":\"After initialization, self.op is always callable\"},{\"qualname\":\"glom.reduction.flatten\",\"inputs\":\"target: the value to flatten; **kwargs: keyword arguments including spec (default T), init (default list), and levels (default 1)\",\"outputs\":\"The flattened result: a single list by default, or other type depending on init and levels\",\"raises\":[\"TypeError\",\"ValueError\"],\"side_effects\":\"none\",\"invariants\":\"If levels is 0, returns target unchanged; if levels is negative, raises ValueError\"},{\"qualname\":\"glom.reduction.merge\",\"inputs\":\"target: the value to merge (iterable of mappings); **kwargs: keyword arguments including spec (default T), init (default dict), and op (default None)\",\"outputs\":\"The merged mapping result\",\"raises\":[\"TypeError\"],\"side_effects\":\"none\",\"invariants\":\"The returned result is produced by glomming target with a Merge spec constructed from subspec, init, and op\"}]}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787003703,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 516,
+      "prompt_tokens": 1507,
+      "total_tokens": 2023,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 328,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 424,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 64,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

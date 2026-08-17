@@ -1,0 +1,99 @@
+{
+  "step": "p3.build.golden_rationale",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Write 2-4 sentences explaining WHY this change is correct for the task below, grounded on the diff and the verifier tests (what behavior it establishes and why the tests pass). Plain prose, no bullet list.\n\nTask: Check default should apply when validator raises validation error\nBehavior summary: Check now returns its configured default when a validator function raises the validation error type, instead of only handling non-validation exceptions; previously failing validators wouldn't trigger the default return.\nContract:\n- `glom.core.Check.glomit`: `glomit(self, target, scope)`\n\n```diff\n--- input/glom/core.py\n+++ solution/glom/core.py\n@@ -1075,7 +1075,10 @@\n                 except Exception as e:\n                     msg = ('expected %r check to validate target'\n                            % getattr(validator, '__name__', None) or ('#%s' % i))\n-                    if type(e) is not self._ValidationError:\n+                    if type(e) is self._ValidationError:\n+                        if self.default is not RAISE:\n+                            return self.default\n+                    else:\n                         msg += ' (got exception: %r)' % e\n                     errs.append(msg)\n \n\n```\n\n### glom/test/test_check.py (verifier tests: test_check_basic)\n```python\n\nfrom pytest import raises\n\nfrom glom import glom, Check, CheckError, Coalesce, OMIT, STOP, T\n\n\ndef test_check_basic():\n    assert glom([0, OMIT], [T]) == [0]  # sanity check OMIT\n\n    target = [{'id': 0}, {'id': 1}, {'id': 2}]\n\n    # check that skipping non-passing values works\n    assert glom(target, ([Coalesce(Check('id', equal_to=0), default=OMIT)], T[0])) == {'id': 0}\n    assert glom(target, ([Check('id', equal_to=0, default=OMIT)], T[0])) == {'id': 0}\n\n    # check that stopping iteration on non-passing values works\n    assert glom(target, [Check('id', equal_to=0, default=STOP)]) == [{'id': 0}]\n\n    # check that stopping chain execution on non-passing values works\n    spec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])\n    assert glom('hello', spec) == 'h'\n    assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work\n\n    target = [1, 'a']\n    assert glom(target, [Check(type=str, default=OMIT)]) == ['a']\n    assert glom(target, [Check(type=(str, int))]) == [1, 'a']\n    assert glom(target, [Check(instance_of=str, default=OMIT)]) == ['a']\n    assert glom(target, [Check(instance_of=(str, int))]) == [1, 'a']\n\n    target = ['1']\n    assert glom(target, [Check(validate=(int, float))])\n    assert glom(target, [Check()])  # bare check does a truthy check\n\n    failing_checks = [({'a': {'b': 1}}, {'a': ('a', 'b', Check(type=str))},\n                       '''target at path ['a', 'b'] failed check, got error: \"expected type to be 'str', found type 'int'\"'''),\n                      ({'a': {'b': 1}}, {'a': ('a', Check('b', type=str))},\n                       '''target at path ['a'] failed check, subtarget at 'b' got error: \"expected type to be 'str', found type 'int'\"'''),\n                      (1, Check(type=(str, bool))),\n                      (1, Check(instance_of=str)),\n                      (1, Check(instance_of=(str, bool))),\n                      (1, Check(equal_to=0)),\n                      (1, Check(one_of=(0,))),\n                      (1, Check(one_of=(0, 2))),\n                      ('-3.14', Check(validate=int)),\n                      ('', Check(validate=lambda x: False)),]\n\n    for fc in failing_checks:\n        if len(fc) == 2:\n            target, check = fc\n            msg = None\n        else:\n            target, check, msg = fc\n\n        with raises(CheckError) as exc_info:\n            glom(target, check)\n\n        if msg is not None:\n            assert str(exc_info.value) == msg\n        assert repr(exc_info.value)\n\n\ndef test_check_signature():\n    with raises(ValueError):\n        Check(instance_of=())\n    with raises(ValueError):\n        Check(type=())\n\n    with raises(TypeError):\n        Check(fake_kwarg=True)\n\n    with raises(ValueError):\n        Check(one_of=1)\n    with raises(ValueError):\n        Check(one_of=())\n    with raises(TypeError):\n        Check(one_of=(1, 2), equal_to=3)\n\n    with raises(ValueError):\n        Check(validate='bad, not callable, value')\n\n```"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "why_correct": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "why_correct"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-6cef3db7c5724997b7f0a345a9cc6b8a",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"why_correct\": \"The change makes `Check.glomit` return `self.default` when a validator raises `self._ValidationError`, whereas before it only returned the default for non-validation exceptions. This is correct because the task requires the default to apply when a validator raises a validation error, not just other exceptions. The test `test_check_basic` verifies this through cases like `Check(validate=lambda x: False)` and `Check(validate=int)` on `'-3.14'`\u2014these validators raise validation errors, and with the fix, if a default were configured, it would be returned instead of propagating the error. The diff specifically adds a branch that checks `if type(e) is self._ValidationError` and returns `self.default` when it is set (not `RAISE`), ensuring the configured default is honored for validation failures just as it was for other exceptions.\"}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787004091,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 189,
+      "prompt_tokens": 1114,
+      "total_tokens": 1303,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 115,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 181,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 64,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

@@ -1,0 +1,132 @@
+$ python -m pytest -q glom/test/test_match.py::test_basic -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________________________________ test_basic __________________________________
+
+    def test_basic():
+        _chk(Match(1), 1, 2)
+        _chk(Match(int), 1, 1.0)
+        # test unordered sequence comparisons
+        _chk(Match([int]), [1], ["1"])
+        _chk(Match({int}), {1}, [1])
+        _chk(Match(frozenset({float})), frozenset({}), frozenset({"1"}))
+        _chk(Match(len), [1], [])
+        with pytest.raises(MatchError):
+>           glom(None, Match(len))
+
+glom/test/test_match.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target = None, spec = Match(len), kwargs = {}
+
+    def glom(target, spec, **kwargs):
+        """Access or construct a value from a given *target* based on the
+        specification declared by *spec*.
+    
+        Accessing nested data, aka deep-get:
+    
+        >>> target = {'a': {'b': 'c'}}
+        >>> glom(target, 'a.b')
+        'c'
+    
+        Here the *spec* was just a string denoting a path,
+        ``'a.b.``. As simple as it should be. The next example shows
+        how to use nested data to access many fields at once, and make
+        a new nested structure.
+    
+        Constructing, or restructuring more-complicated nested data:
+    
+        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}
+        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}
+        >>> output = glom(target, spec)
+        >>> pprint(output)
+        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}
+    
+        ``glom`` also takes a keyword-argument, *default*. When set,
+        if a ``glom`` operation fails with a :exc:`GlomError`, the
+        *default* will be returned, very much like
+        :meth:`dict.get()`:
+    
+        >>> glom(target, 'a.xx', default='nada')
+        'nada'
+    
+        The *skip_exc* keyword argument controls which errors should
+        be ignored.
+    
+        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)
+        0.0
+    
+        Args:
+           target (object): the object on which the glom will operate.
+           spec (object): Specification of the output object in the form
+             of a dict, list, tuple, string, other glom construct, or
+             any composition of these.
+           default (object): An optional default to return in the case
+             an exception, specified by *skip_exc*, is raised.
+           skip_exc (Exception): An optional exception or tuple of
+             exceptions to ignore and return *default* (None if
+             omitted). If *skip_exc* and *default* are both not set,
+             glom raises errors through.
+           scope (dict): Additional data that can be accessed
+             via S inside the glom-spec.
+    
+        It's a small API with big functionality, and glom's power is
+        only surpassed by its intuitiveness. Give it a whirl!
+    
+        """
+        # TODO: check spec up front
+        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)
+        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)
+        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)
+        scope = _DEFAULT_SCOPE.new_child({
+            Path: kwargs.pop('path', []),
+            Inspect: kwargs.pop('inspector', None),
+            MODE: AUTO,
+        })
+        scope[UP] = scope
+        scope[ROOT] = scope
+        scope[T] = target
+        scope.update(kwargs.pop('scope', {}))
+        err = None
+        if kwargs:
+            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))
+        try:
+            try:
+                ret = _glom(target, spec, scope)
+            except skip_exc:
+                if default is _MISSING:
+                    raise
+                ret = default
+        except Exception as e:
+            if glom_debug:
+                raise
+            if isinstance(e, GlomError):
+                # need to change id or else py3 seems to not let us truncate the
+                # stack trace with the explicit "raise err" below
+                err = copy.copy(e)
+            else:
+                err = GlomError.wrap(e)
+            if isinstance(err, GlomError):
+                err._finalize(scope[ERROR_SCOPE])
+            else:  # wrapping failed, fall back to default behavior
+                raise
+    
+        if err:
+>           raise err
+E           glom.core.GlomError.wrap(TypeError): error raised while processing.
+E            Target-spec trace, with error detail (most recent last):
+E            - Target: None
+E            - Spec: Match(len)
+E            - Spec: len
+E                  ^^^^^^^^^^^^
+E           TypeError: object of type 'NoneType' has no len()
+
+glom/core.py:1790: GlomError.wrap(TypeError)
+=========================== short test summary info ============================
+FAILED glom/test/test_match.py::test_basic - glom.core.GlomError.wrap(TypeErr...
+1 failed in 0.13s
+
+--- stderr ---
+

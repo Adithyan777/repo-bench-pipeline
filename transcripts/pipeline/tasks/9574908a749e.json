@@ -1,0 +1,107 @@
+{
+  "step": "p3.build.write_instruction",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You write instructions for a coding benchmark task. You see the contract of the touched functions as it stands in the pre-change tree, the verifier tests, a behavior summary and the scope; you never see the solution. Write a Markdown instruction with exactly these sections: `## Goal`, `## Observable behavior` (with the requested number of concrete input -> output examples COPIED verbatim from the verifier tests, as code), `## Constraints` (about the task: API to keep, files in scope), `## How success is measured` (the verifier command). Describe WHAT must hold, never how to implement it or which edit to make; name only identifiers visible in the contract or the tests, never internal names (starting with `_`); do not restate test code beyond the examples; do not copy meta lines of this prompt (title limits, example counts, visibility notes) into the instruction. Also return a short title that names no internal identifier."
+      },
+      {
+        "role": "user",
+        "content": "Task kind: history\nBehavior summary: Fixes the repr/formatting of T/S specs containing slice indices so that slices render like `[1:2]` instead of using the default slice repr. The string representation of T/S expressions with slices is now more readable.\n\nTouched-function contract (as in the current tree; entries marked (internal) must not be named in the instruction):\n- `glom.core._BBRepr.repr1` (internal): `repr1(self, x, maxlevel)`\n- `glom.core._format_t` (internal): `_format_t(path, root=T)`\n\nFiles in scope: glom/__init__.py, glom/core.py, glom/grouping.py, glom/matching.py, glom/mutation.py, glom/reduction.py, glom/streaming.py, glom/test/test_path_and_t.py\nVerifier command: `python -m pytest -q glom/test/test_path_and_t.py::test_path_t_roundtrip`\nVerifier visibility: The verifier tests are in `verifier/` and are re-applied before judging.\nExamples to copy from the tests: 2\nTitle max chars: 80\n\n### glom/test/test_path_and_t.py (verifier tests: test_path_t_roundtrip)\n```python\n\nfrom pytest import raises\n\nfrom glom import glom, Path, S, T, PathAccessError, GlomError\n\ndef test_list_path_access():\n    assert glom(list(range(10)), Path(1)) == 1\n\n\ndef test_path():\n    _obj = object()\n    target = {'a': {'b.b': [None, {_obj: [None, None, 'd']}]}}\n\n    assert glom(target, Path('a', 'b.b', 1, _obj, -1)) == 'd'\n\n\ndef test_empty_path_access():\n    target = {}\n\n    assert glom(target, Path()) is target\n    assert glom(target, (Path(), Path(), Path())) is target\n\n    dup_dict = glom(target, {'target': Path(),\n                             'target2': Path()})\n    dup_dict['target'] is target\n    dup_dict['target2'] is target\n\n\ndef test_path_t_roundtrip():\n    # check that T repr roundrips\n    assert repr(T['a'].b.c()) == \"T['a'].b.c()\"\n    assert repr(T[1:]) == \"T[1:]\"\n\n    # check that Path repr roundtrips\n    assert repr(Path('a', 1, 'b.b', -1.0)) == \"Path('a', 1, 'b.b', -1.0)\"\n\n    # check that Path repr roundtrips when it contains Ts\n    assert repr(Path(T['a'].b, 'c', T['d'].e)) == \"Path(T['a'].b, 'c', T['d'].e)\"\n\n    # check that T instances containing Path access revert to repring with Path\n    assert repr(Path(T['a'].b, 'c', T['d'].e).path_t) == \"Path(T['a'].b, 'c', T['d'].e)\"\n\n    # check that Paths containing only T objects reduce to a T (joining the T objects)\n    assert repr(Path(T['a'].b, T.c())) == \"T['a'].b.c()\"\n\n    # check that multiple nested paths reduce\n    assert repr(Path(Path(Path('a')))) == \"Path('a')\"\n\n    # check builtin repr\n    assert repr(T[len]) == 'T[len]'\n    assert repr(T.func(len, sum)) == 'T.func(len, sum)'\n\n\ndef test_path_access_error_message():\n\n    # test fuzzy access\n    with raises(GlomError) as exc_info:\n        glom({}, 'a.b')\n    assert (\"PathAccessError: could not access 'a', part 0 of Path('a', 'b'), got error: KeyError\"\n            in exc_info.exconly())\n    ke = repr(KeyError('a'))  # py3.7+ changed the keyerror repr\n    assert repr(exc_info.value) == \"PathAccessError(\" + ke + \", Path('a', 'b'), 0)\"\n\n    # test multi-part Path with T, catchable as a KeyError\n    with raises(KeyError) as exc_info:\n        # don't actually use glom to copy your data structures please\n        glom({'a': {'b': 'c'}}, Path('a', T.copy(), 'd'))\n    assert (\"PathAccessError: could not access 'd', part 3 of Path('a', T.copy(), 'd'), got error: KeyError\"\n            in exc_info.exconly())\n    ke = repr(KeyError('d'))  # py3.7+ changed the keyerror repr\n    assert repr(exc_info.value) == \"PathAccessError(\" + ke + \", Path('a', T.copy(), 'd'), 3)\"\n\n    # test AttributeError\n    with raises(GlomError) as exc_info:\n        glom({'a': {'b': 'c'}}, Path('a', T.b))\n    assert (\"PathAccessError: could not access 'b', part 1 of Path('a', T.b), got error: AttributeError\"\n            in exc_info.exconly())\n    ae = repr(AttributeError(\"'dict' object has no attribute 'b'\"))\n    assert repr(exc_info.value) == \"PathAccessError(\" + ae + \", Path(\\'a\\', T.b), 1)\"\n\n\ndef test_t_picklability():\n    import pickle\n\n    class TargetType(object):\n        def __init__(self):\n            self.attribute = lambda: None\n            self.attribute.method = lambda: {'key': lambda x: x * 2}\n\n    spec = T.attribute.method()['key'](x=5)\n\n    rt_spec = pickle.loads(pickle.dumps(spec))\n    assert repr(spec) == repr(rt_spec)\n\n    assert glom(TargetType(), spec) == 10\n\n    s_spec = S.attribute\n    assert repr(s_spec) == repr(pickle.loads(pickle.dumps(s_spec)))\n\n\ndef test_path_len():\n\n    assert len(Path()) == 0\n    assert len(Path('a', 'b', 'c')) == 3\n    assert len(Path.from_text('1.2.3.4')) == 4\n\n    assert len(Path(T)) == 0\n    assert len(Path(T.a.b.c)) == 3\n    assert len(Path(T.a()['b'].c.d)) == 5\n\n\ndef test_path_getitem():\n    path = Path(T.a.b.c)\n\n    assert path[0] == Path(T.a)\n    assert path[1] == Path(T.b)\n    assert path[2] == Path(T.c)\n    assert path[-1] == Path(T.c)\n    assert path[-2] == Path(T.b)\n\n    with raises(IndexError, match='Path index out of range'):\n        path[4]\n\n    with raises(IndexError, match='Path index out of range'):\n        path[-14]\n    return\n\n\ndef test_path_slices():\n    path = Path(T.a.b, 1, 2, T(test='yes'))\n\n    assert path[::] == path\n\n    # positive indices\n    assert path[3:] == Path(2, T(test='yes'))\n    assert path[1:3] == Path(T.b, 1)\n    assert path[:3] == Path(T.a.b, 1)\n\n    # positive indices backwards\n    assert path[2:1] == Path()\n\n    # negative indices forward\n    assert path[-1:] == Path(T(test='yes'))\n    assert path[:-2] == Path(T.a.b, 1)\n    assert path[-3:-1] == Path(1, 2)\n\n    # negative indices backwards\n    assert path[-1:-3] == Path()\n\n    # slicing and stepping\n    assert path[1::2] == Path(T.b, 2)\n\n\ndef test_path_values():\n    path = Path(T.a.b, 1, 2, T(test='yes'))\n\n    assert path.values() == ('a', 'b', 1, 2, ((), {'test': 'yes'}))\n\n    assert Path().values() == ()\n\n\ndef test_path_items():\n    path = Path(T.a, 1, 2, T(test='yes'))\n\n    assert path.items() == (('.', 'a'),\n                            ('P', 1), ('P', 2),\n                            ('(', ((), {'test': 'yes'})))\n\n    assert Path().items() == ()\n\n\ndef test_path_eq():\n    assert Path('a', 'b') == Path('a', 'b')\n    assert Path('a') != Path('b')\n\n    assert Path() != object()\n\n\ndef test_path_eq_t():\n    assert Path(T.a.b) == T.a.b\n    assert Path(T.a.b.c) != T.a.b\n\n\ndef test_startswith():\n    ref = T.a.b[1]\n\n    assert Path(ref).startswith(T)\n    assert Path(ref).startswith(T.a.b)\n    assert Path(ref).startswith(ref)\n    assert Path(ref).startswith(ref.c) is False\n\n    assert Path('a.b.c').startswith(Path())\n    assert Path('a.b.c').startswith('a.b.c')\n\n    with raises(TypeError):\n        assert Path('a.b.c').startswith(None)\n\n    return\n\n\ndef test_from_t_identity():\n    ref = Path(T.a.b)\n    assert ref.from_t() == ref\n    assert ref.from_t() is ref\n\n\ndef test_t_dict_key():\n    target = {'a': 'A'}\n    assert glom(target, {T['a']: 'a'}) == {'A': 'A'}\n\n```"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "instruction": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "title",
+              "instruction"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-b3da5e23fa954c068b698a4a043b1362",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"title\":\"Fix slice repr in T and S expressions\",\"instruction\":\"## Goal\\n\\nFix the string representation (repr) of `T` and `S` expressions so that slice indices render as `[1:]` instead of the default Python slice repr.\\n\\n## Observable behavior\\n\\n```python\\nassert repr(T['a'].b.c()) == \\\"T['a'].b.c()\\\"\\nassert repr(T[1:]) == \\\"T[1:]\\\"\\n```\\n\\n## Constraints\\n\\n- Keep the public API of `glom.core` unchanged; do not rename or remove `T`, `S`, `Path`, or their existing public methods.\\n- Files in scope: `glom/__init__.py`, `glom/core.py`, `glom/grouping.py`, `glom/matching.py`, `glom/mutation.py`, `glom/reduction.py`, `glom/streaming.py`, `glom/test/test_path_and_t.py`.\\n\\n## How success is measured\\n\\n```\\npython -m pytest -q glom/test/test_path_and_t.py::test_path_t_roundtrip\\n```\\n\"}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787004104,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 249,
+      "prompt_tokens": 2281,
+      "total_tokens": 2530,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 173,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 131,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 224,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

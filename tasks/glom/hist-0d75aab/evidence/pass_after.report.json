@@ -1,0 +1,52 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 231,
+          "nodeid": "glom/test/test_path_and_t.py::test_t_dunders",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787006005.16625,
+  "duration": 0.09422969818115234,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "passed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00013708299957215786,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_t_dunders",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 231,
+      "nodeid": "glom/test/test_path_and_t.py::test_t_dunders",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00037737300590379164,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.712500519119203e-05,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

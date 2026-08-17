@@ -1,0 +1,265 @@
+{
+  "checks": {
+    "collateral": {
+      "newly_failing": 0,
+      "not_run": 0,
+      "ok": true,
+      "report_present": true
+    },
+    "determinism": {
+      "ok": true,
+      "runs": 3
+    },
+    "fail_before": {
+      "exit_code": 1,
+      "n_failing": 29,
+      "n_passing": 0,
+      "ok": true
+    },
+    "image": {
+      "built_from_input": false,
+      "digest_matches_task": true,
+      "environment_hashes": {
+        "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+        "requirements.lock.txt": "e659c3c6806a0a55a9aa0b99ca31e9dd48a72bc9aead0af5d74100054bd15428"
+      },
+      "live_digest": "sha256:dca64ba3b7231cf251c64edacf424e4859c1e7c526e29755074fe6623c21d998",
+      "ok": true,
+      "present": true
+    },
+    "pass_after": {
+      "exit_code": 0,
+      "n_failing": 0,
+      "n_passing": 29,
+      "ok": true
+    },
+    "right_reason": {
+      "invalid": [],
+      "ok": true,
+      "tests": {
+        "glom/test/generated/test_glom_cli.py::TestGlomCli::test_glom_error_returns_one": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/generated/test_glom_cli.py::TestGlomCli::test_glom_error_returns_one",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_check.py::test_check_basic": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_check.py::test_check_basic",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_check.py::test_check_multi": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_check.py::test_check_multi",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_cli.py::test_main_basic": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_cli.py::test_main_basic",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_3_11_byte_code_caret": {
+          "detail": "AssertionError: assert 'Traceback (m...r() failed>\\n' == 'Traceback (m...ut of range\\n'\n  \n  Skipping 185 identical leading characters in diff, use -v to show\n  + exError): <exception str() failed>\n  ",
+          "nodeid": "glom/test/test_error.py::test_3_11_byte_code_caret",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_all_public_errors": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_error.py::test_all_public_errors",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_branching_stack": {
+          "detail": "AssertionError: assert 'Traceback (m...r() failed>\\n' == 'Traceback (m...t in Switch\\n'\n  \n  Skipping 173 identical leading characters in diff, use -v to show\n  + tchError: <exception str() failed>\n  ",
+          "nodeid": "glom/test/test_error.py::test_branching_stack",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_coalesce_stack": {
+          "detail": "AssertionError: assert 'Traceback (m...r() failed>\\n' == 'Traceback (m...at path [])\\n'\n  \n  Skipping 172 identical leading characters in diff, use -v to show\n  + sceError: <exception str() failed>\n  ",
+          "nodeid": "glom/test/test_error.py::test_coalesce_stack",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_glom_dev_debug": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_error.py::test_glom_dev_debug",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_glom_error_double_stack": {
+          "detail": "assert 'Traceback (m...e \\'val\\'\")\\n' == 'Traceback (m...r() failed>\\n'\n  \n  Skipping 174 identical leading characters in diff, use -v to show\n  - essError: <exception str() failed>\n  + essError: erro",
+          "nodeid": "glom/test/test_error.py::test_glom_error_double_stack",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_glom_error_stack": {
+          "detail": "assert 'Traceback (m...r() failed>\\n' == 'Traceback (m...\\'value\\'\")\\n'\n  \n  Skipping 174 identical leading characters in diff, use -v to show\n  + essError: <exception str() failed>\n  - essError: erro",
+          "nodeid": "glom/test/test_error.py::test_glom_error_stack",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_long_target_repr": {
+          "detail": "assert '(len=1000)' in 'Traceback (most recent call last):\\n  File \"test_error.py\", line ___, in _make_stack\\n    glom(target, spec)\\n  File \"core.py\", line ___, in glom\\n    raise err\\nglom.core.Path",
+          "nodeid": "glom/test/test_error.py::test_long_target_repr",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_midway_branch": {
+          "detail": "assert 'Traceback (m...r() failed>\\n' == 'Traceback (m...ute \\'a\\'\")\\n'\n  \n  Skipping 174 identical leading characters in diff, use -v to show\n  + essError: <exception str() failed>\n  - essError: erro",
+          "nodeid": "glom/test/test_error.py::test_midway_branch",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_nesting_stack": {
+          "detail": "assert 'Traceback (m...r() failed>\\n' == \"Traceback (m...yError('c')\\n\"\n  \n  Skipping 174 identical leading characters in diff, use -v to show\n  + essError: <exception str() failed>\n  - essError: erro",
+          "nodeid": "glom/test/test_error.py::test_nesting_stack",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_pae_scope_printable": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_error.py::test_pae_scope_printable",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_partially_failing_branch": {
+          "detail": "assert 'Traceback (m...r() failed>\\n' == 'Traceback (m...ute \\'c\\'\")\\n'\n  \n  Skipping 174 identical leading characters in diff, use -v to show\n  + essError: <exception str() failed>\n  - essError: erro",
+          "nodeid": "glom/test/test_error.py::test_partially_failing_branch",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_regular_error_stack": {
+          "detail": "AssertionError: assert 'Traceback (m...que message\\n' == 'Traceback (m...r() failed>\\n'\n  \n  Skipping 184 identical leading characters in diff, use -v to show\n  - ception): <exception str() failed>\n  ",
+          "nodeid": "glom/test/test_error.py::test_regular_error_stack",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_error.py::test_unicode_stack": {
+          "detail": "assert 'beyonc' in 'Traceback (most recent call last):\\n  File \"test_error.py\", line ___, in _make_stack\\n    glom(target, spec)\\n  File \"core.py\", line ___, in glom\\n    raise err\\nglom.core.PathAcce",
+          "nodeid": "glom/test/test_error.py::test_unicode_stack",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_match.py::test_check_ported_tests": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_match.py::test_check_ported_tests",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_mutation.py::test_bad_assign_target": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_mutation.py::test_bad_assign_target",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_mutation.py::test_bad_delete_target": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_mutation.py::test_bad_delete_target",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_mutation.py::test_sequence_assign": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_mutation.py::test_sequence_assign",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_mutation.py::test_sequence_delete": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_mutation.py::test_sequence_delete",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_mutation.py::test_unregistered_assign": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_mutation.py::test_unregistered_assign",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_mutation.py::test_unregistered_delete": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_mutation.py::test_unregistered_delete",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_path_and_t.py::test_path_access_error_message": {
+          "detail": "assert \"PathAccessError: could not access 'a', part 0 of Path('a', 'b'), got error: KeyError\" in 'glom.core.PathAccessError: <exception str() failed>'\n +  where 'glom.core.PathAccessError: <exception ",
+          "nodeid": "glom/test/test_path_and_t.py::test_path_access_error_message",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_path_and_t.py::test_t_arithmetic_errors": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_path_and_t.py::test_t_arithmetic_errors",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_spec.py::test_spec": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_spec.py::test_spec",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "glom/test/test_target_types.py::test_types_bare": {
+          "detail": "in glom/core.py",
+          "nodeid": "glom/test/test_target_types.py::test_types_bare",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        }
+      }
+    },
+    "static_gate": {
+      "ok": true,
+      "violations": []
+    }
+  },
+  "environment_hashes": {
+    "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+    "requirements.lock.txt": "e659c3c6806a0a55a9aa0b99ca31e9dd48a72bc9aead0af5d74100054bd15428"
+  },
+  "image_digest": "sha256:dca64ba3b7231cf251c64edacf424e4859c1e7c526e29755074fe6623c21d998",
+  "image_tag": "bench-glom",
+  "reasons": [],
+  "repeat_count": 3,
+  "task_id": "exc-glom.core-format_target_spec_trace",
+  "task_image_digest": "sha256:dca64ba3b7231cf251c64edacf424e4859c1e7c526e29755074fe6623c21d998",
+  "timestamps": {
+    "finished": "2026-08-17T22:32:41+00:00",
+    "started": "2026-08-17T22:32:28+00:00"
+  },
+  "valid": true
+}

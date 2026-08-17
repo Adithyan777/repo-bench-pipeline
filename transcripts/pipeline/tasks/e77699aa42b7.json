@@ -1,0 +1,113 @@
+{
+  "step": "p3.build.neutrality_check_rewrite",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "You review verifier tests for a benchmark task: the solver gets the tree BEFORE a change and must reimplement the change so these tests pass. Tests are acceptable only if they assert BEHAVIOR through the public interface. Flag a test if it: imports or calls private helpers (`_name`), references identifiers newly introduced by the change (listed below) that a solver could name differently, asserts implementation details (internal call order, private state, exact repr of internals), or merely mirrors the patch. Testing public functions/classes that already exist before the change is fine, and so is reaching NEW public API through the convention `getattr(existing_public_module, 'name', None)` + a presence assert (new public API is part of the task's contract; only its private helpers are not). Which exception type is raised, and exception identity/chaining observable by a caller (`e is cause`, `__cause__`), IS behavior, not an implementation detail.\n\nCommit: matching coverage and bugfixes\nTouched functions:\n- glom.matching.Or.glomit: `glomit(self, target, scope)`\n- glom.matching.Not._m_repr: `_m_repr(self)`\nIdentifiers introduced by the change: (none)\n\n### glom/test/test_match.py (tests: test_basic)\n```python\n\nimport re\nimport json\n\nimport pytest\n\nfrom glom import glom, S, Literal, T, Merge, Fill, Let, Ref\nfrom glom.matching import (\n    Match, M, MatchError, TypeMatchError, And, Or, Not,\n    Optional, Required, Regex)\nfrom glom.core import Auto, SKIP, Ref\n\n\ndef _chk(spec, good_target, bad_target):\n    glom(good_target, spec)\n    with pytest.raises(MatchError):\n        glom(bad_target, spec)\n\ndef test_basic():\n    _chk(Match(1), 1, 2)\n    _chk(Match(int), 1, 1.0)\n    # test unordered sequence comparisons\n    _chk(Match([int]), [1], [\"1\"])\n    _chk(Match({int}), {1}, [1])\n    _chk(Match(frozenset({float})), frozenset({}), frozenset({\"1\"}))\n    with pytest.raises(MatchError):\n        glom([1], Match([]))  # empty shouldn't match\n    glom({\"a\": 1, \"b\": 2}, Match({str: int}))\n    glom(2, M == 2)\n    glom(int, M == int)\n    glom(1.0, M > 0)\n    glom(1.0, M >= 1)\n    glom(1.0, M < 2)\n    glom(1.0, M <= 1)\n    glom(1.0, M != None)\n    glom(1.0, (M > 0) & float)\n    glom(1.0, (M > 100) | float)\n\n    assert Match(('a', 'b')).matches(('a', 'b', 'c')) is False\n\n    # test idiom for enum\n    with pytest.raises(MatchError):\n        glom(\"c\", Match(\"a\"))\n    glom(\"c\", Not(Match(\"a\")))\n    with pytest.raises(MatchError):\n        glom(\"c\", Match(Or(\"a\", \"b\")))\n\n    with pytest.raises(MatchError):\n        glom(\"\", Match(Or() | Or()))\n\n    assert Match(And() & And()).matches(True) is True\n\n    assert repr(Not(M < 3)) == '~(M < 3)'\n    assert repr(~(M < 4)) == '~(M < 4)'\n\n    _chk(Match(Or(\"a\", \"b\")), \"a\", \"c\")\n    glom({None: 1}, Match({object: object}))\n    _chk(Match((int, str)), (1, \"cat\"), (1, 2))\n    with pytest.raises(MatchError):\n        glom({1: 2}, Match({(): int}))\n    with pytest.raises(MatchError):\n        glom(1, Match({}))\n    Match(M > 0).verify(1.0)\n\n    assert Match(M).matches(False) is False\n    assert Match(M).matches(True) is True\n\n\ndef test_double_wrapping():\n    for outer in (Required, Optional):\n        with pytest.raises(TypeError):\n            outer(Optional('key'))\n\n    with pytest.raises(ValueError):\n        Required('key')\n\n    return\n\n\ndef test_sets():\n    with pytest.raises(MatchError):\n        glom({1}, Match({}))\n    with pytest.raises(MatchError):\n        glom(frozenset([1]), Match(frozenset()))\n\n\ndef test_spec_match():\n    \"\"\"test that M __call__ can be used to wrap a subspec for comparison\"\"\"\n    target = {}\n    target['a'] = target\n    assert glom(target, M == M('a'))\n\n\ndef test_cruddy_json():\n    _chk(\n        Match({'int_id?': Auto((int, (M > 0)))}),\n        {'int_id?': '1'},\n        {'int_id?': '-1'})\n    # embed a build\n    squished_json = Match({\n        'smooshed_json': Auto(\n            (json.loads, Match({\n                'sub': Auto((json.loads, M == 1))})))\n        })\n    glom({'smooshed_json': json.dumps({'sub': json.dumps(1)})}, squished_json)\n\n\ndef test_pattern_matching():\n    pattern_matcher = Or(\n        And(Match(1), Literal('one')),\n        And(Match(2), Literal('two')),\n        And(Match(float), Literal('float'))\n        )\n    assert glom(1, pattern_matcher) == 'one'\n    assert glom(1.1, pattern_matcher) == 'float'\n\n    # obligatory fibonacci\n\n    fib = (M > 2) & (lambda n: glom(n - 1, fib) + glom(n - 2, fib)) | T\n\n    assert glom(5, fib) == 8\n\n    factorial = (\n        lambda t: t + 1, Ref('fact', (\n            lambda t: t - 1,\n            (M == 0) & Fill(1) |\n            (Let(r=Ref('fact')),\n                S, lambda s: s['r'] * s[T]))))\n\n    assert glom(4, factorial) == 4 * 3 * 2\n\n\ndef test_examples():\n    assert glom(8, (M > 7) & Literal(7)) == 7\n    assert glom(range(10), [(M > 7) & Literal(7) | T]) == [0, 1, 2, 3, 4, 5, 6, 7, 7, 7]\n    assert glom(range(10), [(M > 7) & Literal(SKIP) | T]) == [0, 1, 2, 3, 4, 5, 6, 7]\n\n\ndef test_reprs():\n    repr(M)\n    repr(M == 1)\n    repr(M | M == 1)\n    repr(M & M == 1)\n    repr(~M)\n    repr(And(1, 2))\n    repr(Or(1, 2))\n    repr(Not(1))\n    repr(MatchError(\"uh oh\"))\n    repr(TypeMatchError(\"uh oh {0}\", dict))\n    assert repr(And(M == 1, float)) == \"(M == 1) & float\"\n    assert repr(eval(repr(And(M == 1, float)))) == \"(M == 1) & float\"\n\n    assert repr(Regex('[ab]')) == \"Regex('[ab]')\"\n    assert repr(Regex('[ab]', flags=1)) == \"Regex('[ab]', flags=1)\"\n    assert 'search' in repr(Regex('[ab]', func=re.search))\n\n\ndef test_shortcircuit():\n    assert glom(False, Fill(M | \"default\")) == \"default\"\n    assert glom(True, Fill(M | \"default\")) == True\n    assert glom(True, Fill(M & \"default\")) == \"default\"\n    with pytest.raises(MatchError):\n        glom(False, Fill(M & \"default\"))\n    assert glom(False, ~M) == False\n    assert glom(True, Fill(~M | \"default\")) == \"default\"\n\n\ndef test_sample():\n    \"\"\"\n    test meant to cover a more realistic use\n    \"\"\"\n    import datetime\n\n    data = {\n        'name': 'item',\n        'date_added': datetime.datetime.now(),\n        'desc': 'a data item',\n        'tags': ['data', 'new'],\n    }\n\n    spec = Match({\n        'name': str,\n        Optional('date_added'): datetime.datetime,\n        'desc': str,\n        'tags': [str,]})\n\n    def good():\n        glom(data, spec)\n    def bad():\n        with pytest.raises(MatchError):\n            glom(data, spec)\n\n    good()  # should match\n    del data['date_added']\n    good()  # should still match w/out optional\n    del data['desc']\n    bad()\n    data['desc'] = 'a data item'\n    data['extra'] = 'will fail on extra'\n    bad()\n    spec.spec[str] = str  # now extra str-key/str-val are okay\n    good()\n    data['extra2'] = 2  # but extra str-key/non-str-val are bad\n    bad()\n    # reset data\n    data = {\n        'name': 'item',\n        'date_added': datetime.datetime.now(),\n        'desc': 'a data item',\n        'tags': ['data', 'new'],\n    }\n    del spec.spec[str]\n    spec.spec[Required(str)] = str  # now there MUST be at least one str\n    bad()\n    data['extra'] = 'extra'\n    good()\n\n\ndef test_regex():\n    assert glom('abc', (Regex('(?P<test>.*)'), S['test'])) == 'abc'\n    with pytest.raises(MatchError):\n        glom(1, Regex('1'))\n\n\ndef test_ternary():\n    assert glom('abc', Match(Or(None, 'abc'))) == 'abc'\n\n\ndef test_sky():\n    \"\"\"test adapted from github.com/shopkick/opensky\"\"\"\n\n    def as_type(sub_schema, typ):\n        'after checking sub_schema, pass the result to typ()'\n        return And(sub_schema, Auto(typ))\n\n    assert glom('abc', as_type(M == 'abc', list)) == list('abc')\n\n    def none_or(sub_schema):\n        'allow None or sub_schema'\n        return Match(Or(None, sub_schema))\n\n    assert glom(None, none_or('abc')) == None\n    assert glom('abc', none_or('abc')) == 'abc'\n    with pytest.raises(MatchError):\n        glom(123, none_or('abc'))\n\n    def in_range(sub_schema, _min, _max):\n        'check that sub_schema is between _min and _max'\n        return Match(And(sub_schema, _min < M, M < _max))\n        # TODO: make _min < M < _max work\n\n    assert glom(1, in_range(int, 0, 2))\n    with pytest.raises(MatchError):\n        glom(-1, in_range(int, 0, 2))\n\n    def default_if_none(sub_schema, default_factory):\n        return Or(\n            And(M == None, Auto(lambda t: default_factory())), sub_schema)\n\n    assert glom(1, default_if_none(T, list)) == 1\n    assert glom(None, default_if_none(T, list)) == []\n\n    def nullable_list_of(*items):\n        return default_if_none(Match(list(items)), list)\n\n    assert glom(None, nullable_list_of(str)) == []\n    assert glom(['a'], nullable_list_of(str)) == ['a']\n    with pytest.raises(MatchError):\n        glom([1], nullable_list_of(str))\n\n\ndef test_clamp():\n    assert glom(range(10), [(M < 7) | Literal(7)]) == [0, 1, 2, 3, 4, 5, 6, 7, 7, 7]\n    assert glom(range(10), [(M < 7) | Literal(SKIP)]) == [0, 1, 2, 3, 4, 5, 6]\n\n\ndef test_json_ref():\n    assert glom(\n        {'a': {'b': [0, 1]}},\n        Ref('json',\n            Match(Or(\n                And(dict, {Ref('json'): Ref('json')}),\n                And(list, [Ref('json')]),\n                And(0, Literal(None)),\n                object)))) == {'a': {'b': [None, 1]}}\n\n\ndef test_nested_struct():\n    \"\"\"adapted from use case\"\"\"\n    import json\n\n    _json = lambda spec: Auto((json.loads, _str_json, Match(spec)))\n\n    _str_json = Ref('json',\n        Match(Or(\n            And(dict, {Ref('json'): Ref('json')}),\n            And(list, [Ref('json')]),\n            And(type(u''), Auto(str)),\n            object)))\n\n    rule_spec = Match({\n        'rule_id': Or('', Regex(r'\\d+')),\n        'rule_name': str,\n        'effect': Or('approve', 'custom_approvers'),\n        'rule_approvers': _json([{'pk': int, 'level': int}]),\n        'rule_data': _json([  # list of condition-objects\n            {\n                Optional('value', 'null'): _json(\n                    Or(None, int, float, str, [int, float, str])),\n                'field': Auto(int),  # id of row from FilterField\n                'operator': str,  # corresponds to FilterOperator.display_name\n            }]),\n        Optional('save_as_new', False): Or(str, bool),\n    })\n\n    rule = dict(\n        rule_id='1',\n        rule_name='test rule',\n        effect='approve',\n        rule_approvers=json.dumps([{'pk': 2, 'level': 1}]),\n        rule_data=json.dumps([\n            {'value': json.dumps([1, 2]), 'field': 2, 'operator': '>'},\n            {'field': 2, 'operator': '=='}])\n    )\n\n    glom(rule, rule_spec)\n    rule['save_as_new'] = 'true'\n    glom(rule, rule_spec)\n\n```\n\nReturn neutral=true when nothing is flagged; otherwise list issues and the flagged test nodeids (file::name)."
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "neutral": {
+                "type": "boolean"
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "flagged_tests": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "neutral",
+              "issues",
+              "flagged_tests"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-99b85f0e338145a0a4cc90ae31a19846",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"neutral\": true, \"issues\": [], \"flagged_tests\": []}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787005620,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 24,
+      "prompt_tokens": 3193,
+      "total_tokens": 3217,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 17,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 11,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 224,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

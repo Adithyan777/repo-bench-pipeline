@@ -1,0 +1,211 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 284,
+          "nodeid": "glom/test/test_basic.py::test_spec_and_recursion",
+          "type": "Function"
+        },
+        {
+          "lineno": 101,
+          "nodeid": "glom/test/test_match.py::test_match_default",
+          "type": "Function"
+        },
+        {
+          "lineno": 489,
+          "nodeid": "glom/test/test_match.py::test_switch",
+          "type": "Function"
+        },
+        {
+          "lineno": 45,
+          "nodeid": "glom/test/test_mutation.py::test_assign_spec_val",
+          "type": "Function"
+        },
+        {
+          "lineno": 106,
+          "nodeid": "glom/test/test_path_and_t.py::test_t_subspec",
+          "type": "Function"
+        },
+        {
+          "lineno": 8,
+          "nodeid": "glom/test/test_scope_vars.py::test_s_scope_assign",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787005988.8510973,
+  "duration": 0.28603219985961914,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 6,
+    "passed": 6,
+    "total": 6
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00033441500272601843,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_spec_and_recursion",
+        "test_basic.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 284,
+      "nodeid": "glom/test/test_basic.py::test_spec_and_recursion",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00034366500040050596,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.791599637130275e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014233299589250237,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_match_default",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 101,
+      "nodeid": "glom/test/test_match.py::test_match_default",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014529100008076057,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.233300129882991e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0011871199967572466,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_switch",
+        "test_match.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 489,
+      "nodeid": "glom/test/test_match.py::test_switch",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.341600237647071e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.054100180743262e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00017049999587470666,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assign_spec_val",
+        "test_mutation.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 45,
+      "nodeid": "glom/test/test_mutation.py::test_assign_spec_val",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.191600550664589e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.97079997533001e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003177899998263456,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_t_subspec",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 106,
+      "nodeid": "glom/test/test_path_and_t.py::test_t_subspec",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.041599408490583e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.283300172071904e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.001590367995959241,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_s_scope_assign",
+        "test_scope_vars.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 8,
+      "nodeid": "glom/test/test_scope_vars.py::test_s_scope_assign",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00024070699873846024,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.729100277880207e-05,
+        "outcome": "passed"
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "category": "SyntaxWarning",
+      "filename": "/repo/glom/matching.py",
+      "lineno": 800,
+      "message": "invalid escape sequence '\\ '",
+      "when": "collect"
+    }
+  ]
+}

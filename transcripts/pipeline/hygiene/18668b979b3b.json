@@ -1,0 +1,132 @@
+{
+  "step": "p2.okf.function_contracts",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "For each function of module `glom.cli` below, write a behavioral contract: inputs (what each parameter means), outputs (what is returned), raises (list of exception TYPE NAMES it can raise, [] if none), side_effects (\"none\" or a short phrase), invariants (a property that always holds, or \"\"). Base every field ONLY on the code shown. Return one entry per qualname.\n\n### glom.cli._compile_code\nsignature: _compile_code(code_str, name, env=None, verbose=False)\ndef _compile_code(code_str, name, env=None, verbose=False):\n    code = compile(code_str, '<glom-generated code>', 'single')\n    if verbose:\n        print(code_str)\n    if env is None:\n        env = {}\n    exec(code, env)\n\n    return env[name]\n\n### glom.cli._from_glom_import_star\nsignature: _from_glom_import_star()\ndef _from_glom_import_star():\n    ret = dict(glom.__dict__)\n    for k in ('__builtins__', '__name__', '__doc__', '__package__'):\n        ret.pop(k, None)\n    for k, v in list(ret.items()):\n        if type(v) == type(glom):\n            ret.pop(k)\n    return ret\n\n### glom.cli.console_main\nsignature: console_main()\ndef console_main():\n    _enable_debug = os.getenv('GLOM_CLI_DEBUG')\n    if _enable_debug:\n        print(sys.argv)\n    try:\n        sys.exit(main(sys.argv) or 0)\n    except Exception:\n        if _enable_debug:\n            import pdb;pdb.post_mortem()\n        raise\n\n### glom.cli.get_command\nsignature: get_command()\ndef get_command():\n    posargs = PosArgSpec(str, max_count=2, display={'label': '[spec [target]]'})\n    cmd = Command(glom_cli, posargs=posargs, middlewares=[mw_get_target])\n    cmd.add('--target-file', str, missing=None, doc='path to target data source')\n    cmd.add('--target-format', str, missing='json',\n            doc='format of the source data (json or python)')\n    cmd.add('--spec-file', str, missing=None, doc='path to glom spec definition')\n    cmd.add('--spec-format', str, missing='python',\n            doc='format of the glom spec definition (json, python, python-full)')\n\n    cmd.add('--indent', int, missing=2,\n            doc='number of spaces to indent the result, 0 to disable pretty-printing')\n    \n    cmd.add('--scalar', parse_as=True,\n            doc=\"if the result is a single value (not a collection), output it\"\n            \" without quotes or whitespace, for easier usage in scripts\")\n    cmd.add('--debug', parse_as=True, doc='interactively debug any errors that come up')\n    cmd.add('--inspect', parse_as=True, doc='interactively explore the data')\n    return cmd\n\n### glom.cli.glom_cli\nsignature: glom_cli(target, spec, indent, debug, inspect, scalar)\ndef glom_cli(target, spec, indent, debug, inspect, scalar):\n    \"\"\"Command-line interface to the glom library, providing nested data\n    access and data restructuring with the power of Python.\n    \"\"\"\n    if debug or inspect:\n        stdin_open = not sys.stdin.closed\n        spec = Inspect(spec,\n                       echo=inspect,\n                       recursive=inspect,\n                       breakpoint=inspect and stdin_open,\n                       post_mortem=debug and stdin_open)\n\n    try:\n        result = glom.glom(target, spec)\n    except GlomError as ge:\n        print(f'{ge.__class__.__name__}: {ge}')\n        return 1\n\n    if not indent:\n        indent = None\n    \n    if scalar and is_scalar(result):\n        print(result, end='')\n    else:\n        print(json.dumps(result, indent=indent, sort_keys=True))\n    return\n\n### glom.cli.main\nsignature: main(argv)\ndef main(argv):\n    cmd = get_command()\n    return cmd.run(argv) or 0\n\n### glom.cli.mw_get_target\nsignature: mw_get_target(next_, posargs_, target_file, target_format, spec_file, spec_format)\ndef mw_get_target(next_, posargs_, target_file, target_format, spec_file, spec_format):\n    spec_text, target_text = None, None\n    if len(posargs_) == 2:\n        spec_text, target_text = posargs_\n    elif len(posargs_) == 1:\n        spec_text, target_text = posargs_[0], None\n\n    if spec_text and spec_file:\n        raise UsageError('expected spec file or spec argument, not both')\n    elif spec_file:\n        try:\n            with open(spec_file) as f:\n                spec_text = f.read()\n        except OSError as ose:\n            raise UsageError(f'could not read spec file {spec_file!r}, got: {ose}')\n\n    if not spec_text:\n        spec = Path()\n    elif spec_format == 'python':\n        if spec_text[0] not in ('\"', \"'\", \"[\", \"{\", \"(\"):\n            # intention: handle trivial path access, assume string\n            spec_text = repr(spec_text)\n        spec = ast.literal_eval(spec_text)\n    elif spec_format == 'json':\n        spec = json.loads(spec_text)\n    elif spec_format == 'python-full':\n        spec = _eval_python_full_spec(spec_text)\n    else:\n        raise UsageError('expected spec-format to be one of json, python, or python-full')\n\n    if target_text and target_file:\n        raise UsageError('expected target file or target argument, not both')\n    elif target_text == '-' or target_file == '-':\n        target_text = sys.stdin.read()\n    elif target_file:\n        try:\n            target_text = open(target_file).read()\n        except OSError as ose:\n            raise UsageError(f'could not read target file {target_file!r}, got: {ose}')\n    elif not target_text and not isatty(sys.stdin):\n        target_text = sys.stdin.read()\n\n    target = mw_handle_target(target_text, target_format)\n\n    return next_(spec=spec, target=target)\n\n### glom.cli.mw_handle_target\nsignature: mw_handle_target(target_text, target_format)\ndef mw_handle_target(target_text, target_format):\n    \"\"\" Handles reading in a file specified in cli command.\n\n    Args:\n        target_text (str): The target data to load, as text\n        target_format (str): Valid formats include `json`, `toml`, and `yml`/`yaml`\n    Returns:\n        The content of the file that you specified\n    Raises:\n        CommandLineError: Issue with file format or appropriate file reading package not installed.\n    \"\"\"\n    if not target_text:\n        return {}\n    target = {}\n    if target_format == 'json':\n        load_func = json.loads\n    elif target_format in ('yaml', 'yml'):\n        try:\n            import yaml\n            load_func = yaml.safe_load\n        except ImportError:  # pragma: no cover\n            raise UsageError('No YAML package found. To process yaml files, run: pip install PyYAML')  # pragma: no cover\n    elif target_format == 'toml':\n        missing =  UsageError('No TOML package found. To process toml files, upgrade to Python 3.11 or run: pip install tomli')\n        try:\n            import tomllib \n            load_func = tomllib.loads\n        except ImportError:\n            try:\n                import tomli\n                load_func = tomli.loads\n            except ImportError:  # pragma: no cover\n                raise missing  # pragma: no cover\n    elif target_format == 'python':\n        load_func = ast.literal_eval\n    else:\n        raise UsageError('expected target-format to be one of python, json, toml, or yaml')\n\n\n    try:\n        target = load_func(target_text)\n    except Exception as e:\n        raise UsageError('could not load target data, got: %s: %s'\n                         % (e.__class__.__name__, e))\n\n\n    return target"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "contracts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "inputs": {
+                      "type": "string"
+                    },
+                    "outputs": {
+                      "type": "string"
+                    },
+                    "raises": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "side_effects": {
+                      "type": "string"
+                    },
+                    "invariants": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "inputs",
+                    "outputs",
+                    "raises",
+                    "side_effects"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "contracts"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-26136f897a9543f1bae4aec61f82379e",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"contracts\": [{\"qualname\":\"glom.cli._compile_code\",\"inputs\":\"code_str: a string of Python code to compile and execute; name: the key to look up in the environment after execution; env: optional dict to use as execution namespace, defaults to empty dict if None; verbose: optional bool to print code_str before execution\",\"outputs\":\"the value bound to name in the execution environment after running code_str\",\"raises\":[\"SyntaxError\",\"KeyError\",\"NameError\"],\"side_effects\":\"if verbose is True, prints code_str to stdout; mutates env by executing code in it\",\"invariants\":\"\"},{\"qualname\":\"glom.cli._from_glom_import_star\",\"inputs\":\"none\",\"outputs\":\"a dict of glom module public attributes, excluding dunder attributes and submodules\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.cli.console_main\",\"inputs\":\"none (reads sys.argv and GLOM_CLI_DEBUG environment variable implicitly)\",\"outputs\":\"none (calls sys.exit with main's return value or 0)\",\"raises\":[\"SystemExit\",\"Exception (re-raised after optional pdb.post_mortem)\"],\"side_effects\":\"reads GLOM_CLI_DEBUG env var; may print sys.argv; may call sys.exit; may invoke pdb.post_mortem on exception if debugging enabled\",\"invariants\":\"\"},{\"qualname\":\"glom.cli.get_command\",\"inputs\":\"none\",\"outputs\":\"a configured Command object for the glom CLI with positional args and various flags added\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.cli.glom_cli\",\"inputs\":\"target: the data to run glom on; spec: the glom spec to evaluate; indent: int for JSON indentation spaces, 0 disables pretty-printing; debug: bool to enable post-mortem debugging; inspect: bool to enable interactive inspection; scalar: bool to output single values without JSON formatting\",\"outputs\":\"returns 1 on GlomError, otherwise None (implicitly) after printing result\",\"raises\":[\"GlomError (caught and printed, returning 1)\"],\"side_effects\":\"prints error message to stdout on GlomError; prints formatted result or scalar value to stdout; may wrap spec in Inspect\",\"invariants\":\"\"},{\"qualname\":\"glom.cli.main\",\"inputs\":\"argv: list of command-line argument strings\",\"outputs\":\"int exit code (0 if cmd.run returns None or falsy)\",\"raises\":[],\"side_effects\":\"none beyond delegating to cmd.run\",\"invariants\":\"\"},{\"qualname\":\"glom.cli.mw_get_target\",\"inputs\":\"next_: the next middleware/callable to invoke; posargs_: list of positional string arguments (length 0-2); target_file: optional path string to target data source; target_format: string format of target data; spec_file: optional path string to spec definition; spec_format: string format of spec\",\"outputs\":\"the result of calling next_ with parsed spec and target keyword arguments\",\"raises\":[\"UsageError\",\"OSError (caught and re-raised as UsageError)\"],\"side_effects\":\"reads files specified by spec_file and target_file; reads sys.stdin if '-' or non-tty stdin\",\"invariants\":\"\"},{\"qualname\":\"glom.cli.mw_handle_target\",\"inputs\":\"target_text: string containing the raw target data; target_format: string indicating format (json, yaml, yml, toml, python)\",\"outputs\":\"the parsed data structure loaded from target_text\",\"raises\":[\"UsageError\"],\"side_effects\":\"none\",\"invariants\":\"\"}]}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787003648,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 740,
+      "prompt_tokens": 1795,
+      "total_tokens": 2535,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 471,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 605,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

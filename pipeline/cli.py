@@ -265,7 +265,7 @@ def _summary_lines(run_dir: Path, config: Config, stages: tuple[str, ...]) -> No
 
 
 def _build_report(ctx) -> None:
-    """Enrich report_data.json + render REPORT.md at the repo root. A drafting failure
+    """Enrich report_data.json + render output/<repo>/REPORT.md. A drafting failure
     never breaks the run — the report is still written from the tables alone."""
     from pipeline.report import build as report_build
 

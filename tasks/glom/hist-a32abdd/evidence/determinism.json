@@ -1,0 +1,44 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_match.py::test_basic": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_match.py::test_basic": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_match.py::test_basic": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_match.py::test_basic": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_match.py::test_basic": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_match.py::test_basic": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

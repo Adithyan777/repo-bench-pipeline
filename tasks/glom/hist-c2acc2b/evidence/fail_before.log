@@ -1,0 +1,23 @@
+$ python -m pytest -q glom/test/test_path_and_t.py::test_path_t_roundtrip -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____________________________ test_path_t_roundtrip _____________________________
+
+    def test_path_t_roundtrip():
+        # check that T repr roundrips
+        assert repr(T['a'].b.c()) == "T['a'].b.c()"
+>       assert repr(T[1:]) == "T[1:]"
+E       AssertionError: assert 'T[slice(1, None, None)]' == 'T[1:]'
+E         
+E         - T[1:]
+E         + T[slice(1, None, None)]
+
+glom/test/test_path_and_t.py:32: AssertionError
+=========================== short test summary info ============================
+FAILED glom/test/test_path_and_t.py::test_path_t_roundtrip - AssertionError: ...
+1 failed in 0.10s
+
+--- stderr ---
+

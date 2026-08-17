@@ -1,0 +1,509 @@
+{
+  "step": "p1.testgen.write_tests_agent",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You write pytest tests for a Python library. You may create or edit ONLY the single test file you are told to write; never touch the library source or any other file. Write focused, deterministic tests that assert concrete behavior (exact return values, raised exceptions, boundaries) of the target functions -- not smoke tests. Use the run tool to execute the file and confirm it passes before finishing."
+      },
+      {
+        "role": "user",
+        "content": "Write pytest tests to the file `glom/test/generated/test_glom_core.py` for these functions from module `glom.core`. Test real behavior so a wrong implementation would fail.\n\nModule imports:\nimport os\nimport sys\nimport pdb\nimport copy\nimport warnings\nimport weakref\nimport operator\nfrom abc import ABCMeta\nfrom pprint import pprint\nimport string\nfrom collections import OrderedDict\nimport traceback\nfrom face.helpers import get_wrap_width\nfrom boltons.typeutils import make_sentinel\nfrom boltons.iterutils import is_iterable\nfrom collections import ChainMap\nfrom reprlib import Repr, recursive_repr\n\nTarget functions:\n### glom.core.CoalesceError.get_message  (signature: get_message(self))\n    def get_message(self):\n        missed_specs = tuple(self.coal_obj.subspecs)\n        skipped_vals = [v.__class__.__name__\n                        if isinstance(v, self.coal_obj.skip_exc)\n                        else '<skipped %s>' % v.__class__.__name__\n                        for v in self.skipped]\n        msg = ('no valid values found. Tried %r and got (%s)'\n               % (missed_specs, ', '.join(skipped_vals)))\n        if self.coal_obj.skip is not _MISSING:\n            msg += f', skip set to {self.coal_obj.skip!r}'\n        if self.coal_obj.skip_exc is not GlomError:\n            msg += f', skip_exc set to {self.coal_obj.skip_exc!r}'\n        if self.path is not None:\n            msg += f' (at path {self.path!r})'\n        return msg\n\n### glom.core._extend_children  (signature: _extend_children(children, item, get_handler))\ndef _extend_children(children, item, get_handler):\n    try:  # dict or obj-like\n        keys = get_handler('keys', item)\n        get = get_handler('get', item)\n    except UnregisteredTarget:\n        try:\n            iterate = get_handler('iterate', item)\n        except UnregisteredTarget:\n            pass\n        else:\n            try:  # list-like\n                children.extend(iterate(item))\n            except Exception:\n                pass\n    else:\n        try:\n            for key in keys(item):\n                try:\n                    children.append(get(item, key))\n                except Exception:\n                    pass\n        except Exception:\n            pass\n\n### glom.core.format_invocation  (signature: format_invocation(name='', args=(), kwargs=None, **kw))\ndef format_invocation(name='', args=(), kwargs=None, **kw):\n    \"\"\"Given a name, positional arguments, and keyword arguments, format\n    a basic Python-style function call.\n\n    >>> print(format_invocation('func', args=(1, 2), kwargs={'c': 3}))\n    func(1, 2, c=3)\n    >>> print(format_invocation('a_func', args=(1,)))\n    a_func(1)\n    >>> print(format_invocation('kw_func', kwargs=[('a', 1), ('b', 2)]))\n    kw_func(a=1, b=2)\n\n    \"\"\"\n    _repr = kw.pop('repr', bbrepr)\n    if kw:\n        raise TypeError('unexpected keyword args: %r' % ', '.join(kw.keys()))\n    kwargs = kwargs or {}\n    a_text = ', '.join([_repr(a) for a in args])\n    if isinstance(kwargs, dict):\n        kwarg_items = [(k, kwargs[k]) for k in sorted(kwargs)]\n    else:\n        kwarg_items = kwargs\n    kw_text = ', '.join([f'{k}={_repr(v)}' for k, v in kwarg_items])\n\n    all_args_text = a_text\n    if all_args_text and kw_text:\n        all_args_text += ', '\n    all_args_text += kw_text\n\n    return f'{name}({all_args_text})'\n\n### glom.core.AUTO  (signature: AUTO(target, spec, scope))\ndef AUTO(target, spec, scope):\n    if type(spec) is str:  # shortcut to make deep-get use case faster\n        return _t_eval(target, Path.from_text(spec).path_t, scope)\n    if isinstance(spec, dict):\n        return _handle_dict(target, spec, scope)\n    elif isinstance(spec, list):\n        return _handle_list(target, spec, scope)\n    elif isinstance(spec, tuple):\n        return _handle_tuple(target, spec, scope)\n    elif isinstance(spec, basestring):\n        return Path.from_text(spec).glomit(target, scope)\n    elif callable(spec):\n        return spec(target)\n\n    raise TypeError('expected spec to be dict, list, tuple, callable, string,'\n                    ' or other Spec-like type, not: %r' % (spec,))\n\nExisting test style for reference:\n# glom/test/test_basic.py\nimport sys\nfrom xml.etree import ElementTree as ElementTree\n\nimport pytest\n\nfrom glom import glom, SKIP, STOP, Path, Inspect, Coalesce, CoalesceError, Val, Call, T, S, Invoke, Spec, Ref\nfrom glom import Auto, Fill, Iter, A, Vars, Val, GlomError, Pipe\n\nimport glom.core as glom_core\nfrom glom.core import UP, ROOT, bbformat, bbrepr\nfrom glom.mutation import PathAssignError\n\n\n\ndef test_initial_integration():\n    class Example:\n        pass\n\n    example = Example()\n    subexample = Example()\n    subexample.name = 'good_name'\n    example.mapping = {'key': subexample}\n\n    val = {'a': {'b': 'c'},  # basic dictionary nesting\n           'example': example,  # basic object\n           'd': {'e': ['f'],    # list in dictionary\n                 'g': 'h'},\n           'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries\n           'n': 'o'}\n\n    spec = {'a': (Inspect(recursive=True), 'a', 'b'),  # inspect just prints here\n            'name': 'example.mapping.key.name',  # test object access\n            'e': 'd.e',  # d.e[0] or d.e: (callable to fetch 0)\n            'i': ('i', [{'j': 'j'}]),  # TODO: support True for cases when the value should simply be mapped into the field name?\n            'n': ('n', lambda n: n.upper()),\n            'p': Coalesce('xxx',\n                          'yyy',\n                          default='zzz')}\n\n    ret = glom(val, spec)\n\n    print('in: ', val)\n    print('got:', ret)\n    expected = {'a': 'c',\n                'name': 'good_name',\n                'e': ['f'\n\n# glom/test/test_check.py\nfrom pytest import raises\n\nfrom glom import glom, Check, CheckError, Coalesce, SKIP, STOP, T\n\ntry:\n    unicode\nexcept NameError:\n    unicode = str\n\n\ndef test_check_basic():\n    assert glom([0, SKIP], [T]) == [0]  # sanity check SKIP\n\n    target = [{'id': 0}, {'id': 1}, {'id': 2}]\n\n    # check that skipping non-passing values works\n    assert glom(target, ([Coalesce(Check('id', equal_to=0), default=SKIP)], T[0])) == {'id': 0}\n    assert glom(target, ([Check('id', equal_to=0, default=SKIP)], T[0])) == {'id': 0}\n\n    # check that stopping iteration on non-passing values works\n    assert glom(target, [Check('id', equal_to=0, default=STOP)]) == [{'id': 0}]\n\n    # check that stopping chain execution on non-passing values works\n    spec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])\n    assert glom('hello', spec) == 'h'\n    assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work\n\n    assert repr(Check()) == 'Check()'\n    assert repr(Check(T.a)) == 'Check(T.a)'\n    assert repr(Check(equal_to=1)) == 'Check(equal_to=1)'\n    assert repr(Check(instance_of=dict)) == 'Check(instance_of=dict)'\n    assert repr(Check(T(len), validate=sum)) == 'Check(T(len), validate=sum)'\n\n    target = [1, 'a']\n    assert glom(target, [Check(type=unicode, default=SKIP)]) == ['a']\n    assert glom(target, [Check(type=(unicode, int))]) == [1, 'a']\n    assert glom(target, [Check(instance_of=unicode, default=SKIP)]) == ['a']\n    assert glom(target, [Check(instance_of=(unicode, i\n\nWrite ONLY `glom/test/generated/test_glom_core.py`. Confirm with: python -m pytest -q glom/test/generated/test_glom_core.py"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.run:0",
+            "type": "function",
+            "function": {
+              "name": "run",
+              "arguments": "{\"cmd\": \"find . -type f -name \\\"*.py\\\" | head -20\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.run:0",
+        "content": "exit_code=0\n--- stdout ---\n./docs/conf.py\n./setup.py\n./glom/test/generated/__init__.py\n./glom/test/generated/test_glom_cli.py\n./glom/test/test_fill.py\n./glom/test/test_grouping.py\n./glom/test/test_mutation.py\n./glom/test/test_basic.py\n./glom/test/conftest.py\n./glom/test/test_spec.py\n./glom/test/test_streaming.py\n./glom/test/test_target_types.py\n./glom/test/perf_report.py\n./glom/test/__init__.py\n./glom/test/test_match.py\n./glom/test/test_tutorial.py\n./glom/test/test_reduction.py\n./glom/test/test_check.py\n./glom/test/test_error.py\n./glom/test/test_scope_vars.py\n\n--- stderr ---\n"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.grep:0",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"class CoalesceError\"}"
+            }
+          },
+          {
+            "id": "functions.grep:1",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"def _extend_children\"}"
+            }
+          },
+          {
+            "id": "functions.grep:2",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"def format_invocation\"}"
+            }
+          },
+          {
+            "id": "functions.grep:3",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"AUTO\\\\s*=\\\\s*\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:0",
+        "content": "glom/core.py:390:class CoalesceError(GlomError):"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:1",
+        "content": "glom/core.py:1678:def _extend_children(children, item, get_handler):"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:2",
+        "content": "glom/core.py:549:def format_invocation(name='', args=(), kwargs=None, **kw):"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:3",
+        "content": "no matches"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.grep:0",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"^AUTO\\\\s*=|^def AUTO\\\\b\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:0",
+        "content": "glom/core.py:2367:def AUTO(target, spec, scope):"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.read_file:0",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"390:450\"}"
+            }
+          },
+          {
+            "id": "functions.read_file:1",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"1678:1710\"}"
+            }
+          },
+          {
+            "id": "functions.read_file:2",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"549:590\"}"
+            }
+          },
+          {
+            "id": "functions.read_file:3",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"2367:2400\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:0",
+        "content": "class CoalesceError(GlomError):\n    \"\"\"This :exc:`GlomError` subtype is raised from within a\n    :class:`Coalesce` spec's processing, when none of the subspecs\n    match and no default is provided.\n\n    The exception object itself keeps track of several values which\n    may be useful for processing:\n\n    Args:\n       coal_obj (Coalesce): The original failing spec, see\n          :class:`Coalesce`'s docs for details.\n       skipped (list): A list of ignored values and exceptions, in the\n          order that their respective subspecs appear in the original\n          *coal_obj*.\n       path: Like many GlomErrors, this exception knows the path at\n          which it occurred.\n\n    >>> target = {}\n    >>> glom(target, Coalesce('a', 'b'))\n    Traceback (most recent call last):\n    ...\n    CoalesceError: no valid values found. Tried ('a', 'b') and got (PathAccessError, PathAccessError) ...\n\n    .. note::\n\n       Coalesce is a *branching* specifier type, so as of v20.7.0, its\n       exception messages feature an error tree. See\n       :ref:`branched-exceptions` for details on how to interpret these\n       exceptions.\n\n    \"\"\"\n    def __init__(self, coal_obj, skipped, path):\n        self.coal_obj = coal_obj\n        self.skipped = skipped\n        self.path = path\n\n    def __repr__(self):\n        cn = self.__class__.__name__\n        return f'{cn}({self.coal_obj!r}, {self.skipped!r}, {self.path!r})'\n\n    def get_message(self):\n        missed_specs = tuple(self.coal_obj.subspecs)\n        skipped_vals = [v.__class__.__name__\n                        if isinstance(v, self.coal_obj.skip_exc)\n                        else '<skipped %s>' % v.__class__.__name__\n                        for v in self.skipped]\n        msg = ('no valid values found. Tried %r and got (%s)'\n               % (missed_specs, ', '.join(skipped_vals)))\n        if self.coal_obj.skip is not _MISSING:\n            msg += f', skip set to {self.coal_obj.skip!r}'\n        if self.coal_obj.skip_exc is not GlomError:\n            msg += f', skip_exc set to {self.coal_obj.skip_exc!r}'\n        if self.path is not None:\n            msg += f' (at path {self.path!r})'\n        return msg\n\n\nclass BadSpec(GlomError, TypeError):\n    \"\"\"Raised when a spec structure is malformed, e.g., when a specifier\n    type is invalid for the current mode.\"\"\"\n"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:1",
+        "content": "def _extend_children(children, item, get_handler):\n    try:  # dict or obj-like\n        keys = get_handler('keys', item)\n        get = get_handler('get', item)\n    except UnregisteredTarget:\n        try:\n            iterate = get_handler('iterate', item)\n        except UnregisteredTarget:\n            pass\n        else:\n            try:  # list-like\n                children.extend(iterate(item))\n            except Exception:\n                pass\n    else:\n        try:\n            for key in keys(item):\n                try:\n                    children.append(get(item, key))\n                except Exception:\n                    pass\n        except Exception:\n            pass\n\n\nT = TType()  # target aka Mr. T aka \"this\"\nS = TType()  # like T, but means grab stuff from Scope, not Target\nA = TType()  # like S, but shorthand to assign target to scope\n\nT.__ops__ = (T,)\nS.__ops__ = (S,)\nA.__ops__ = (A,)\n"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:2",
+        "content": "def format_invocation(name='', args=(), kwargs=None, **kw):\n    \"\"\"Given a name, positional arguments, and keyword arguments, format\n    a basic Python-style function call.\n\n    >>> print(format_invocation('func', args=(1, 2), kwargs={'c': 3}))\n    func(1, 2, c=3)\n    >>> print(format_invocation('a_func', args=(1,)))\n    a_func(1)\n    >>> print(format_invocation('kw_func', kwargs=[('a', 1), ('b', 2)]))\n    kw_func(a=1, b=2)\n\n    \"\"\"\n    _repr = kw.pop('repr', bbrepr)\n    if kw:\n        raise TypeError('unexpected keyword args: %r' % ', '.join(kw.keys()))\n    kwargs = kwargs or {}\n    a_text = ', '.join([_repr(a) for a in args])\n    if isinstance(kwargs, dict):\n        kwarg_items = [(k, kwargs[k]) for k in sorted(kwargs)]\n    else:\n        kwarg_items = kwargs\n    kw_text = ', '.join([f'{k}={_repr(v)}' for k, v in kwarg_items])\n\n    all_args_text = a_text\n    if all_args_text and kw_text:\n        all_args_text += ', '\n    all_args_text += kw_text\n\n    return f'{name}({all_args_text})'\n\n\nclass Path:\n    \"\"\"Path objects specify explicit paths when the default\n    ``'a.b.c'``-style general access syntax won't work or isn't\n    desirable. Use this to wrap ints, datetimes, and other valid\n    keys, as well as strings with dots that shouldn't be expanded.\n\n    >>> target = {'a': {'b': 'c', 'd.e': 'f', 2: 3}}\n    >>> glom(target, Path('a', 2))\n    3\n    >>> glom(target, Path('a', 'd.e'))\n    'f'"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:3",
+        "content": "def AUTO(target, spec, scope):\n    if type(spec) is str:  # shortcut to make deep-get use case faster\n        return _t_eval(target, Path.from_text(spec).path_t, scope)\n    if isinstance(spec, dict):\n        return _handle_dict(target, spec, scope)\n    elif isinstance(spec, list):\n        return _handle_list(target, spec, scope)\n    elif isinstance(spec, tuple):\n        return _handle_tuple(target, spec, scope)\n    elif isinstance(spec, basestring):\n        return Path.from_text(spec).glomit(target, scope)\n    elif callable(spec):\n        return spec(target)\n\n    raise TypeError('expected spec to be dict, list, tuple, callable, string,'\n                    ' or other Spec-like type, not: %r' % (spec,))\n\n\n_DEFAULT_SCOPE.update({\n    glom: _glom,\n    TargetRegistry: TargetRegistry(register_default_types=True),\n})\n\n\ndef register(target_type, **kwargs):\n    \"\"\"Register *target_type* so :meth:`~Glommer.glom()` will\n    know how to handle instances of that type as targets.\n\n    Here's an example of adding basic iterabile support for Django's ORM:\n\n    .. code-block:: python\n\n        import glom\n        import django.db.models"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.grep:0",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"class Coalesce\\\\b\"}"
+            }
+          },
+          {
+            "id": "functions.grep:1",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"bbrepr\\\\s*=\"}"
+            }
+          },
+          {
+            "id": "functions.grep:2",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"def _t_eval\"}"
+            }
+          },
+          {
+            "id": "functions.grep:3",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"def _handle_dict\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:0",
+        "content": "glom/core.py:829:class Coalesce:"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:1",
+        "content": "glom/core.py:531:bbrepr = recursive_repr()(_BBRepr().repr)"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:2",
+        "content": "glom/core.py:1541:def _t_eval(target, _t, scope):"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:3",
+        "content": "glom/core.py:1924:def _handle_dict(target, spec, scope):\nglom/matching.py:677:def _handle_dict(target, spec, scope):"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.read_file:0",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"829:900\"}"
+            }
+          },
+          {
+            "id": "functions.read_file:1",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"520:548\"}"
+            }
+          },
+          {
+            "id": "functions.read_file:2",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"1924:1970\"}"
+            }
+          },
+          {
+            "id": "functions.read_file:3",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"1541:1580\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:0",
+        "content": "class Coalesce:\n    \"\"\"Coalesce objects specify fallback behavior for a list of\n    subspecs.\n\n    Subspecs are passed as positional arguments, and keyword arguments\n    control defaults. Each subspec is evaluated in turn, and if none\n    match, a :exc:`CoalesceError` is raised, or a default is returned,\n    depending on the options used.\n\n    .. note::\n\n      This operation may seem very familar if you have experience with\n      `SQL`_ or even `C# and others`_.\n\n\n    In practice, this fallback behavior's simplicity is only surpassed\n    by its utility:\n\n    >>> target = {'c': 'd'}\n    >>> glom(target, Coalesce('a', 'b', 'c'))\n    'd'\n\n    glom tries to get ``'a'`` from ``target``, but gets a\n    KeyError. Rather than raise a :exc:`~glom.PathAccessError` as usual,\n    glom *coalesces* into the next subspec, ``'b'``. The process\n    repeats until it gets to ``'c'``, which returns our value,\n    ``'d'``. If our value weren't present, we'd see:\n\n    >>> target = {}\n    >>> glom(target, Coalesce('a', 'b'))\n    Traceback (most recent call last):\n    ...\n    CoalesceError: no valid values found. Tried ('a', 'b') and got (PathAccessError, PathAccessError) ...\n\n    Same process, but because ``target`` is empty, we get a\n    :exc:`CoalesceError`.\n\n    .. note::\n\n       Coalesce is a *branching* specifier type, so as of v20.7.0, its\n       exception messages feature an error tree. See\n       :ref:`branched-exceptions` for details on how to interpret these\n       exceptions.\n\n\n    If we want to avoid an exception, and we know which value we want\n    by default, we can set *default*:\n\n    >>> target = {}\n    >>> glom(target, Coalesce('a', 'b', 'c'), default='d-fault')\n    'd-fault'\n\n    ``'a'``, ``'b'``, and ``'c'`` weren't present so we got ``'d-fault'``.\n\n    Args:\n\n       subspecs: One or more glommable subspecs\n       default: A value to return if no subspec results in a valid value\n       default_factory: A callable whose result will be returned as a default\n       skip: A value, tuple of values, or predicate function\n         representing values to ignore\n       skip_exc: An exception or tuple of exception types to catch and\n         move on to the next subspec. Defaults to :exc:`GlomError`, the\n         parent type of all glom runtime exceptions.\n\n    If all subspecs produce skipped values or exceptions, a\n    :exc:`CoalesceError` will be raised. For more examples, check out\n    the :doc:`tutorial`, which makes extensive use of Coalesce.\n\n    .. _SQL: https://en.wikipedia.org/w/index.php?title=Null_(SQL)&oldid=833093792#COALESCE\n    .. _C# and others: https://en.wikipedia.org/w/index.php?title=Null_coalescing_operator&oldid=839493322#C#\n"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:1",
+        "content": "            if not isinstance(getattr(self, name), int):\n                continue\n            setattr(self, name, 1024)\n\n    def repr1(self, x, level):\n        ret = Repr.repr1(self, x, level)\n        if not ret.startswith('<'):\n            return ret\n        return _BUILTIN_ID_NAME_MAP.get(id(x), ret)\n\n\nbbrepr = recursive_repr()(_BBRepr().repr)\n\n\nclass _BBReprFormatter(string.Formatter):\n    \"\"\"\n    allow format strings to be evaluated where {!r} will use bbrepr\n    instead of repr\n    \"\"\"\n    def convert_field(self, value, conversion):\n        if conversion == 'r':\n            return bbrepr(value).replace(\"\\\\'\", \"'\")\n        return super().convert_field(value, conversion)\n\n\nbbformat = _BBReprFormatter().format\n\n\n# TODO: push this back up to boltons with repr kwarg"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:2",
+        "content": "def _handle_dict(target, spec, scope):\n    ret = type(spec)()  # TODO: works for dict + ordereddict, but sufficient for all?\n    for field, subspec in spec.items():\n        val = scope[glom](target, subspec, scope)\n        if val is SKIP:\n            continue\n        if type(field) in (Spec, TType):\n            field = scope[glom](target, field, scope)\n        ret[field] = val\n    return ret\n\n\ndef _handle_list(target, spec, scope):\n    subspec = spec[0]\n    iterate = scope[TargetRegistry].get_handler('iterate', target, path=scope[Path])\n    try:\n        iterator = iterate(target)\n    except Exception as e:\n        raise TypeError('failed to iterate on instance of type %r at %r (got %r)'\n                        % (target.__class__.__name__, Path(*scope[Path]), e))\n    ret = []\n    base_path = scope[Path]\n    for i, t in enumerate(iterator):\n        scope[Path] = base_path + [i]\n        val = scope[glom](t, subspec, scope)\n        if val is SKIP:\n            continue\n        if val is STOP:\n            break\n        ret.append(val)\n    return ret\n\n\ndef _handle_tuple(target, spec, scope):\n    res = target\n    for subspec in spec:\n        scope = chain_child(scope)\n        nxt = scope[glom](res, subspec, scope)\n        if nxt is SKIP:\n            continue\n        if nxt is STOP:\n            break\n        res = nxt\n        if not isinstance(subspec, list):\n            scope[Path] += [getattr(subspec, '__name__', subspec)]\n    return res\n"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:3",
+        "content": "def _t_eval(target, _t, scope):\n    t_path = _t.__ops__\n    i = 1\n    fetch_till = len(t_path)\n    root = t_path[0]\n    if root is T:\n        cur = target\n    elif root is S or root is A:\n        # A is basically the same as S, but last step is assign\n        if root is A:\n            fetch_till -= 2\n            if fetch_till < 1:\n                raise BadSpec('cannot assign without destination')\n        cur = scope\n        if fetch_till > 1 and t_path[1] in ('.', 'P'):\n            cur = _s_first_magic(cur, t_path[2], _t)\n            i += 2\n        elif root is S and fetch_till > 1 and t_path[1] == '(':\n            # S(var='spec') style assignment\n            _, kwargs = t_path[2]\n            scope.update({\n                k: arg_val(target, v, scope) for k, v in kwargs.items()})\n            return target\n\n    else:\n        raise ValueError('TType instance with invalid root')  # pragma: no cover\n    pae = None\n    while i < fetch_till:\n        op, arg = t_path[i], t_path[i + 1]\n        arg = arg_val(target, arg, scope)\n        if op == '.':\n            try:\n                cur = getattr(cur, arg)\n            except AttributeError as e:\n                pae = PathAccessError(e, Path(_t), i // 2)\n        elif op == '[':\n            try:\n                cur = cur[arg]\n            except (KeyError, IndexError, TypeError) as e:\n                pae = PathAccessError(e, Path(_t), i // 2)"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.read_file:0",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/core.py\", \"lines\": \"900:960\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:0",
+        "content": "\n    \"\"\"\n    def __init__(self, *subspecs, **kwargs):\n        self.subspecs = subspecs\n        self._orig_kwargs = dict(kwargs)\n        self.default = kwargs.pop('default', _MISSING)\n        self.default_factory = kwargs.pop('default_factory', _MISSING)\n        if self.default and self.default_factory:\n            raise ValueError('expected one of \"default\" or \"default_factory\", not both')\n        self.skip = kwargs.pop('skip', _MISSING)\n        if self.skip is _MISSING:\n            self.skip_func = lambda v: False\n        elif callable(self.skip):\n            self.skip_func = self.skip\n        elif isinstance(self.skip, tuple):\n            self.skip_func = lambda v: v in self.skip\n        else:\n            self.skip_func = lambda v: v == self.skip\n        self.skip_exc = kwargs.pop('skip_exc', GlomError)\n        if kwargs:\n            raise TypeError(f'unexpected keyword args: {sorted(kwargs.keys())!r}')\n\n    def glomit(self, target, scope):\n        skipped = []\n        for subspec in self.subspecs:\n            try:\n                ret = scope[glom](target, subspec, scope)\n                if not self.skip_func(ret):\n                    break\n                skipped.append(ret)\n            except self.skip_exc as e:\n                skipped.append(e)\n                continue\n        else:\n            if self.default is not _MISSING:\n                ret = arg_val(target, self.default, scope)\n            elif self.default_factory is not _MISSING:\n                ret = self.default_factory()\n            else:\n                raise CoalesceError(self, skipped, scope[Path])\n        return ret\n\n    def __repr__(self):\n        cn = self.__class__.__name__\n        return format_invocation(cn, self.subspecs, self._orig_kwargs, repr=bbrepr)\n\n\nclass Inspect:\n    \"\"\"The :class:`~glom.Inspect` specifier type provides a way to get\n    visibility into glom's evaluation of a specification, enabling\n    debugging of those tricky problems that may arise with unexpected\n    data.\n\n    :class:`~glom.Inspect` can be inserted into an existing spec in one of two\n    ways. First, as a wrapper around the spec in question, or second,\n    as an argument-less placeholder wherever a spec could be.\n\n    :class:`~glom.Inspect` supports several modes, controlled by\n    keyword arguments. Its default, no-argument mode, simply echos the\n    state of the glom at the point where it appears:\n"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.read_file:0",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/test/generated/__init__.py\"}"
+            }
+          },
+          {
+            "id": "functions.grep:1",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"from glom.core import\", \"path\": \"glom/test/test_basic.py\"}"
+            }
+          },
+          {
+            "id": "functions.grep:2",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"UnregisteredTarget\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:0",
+        "content": ""
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:1",
+        "content": "ERROR: concrete_tools.<locals>.<lambda>() got an unexpected keyword argument 'path'"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:2",
+        "content": "docs/api.rst:240:.. autoclass:: glom.UnregisteredTarget\ndocs/custom_spec_types.rst:136:from glom.core import TargetRegistry, UnregisteredTarget  # 1\ndocs/custom_spec_types.rst:150:except UnregisteredTarget as ut:\ndocs/debugging.rst:39:* :exc:`~glom.UnregisteredTarget`\nglom/__init__.py:27:UnregisteredTarget,\nglom/core.py:452:class UnregisteredTarget(GlomError):\nglom/core.py:460:UnregisteredTarget: target type 'object' not registered for 'iterate', expected one of registered types: (...)\nglom/core.py:466:An UnregisteredTarget takes and tracks a few values:\nglom/core.py:1682:except UnregisteredTarget:\nglom/core.py:1685:except UnregisteredTarget:\nglom/core.py:2012:closest-matching handler function, raising UnregisteredTarget\nglom/core.py:2034:raise UnregisteredTarget(op, obj_type, type_map=type_map, path=path)\nglom/mutation.py:22:from .core import Path, T, S, Spec, glom, UnregisteredTarget, GlomError, PathAccessError, UP\nglom/reduction.py:7:from .core import T, glom, GlomError, format_invocation, bbrepr, UnregisteredTarget, MODE\nglom/reduction.py:81:except UnregisteredTarget as ut:\nglom/test/test_basic.py:422:# UnregisteredTarget: UnregisteredTarget('iterate', <type 'Element'>, ...\nglom/test/test_error.py:494:_test_exc(glom.UnregisteredTarget, 'kurt', [glom.T])\nglom/test/test_mutation.py:6:from glom.core import UnregisteredTarget\nglom/test/test_mutation.py:57:with pytest.raises(UnregisteredTarget, match='assign'):\nglom/test/test_mutation.py:61:with pytest.raises(UnregisteredTarget, match='assign'):\nglom/test/test_mutation.py:266:with pytest.raises(UnregisteredTarget, match='delete'):\nglom/test/test_mutation.py:269:with pytest.raises(UnregisteredTarget, match='delete'):\nglom/test/test_target_types.py:4:from glom import Glommer, PathAccessError, UnregisteredTarget\nglom/test/test_target_types.py:55:with pytest.raises(UnregisteredTarget) as exc_info:\nglom/test/test_target_types.py:57:assert repr(exc_info.value) == \"UnregisteredTarget('get', <type 'object'>, OrderedDict(), ('__class__',))\"\nglom/test/test_target_types.py:62:with pytest.raises(UnregisteredTarget, match='without registering') as exc_info:\nglom/test/test_target_types.py:71:with pytest.raises(UnregisteredTarget) as exc_info:\nglom/test/test_target_types.py:99:with pytest.raises(UnregisteredTarget):\nglom/test/test_target_types.py:117:with pytest.raises(UnregisteredTarget):\nglom/test/test_target_types.py:161:with pytest.raises(UnregisteredTarget):"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "read_file",
+          "description": "Read a source file. Optional `lines` as 'start:end' (1-indexed).",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "lines": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "grep",
+          "description": "Search the repo for a regular expression. Returns file:line:match.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "pattern": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "pattern"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "write_file",
+          "description": "Write (create or overwrite) a file in the repo.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "content"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "run",
+          "description": "Run a shell command inside the repo's Docker container. Returns exit code and output.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "cmd": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "cmd"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": "auto"
+  },
+  "response": {
+    "id": "chatcmpl-ae1acbd0d4154ae19ee4f9b61d35b829",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.grep:0",
+              "function": {
+                "arguments": "{\"pattern\": \"scope\\\\[glom\\\\]\"}",
+                "name": "grep"
+              },
+              "type": "function"
+            },
+            {
+              "id": "functions.grep:1",
+              "function": {
+                "arguments": "{\"pattern\": \"_DEFAULT_SCOPE\"}",
+                "name": "grep"
+              },
+              "type": "function"
+            },
+            {
+              "id": "functions.grep:2",
+              "function": {
+                "arguments": "{\"pattern\": \"chain_child\"}",
+                "name": "grep"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": "Now I have a good understanding of the functions. Let me also check what imports are available and how to properly construct the test cases.\n\nFor `CoalesceError.get_message`:\n- Need to create a `Coalesce` object and a `CoalesceError`\n- The `Coalesce` object has `subspecs`, `skip`, `skip_exc`\n- The `skipped` list contains either exceptions (instances of `skip_exc`) or other values\n\nFor `_extend_children`:\n- Need a `get_handler` function that can return handlers for 'keys', 'get', 'iterate'\n- Need to test with dict-like, list-like, and unregistered targets\n\nFor `format_invocation`:\n- Straightforward, just test various argument combinations\n\nFor `AUTO`:\n- Need to test with string, dict, list, tuple, callable, and invalid spec\n- Need to set up a proper scope\n\nLet me look at how tests set up scope for AUTO."
+        }
+      }
+    ],
+    "created": 1787003433,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 247,
+      "prompt_tokens": 7638,
+      "total_tokens": 7885,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 161,
+        "audio_tokens": 0,
+        "reasoning_tokens": 195,
+        "rejected_prediction_tokens": 187,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 2464,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

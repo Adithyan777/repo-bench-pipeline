@@ -1,0 +1,898 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 10,
+          "nodeid": "glom/test/test_check.py::test_check_basic",
+          "type": "Function"
+        },
+        {
+          "lineno": 71,
+          "nodeid": "glom/test/test_check.py::test_check_multi",
+          "type": "Function"
+        },
+        {
+          "lineno": 458,
+          "nodeid": "glom/test/test_error.py::test_all_public_errors",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[22-glom([1, 2, 3], (reversed, list))\\nglom([1, 2, 3], T[::-1])\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[38-glom([-1, 2, -3], ([abs], tuple))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[53-glom({1:2, 2:3}, Call(dict, args=(T.items(),)))\\nglom({1:2, 2:3}, lambda t: dict(t.items()))\\nglom({1:2, 2:3}, dict)\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[71-glom([1, 2, 3], [Decimal])\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[83-glom([1, 2, 3], Call(deque, args=[T, 10]))\\nglom([1, 2, 3], lambda t: deque(t, 10))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[97-glom([1, 2, 3, 4, 5, 6], lambda t: [i for i in t if i % 2])\\nglom([1, 2, 3, 4, 5, 6], [lambda i: i if i % 2 else SKIP])\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[115-glom(contacts, [Coalesce('primary_email.email', skip=('', None), default=SKIP)])\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[130-glom((1, 2, 3), (\\n    {\\n        \"type\": type,\\n        \"result\": [T + 1]  # arbitrary operation\\n    }, T['type'](T['result'])))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[153-import glom\\nimport django.db.models\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[175-glom(['cat', 1, 'dog', 2], [Check(type=str, default=SKIP)])\\n# ['cat', 'dog']\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[193-class If(object):\\n    def __init__(self, cond, if_, else_=None):\\n        self.cond, self.if_, self.else_ = cond, if_, else_\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[222-class Seq(object):\\n    def __init__(self, *subspecs):\\n        self.subspecs = subspecs\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[238-glom('1', ({1: float, 2: int}, T.values()))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[252-glom(range(10), [(M < 7) | Val(7)])\\n# [0, 1, 2, 3, 4, 5, 6, 7, 7, 7]\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[262-glom(range(10), [(M < 7) | Val(SKIP)])\\n# [0, 1, 2, 3, 4, 5, 6]\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[277-etree2dicts = Ref('ElementTree',\\n    {\"tag\": \"tag\", \"text\": \"text\", \"attrib\": \"attrib\", \"children\": (iter, [Ref('ElementTree')])})\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[285-etree2tuples = Fill(Ref('ElementTree', (T.tag, Iter(Ref('ElementTree')).all())))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[306->>> etree = ElementTree.fromstring(html_text)\\n>>> glom(etree, etree2tuples)\\n('html', [('head', [('title', [])]), ('body', [('p', [])])])\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[323-glom(json.loads(data),\\n    Ref('json',\\n        Match(Switch({\\n            dict: {Ref('json'): Ref('json')},\\n            list: [Ref('json')],\\n            type(u''): Auto(str),\\n            object: T}))\\n        )\\n    )\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[358-glom({}, (A.t, T.update({1: 1}), S.t))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[371-input_data = {\"a\": {\"b\": {\"c\": 1}}}\\n# transform to:\\noutput_data = [{\"value\": 1, \"grandparent\": \"a\"}]\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[379-(\\n    T.items(),\\n    [\\n        (\\n            A.globals.gp_item,  # save the grandparent item to the global scope\\n            T[1].values(),      # access the values as usual\\n            [{\"value\": \"c\", \"grandparent\": S.globals.gp_item[0]}],  # access the grandparent item\\n        )\\n    ],\\n    Flatten(),\\n)\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 27,
+          "nodeid": "glom/test/test_streaming.py::test_filter",
+          "type": "Function"
+        },
+        {
+          "lineno": 89,
+          "nodeid": "glom/test/test_streaming.py::test_windowed",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787005979.8654804,
+  "duration": 0.10234618186950684,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 27,
+    "passed": 27,
+    "total": 27
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.004470105996006168,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_check_basic",
+        "test_check.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 10,
+      "nodeid": "glom/test/test_check.py::test_check_basic",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0003461239975877106,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012083299952792004,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00039670700061833486,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_check_multi",
+        "test_check.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 71,
+      "nodeid": "glom/test/test_check.py::test_check_multi",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.012500231619924e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.366599649889395e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0038816920059616677,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_all_public_errors",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 458,
+      "nodeid": "glom/test/test_error.py::test_all_public_errors",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.512500112876296e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.870799890952185e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001598739982000552,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[22-glom([1, 2, 3], (reversed, list))\\nglom([1, 2, 3], T[::-1])\\n]",
+        "parametrize",
+        "pytestmark",
+        "22-glom([1, 2, 3], (reversed, list))\\nglom([1, 2, 3], T[::-1])\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[22-glom([1, 2, 3], (reversed, list))\\nglom([1, 2, 3], T[::-1])\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00021608300448860973,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.116600267589092e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001302070013480261,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[38-glom([-1, 2, -3], ([abs], tuple))\\n]",
+        "parametrize",
+        "pytestmark",
+        "38-glom([-1, 2, -3], ([abs], tuple))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[38-glom([-1, 2, -3], ([abs], tuple))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014666600327473134,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.433300197590142e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00022370799706550315,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[53-glom({1:2, 2:3}, Call(dict, args=(T.items(),)))\\nglom({1:2, 2:3}, lambda t: dict(t.items()))\\nglom({1:2, 2:3}, dict)\\n]",
+        "parametrize",
+        "pytestmark",
+        "53-glom({1:2, 2:3}, Call(dict, args=(T.items(),)))\\nglom({1:2, 2:3}, lambda t: dict(t.items()))\\nglom({1:2, 2:3}, dict)\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[53-glom({1:2, 2:3}, Call(dict, args=(T.items(),)))\\nglom({1:2, 2:3}, lambda t: dict(t.items()))\\nglom({1:2, 2:3}, dict)\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013495799794327468,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.816599488956854e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012441600119927898,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[71-glom([1, 2, 3], [Decimal])\\n]",
+        "parametrize",
+        "pytestmark",
+        "71-glom([1, 2, 3], [Decimal])\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[71-glom([1, 2, 3], [Decimal])\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014358299813466147,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013362400204641744,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002040819963440299,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[83-glom([1, 2, 3], Call(deque, args=[T, 10]))\\nglom([1, 2, 3], lambda t: deque(t, 10))\\n]",
+        "parametrize",
+        "pytestmark",
+        "83-glom([1, 2, 3], Call(deque, args=[T, 10]))\\nglom([1, 2, 3], lambda t: deque(t, 10))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[83-glom([1, 2, 3], Call(deque, args=[T, 10]))\\nglom([1, 2, 3], lambda t: deque(t, 10))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00022166599956108257,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.262499952455983e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003446650007390417,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[97-glom([1, 2, 3, 4, 5, 6], lambda t: [i for i in t if i % 2])\\nglom([1, 2, 3, 4, 5, 6], [lambda i: i if i % 2 else SKIP])\\n]",
+        "parametrize",
+        "pytestmark",
+        "97-glom([1, 2, 3, 4, 5, 6], lambda t: [i for i in t if i % 2])\\nglom([1, 2, 3, 4, 5, 6], [lambda i: i if i % 2 else SKIP])\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[97-glom([1, 2, 3, 4, 5, 6], lambda t: [i for i in t if i % 2])\\nglom([1, 2, 3, 4, 5, 6], [lambda i: i if i % 2 else SKIP])\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00015120700118131936,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.012500231619924e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00016958199557848275,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[115-glom(contacts, [Coalesce('primary_email.email', skip=('', None), default=SKIP)])\\n]",
+        "parametrize",
+        "pytestmark",
+        "115-glom(contacts, [Coalesce('primary_email.email', skip=('', None), default=SKIP)])\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[115-glom(contacts, [Coalesce('primary_email.email', skip=('', None), default=SKIP)])\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014304100477602333,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.274999709101394e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00023383200459647924,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[130-glom((1, 2, 3), (\\n    {\\n        \"type\": type,\\n        \"result\": [T + 1]  # arbitrary operation\\n    }, T['type'](T['result'])))\\n]",
+        "parametrize",
+        "pytestmark",
+        "130-glom((1, 2, 3), (\\n    {\\n        \"type\": type,\\n        \"result\": [T + 1]  # arbitrary operation\\n    }, T['type'](T['result'])))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[130-glom((1, 2, 3), (\\n    {\\n        \"type\": type,\\n        \"result\": [T + 1]  # arbitrary operation\\n    }, T['type'](T['result'])))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013816600403515622,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.020799966994673e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.04159969650209e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[153-import glom\\nimport django.db.models\\n]",
+        "parametrize",
+        "pytestmark",
+        "153-import glom\\nimport django.db.models\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[153-import glom\\nimport django.db.models\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001332910032942891,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.6457996328827e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014379200001712888,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[175-glom(['cat', 1, 'dog', 2], [Check(type=str, default=SKIP)])\\n# ['cat', 'dog']\\n]",
+        "parametrize",
+        "pytestmark",
+        "175-glom(['cat', 1, 'dog', 2], [Check(type=str, default=SKIP)])\\n# ['cat', 'dog']\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[175-glom(['cat', 1, 'dog', 2], [Check(type=str, default=SKIP)])\\n# ['cat', 'dog']\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001390410034218803,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.899900472490117e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014637400454375893,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[193-class If(object):\\n    def __init__(self, cond, if_, else_=None):\\n        self.cond, self.if_, self.else_ = cond, if_, else_\\n]",
+        "parametrize",
+        "pytestmark",
+        "193-class If(object):\\n    def __init__(self, cond, if_, else_=None):\\n        self.cond, self.if_, self.else_ = cond, if_, else_\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[193-class If(object):\\n    def __init__(self, cond, if_, else_=None):\\n        self.cond, self.if_, self.else_ = cond, if_, else_\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013412399857770652,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.204100645845756e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011895699572050944,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[222-class Seq(object):\\n    def __init__(self, *subspecs):\\n        self.subspecs = subspecs\\n]",
+        "parametrize",
+        "pytestmark",
+        "222-class Seq(object):\\n    def __init__(self, *subspecs):\\n        self.subspecs = subspecs\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[222-class Seq(object):\\n    def __init__(self, *subspecs):\\n        self.subspecs = subspecs\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014216599811334163,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.345799920381978e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00016483299987157807,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[238-glom('1', ({1: float, 2: int}, T.values()))\\n]",
+        "parametrize",
+        "pytestmark",
+        "238-glom('1', ({1: float, 2: int}, T.values()))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[238-glom('1', ({1: float, 2: int}, T.values()))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013154099724488333,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.404200394172221e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00017429100262233987,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[252-glom(range(10), [(M < 7) | Val(7)])\\n# [0, 1, 2, 3, 4, 5, 6, 7, 7, 7]\\n]",
+        "parametrize",
+        "pytestmark",
+        "252-glom(range(10), [(M < 7) | Val(7)])\\n# [0, 1, 2, 3, 4, 5, 6, 7, 7, 7]\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[252-glom(range(10), [(M < 7) | Val(7)])\\n# [0, 1, 2, 3, 4, 5, 6, 7, 7, 7]\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00015179099864326417,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.562499766005203e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00016899999900488183,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[262-glom(range(10), [(M < 7) | Val(SKIP)])\\n# [0, 1, 2, 3, 4, 5, 6]\\n]",
+        "parametrize",
+        "pytestmark",
+        "262-glom(range(10), [(M < 7) | Val(SKIP)])\\n# [0, 1, 2, 3, 4, 5, 6]\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[262-glom(range(10), [(M < 7) | Val(SKIP)])\\n# [0, 1, 2, 3, 4, 5, 6]\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0004987480060663074,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.062500273808837e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011870800517499447,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[277-etree2dicts = Ref('ElementTree',\\n    {\"tag\": \"tag\", \"text\": \"text\", \"attrib\": \"attrib\", \"children\": (iter, [Ref('ElementTree')])})\\n]",
+        "parametrize",
+        "pytestmark",
+        "277-etree2dicts = Ref('ElementTree',\\n    {\"tag\": \"tag\", \"text\": \"text\", \"attrib\": \"attrib\", \"children\": (iter, [Ref('ElementTree')])})\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[277-etree2dicts = Ref('ElementTree',\\n    {\"tag\": \"tag\", \"text\": \"text\", \"attrib\": \"attrib\", \"children\": (iter, [Ref('ElementTree')])})\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014029200247023255,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.166599582182243e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001176249934360385,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[285-etree2tuples = Fill(Ref('ElementTree', (T.tag, Iter(Ref('ElementTree')).all())))\\n]",
+        "parametrize",
+        "pytestmark",
+        "285-etree2tuples = Fill(Ref('ElementTree', (T.tag, Iter(Ref('ElementTree')).all())))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[285-etree2tuples = Fill(Ref('ElementTree', (T.tag, Iter(Ref('ElementTree')).all())))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001408749958500266,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.41250007902272e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 6.387499888660386e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[306->>> etree = ElementTree.fromstring(html_text)\\n>>> glom(etree, etree2tuples)\\n('html', [('head', [('title', [])]), ('body', [('p', [])])])\\n]",
+        "parametrize",
+        "pytestmark",
+        "306->>> etree = ElementTree.fromstring(html_text)\\n>>> glom(etree, etree2tuples)\\n('html', [('head', [('title', [])]), ('body', [('p', [])])])\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[306->>> etree = ElementTree.fromstring(html_text)\\n>>> glom(etree, etree2tuples)\\n('html', [('head', [('title', [])]), ('body', [('p', [])])])\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001425829977961257,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.095799810485914e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00027124899497721344,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[323-glom(json.loads(data),\\n    Ref('json',\\n        Match(Switch({\\n            dict: {Ref('json'): Ref('json')},\\n            list: [Ref('json')],\\n            type(u''): Auto(str),\\n            object: T}))\\n        )\\n    )\\n]",
+        "parametrize",
+        "pytestmark",
+        "323-glom(json.loads(data),\\n    Ref('json',\\n        Match(Switch({\\n            dict: {Ref('json'): Ref('json')},\\n            list: [Ref('json')],\\n            type(u''): Auto(str),\\n            object: T}))\\n        )\\n    )\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[323-glom(json.loads(data),\\n    Ref('json',\\n        Match(Switch({\\n            dict: {Ref('json'): Ref('json')},\\n            list: [Ref('json')],\\n            type(u''): Auto(str),\\n            object: T}))\\n        )\\n    )\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012508199870353565,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.504100358346477e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00019295699894428253,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[358-glom({}, (A.t, T.update({1: 1}), S.t))\\n]",
+        "parametrize",
+        "pytestmark",
+        "358-glom({}, (A.t, T.update({1: 1}), S.t))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[358-glom({}, (A.t, T.update({1: 1}), S.t))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014045800344320014,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.9042005634401e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001054579988704063,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[371-input_data = {\"a\": {\"b\": {\"c\": 1}}}\\n# transform to:\\noutput_data = [{\"value\": 1, \"grandparent\": \"a\"}]\\n]",
+        "parametrize",
+        "pytestmark",
+        "371-input_data = {\"a\": {\"b\": {\"c\": 1}}}\\n# transform to:\\noutput_data = [{\"value\": 1, \"grandparent\": \"a\"}]\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[371-input_data = {\"a\": {\"b\": {\"c\": 1}}}\\n# transform to:\\noutput_data = [{\"value\": 1, \"grandparent\": \"a\"}]\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012962499749846756,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.191599823068827e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000128416002553422,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[379-(\\n    T.items(),\\n    [\\n        (\\n            A.globals.gp_item,  # save the grandparent item to the global scope\\n            T[1].values(),      # access the values as usual\\n            [{\"value\": \"c\", \"grandparent\": S.globals.gp_item[0]}],  # access the grandparent item\\n        )\\n    ],\\n    Flatten(),\\n)\\n]",
+        "parametrize",
+        "pytestmark",
+        "379-(\\n    T.items(),\\n    [\\n        (\\n            A.globals.gp_item,  # save the grandparent item to the global scope\\n            T[1].values(),      # access the values as usual\\n            [{\"value\": \"c\", \"grandparent\": S.globals.gp_item[0]}],  # access the grandparent item\\n        )\\n    ],\\n    Flatten(),\\n)\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[379-(\\n    T.items(),\\n    [\\n        (\\n            A.globals.gp_item,  # save the grandparent item to the global scope\\n            T[1].values(),      # access the values as usual\\n            [{\"value\": \"c\", \"grandparent\": S.globals.gp_item[0]}],  # access the grandparent item\\n        )\\n    ],\\n    Flatten(),\\n)\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012408299517119303,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.883299647597596e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0006059970037313178,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_filter",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 27,
+      "nodeid": "glom/test/test_streaming.py::test_filter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.641700019827113e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.13329975749366e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00022362400341080502,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_windowed",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 89,
+      "nodeid": "glom/test/test_streaming.py::test_windowed",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.6291995861101896e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.783300002804026e-05,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

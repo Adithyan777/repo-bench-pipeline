@@ -1,0 +1,132 @@
+{
+  "step": "p2.okf.function_contracts",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "For each function of module `glom.core` below, write a behavioral contract: inputs (what each parameter means), outputs (what is returned), raises (list of exception TYPE NAMES it can raise, [] if none), side_effects (\"none\" or a short phrase), invariants (a property that always holds, or \"\"). Base every field ONLY on the code shown. Return one entry per qualname.\n\n### glom.core.format_target_spec_trace\nsignature: format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True)\ndef format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True):\n    \"\"\"\n    unpack a scope into a multi-line but short summary\n    \"\"\"\n    segments = []\n    indent = \" \" + \"|\" * depth\n    tick = \"| \" if depth else \"- \"\n    def mk_fmt(label, t=None):\n        pre = indent + (t or tick) + label + \": \"\n        fmt_width = width - len(pre)\n        return lambda v: pre + _format_trace_value(v, fmt_width)\n    fmt_t = mk_fmt(\"Target\")\n    fmt_s = mk_fmt(\"Spec\")\n    fmt_b = mk_fmt(\"Spec\", \"+ \")\n    recurse = lambda s, last=False: format_target_spec_trace(s, root_error, width, depth + 1, prev_target, last)\n    tb_exc_line = lambda e: \"\".join(traceback.format_exception_only(type(e), e))[:-1]\n    fmt_e = lambda e: indent + tick + tb_exc_line(e)\n    for scope, spec, target, error, branches in _unpack_stack(scope):\n        if target is not prev_target:\n            segments.append(fmt_t(target))\n        prev_target = target\n        if branches:\n            segments.append(fmt_b(spec))\n            segments.extend([recurse(s) for s in branches[:-1]])\n            segments.append(recurse(branches[-1], last_branch))\n        else:\n            segments.append(fmt_s(spec))\n        if error is not None and error is not root_error:\n            last_line_error = True\n            segments.append(fmt_e(error))\n        else:\n            last_line_error = False\n    if depth:  # \\ on first line, X on last line\n        remark = lambda s, m: s[:depth + 1] + m + s[depth + 2:]\n        segments[0] = remark(segments[0], \"\\\\\")\n        if not last_branch or last_line_error:\n            segments[-1] = remark(segments[-1], \"X\")\n    return \"\\n\".join(segments)\n\n### glom.core.glom\nsignature: glom(target, spec, **kwargs)\ndef glom(target, spec, **kwargs):\n    \"\"\"Access or construct a value from a given *target* based on the\n    specification declared by *spec*.\n\n    Accessing nested data, aka deep-get:\n\n    >>> target = {'a': {'b': 'c'}}\n    >>> glom(target, 'a.b')\n    'c'\n\n    Here the *spec* was just a string denoting a path,\n    ``'a.b'``. As simple as it should be. You can also use \n    :mod:`glob`-like wildcard selectors:\n\n    >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}\n    >>> glom(target, 'a.*.k')\n    ['v1', 'v2']\n\n    In addition to ``*``, you can also use ``**`` for recursive access:\n\n    >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}\n    >>> glom(target, '**.k')\n    ['v0', 'v3', 'v4']\n    \n    The next example shows how to use nested data to \n    access many fields at once, and make a new nested structure.\n\n    Constructing, or restructuring more-complicated nested data:\n\n    >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n    >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n    >>> output = glom(target, spec)\n    >>> pprint(output)\n    {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n\n    ``glom`` also takes a keyword-argument, *default*. When set,\n    if a ``glom`` operation fails with a :exc:`GlomError`, the\n    *default* will be returned, very much like\n    :meth:`dict.get()`:\n\n    >>> glom(target, 'a.xx', default='nada')\n    'nada'\n\n    The *skip_exc* keyword argument controls which errors should\n    be ignored.\n\n    >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n    0.0\n\n    Args:\n       target (object): the object on which the glom will operate.\n       spec (object): Specification of the output object in the form\n         of a dict, list, tuple, string, other glom construct, or\n         any composition of these.\n       default (object): An optional default to return in the case\n         an exception, specified by *skip_exc*, is raised.\n       skip_exc (Exception): An optional exception or tuple of\n         exceptions to ignore and return *default* (None if\n         omitted). If *skip_exc* and *default* are both not set,\n         glom raises errors through.\n       scope (dict): Additional data that can be accessed\n         via S inside the glom-spec. Read more: :ref:`scope`.\n\n    It's a small API with big functionality, and glom's power is\n    only surpassed by its intuitiveness. Give it a whirl!\n\n    \"\"\"\n    # TODO: check spec up front\n    default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)\n    skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)\n    glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)\n    scope = _DEFAULT_SCOPE.new_child({\n        Path: kwargs.pop('path', []),\n        Inspect: kwargs.pop('inspector', None),\n        MODE: AUTO,\n        MIN_MODE: None,\n        CHILD_ERRORS: [],\n        'globals': ScopeVars({}, {}),\n    })\n    scope[UP] = scope\n    scope[ROOT] = scope\n    scope[T] = target\n    scope.update(kwargs.pop('scope', {}))\n    err = None\n    if kwargs:\n        raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n    try:\n        try:\n            ret = _glom(target, spec, scope)\n        except skip_exc:\n            if default is _MISSING:\n                raise\n            ret = default  # should this also be arg_val'd?\n    except Exception as e:\n        if glom_debug:\n            raise\n        if isinstance(e, GlomError):\n            # need to change id or else py3 seems to not let us truncate the\n            # stack trace with the explicit \"raise err\" below\n            err = copy.copy(e)\n            err._set_wrapped(e)\n        else:\n            err = GlomError.wrap(e)\n        if isinstance(err, GlomError):\n            err._finalize(scope[LAST_CHILD_SCOPE])\n        else:  # wrapping failed, fall back to default behavior\n            raise\n\n    if err:\n        raise err\n    return ret\n\n### glom.core.register\nsignature: register(target_type, **kwargs)\ndef register(target_type, **kwargs):\n    \"\"\"Register *target_type* so :meth:`~Glommer.glom()` will\n    know how to handle instances of that type as targets.\n\n    Here's an example of adding basic iterabile support for Django's ORM:\n\n    .. code-block:: python\n\n        import glom\n        import django.db.models\n\n        glom.register(django.db.models.Manager, iterate=lambda m: m.all())\n        glom.register(django.db.models.QuerySet, iterate=lambda qs: qs.all())\n\n\n\n    Args:\n       target_type (type): A type expected to appear in a glom()\n          call target\n       get (callable): A function which takes a target object and\n          a name, acting as a default accessor. Defaults to\n          :func:`getattr`.\n       iterate (callable): A function which takes a target object\n          and returns an iterator. Defaults to :func:`iter` if\n          *target_type* appears to be iterable.\n       exact (bool): Whether or not to match instances of subtypes\n          of *target_type*.\n\n    .. note::\n\n       The module-level :func:`register()` function affects the\n       module-level :func:`glom()` function's behavior. If this\n       global effect is undesirable for your application, or\n       you're implementing a library, consider instantiating a\n       :class:`Glommer` instance, and using the\n       :meth:`~Glommer.register()` and :meth:`Glommer.glom()`\n       methods instead.\n\n    \"\"\"\n    _DEFAULT_SCOPE[TargetRegistry].register(target_type, **kwargs)\n    return\n\n### glom.core.register_op\nsignature: register_op(op_name, **kwargs)\ndef register_op(op_name, **kwargs):\n    \"\"\"For extension authors needing to add operations beyond the builtin\n    'get', 'iterate', 'keys', 'assign', and 'delete' to the default scope. \n    See TargetRegistry for more details.\n    \"\"\"\n    _DEFAULT_SCOPE[TargetRegistry].register_op(op_name, **kwargs)\n    return"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "contracts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "inputs": {
+                      "type": "string"
+                    },
+                    "outputs": {
+                      "type": "string"
+                    },
+                    "raises": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "side_effects": {
+                      "type": "string"
+                    },
+                    "invariants": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "inputs",
+                    "outputs",
+                    "raises",
+                    "side_effects"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "contracts"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-24b08cf4df474a29afe9093a941903f6",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"contracts\": [{\"qualname\":\"glom.core.format_target_spec_trace\",\"inputs\":\"scope: a scope object to unpack into a trace summary; root_error: the root error to distinguish from nested errors; width: maximum line width for trace formatting (defaults to TRACE_WIDTH); depth: current recursion depth for indentation (defaults to 0); prev_target: previous target for deduplication (defaults to _MISSING); last_branch: whether this is the last branch at the current depth (defaults to True)\",\"outputs\":\"A multi-line string summarizing the scope stack with formatted targets, specs, branches, and errors.\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"If depth > 0, the first segment line has a backslash at position depth+1, and if not last_branch or last_line_error is True, the last segment line has an X at position depth+1.\"},{\"qualname\":\"glom.core.glom\",\"inputs\":\"target: the object on which the glom will operate; spec: specification of the output object; **kwargs: optional keyword arguments including default, skip_exc, glom_debug, path, inspector, and scope\",\"outputs\":\"The result of evaluating the spec against the target, or default if an exception in skip_exc occurs.\",\"raises\":[\"TypeError\",\"GlomError\"],\"side_effects\":\"Modifies internal scope state and may mutate scope via kwargs.\",\"invariants\":\"If kwargs contains unexpected keys, a TypeError is raised.\"},{\"qualname\":\"glom.core.register\",\"inputs\":\"target_type: a type expected to appear as a glom target; **kwargs: optional keyword arguments including get, iterate, and exact\",\"outputs\":\"None\",\"raises\":[],\"side_effects\":\"Registers target_type in the default scope's TargetRegistry, affecting subsequent module-level glom() behavior.\",\"invariants\":\"The module-level default scope is mutated.\"},{\"qualname\":\"glom.core.register_op\",\"inputs\":\"op_name: the name of the operation to register; **kwargs: keyword arguments forwarded to TargetRegistry.register_op\",\"outputs\":\"None\",\"raises\":[],\"side_effects\":\"Registers a new operation in the default scope's TargetRegistry, affecting subsequent module-level glom() behavior.\",\"invariants\":\"The module-level default scope is mutated.\"}]}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787003673,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 468,
+      "prompt_tokens": 2164,
+      "total_tokens": 2632,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 306,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 338,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

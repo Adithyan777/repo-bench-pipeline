@@ -1,0 +1,164 @@
+$ python -m pytest -p no:cacheprovider -q --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+.......................................F.......F........................ [ 46%]
+........................................................................ [ 92%]
+...........                                                              [100%]
+=================================== FAILURES ===================================
+____________________________ test_main_yaml_target _____________________________
+
+target_text = '--- \nHello: \n  - World\n', target_format = 'yml'
+
+    def mw_handle_target(target_text, target_format):
+        """ Handles reading in a file specified in cli command.
+    
+        Args:
+            target_text (str): String that specifies where 6
+            target_format (str): Valid formats include `.json` and `.yml` or `.yaml`
+        Returns:
+            The content of the file that you specified
+        Raises:
+            CommandLineError: Issue with file format or appropriate file reading package not installed.
+        """
+        if not target_text:
+            return {}
+        target = {}
+        if target_format == 'json':
+            load_func = json.loads
+        elif target_format in ('yaml', 'yml'):
+            try:
+                import yaml
+                load_func = yaml.load
+            except ImportError:
+                raise UsageError('No YAML package found. To process yaml files, run: pip install PyYAML')
+        elif target_format == 'python':
+            load_func = ast.literal_eval
+        else:
+            raise UsageError('expected target-format to be one of python, json, or yaml')
+    
+    
+        try:
+>           target = load_func(target_text)
+                     ^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: load() missing 1 required positional argument: 'Loader'
+
+glom/cli.py:140: TypeError
+
+During handling of the above exception, another exception occurred:
+
+    def test_main_yaml_target():
+        cwd = os.path.dirname(os.path.abspath(__file__))
+        # Handles the filepath if running tox
+        if '.tox' in cwd:
+            cwd = os.path.join(cwd.split('.tox')[0] + '/glom/test/')
+        path = os.path.join(cwd, 'data/test_valid.yaml')
+        argv = ['__', '--target-file', path, '--target-format', 'yml', 'Hello']
+>       assert cli.main(argv) == 0
+               ^^^^^^^^^^^^^^
+
+glom/test/test_cli.py:125: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+glom/cli.py:96: in main
+    return cmd.run(argv) or 0
+           ^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/face/command.py:478: in run
+    ret = inject(wrapped, kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/site-packages/face/sinter.py:55: in inject
+    return f(**kwargs)
+           ^^^^^^^^^^^
+<sinter generated next_ edaff0d4b1f86b6b>:6: in next_
+    return funcs[0](next_=next_, posargs_=posargs_, spec_file=spec_file, spec_format=spec_format, target_file=target_file, target_format=target_format)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+glom/cli.py:192: in mw_get_target
+    target = mw_handle_target(target_text, target_format)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+target_text = '--- \nHello: \n  - World\n', target_format = 'yml'
+
+    def mw_handle_target(target_text, target_format):
+        """ Handles reading in a file specified in cli command.
+    
+        Args:
+            target_text (str): String that specifies where 6
+            target_format (str): Valid formats include `.json` and `.yml` or `.yaml`
+        Returns:
+            The content of the file that you specified
+        Raises:
+            CommandLineError: Issue with file format or appropriate file reading package not installed.
+        """
+        if not target_text:
+            return {}
+        target = {}
+        if target_format == 'json':
+            load_func = json.loads
+        elif target_format in ('yaml', 'yml'):
+            try:
+                import yaml
+                load_func = yaml.load
+            except ImportError:
+                raise UsageError('No YAML package found. To process yaml files, run: pip install PyYAML')
+        elif target_format == 'python':
+            load_func = ast.literal_eval
+        else:
+            raise UsageError('expected target-format to be one of python, json, or yaml')
+    
+    
+        try:
+            target = load_func(target_text)
+        except Exception as e:
+>           raise UsageError('could not load target data, got: %s: %s'
+                             % (e.__class__.__name__, e))
+E           face.errors.UsageError: could not load target data, got: TypeError: load() missing 1 required positional argument: 'Loader'
+
+glom/cli.py:142: UsageError
+----------------------------- Captured stderr call -----------------------------
+error: could not load target data, got: TypeError: load() missing 1 required positional argument: 'Loader'
+___________________________ test_regular_error_stack ___________________________
+
+    def test_regular_error_stack():
+        actual = _make_stack({'results': [{'value': _raise_exc}]})
+        expected = """\
+    Traceback (most recent call last):
+      File "test_error.py", line ___, in _make_stack
+        glom(target, spec)
+      File "core.py", line ___, in glom
+        raise err
+    glom.core.GlomError.wrap(Exception): error raised while processing.
+     Target-spec trace, with error detail (most recent last):
+     - Target: [None]
+     - Spec: {'results': [{'value': <function _raise_exc at
+     - Spec: [{'value': <function _raise_exc at
+     - Target: None
+     - Spec: {'value': <function _raise_exc at
+     - Spec: <function _raise_exc at
+      File "<boltons.funcutils.FunctionBuilder-0>", line ___, in _raise_exc
+    Exception: unique message
+    """
+        # _raise_exc being present in the second-to-last line above tests
+        # that errors in user-defined functions result in frames being
+        # visible
+>       assert expected == actual
+E       assert 'Traceback (m...que message\n' == 'Traceback (m...que message\n'
+E         
+E         Skipping 485 identical leading characters in diff, use -v to show
+E           _exc at
+E         -            ^^^^^^^^^^^^
+E             File "<boltons.funcutils.FunctionBuilder-0>", line ___, in _raise_exc
+E           Exception: unique message
+
+/repo/glom/test/test_error.py:147: AssertionError
+=============================== warnings summary ===============================
+glom/test/test_match.py::test_reprs
+  /usr/local/lib/python3.12/re/__init__.py:302: DeprecationWarning: The re.TEMPLATE/re.T flag is deprecated as it is an undocumented flag without an obvious purpose. Don't use it.
+    warnings.warn("The re.TEMPLATE/re.T flag is deprecated "
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED glom/test/test_cli.py::test_main_yaml_target - face.errors.UsageError:...
+FAILED glom/test/test_error.py::test_regular_error_stack - assert 'Traceback ...
+2 failed, 153 passed, 1 warning in 0.89s
+
+--- stderr ---
+

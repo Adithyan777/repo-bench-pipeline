@@ -1,0 +1,65 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 28,
+          "nodeid": "glom/test/test_path_and_t.py::test_path_t_roundtrip",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787006023.8040717,
+  "duration": 0.10220575332641602,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "failed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 32,
+          "message": "AssertionError: assert 'T[slice(1, None, None)]' == 'T[1:]'\n  \n  - T[1:]\n  + T[slice(1, None, None)]",
+          "path": "/repo/glom/test/test_path_and_t.py"
+        },
+        "duration": 0.0004334149998612702,
+        "longrepr": "def test_path_t_roundtrip():\n        # check that T repr roundrips\n        assert repr(T['a'].b.c()) == \"T['a'].b.c()\"\n>       assert repr(T[1:]) == \"T[1:]\"\nE       AssertionError: assert 'T[slice(1, None, None)]' == 'T[1:]'\nE         \nE         - T[1:]\nE         + T[slice(1, None, None)]\n\nglom/test/test_path_and_t.py:32: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 32,
+            "message": "AssertionError",
+            "path": "glom/test/test_path_and_t.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_path_t_roundtrip",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 28,
+      "nodeid": "glom/test/test_path_and_t.py::test_path_t_roundtrip",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0003631229992606677,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010370800009695813,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

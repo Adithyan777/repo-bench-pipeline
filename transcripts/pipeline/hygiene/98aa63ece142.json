@@ -1,0 +1,99 @@
+{
+  "step": "p2.okf.module_purpose",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Summarize the PURPOSE of the Python module `glom.streaming` in 1-3 sentences for an engineer navigating the codebase. Module docstring: glom's helpers for streaming use cases.\n\nSpecifier types which yield their results incrementally so that they\ncan be applied to targets which are themselves streaming (e.g. chunks\nof rows from a database, lines from a file) without excessive memory\nusage.\n\nglom's streaming functionality revolves around a single :class:`Iter`\nSpecifier type, which has methods to transform the target stream.\nPublic API:\n- First:  Get the first element of an iterable which matches *key*, if there\nis one, otherwise return *default* (``None`` if unset\n- glomit: glomit(self, target, scope) \n- Iter:  ``Iter()`` is glom's counterpart to Python's built-in :func:`iter()`\nfunction. Given an iterable target, ``Iter()`` yiel\n- all: all(self) A convenience method which returns a new spec which turns an\niterable into a list.\n\n>>> glom(range(5), Iter(lambda t: t \n- chunked: chunked(self, size, fill=_MISSING) Return a new :class:`Iter()` spec which groups elements in the iterable\ninto lists of length *size*.\n\nIf the optional *f\n- dropwhile: dropwhile(self, key=T) Returns a new :class:`Iter()` spec which drops stream items until\n*key* becomes falsy.\n\n>>> glom([0, 0, 3, 2, 0], Iter()\n- filter: filter(self, key=T) Return a new :class:`Iter()` spec which will include only elements matching the\ngiven *key*.\n\n>>> glom(range(6), Iter().\n- first: first(self, key=T, default=None) A convenience method for lazily yielding a single truthy item from\nan iterable.\n\n>>> target = [False, 1, 2, 3]\n>>> glom(\n- flatten: flatten(self) Returns a new :class:`Iter()` instance which combines iterables into a\nsingle iterable.\n\n>>> target = [[1, 2], [3, 4], [\n- glomit: glomit(self, target, scope) \n- limit: limit(self, count) A convenient alias for :meth:`~Iter.slice`, which takes a single\nargument, *count*, the max number of items to yield.\n- map: map(self, subspec) Return a new :class:`Iter()` spec which will apply the provided\n*subspec* to each element of the iterable.\n\n>>> glom(ran\n- slice: slice(self, *args) Returns a new :class:`Iter()` spec which trims iterables in the\nsame manner as :func:`itertools.islice`.\n\n>>> target = [\n- split: split(self, sep=None, maxsplit=None) Return a new :class:`Iter()` spec which will lazily split an iterable based\non a separator (or list of separators), *sep\n- takewhile: takewhile(self, key=T) Returns a new :class:`Iter()` spec which stops the stream once\n*key* becomes falsy.\n\n>>> glom([3, 2, 0, 1], Iter().takew\n- unique: unique(self, key=T) Return a new :class:`Iter()` spec which lazily filters out duplicate\nvalues, i.e., only the first appearance of a value \n- windowed: windowed(self, size) Return a new :class:`Iter()` spec which will yield a sliding window of\nadjacent elements in the iterable. Each tuple yie\nDescribe what the module is for, not each function. No code. Ground every statement in the docstring and the listed API ONLY; do NOT infer the purpose from the module name. If the module exposes no meaningful public API or the source does not support a specific claim, say so briefly (e.g. 'internal helpers with no public API')."
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "purpose": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "purpose"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-d72ba4574b2a4d77a7b3a36846f1eec6",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"purpose\": \"The `glom.streaming` module provides specifier types for incrementally processing streaming targets (e.g., database rows, file lines) without excessive memory usage. Its public API centers on the `Iter` specifier, which offers methods like `map`, `filter`, `slice`, and `chunked` to lazily transform iterable targets, along with convenience utilities such as `First` for extracting the first matching element.\"}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787003704,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 96,
+      "prompt_tokens": 877,
+      "total_tokens": 973,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 61,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 79,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 32,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

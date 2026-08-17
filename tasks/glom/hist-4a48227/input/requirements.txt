@@ -1,0 +1,13 @@
+attrs==17.4.0
+boltons==17.2.0
+coverage==4.5.1
+face>=0.1.0
+funcsigs==1.0.2
+more-itertools==4.1.0
+pluggy==0.6.0
+py==1.5.2
+pytest==3.5.1
+six==1.11.0
+tox==2.9.1
+virtualenv==15.1.0
+PyYAML==3.12

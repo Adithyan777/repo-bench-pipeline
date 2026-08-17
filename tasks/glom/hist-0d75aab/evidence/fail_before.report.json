@@ -1,0 +1,65 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 231,
+          "nodeid": "glom/test/test_path_and_t.py::test_t_dunders",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787006004.2943118,
+  "duration": 0.1059422492980957,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "failed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 236,
+          "message": "assert 'use T.__(\"name__\")' in 'T instances reserve dunder attributes, use T.__()'\n +  where 'T instances reserve dunder attributes, use T.__()' = str(AttributeError('T instances reserve dunder attributes, use T.__()'))\n +    where AttributeError('T instances reserve dunder attributes, use T.__()') = <ExceptionInfo AttributeError('T instances reserve dunder attributes, use T.__()') tblen=2>.value",
+          "path": "/repo/glom/test/test_path_and_t.py"
+        },
+        "duration": 0.00024579099408583716,
+        "longrepr": "def test_t_dunders():\n        with raises(AttributeError) as exc_info:\n            T.__name__\n    \n>       assert 'use T.__(\"name__\")' in str(exc_info.value)\nE       assert 'use T.__(\"name__\")' in 'T instances reserve dunder attributes, use T.__()'\nE        +  where 'T instances reserve dunder attributes, use T.__()' = str(AttributeError('T instances reserve dunder attributes, use T.__()'))\nE        +    where AttributeError('T instances reserve dunder attributes, use T.__()') = <ExceptionInfo AttributeError('T instances reserve dunder attributes, use T.__()') tblen=2>.value\n\nglom/test/test_path_and_t.py:236: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 236,
+            "message": "AssertionError",
+            "path": "glom/test/test_path_and_t.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_t_dunders",
+        "test_path_and_t.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 231,
+      "nodeid": "glom/test/test_path_and_t.py::test_t_dunders",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00036645699583459646,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010462499631103128,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "failed",
+        "glom/test/test_grouping.py::test_agg": "failed",
+        "glom/test/test_grouping.py::test_bucketing": "failed",
+        "glom/test/test_grouping.py::test_corner_cases": "failed",
+        "glom/test/test_grouping.py::test_limit": "failed",
+        "glom/test/test_grouping.py::test_sample": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "failed",
+        "glom/test/test_grouping.py::test_agg": "failed",
+        "glom/test/test_grouping.py::test_bucketing": "failed",
+        "glom/test/test_grouping.py::test_corner_cases": "failed",
+        "glom/test/test_grouping.py::test_limit": "failed",
+        "glom/test/test_grouping.py::test_sample": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "failed",
+        "glom/test/test_grouping.py::test_agg": "failed",
+        "glom/test/test_grouping.py::test_bucketing": "failed",
+        "glom/test/test_grouping.py::test_corner_cases": "failed",
+        "glom/test/test_grouping.py::test_limit": "failed",
+        "glom/test/test_grouping.py::test_sample": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "passed",
+        "glom/test/test_grouping.py::test_agg": "passed",
+        "glom/test/test_grouping.py::test_bucketing": "passed",
+        "glom/test/test_grouping.py::test_corner_cases": "passed",
+        "glom/test/test_grouping.py::test_limit": "passed",
+        "glom/test/test_grouping.py::test_sample": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "passed",
+        "glom/test/test_grouping.py::test_agg": "passed",
+        "glom/test/test_grouping.py::test_bucketing": "passed",
+        "glom/test/test_grouping.py::test_corner_cases": "passed",
+        "glom/test/test_grouping.py::test_limit": "passed",
+        "glom/test/test_grouping.py::test_sample": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_error.py::test_all_public_errors": "passed",
+        "glom/test/test_grouping.py::test_agg": "passed",
+        "glom/test/test_grouping.py::test_bucketing": "passed",
+        "glom/test/test_grouping.py::test_corner_cases": "passed",
+        "glom/test/test_grouping.py::test_limit": "passed",
+        "glom/test/test_grouping.py::test_sample": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

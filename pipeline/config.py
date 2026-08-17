@@ -242,7 +242,7 @@ class TestGenConfig:
     place_beside_existing_tests: bool = True  # else always generated_tests_dir
     generated_subdir: str = "generated"  # subdir name + marker excluded from input hashes
     max_agent_runs_per_repo: int = 10  # write + retry agent runs, all modules
-    agent_max_turns: int = 12
+    agent_max_turns: int = 12  # 30 tried on glom.core: agent explored, never wrote
     mutant_timeout_s: int = 120  # a mutant run past this is "invalid", not a kill
     run_output_chars: int = 2000  # agent-visible tail of a failed test run
     example_test_chars: int = 1500  # per existing test shown for style
@@ -393,8 +393,8 @@ class HistoryFunnelConfig:
     score_module_diversity: float = 0.5
     score_reverted_penalty: float = -3.0
     keep_kinds: tuple[str, ...] = ("bugfix", "feature")
-    shortlist_size: int = 15
-    build_target: int = 8  # built; expect ~5-6 to validate
+    shortlist_size: int = 20
+    build_target: int = 10  # built; headroom so select never lands on exactly 10
     pr_merge_input_is_first_parent: bool = True
     # Non-PR merges (back-merges) diff against an arbitrary first parent -> rejected.
     reject_non_pr_merges: bool = True
@@ -621,7 +621,7 @@ class SelectionConfig:
 @dataclass
 class ReportConfig:
     # report_data.json (runner, per stage) is read only; the aggregate goes to report_summary.json.
-    report_md_filename: str = "REPORT.md"
+    report_md_filename: str = "REPORT.md"  # under output/<repo>/; root REPORT.md is hand-maintained
     report_data_filename: str = "report_data.json"  # the runner's per-stage file (input only)
     summary_filename: str = "report_summary.json"  # the report's aggregate (output)
     decisions_filename: str = "report_decisions.json"  # output/<repo>/, drafts cached by hash

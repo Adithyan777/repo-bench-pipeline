@@ -1,0 +1,113 @@
+{
+  "step": "p3.build.neutrality_check_rewrite",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "You review verifier tests for a benchmark task: the solver gets the tree BEFORE a change and must reimplement the change so these tests pass. Tests are acceptable only if they assert BEHAVIOR through the public interface. Flag a test if it: imports or calls private helpers (`_name`), references identifiers newly introduced by the change (listed below) that a solver could name differently, asserts implementation details (internal call order, private state, exact repr of internals), or merely mirrors the patch. Testing public functions/classes that already exist before the change is fine, and so is reaching NEW public API through the convention `getattr(existing_public_module, 'name', None)` + a presence assert (new public API is part of the task's contract; only its private helpers are not). Which exception type is raised, and exception identity/chaining observable by a caller (`e is cause`, `__cause__`), IS behavior, not an implementation detail.\n\nCommit: replace assert statement with typeerror\nTouched functions:\n- glom.core.Invoke.star: `star(self, args=None, kwargs=None)`\n  glom args and kwargs and pass to func as *a and **kw\nIdentifiers introduced by the change: (none)\n\n### glom/test/test_basic.py (tests: test_invoke)\n```python\n\nimport pytest\n\nfrom glom import glom, SKIP, STOP, Path, Inspect, Coalesce, CoalesceError, Literal, Call, T, S, Invoke, Spec\n\nimport glom.core as glom_core\nfrom glom.core import UP, ROOT, Let\n\nfrom glom import OMIT  # backwards compat\n\n\ndef test_initial_integration():\n    class Example(object):\n        pass\n\n    example = Example()\n    subexample = Example()\n    subexample.name = 'good_name'\n    example.mapping = {'key': subexample}\n\n    val = {'a': {'b': 'c'},  # basic dictionary nesting\n           'example': example,  # basic object\n           'd': {'e': ['f'],    # list in dictionary\n                 'g': 'h'},\n           'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries\n           'n': 'o'}\n\n    spec = {'a': (Inspect(recursive=True), 'a', 'b'),  # inspect just prints here\n            'name': 'example.mapping.key.name',  # test object access\n            'e': 'd.e',  # d.e[0] or d.e: (callable to fetch 0)\n            'i': ('i', [{'j': 'j'}]),  # TODO: support True for cases when the value should simply be mapped into the field name?\n            'n': ('n', lambda n: n.upper()),\n            'p': Coalesce('xxx',\n                          'yyy',\n                          default='zzz')}\n\n    ret = glom(val, spec)\n\n    print('in: ', val)\n    print('got:', ret)\n    expected = {'a': 'c',\n                'name': 'good_name',\n                'e': ['f'],\n                'i': [{'j': 'k'}],\n                'n': 'O',\n                'p': 'zzz'}\n    print('exp:', expected)\n\n    assert ret == expected\n\n\ndef test_list_item_lift_and_access():\n    val = {'d': {'e': ['f']}}\n\n    assert glom(val, ('d.e', lambda x: x[0])) == 'f'\n    assert glom(val, ('d.e', [(lambda x: {'f': x[0]}, 'f')])) == ['f']\n\n\ndef test_coalesce():\n    val = {'a': {'b': 'c'},  # basic dictionary nesting\n           'd': {'e': ['f'],    # list in dictionary\n                 'g': 'h'},\n           'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries\n           'n': 'o'}\n\n    assert glom(val, 'a.b') == 'c'\n    assert glom(val, Coalesce('xxx', 'yyy', 'a.b')) == 'c'\n\n    with pytest.raises(CoalesceError) as exc_info:\n        glom(val, Coalesce('xxx', 'yyy'))\n\n    msg = exc_info.exconly()\n    assert \"'xxx'\" in msg\n    assert \"'yyy'\" in msg\n    assert msg.count('PathAccessError') == 2\n    expected = \"[PathAccessError(KeyError('xxx',), Path('xxx'), 0), PathAccessError(KeyError('yyy',), Path('yyy'), 0)], [])\"\n    received = repr(exc_info.value)\n    assert expected.replace(',', '') in received.replace(',', '')  # normalize commas for py3.7+ repr change\n\n    # check that defaulting works\n    assert glom(val, Coalesce('xxx', 'yyy', default='zzz')) == 'zzz'\n\n    # check that default_factory works\n    sentinel_list = []\n    factory = lambda: sentinel_list\n    assert glom(val, Coalesce('xxx', 'yyy', default_factory=factory)) is sentinel_list\n\n    with pytest.raises(ValueError):\n        Coalesce('x', 'y', default=1, default_factory=list)\n\n    # check that arbitrary values can be skipped\n    assert glom(val, Coalesce('xxx', 'yyy', 'a.b', default='zzz', skip='c')) == 'zzz'\n\n    # check that arbitrary exceptions can be ignored\n    assert glom(val, Coalesce(lambda x: 1/0, 'a.b', skip_exc=ZeroDivisionError)) == 'c'\n\n\ndef test_skip():\n    assert OMIT is SKIP  # backwards compat\n\n    target = {'a': {'b': 'c'},  # basic dictionary nesting\n              'd': {'e': ['f'],    # list in dictionary\n                    'g': 'h'},\n              'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries\n              'n': 'o'}\n\n    res = glom(target, {'a': 'a.b',\n                        'z': Coalesce('x', 'y', default=SKIP)})\n    assert res['a'] == 'c'  # sanity check\n\n    assert 'x' not in target\n    assert 'y' not in target\n    assert 'z' not in res\n\n    # test that skip works on lists\n    target = range(7)\n    res = glom(target, [lambda t: t if t % 2 else SKIP])\n    assert res == [1, 3, 5]\n\n    # test that skip works on chains (enable conditional applications of transforms)\n    target = range(7)\n    # double each value if it's even, but convert all values to floats\n    res = glom(target, [(lambda x: x * 2 if x % 2 == 0 else SKIP, float)])\n    assert res == [0.0, 1.0, 4.0, 3.0, 8.0, 5.0, 12.0]\n\n\ndef test_stop():\n    # test that stop works on iterables\n    target = iter([0, 1, 2, STOP, 3, 4])\n    assert glom(target, [T]) == [0, 1, 2]\n\n    # test that stop works on chains (but doesn't stop iteration up the stack)\n    target = ['a', ' b', ' c ', '   ', '  done']\n    assert glom(target, [(lambda x: x.strip(),\n                          lambda x: x if x else STOP,\n                          lambda x: x[0])]) == ['a', 'b', 'c', '', 'd']\n    return\n\n\ndef test_top_level_default():\n    expected = object()\n    val = glom({}, 'a.b.c', default=expected)\n    assert val is expected\n\n    val = glom({}, lambda x: 1/0, skip_exc=ZeroDivisionError)\n    assert val is None\n\n    val = glom({}, lambda x: 1/0, skip_exc=ZeroDivisionError, default=expected)\n    assert val is expected\n\n    with pytest.raises(KeyError):\n        # p degenerate case if you ask me\n        glom({}, 'x', skip_exc=KeyError, default=glom_core._MISSING)\n\n    return\n\n\ndef test_literal():\n    expected = {'value': 'c',\n                'type': 'a.b'}\n    target = {'a': {'b': 'c'}}\n    val = glom(target, {'value': 'a.b',\n                        'type': Literal('a.b')})\n\n    assert val == expected\n\n    assert glom(None, Literal('success')) == 'success'\n    assert repr(Literal(3.14)) == 'Literal(3.14)'\n\n\ndef test_abstract_iterable():\n    assert isinstance([], glom_core._AbstractIterable)\n\n    class MyIterable(object):\n        def __iter__(self):\n            return iter([1, 2, 3])\n\n    assert isinstance(MyIterable(), glom_core._AbstractIterable)\n\n\ndef test_call_and_target():\n    class F(object):\n        def __init__(s, a, b, c): s.a, s.b, s.c = a, b, c\n\n    call_f = Call(F, kwargs=dict(a=T, b=T, c=T))\n    assert repr(call_f)\n    val = glom(1, call_f)\n    assert (val.a, val.b, val.c) == (1, 1, 1)\n    class F(object):\n        def __init__(s, a): s.a = a\n    val = glom({'one': F('two')}, Call(F, args=(T['one'].a,)))\n    assert val.a == 'two'\n    assert glom({'a': 1}, Call(F, kwargs=T)).a == 1\n    assert glom([1], Call(F, args=T)).a == 1\n    assert glom(F, T(T)).a == F\n    assert glom([F, 1], T[0](T[1]).a) == 1\n    assert glom([[1]], S[UP][Literal(T)][0][0]) == 1\n    assert glom([[1]], S[UP][UP][UP][Literal(T)]) == [[1]]  # tops out\n\n    assert list(glom({'a': 'b'}, Call(T.values))) == ['b']\n\n    with pytest.raises(TypeError, match='expected func to be a callable or T'):\n        Call(func=object())\n    return\n\n\ndef test_invoke():\n    args = []\n    def test(*a, **kw):\n        args.append(a)\n        args.append(kw)\n        return 'test'\n\n    assert glom('a', Invoke(len).specs(T)) == 1\n    data = {\n        'args': (1, 2),\n        'args2': (4, 5),\n        'kwargs': {'a': 'a'},\n        'c': 'C',\n    }\n    spec = Invoke(test).star(args='args'\n        ).consts(3, b='b').specs(c='c'\n        ).star(args='args2', kwargs='kwargs')\n    repr(spec)  # no exceptions\n    assert glom(data, spec) == 'test'\n    assert args == [\n        (1, 2, 3, 4, 5),\n        {'a': 'a', 'b': 'b', 'c': 'C'}]\n    args = []\n    assert glom(test, Invoke.specfunc(T)) == 'test'\n    assert args == [(), {}]\n    repr_spec = Invoke.specfunc(T).star(args='args'\n        ).consts(3, b='b').specs(c='c'\n        ).star(args='args2', kwargs='kwargs')\n    assert repr(eval(repr(repr_spec), locals(), globals())) == repr(repr_spec)\n\n    with pytest.raises(TypeError, match='expected func to be a callable or Spec instance'):\n        Invoke(object())\n    with pytest.raises(TypeError, match='expected one or both of args/kwargs'):\n        Invoke(lambda t: t).star()\n\n    # test interleaved pos args\n    def ret_args(*a, **kw):\n        return a, kw\n\n    spec = Invoke(ret_args).consts(1).specs({}).consts(3)\n    assert glom({}, spec) == ((1, {}, 3), {})\n    assert repr(spec).endswith('.consts(1).specs({}).consts(3)')\n\n    # test overridden kwargs\n    should_stay_empty = []\n    spec = Invoke(ret_args).consts(a=1).specs(a=should_stay_empty.append).consts(a=3)\n    assert glom({}, spec) == ((), {'a': 3})\n    assert len(should_stay_empty) == 0\n    assert repr(spec).endswith(').consts(a=3)')\n\n\ndef test_spec_and_recursion():\n    assert repr(Spec('a.b.c')) == \"Spec('a.b.c')\"\n\n    # Call doesn't normally recurse, but Spec can make it do so\n    assert glom(\n        ['a', 'b', 'c'],\n        Call(list, args=(\n            Spec(Call(reversed, args=(Spec(T),))),)\n        )) == ['c', 'b', 'a']\n    assert glom(['cat', {'cat': 1}], T[1][T[0]]) == 1\n    assert glom(\n        [['ab', 'cd', 'ef'], ''.join],\n        Call(T[1], args=(Spec((T[0], [T[1:]])),))) == 'bdf'\n\n    # test that spec works on the left of a dict spec\n    assert glom({'a': 'A'}, {Spec('a'): 'a', 'a': 'a'}) == {'A': 'A', 'a': 'A'}\n\n\ndef test_scope():\n    assert glom(None, S['foo'], scope={'foo': 'bar'}) == 'bar'\n\n    target = range(3)\n    spec = [(S, lambda S: S['multiplier'] * S[T])]\n    scope = {'multiplier': 2}\n    assert glom(target, spec, scope=scope) == [0, 2, 4]\n    scope = {'multiplier': 2.5}\n    assert glom(target, spec, scope=scope) == [0.0, 2.5, 5.0]\n\n\ndef test_seq_getitem():\n    assert glom({'items': [0, 1, 2, 3]}, 'items.1') == 1\n    assert glom({'items': (9, 8, 7, 6)}, 'items.-3') == 8\n\n    with pytest.raises(glom_core.PathAccessError):\n        assert glom({'items': (9, 8, 7, 6)}, 'items.fun')\n\n\n# examples from http://sedimental.org/glom_restructured_data.html\n\ndef test_beyond_access():\n    # 1\n    target = {'galaxy': {'system': {'planet': 'jupiter'}}}\n    spec = 'galaxy.system.planet'\n\n    output = glom(target, spec)\n    assert output == 'jupiter'\n\n    # 2\n    target = {'system': {'planets': [{'name': 'earth'}, {'name': 'jupiter'}]}}\n\n    output = glom(target, ('system.planets', ['name']))\n    assert output == ['earth', 'jupiter']\n\n    # 3\n    target = {'system': {'planets': [{'name': 'earth', 'moons': 1},\n                                     {'name': 'jupiter', 'moons': 69}]}}\n    spec = {'names': ('system.planets', ['name']),\n            'moons': ('system.planets', ['moons'])}\n\n    output = glom(target, spec)\n    assert output == {'names': ['earth', 'jupiter'], 'moons': [1, 69]}\n\n\ndef test_python_native():\n    # 4\n    target = {'system': {'planets': [{'name': 'earth', 'moons': 1},\n                                     {'name': 'jupiter', 'moons': 69}]}}\n\n\n    output = glom(target, {'moon_count': ('system.planets', ['moons'], sum)})\n    assert output == {'moon_count': 70}\n\n    # 5\n    spec = T['system']['planets'][-1].values()\n\n    output = glom(target, spec)\n    assert set(output) == set(['jupiter', 69])  # for ordering reasons\n\n    with pytest.raises(glom_core.GlomError):\n        spec = T['system']['comets'][-1].values()\n        output = glom(target, spec)\n\n\ndef test_glom_extra_kwargs():\n    # for coverage\n    with pytest.raises(TypeError):\n        glom({'a': 'a'}, 'a', invalid_kwarg='yes')\n\n\ndef test_inspect():\n    # test repr\n    assert repr(Inspect()) == '<INSPECT>'\n\n    target = {'a': {'b': 'c'}}\n\n    import pdb\n    # test breakpoint\n    assert Inspect(breakpoint=True).breakpoint == pdb.set_trace\n    with pytest.raises(TypeError):\n        Inspect(breakpoint='lol')\n\n    tracker = []\n    spec = {'a': Inspect('a.b', echo=False, breakpoint=lambda: tracker.append(True))}\n\n    glom(target, spec)\n\n    assert len(tracker) == 1\n\n    # test post_mortem\n    assert Inspect(post_mortem=True).post_mortem == pdb.post_mortem\n    with pytest.raises(TypeError):\n        Inspect(post_mortem='lol')\n\n    tracker = []\n    spec = {'a': Inspect('nope.nope', post_mortem=lambda: tracker.append(True))}\n\n    assert glom(target, spec, default='default') == 'default'\n    assert len(tracker) == 1\n\n\ndef test_let():\n    data = {'a': 1, 'b': [{'c': 2}, {'c': 3}]}\n    output = [{'a': 1, 'c': 2}, {'a': 1, 'c': 3}]\n    assert glom(data, (Let(a='a'), ('b', [{'a': S['a'], 'c': 'c'}]))) == output\n    assert glom(data, ('b', [{'a': S[ROOT][Literal(T)]['a'], 'c': 'c'}])) == output\n\n    with pytest.raises(TypeError):\n        Let('posarg')\n    with pytest.raises(TypeError):\n        Let()\n\n    assert repr(Let(a=T.a.b)) == 'Let(a=T.a.b)'\n\n```\n\nReturn neutral=true when nothing is flagged; otherwise list issues and the flagged test nodeids (file::name)."
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "neutral": {
+                "type": "boolean"
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "flagged_tests": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "neutral",
+              "issues",
+              "flagged_tests"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-3677e6e903f349deb013e8139036702f",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"neutral\": true, \"issues\": [], \"flagged_tests\": []}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787003806,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 24,
+      "prompt_tokens": 4059,
+      "total_tokens": 4083,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 17,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 11,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

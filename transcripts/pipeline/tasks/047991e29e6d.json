@@ -1,0 +1,122 @@
+{
+  "step": "p3.build.review_instruction",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You review a benchmark task instruction against the touched-function contract and the verifier tests (you never see the solution). Judge: solvable_by_transcription (does the text spell out the implementation so a solver could transcribe it without understanding? Copied test examples are REQUIRED by the format and are not transcription; a behavioral statement of a small change is not transcription either), states_mechanical_edit (does it name the concrete edit to make -- e.g. 'replace X with Y on line N', 'add a parameter Z' -- instead of the observable behavior?), self_contained (can a competent engineer solve it with this instruction, the repo and the tests alone?), implementation_neutral (does it avoid prescribing a specific implementation, private names or internal structure?). List concrete issues."
+      },
+      {
+        "role": "user",
+        "content": "Touched-function contract:\n- `glom.core._unpack_stack` (internal): `_unpack_stack(scope)`\n  convert scope to [[scope, spec, target, error, [children]]]\n\nthis is a convenience method for printing stacks\n- `glom.core.format_oneline_trace`: `format_oneline_trace(scope)`\n  unpack a scope into a single line summary\n(shortest summary possible)\n- `glom.core.Coalesce.glomit`: `glomit(self, target, scope)`\n- `glom.core.Call.glomit`: `glomit(self, target, scope)`\n  run against the current target\n- `glom.core._t_eval` (internal): `_t_eval(target, _t, scope)`\n- `glom.core.glom`: `glom(target, spec, **kwargs)`\n  Access or construct a value from a given *target* based on the\nspecification declared by *spec*.\n\nAccessing nested data, aka deep-get:\n\n>>> target = {'a': {'b': 'c'}}\n>>> glom(target, 'a.b')\n'c'\n\nHere the *spec* was just a string denoting a path,\n``'a.b.``. As simple as it should be. The next example shows\nhow to use nested data to access many fields at once, and make\na new nested structure.\n\nConstructing, or restructuring more-complicated nested data:\n\n>>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n>>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n>>> output = glom(target, spec)\n>>> pprint(output)\n{'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n\n``glom`` also takes a keyword-argument, *default*. When set,\nif a ``glom`` operation fails with a :exc:`GlomError`, the\n*default* will be returned, very much like\n:meth:`dict.get()`:\n\n>>> glom(target, 'a.xx', default='nada')\n'nada'\n\nThe *skip_exc* keyword argument controls which errors should\nbe ignored.\n\n>>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n0.0\n\nArgs:\n   target (object): the object on which the glom will operate.\n   spec (object): Specification of the output object in the form\n     of a dict, list, tuple, string, other glom construct, or\n     any composition of these.\n   default (object): An optional default to return in the case\n     an exception, specified by *skip_exc*, is raised.\n   skip_exc (Exception): An optional exception or tuple of\n     exceptions to ignore and return *default* (None if\n     omitted). If *skip_exc* and *default* are both not set,\n     glom raises errors through.\n   scope (dict): Additional data that can be accessed\n     via S inside the glom-spec. Read more: :ref:`scope`.\n\nIt's a small API with big functionality, and glom's power is\nonly surpassed by its intuitiveness. Give it a whirl!\n- `glom.core._glom` (internal): `_glom(target, spec, scope)`\n- `glom.matching.Match.glomit`: `glomit(self, target, scope)`\n- `glom.matching._Bool.glomit` (internal): `glomit(self, target, scope)`\n- `glom.matching._handle_dict` (internal): `_handle_dict(target, spec, scope)`\n- `glom.matching.Switch.glomit`: `glomit(self, target, scope)`\n- `glom.matching.Check.glomit`: `glomit(self, target, scope)`\n- `glom.mutation.Assign.glomit`: `glomit(self, target, scope)`\n\n### glom/test/test_basic.py (verifier tests: test_spec_and_recursion)\n```python\n\nimport sys\nfrom xml.etree import cElementTree as ElementTree\n\nimport pytest\n\nfrom glom import glom, SKIP, STOP, Path, Inspect, Coalesce, CoalesceError, Val, Call, T, S, Invoke, Spec, Ref\nfrom glom import Auto, Fill, Iter, A, Vars, Val, Literal, GlomError, Pipe\n\nimport glom.core as glom_core\nfrom glom.core import UP, ROOT, bbformat, bbrepr\nfrom glom.mutation import PathAssignError\n\nfrom glom import OMIT, Let, Literal  # backwards compat\n\n\ndef test_initial_integration():\n    class Example(object):\n        pass\n\n    example = Example()\n    subexample = Example()\n    subexample.name = 'good_name'\n    example.mapping = {'key': subexample}\n\n    val = {'a': {'b': 'c'},  # basic dictionary nesting\n           'example': example,  # basic object\n           'd': {'e': ['f'],    # list in dictionary\n                 'g': 'h'},\n           'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries\n           'n': 'o'}\n\n    spec = {'a': (Inspect(recursive=True), 'a', 'b'),  # inspect just prints here\n            'name': 'example.mapping.key.name',  # test object access\n            'e': 'd.e',  # d.e[0] or d.e: (callable to fetch 0)\n            'i': ('i', [{'j': 'j'}]),  # TODO: support True for cases when the value should simply be mapped into the field name?\n            'n': ('n', lambda n: n.upper()),\n            'p': Coalesce('xxx',\n                          'yyy',\n                          default='zzz')}\n\n    ret = glom(val, spec)\n\n    print('in: ', val)\n    print('got:', ret)\n    expected = {'a': 'c',\n                'name': 'good_name',\n                'e': ['f'],\n                'i': [{'j': 'k'}],\n                'n': 'O',\n                'p': 'zzz'}\n    print('exp:', expected)\n\n    assert ret == expected\n\n\ndef test_list_item_lift_and_access():\n    val = {'d': {'e': ['f']}}\n\n    assert glom(val, ('d.e', lambda x: x[0])) == 'f'\n    assert glom(val, ('d.e', [(lambda x: {'f': x[0]}, 'f')])) == ['f']\n\n\ndef test_coalesce():\n    val = {'a': {'b': 'c'},  # basic dictionary nesting\n           'd': {'e': ['f'],    # list in dictionary\n                 'g': 'h'},\n           'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries\n           'n': 'o'}\n\n    assert glom(val, 'a.b') == 'c'\n    assert glom(val, Coalesce('xxx', 'yyy', 'a.b')) == 'c'\n\n    # check that defaulting works\n    spec = Coalesce('xxx', 'yyy', default='zzz')\n    assert glom(val, spec) == 'zzz'\n    assert repr(spec) == \"Coalesce('xxx', 'yyy', default='zzz')\"\n\n    # check that default_factory works\n    sentinel_list = []\n    factory = lambda: sentinel_list\n    assert glom(val, Coalesce('xxx', 'yyy', default_factory=factory)) is sentinel_list\n\n    with pytest.raises(ValueError):\n        Coalesce('x', 'y', default=1, default_factory=list)\n\n    # check that arbitrary values can be skipped\n    assert glom(val, Coalesce('xxx', 'yyy', 'a.b', default='zzz', skip='c')) == 'zzz'\n\n    # check that arbitrary exceptions can be ignored\n    assert glom(val, Coalesce(lambda x: 1/0, 'a.b', skip_exc=ZeroDivisionError)) == 'c'\n\n    target = {'a': 1, 'b': 3, 'c': 4}\n    spec = Coalesce('a', 'b', 'c', skip=lambda x: x % 2)\n    assert glom(target, spec) == 4\n\n    spec = Coalesce('a', 'b', 'c', skip=(1,))\n    assert glom(target, spec) == 3\n\n    with pytest.raises(TypeError):\n        Coalesce(bad_kwarg=True)\n\n\n\ndef test_skip():\n    assert OMIT is SKIP  # backwards compat\n\n    target = {'a': {'b': 'c'},  # basic dictionary nesting\n              'd': {'e': ['f'],    # list in dictionary\n                    'g': 'h'},\n              'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries\n              'n': 'o'}\n\n    res = glom(target, {'a': 'a.b',\n                        'z': Coalesce('x', 'y', default=SKIP)})\n    assert res['a'] == 'c'  # sanity check\n\n    assert 'x' not in target\n    assert 'y' not in target\n    assert 'z' not in res\n\n    # test that skip works on lists\n    target = range(7)\n    res = glom(target, [lambda t: t if t % 2 else SKIP])\n    assert res == [1, 3, 5]\n\n    # test that skip works on chains (enable conditional applications of transforms)\n    target = range(7)\n    # double each value if it's even, but convert all values to floats\n    res = glom(target, [(lambda x: x * 2 if x % 2 == 0 else SKIP, float)])\n    assert res == [0.0, 1.0, 4.0, 3.0, 8.0, 5.0, 12.0]\n\n\ndef test_stop():\n    # test that stop works on iterables\n    target = iter([0, 1, 2, STOP, 3, 4])\n    assert glom(target, [T]) == [0, 1, 2]\n\n    # test that stop works on chains (but doesn't stop iteration up the stack)\n    target = ['a', ' b', ' c ', '   ', '  done']\n    assert glom(target, [(lambda x: x.strip(),\n                          lambda x: x if x else STOP,\n                          lambda x: x[0])]) == ['a', 'b', 'c', '', 'd']\n    return\n\n\ndef test_top_level_default():\n    expected = object()\n    val = glom({}, 'a.b.c', default=expected)\n    assert val is expected\n\n    val = glom({}, lambda x: 1/0, skip_exc=ZeroDivisionError)\n    assert val is None\n\n    val = glom({}, lambda x: 1/0, skip_exc=ZeroDivisionError, default=expected)\n    assert val is expected\n\n    with pytest.raises(KeyError):\n        # p degenerate case if you ask me\n        glom({}, 'x', skip_exc=KeyError, default=glom_core._MISSING)\n\n    return\n\n\ndef test_val():\n    assert Literal is Val\n    expected = {'value': 'c',\n                'type': 'a.b'}\n    target = {'a': {'b': 'c'}}\n    val = glom(target, {'value': 'a.b',\n                        'type': Val('a.b')})\n\n    assert val == expected\n\n    assert glom(None, Val('success')) == 'success'\n    assert repr(Val(3.14)) == 'Val(3.14)'\n    assert repr(Val(3.14)) == 'Val(3.14)'\n\n\ndef test_abstract_iterable():\n    assert isinstance([], glom_core._AbstractIterable)\n\n    class MyIterable(object):\n        def __iter__(self):\n            return iter([1, 2, 3])\n    mi = MyIterable()\n    assert list(mi) == [1, 2, 3]\n\n    assert isinstance(mi, glom_core._AbstractIterable)\n\n\ndef test_call_and_target():\n    class F(object):\n        def __init__(s, a, b, c): s.a, s.b, s.c = a, b, c\n\n    call_f = Call(F, kwargs=dict(a=T, b=T, c=T))\n    assert repr(call_f)\n    val = glom(1, call_f)\n    assert (val.a, val.b, val.c) == (1, 1, 1)\n    class F(object):\n        def __init__(s, a): s.a = a\n    val = glom({'one': F('two')}, Call(F, args=(T['one'].a,)))\n    assert val.a == 'two'\n    assert glom({'a': 1}, Call(F, kwargs=T)).a == 1\n    assert glom([1], Call(F, args=T)).a == 1\n    assert glom(F, T(T)).a == F\n    assert glom([F, 1], T[0](T[1]).a) == 1\n    assert glom([[1]], S[UP][Val(T)][0][0]) == 1\n    assert glom([[1]], S[UP][UP][UP][Val(T)]) == [[1]]  # tops out\n\n    assert list(glom({'a': 'b'}, Call(T.values))) == ['b']\n\n    with pytest.raises(TypeError, match='expected func to be a callable or T'):\n        Call(func=object())\n\n    assert glom(lambda: 'hi', Call()) == 'hi'\n    return\n\n\ndef test_invoke():\n    args = []\n    def test(*a, **kw):\n        args.append(a)\n        args.append(kw)\n        return 'test'\n\n    assert glom('a', Invoke(len).specs(T)) == 1\n    data = {\n        'args': (1, 2),\n        'args2': (4, 5),\n        'kwargs': {'a': 'a'},\n        'c': 'C',\n    }\n    spec = Invoke(test).star(args='args'\n        ).constants(3, b='b').specs(c='c'\n        ).star(args='args2', kwargs='kwargs')\n    repr(spec)  # no exceptions\n    assert repr(Invoke(len).specs(T)) == 'Invoke(len).specs(T)'\n    assert (repr(Invoke.specfunc(next).constants(len).constants(1))\n            == 'Invoke.specfunc(next).constants(len).constants(1)')\n    assert glom(data, spec) == 'test'\n    assert args == [\n        (1, 2, 3, 4, 5),\n        {'a': 'a', 'b': 'b', 'c': 'C'}]\n    args = []\n    assert glom(test, Invoke.specfunc(T)) == 'test'\n    assert args == [(), {}]\n    repr_spec = Invoke.specfunc(T).star(args='args'\n        ).constants(3, b='b').specs(c='c'\n        ).star(args='args2', kwargs='kwargs')\n    assert repr(eval(repr(repr_spec), locals(), globals())) == repr(repr_spec)\n\n    with pytest.raises(TypeError, match='expected func to be a callable or Spec instance'):\n        Invoke(object())\n    with pytest.raises(TypeError, match='expected one or both of args/kwargs'):\n        Invoke(T).star()\n\n    # test interleaved pos args\n    def ret_args(*a, **kw):\n        return a, kw\n\n    spec = Invoke(ret_args).constants(1).specs({}).constants(3)\n    assert glom({}, spec) == ((1, {}, 3), {})\n    # .endswith because ret_arg's repr includes a memory location\n    assert repr(spec).endswith(').constants(1).specs({}).constants(3)')\n\n    # test overridden kwargs\n    should_stay_empty = []\n    spec = Invoke(ret_args).constants(a=1).specs(a=should_stay_empty.append).constants(a=3)\n    assert glom({}, spec) == ((), {'a': 3})\n    assert len(should_stay_empty) == 0\n    assert repr(spec).endswith(').constants(a=3)')\n\n    # bit of coverage\n    target = (lambda: 'hi', {})\n    spec = Invoke(T[0])\n    assert glom(target, spec) == 'hi'\n    # and a bit more\n    spec = spec.star(kwargs=T[1])\n    assert repr(spec) == 'Invoke(T[0]).star(kwargs=T[1])'\n    assert glom(target, spec) == 'hi'\n\n\n\ndef test_spec_and_recursion():\n    assert repr(Spec('a.b.c')) == \"Spec('a.b.c')\"\n\n    # Call doesn't normally recurse, but Spec can make it do so\n    assert glom(\n        ['a', 'b', 'c'],\n        Call(list, args=(\n            Spec(Call(reversed, args=(Spec(T),))),)\n        )) == ['c', 'b', 'a']\n    assert glom(['cat', {'cat': 1}], T[1][T[0]]) == 1\n    assert glom(\n        [['ab', 'cd', 'ef'], ''.join],\n        Call(T[1], args=(Auto((T[0], [T[1:]])),))) == 'bdf'\n\n    # test that spec works on the left of a dict spec\n    assert glom({'a': 'A'}, {Spec('a'): 'a', 'a': 'a'}) == {'A': 'A', 'a': 'A'}\n\n\ndef test_scope():\n    assert glom(None, S['foo'], scope={'foo': 'bar'}) == 'bar'\n\n    target = range(3)\n    spec = [(S, lambda S: S['multiplier'] * S[T])]\n    scope = {'multiplier': 2}\n    assert glom(target, spec, scope=scope) == [0, 2, 4]\n    scope = {'multiplier': 2.5}\n    assert glom(target, spec, scope=scope) == [0.0, 2.5, 5.0]\n\n\ndef test_seq_getitem():\n    assert glom({'items': [0, 1, 2, 3]}, 'items.1') == 1\n    assert glom({'items': (9, 8, 7, 6)}, 'items.-3') == 8\n\n    with pytest.raises(glom_core.PathAccessError):\n        assert glom({'items': (9, 8, 7, 6)}, 'items.fun')\n\n\n# examples from http://sedimental.org/glom_restructured_data.html\n\ndef test_beyond_access():\n    # 1\n    target = {'galaxy': {'system': {'planet': 'jupiter'}}}\n    spec = 'galaxy.system.planet'\n\n    output = glom(target, spec)\n    assert output == 'jupiter'\n\n    # 2\n    target = {'system': {'planets': [{'name': 'earth'}, {'name': 'jupiter'}]}}\n\n    output = glom(target, ('system.planets', ['name']))\n    assert output == ['earth', 'jupiter']\n\n    # 3\n    target = {'system': {'planets': [{'name': 'earth', 'moons': 1},\n                                     {'name': 'jupiter', 'moons': 69}]}}\n    spec = {'names': ('system.planets', ['name']),\n            'moons': ('system.planets', ['moons'])}\n\n    output = glom(target, spec)\n    assert output == {'names': ['earth', 'jupiter'], 'moons': [1, 69]}\n\n\ndef test_python_native():\n    # 4\n    target = {'system': {'planets': [{'name': 'earth', 'moons': 1},\n                                     {'name': 'jupiter', 'moons': 69}]}}\n\n\n    output = glom(target, {'moon_count': ('system.planets', ['moons'], sum)})\n    assert output == {'moon_count': 70}\n\n    # 5\n    spec = T['system']['planets'][-1].values()\n\n    output = glom(target, spec)\n    assert set(output) == set(['jupiter', 69])  # for ordering reasons\n\n    with pytest.raises(glom_core.GlomError):\n        spec = T['system']['comets'][-1].values()\n        output = glom(target, spec)\n\n\ndef test_glom_extra_kwargs():\n    # for coverage\n    with pytest.raises(TypeError):\n        glom({'a': 'a'}, 'a', invalid_kwarg='yes')\n\n\ndef test_inspect():\n    # test repr\n    assert repr(Inspect()) == '<INSPECT>'\n\n    target = {'a': {'b': 'c'}}\n\n    import pdb\n    # test breakpoint\n    assert Inspect(breakpoint=True).breakpoint == pdb\n... (truncated)\n\nInstruction under review:\n---\n## Goal\n\nExtend glom so that arguments passed to several core and matching constructs can themselves be evaluated as specs against the current target. This affects `Coalesce` defaults, `Call` arguments, `Match`/`Switch`/`Check` matching, `Assign` values, and `T`-expression subspecs. The change should make nested spec evaluation work recursively and consistently across `glom.core`, `glom.matching`, and `glom.mutation`.\n\n## Observable behavior\n\n```python\n# From test_spec_and_recursion\ndef test_spec_and_recursion():\n    assert repr(Spec('a.b.c')) == \"Spec('a.b.c')\"\n\n    # Call doesn't normally recurse, but Spec can make it do so\n    assert glom(\n        ['a', 'b', 'c'],\n        Call(list, args=(\n            Spec(Call(reversed, args=(Spec(T),))),)\n        )) == ['c', 'b', 'a']\n    assert glom(['cat', {'cat': 1}], T[1][T[0]]) == 1\n    assert glom(\n        [['ab', 'cd', 'ef'], ''.join],\n        Call(T[1], args=(Auto((T[0], [T[1:]])),))) == 'bdf'\n\n    # test that spec works on the left of a dict spec\n    assert glom({'a': 'A'}, {Spec('a'): 'a', 'a': 'a'}) == {'A': 'A', 'a': 'A'}\n```\n\n```python\n# From test_match_default\ndef test_match_default():\n    # test that default works with Match\n    assert glom({'a': 'b'}, Match({'a': 'b'}, default='c')) == {'a': 'b'}\n    assert glom({'a': 'b'}, Match({'a': 'x'}, default='c')) == 'c'\n    assert glom({'a': 'b'}, Match({'a': 'x'}, default=Spec('a'))) == 'b'\n```\n\n## Constraints\n\n- Keep the public API of `glom.core.glom`, `glom.core.Coalesce`, `glom.core.Call`, `glom.matching.Match`, `glom.matching.Switch`, `glom.matching.Check`, and `glom.mutation.Assign` unchanged.\n- Files in scope: `glom/__init__.py`, `glom/core.py`, `glom/grouping.py`, `glom/matching.py`, `glom/mutation.py`, `glom/reduction.py`, `glom/reprlib_backport.py`, `glom/streaming.py`, and the test files under `glom/test/`.\n\n## How success is measured\n\n```\npython -m pytest -q glom/test/test_basic.py::test_spec_and_recursion glom/test/test_match.py::test_match_default glom/test/test_match.py::test_switch glom/test/test_mutation.py::test_assign_spec_val glom/test/test_path_and_t.py::test_t_subspec glom/test/test_scope_vars.py::test_s_scope_assign\n```\n---"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "solvable_by_transcription": {
+                "type": "boolean"
+              },
+              "self_contained": {
+                "type": "boolean"
+              },
+              "states_mechanical_edit": {
+                "type": "boolean"
+              },
+              "implementation_neutral": {
+                "type": "boolean"
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "solvable_by_transcription",
+              "states_mechanical_edit",
+              "self_contained",
+              "implementation_neutral",
+              "issues"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-166710dc988b470799597fd385f252d4",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"solvable_by_transcription\": false, \"self_contained\": true, \"states_mechanical_edit\": false, \"implementation_neutral\": true, \"issues\": []}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787004096,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 44,
+      "prompt_tokens": 5396,
+      "total_tokens": 5440,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 32,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 16,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 224,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

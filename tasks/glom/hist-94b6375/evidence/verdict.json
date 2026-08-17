@@ -1,0 +1,104 @@
+{
+  "checks": {
+    "collateral": {
+      "newly_failing": 0,
+      "not_run": 0,
+      "ok": true,
+      "report_present": true
+    },
+    "determinism": {
+      "ok": true,
+      "runs": 3
+    },
+    "fail_before": {
+      "exit_code": 1,
+      "n_failing": 6,
+      "n_passing": 0,
+      "ok": true
+    },
+    "image": {
+      "built_from_input": false,
+      "digest_matches_task": true,
+      "environment_hashes": {
+        "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+        "requirements.lock.txt": "e659c3c6806a0a55a9aa0b99ca31e9dd48a72bc9aead0af5d74100054bd15428"
+      },
+      "live_digest": "sha256:dca64ba3b7231cf251c64edacf424e4859c1e7c526e29755074fe6623c21d998",
+      "ok": true,
+      "present": true
+    },
+    "pass_after": {
+      "exit_code": 0,
+      "n_failing": 0,
+      "n_passing": 6,
+      "ok": true
+    },
+    "right_reason": {
+      "invalid": [],
+      "ok": true,
+      "tests": {
+        "glom/test/test_basic.py::test_spec_and_recursion": {
+          "detail": "GlomError.wrap(TypeError) in glom/core.py",
+          "nodeid": "glom/test/test_basic.py::test_spec_and_recursion",
+          "outcome": "failed",
+          "reason": "exception_in_repo_code",
+          "valid": true
+        },
+        "glom/test/test_match.py::test_match_default": {
+          "detail": "assert Val([]) is []",
+          "nodeid": "glom/test/test_match.py::test_match_default",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_match.py::test_switch": {
+          "detail": "GlomError.wrap(TypeError) in glom/core.py",
+          "nodeid": "glom/test/test_match.py::test_switch",
+          "outcome": "failed",
+          "reason": "exception_in_repo_code",
+          "valid": true
+        },
+        "glom/test/test_mutation.py::test_assign_spec_val": {
+          "detail": "AssertionError: assert Or('d', 'b') == 'c'",
+          "nodeid": "glom/test/test_mutation.py::test_assign_spec_val",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "glom/test/test_path_and_t.py::test_t_subspec": {
+          "detail": "GlomError.wrap(TypeError) in glom/core.py",
+          "nodeid": "glom/test/test_path_and_t.py::test_t_subspec",
+          "outcome": "failed",
+          "reason": "exception_in_repo_code",
+          "valid": true
+        },
+        "glom/test/test_scope_vars.py::test_s_scope_assign": {
+          "detail": "GlomError.wrap(TypeError) in glom/core.py",
+          "nodeid": "glom/test/test_scope_vars.py::test_s_scope_assign",
+          "outcome": "failed",
+          "reason": "exception_in_repo_code",
+          "valid": true
+        }
+      }
+    },
+    "static_gate": {
+      "ok": true,
+      "violations": []
+    }
+  },
+  "environment_hashes": {
+    "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+    "requirements.lock.txt": "e659c3c6806a0a55a9aa0b99ca31e9dd48a72bc9aead0af5d74100054bd15428"
+  },
+  "image_digest": "sha256:dca64ba3b7231cf251c64edacf424e4859c1e7c526e29755074fe6623c21d998",
+  "image_tag": "bench-glom",
+  "reasons": [],
+  "repeat_count": 3,
+  "task_id": "hist-94b6375",
+  "task_image_digest": "sha256:dca64ba3b7231cf251c64edacf424e4859c1e7c526e29755074fe6623c21d998",
+  "timestamps": {
+    "finished": "2026-08-17T22:33:15+00:00",
+    "started": "2026-08-17T22:33:06+00:00"
+  },
+  "valid": true
+}

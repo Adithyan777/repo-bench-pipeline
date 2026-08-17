@@ -1,0 +1,123 @@
+{
+  "step": "p3.build.difficulty_label",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Assign a difficulty (easy | medium | hard) for a competent engineer to each benchmark task below, from its behavior summary, contract and the computed features. The rationale (1-2 sentences) MUST cite at least one feature by name with its value (e.g. `callers_count=12`). Return one entry per task_id.\n\n### exc-glom.core-format_target_spec_trace\ntitle: Restore format_target_spec_trace behavior\nsummary: The body of `glom.core.format_target_spec_trace` was removed (it raises NotImplementedError); the original behavior must be restored.\ncontract:\n- `glom.core.format_target_spec_trace`: `format_target_spec_trace(scope, root_error, width=TRACE_WIDTH, depth=0, prev_target=_MISSING, last_branch=True)`\n  unpack a scope into a multi-line but short summary\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 2, 'cross_module_edges': 0, 'diff_size': 35, 'similar_named_functions_nearby': 8, 'test_count': 29}\n\n### exc-glom.grouping-GROUP\ntitle: Restore GROUP function behavior in glom.grouping\nsummary: The body of `glom.grouping.GROUP` was removed (it raises NotImplementedError); the original behavior must be restored.\ncontract:\n- `glom.grouping.GROUP`: `GROUP(target, spec, scope)`\n  Group mode dispatcher; also sentinel for current mode = group\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 2, 'diff_size': 55, 'similar_named_functions_nearby': 0, 'test_count': 6}\n\n### exc-glom.matching-Check.glomit\ntitle: Restore Check.glomit behavior in glom.matching\nsummary: The body of `glom.matching.Check.glomit` was removed (it raises NotImplementedError); the original behavior must be restored.\ncontract:\n- `glom.matching.Check.glomit`: `glomit(self, target, scope)`\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 3, 'diff_size': 47, 'similar_named_functions_nearby': 11, 'test_count': 6}\n\n### exc-glom.reduction-Fold.glomit\ntitle: Restore Fold.glomit to make Fold, flatten, merge, and sum work\nsummary: The body of `glom.reduction.Fold.glomit` was removed (it raises NotImplementedError); the original behavior must be restored.\ncontract:\n- `glom.reduction.Fold.glomit`: `glomit(self, target, scope)`\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 1, 'diff_size': 14, 'similar_named_functions_nearby': 0, 'test_count': 12}\n\n### hist-0d75aab\ntitle: Improve T dunder attribute error message\nsummary: Improves the error message raised when accessing a dunder attribute on a T spec, telling the user the exact attribute name and how to access it via `T.__()`. The exception type and behavior are unchanged.\ncontract:\n- `glom.core.TType.__getattr__` (internal): `__getattr__(self, name)`\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 0, 'diff_size': 4, 'similar_named_functions_nearby': 0, 'test_count': 1}\n\n### hist-4a48227\ntitle: Check default should apply when validator raises validation error\nsummary: Check now returns its configured default when a validator function raises the validation error type, instead of only handling non-validation exceptions; previously failing validators wouldn't trigger the default return.\ncontract:\n- `glom.core.Check.glomit`: `glomit(self, target, scope)`\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 0, 'diff_size': 5, 'similar_named_functions_nearby': 14, 'test_count': 1}\n\n### hist-94b6375\ntitle: Enable argument evaluation against targets in glom constructs\nsummary: Introduces an arg-[...] feature ([...], [...]) enabling arguments to be evaluated/valued against targets, and makes Coalesce defaults and recursive repr handling use it; broad behavior changes across glom, matching, and mutation.\ncontract:\n- `glom.core._unpack_stack` (internal): `_unpack_stack(scope)`\n  convert scope to [[scope, spec, target, error, [children]]]\n\nthis is a convenience method for printing stacks\n- `glom.core.format_oneline_trace`: `format_oneline_trace(scope)`\n  unpack a scope into a single line summary\n(shortest summary possible)\n- `glom.core.Coalesce.glomit`: `glomit(self, target, scope)`\n- `glom.core.Call.glomit`: `glomit(self, target, scope)`\n  run against the current target\n- `glom.core._t_eval` (internal): `_t_eval(target, _t, scope)`\n- `glom.core.glom`: `glom(target, spec, **kwargs)`\n  Access or construct a value from a given *target* based on the\nspecification declared by *spec*.\n\nAccessing nested data, aka deep-get:\n\n>>> target = {'a': {'b': 'c'}}\n>>> glom(target, 'a.b')\n'c'\n\nHere the *spec* was just a string denoting a path,\n``'a.b.``. As simple as it should be. The next example shows\nhow to use nested data to access many fields at once, and make\na new nested structure.\n\nConstructing, or restructuring more-complicated nested data:\n\n>>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n>>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n>>> output = glom(target, spec)\n>>> pprint(output)\n{'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n\n``glom`` also takes a keyword-argument, *default*. When set,\nif a ``glom`` operation fails with a :exc:`GlomError`, the\n*default* will be returned, very much like\n:meth:`dict.get()`:\n\n>>> glom(target, 'a.xx', default='nada')\n'nada'\n\nThe *skip_exc* keyword argument controls which errors should\nbe ignored.\n\n>>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n0.0\n\nArgs:\n   target (object): the object on which the glom will operate.\n   spec (object): Specification of the output object in the form\n     of a dict, list, tuple, string, other glom construct, or\n     any composition of these.\n   default (object): An optional default to return in the case\n     an exception, specified by *skip_exc*, is raised.\n   skip_exc (Exception): An optional exception or tuple of\n     exceptions to ignore and return *default* (None if\n     omitted). If *skip_exc* and *default* are both not set,\n     glom raises errors through.\n   scope (dict): Additional data that can be accessed\n     via S inside the glom-spec. Read more: :ref:`scope`.\n\nIt's a small API with big functionality, and glom's power is\nonly surpassed by its intuitiveness. Give it a whirl!\n- `glom.core._glom` (internal): `_glom(target, spec, scope)`\n- `glom.matching.Match.glomit`: `glomit(self, target, scope)`\n- `glom.matching._Bool.glomit` (internal): `glomit(self, target, scope)`\n- `glom.matching._handle_dict` (internal): `_handle_dict(target, spec, scope)`\n- `glom.matching.Switch.glomit`: `glomit(self, target, scope)`\n- `glom.matching.Check.glomit`: `glomit(self, target, scope)`\n- `glom.mutation.Assign.glomit`: `glomit(self, target, scope)`\nfeatures: {'files_touched': 4, 'functions_touched': 17, 'callers_count': 28, 'cross_module_edges': 17, 'diff_size': 135, 'similar_named_functions_nearby': 106, 'test_count': 6}\n\n### hist-99e2ece\ntitle: Invoke.star should raise TypeError when neither args nor kwargs given\nsummary: Invoke.star now raises a TypeError instead of an AssertionError when neither args nor kwargs are provided, so misuse produces a proper exception.\ncontract:\n- `glom.core.Invoke.star`: `star(self, args=None, kwargs=None)`\n  glom args and kwargs and pass to func as *a and **kw\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 0, 'diff_size': 3, 'similar_named_functions_nearby': 1, 'test_count': 1}\n\n### hist-c2acc2b\ntitle: Fix slice repr in T and S expressions\nsummary: Fixes the repr/formatting of T/S specs containing slice indices so that slices render like `[1:2]` instead of using the default slice repr. The string representation of T/S expressions with slices is now more readable.\ncontract:\n- `glom.core._BBRepr.repr1` (internal): `repr1(self, x, maxlevel)`\n- `glom.core._format_t` (internal): `_format_t(path, root=T)`\nfeatures: {'files_touched': 1, 'functions_touched': 3, 'callers_count': 5, 'cross_module_edges': 0, 'diff_size': 17, 'similar_named_functions_nearby': 5, 'test_count': 1}\n\n### hist-e515fb3\ntitle: Fix PathAccessError message formatting for non-Path and out-of-range paths\nsummary: PathAccessError no longer crashes when formatting an error message for a Path whose path/part index cannot be resolved; it now falls back to showing the whole path instead of raising AttributeError/IndexError.\ncontract:\n- `glom.core.PathAccessError.get_message`: `get_message(self)`\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 0, 'diff_size': 5, 'similar_named_functions_nearby': 8, 'test_count': 2}"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "labels": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "task_id": {
+                      "type": "string"
+                    },
+                    "difficulty": {
+                      "type": "string",
+                      "enum": [
+                        "easy",
+                        "medium",
+                        "hard"
+                      ]
+                    },
+                    "rationale": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "task_id",
+                    "difficulty",
+                    "rationale"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "labels"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-091ff33729c146008efa846ed1ac10cf",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"labels\": [{\"task_id\":\"exc-glom.core-format_target_spec_trace\",\"difficulty\":\"easy\",\"rationale\":\"The task touches only one file and one function with a small diff_size=35, and has callers_count=2 and test_count=29 providing strong guidance for restoring the original behavior.\"},{\"task_id\":\"exc-glom.grouping-GROUP\",\"difficulty\":\"medium\",\"rationale\":\"Despite touching only one function, the diff_size=55 is moderate, callers_count=0 means no direct usage examples, and cross_module_edges=2 indicates some inter-module complexity in restoring behavior.\"},{\"task_id\":\"exc-glom.matching-Check.glomit\",\"difficulty\":\"medium\",\"rationale\":\"With diff_size=47, cross_module_edges=3, and similar_named_functions_nearby=11, the engineer must disambiguate among many nearby methods while lacking caller examples (callers_count=0).\"},{\"task_id\":\"exc-glom.reduction-Fold.glomit\",\"difficulty\":\"easy\",\"rationale\":\"The diff_size=14 is very small, there are no nearby similarly-named functions (similar_named_functions_nearby=0), and test_count=12 gives clear expected behavior for a single function.\"},{\"task_id\":\"hist-0d75aab\",\"difficulty\":\"easy\",\"rationale\":\"This is a tiny, localized change with diff_size=4, one function touched, and no cross-module edges, only improving an error message in __getattr__.\"},{\"task_id\":\"hist-4a48227\",\"difficulty\":\"easy\",\"rationale\":\"A small behavioral tweak with diff_size=5 in a single function, though similar_named_functions_nearby=14 is high, the contract and test_count=1 make the intended change clear.\"},{\"task_id\":\"hist-94b6375\",\"difficulty\":\"hard\",\"rationale\":\"This is a broad feature addition touching 4 files, 17 functions, with diff_size=135, cross_module_edges=17, and similar_named_functions_nearby=106, requiring deep understanding across glom, matching, and mutation modules.\"},{\"task_id\":\"hist-99e2ece\",\"difficulty\":\"easy\",\"rationale\":\"A minimal change (diff_size=3) in a single function that only swaps the exception type raised, with clear contract and test_count=1.\"},{\"task_id\":\"hist-c2acc2b\",\"difficulty\":\"medium\",\"rationale\":\"The task involves 3 functions and formatting/repr logic with diff_size=17 and callers_count=5, requiring careful handling of internal repr conventions across _BBRepr.repr1 and _format_t.\"},{\"task_id\":\"hist-e515fb3\",\"difficulty\":\"easy\",\"rationale\":\"A small bug fix with diff_size=5 in a single function, where the summary and test_count=2 clearly describe the desired fallback behavior for error message formatting.\"}]}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787004116,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 592,
+      "prompt_tokens": 2419,
+      "total_tokens": 3011,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 379,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 473,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

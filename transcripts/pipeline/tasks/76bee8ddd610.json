@@ -1,0 +1,275 @@
+{
+  "step": "p3.build.neutrality_check_rewrite",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a test reviewer. Rewrite the named tests so they assert behavior through the public interface only (no private helpers, no implementation details), keeping the test names and their intent. Names introduced by the change do not exist in the pre-change tree, so a module-level import of one fails with ImportError (an invalid failure). Convention: import an EXISTING public module (e.g. `from pkg import mod`), then inside the test do `fn = getattr(mod, 'new_name', None)`, `assert fn is not None`, and assert its behavior; the pre-change tree then fails with AssertionError (a valid failure). Never reach for private helpers (`_name`). Run the tests with the `run` tool until they pass. Only the test files you were told about are kept. Reply with a one-line summary when done."
+      },
+      {
+        "role": "user",
+        "content": "The following verifier tests were flagged as not implementation-neutral:\nissues: test_star_broadcast in test_mutation.py asserts implementation detail `core.PATH_STAR` (a module-level constant) and `Path._STAR_WARNED` (a private flag) instead of public behavior. Setting `core.PATH_STAR = False` and checking `Path._STAR_WARNED` are internal state changes that a solver reimplementing the change could handle differently. The test merely mirrors the patch by toggling an internal default flag and checking a private warning state.; test_star_broadcast in test_path_and_t.py directly calls `Path.from_text`, which is fine as a public API, but it does not reference any newly introduced identifiers (none listed). No issue here on its own.; test_star_warning in test_path_and_t.py directly manipulates `core.PATH_STAR` (module-level internal constant) and asserts `Path._STAR_WARNED` (private flag). This is asserting internal state and implementation details, not behavior through the public interface. It also mirrors the patch's internal mechanics.\nflagged: glom/test/test_mutation.py::test_star_broadcast, glom/test/test_path_and_t.py::test_star_warning\n\nRewrite ONLY those tests in glom/test/test_mutation.py, glom/test/test_path_and_t.py so they assert the same behavior via the public interface (private helpers never; identifiers introduced by the change ((none)) only through the getattr convention). Keep test names. Run `python -m pytest -q glom/test/test_mutation.py glom/test/test_path_and_t.py` until the tests pass."
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "read_file",
+          "description": "Read a source file. Optional `lines` as 'start:end' (1-indexed).",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "lines": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "grep",
+          "description": "Search the repo for a regular expression. Returns file:line:match.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "pattern": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "pattern"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "write_file",
+          "description": "Write (create or overwrite) a file in the repo.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "content"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "run",
+          "description": "Run a shell command inside the repo's Docker container. Returns exit code and output.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "cmd": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "cmd"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "show_symbol",
+          "description": "Look up a function/class from the repo graph by qualname.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "qualname": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "qualname"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "callers",
+          "description": "List call sites that call the given qualname.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "qualname": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "qualname"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "callees",
+          "description": "List intra-repo symbols the given qualname calls.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "qualname": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "qualname"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "tests_for",
+          "description": "List tests that execute the given qualname.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "qualname": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "qualname"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "show_commit",
+          "description": "Inspect a commit from the history index (or git).",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "sha": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "sha"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "okf",
+          "description": "Read an OKF knowledge page by bundle-relative path (e.g. 'modules/pkg.mod.md').",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": "auto"
+  },
+  "response": {
+    "id": "chatcmpl-e8f2bce309134b449100300663f5b96e",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.read_file:0",
+              "function": {
+                "arguments": "{\"path\": \"glom/test/test_mutation.py\"}",
+                "name": "read_file"
+              },
+              "type": "function"
+            },
+            {
+              "id": "functions.read_file:1",
+              "function": {
+                "arguments": "{\"path\": \"glom/test/test_path_and_t.py\"}",
+                "name": "read_file"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": "We need to rewrite two tests: test_star_broadcast in test_mutation.py and test_star_warning in test_path_and_t.py. The user says there are no newly introduced identifiers (none listed). So we cannot import any new names. We need to test behavior through public interface only, not using private helpers or internal constants like core.PATH_STAR or Path._STAR_WARNED.\n\nWe need to understand what these tests currently do, then rewrite them to assert behavior via public interface.\n\nLet's read the files."
+        }
+      }
+    ],
+    "created": 1787003909,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 145,
+      "prompt_tokens": 842,
+      "total_tokens": 987,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 94,
+        "audio_tokens": 0,
+        "reasoning_tokens": 101,
+        "rejected_prediction_tokens": 114,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 512,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

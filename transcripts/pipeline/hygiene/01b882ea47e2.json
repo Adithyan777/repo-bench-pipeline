@@ -1,0 +1,132 @@
+{
+  "step": "p2.okf.function_contracts",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "For each function of module `glom.mutation` below, write a behavioral contract: inputs (what each parameter means), outputs (what is returned), raises (list of exception TYPE NAMES it can raise, [] if none), side_effects (\"none\" or a short phrase), invariants (a property that always holds, or \"\"). Base every field ONLY on the code shown. Return one entry per qualname.\n\n### glom.mutation.Assign.__init__\nsignature: __init__(self, path, val, missing=None)\n    def __init__(self, path, val, missing=None):\n        # TODO: an option like require_preexisting or something to\n        # ensure that a value is mutated, not just added. Current\n        # workaround is to do a Check().\n        if isinstance(path, basestring):\n            path = Path.from_text(path)\n        elif type(path) is TType:\n            path = Path(path)\n        elif not isinstance(path, Path):\n            raise TypeError('path argument must be a .-delimited string, Path, T, or S')\n\n        try:\n            self.op, self.arg = path.items()[-1]\n        except IndexError:\n            raise ValueError('path must have at least one element')\n        self._orig_path = path\n        self.path = path[:-1]\n\n        if self.op not in '[.P':\n            # maybe if we add null-coalescing this should do something?\n            raise ValueError('last part of path must be setattr or setitem')\n        self.val = val\n\n        if missing is not None:\n            if not callable(missing):\n                raise TypeError(f'expected missing to be callable, not {missing!r}')\n        self.missing = missing\n\n### glom.mutation.Assign.glomit\nsignature: glomit(self, target, scope)\n    def glomit(self, target, scope):\n        val = arg_val(target, self.val, scope)\n\n        op, arg, path = self.op, self.arg, self.path\n        if self.path.startswith(S):\n            dest_target = scope[UP]\n            dest_path = self.path.from_t()\n        else:\n            dest_target = target\n            dest_path = self.path\n        try:\n            dest = scope[glom](dest_target, dest_path, scope)\n        except PathAccessError as pae:\n            if not self.missing:\n                raise\n\n            remaining_path = self._orig_path[pae.part_idx + 1:]\n            val = scope[glom](self.missing(), Assign(remaining_path, val, missing=self.missing), scope)\n\n            op, arg = self._orig_path.items()[pae.part_idx]\n            path = self._orig_path[:pae.part_idx]\n            dest = scope[glom](dest_target, path, scope)\n\n        # TODO: forward-detect immutable dest?\n        _apply = lambda dest: _assign_op(\n            dest=dest, op=op, arg=arg, val=val, path=path, scope=scope)\n        _apply_for_each(_apply, path, dest)\n\n        return target\n\n### glom.mutation.Delete.__init__\nsignature: __init__(self, path, ignore_missing=False)\n    def __init__(self, path, ignore_missing=False):\n        if isinstance(path, basestring):\n            path = Path.from_text(path)\n        elif type(path) is TType:\n            path = Path(path)\n        elif not isinstance(path, Path):\n            raise TypeError('path argument must be a .-delimited string, Path, T, or S')\n\n        try:\n            self.op, self.arg = path.items()[-1]\n        except IndexError:\n            raise ValueError('path must have at least one element')\n        self._orig_path = path\n        self.path = path[:-1]\n\n        if self.op not in '[.P':\n            raise ValueError('last part of path must be an attribute or index')\n\n        self.ignore_missing = ignore_missing\n\n### glom.mutation.Delete._del_one\nsignature: _del_one(self, dest, op, arg, scope)\n    def _del_one(self, dest, op, arg, scope):\n        if op == '[':\n            try:\n                del dest[arg]\n            except IndexError as e:\n                if not self.ignore_missing:\n                    raise PathDeleteError(e, self.path, arg)\n        elif op == '.':\n            try:\n                delattr(dest, arg)\n            except AttributeError as e:\n                if not self.ignore_missing:\n                    raise PathDeleteError(e, self.path, arg)\n        elif op == 'P':\n            _delete = scope[TargetRegistry].get_handler('delete', dest)\n            try:\n                _delete(dest, arg)\n            except Exception as e:\n                if not self.ignore_missing:\n                    raise PathDeleteError(e, self.path, arg)\n\n### glom.mutation.Delete.glomit\nsignature: glomit(self, target, scope)\n    def glomit(self, target, scope):\n        op, arg, path = self.op, self.arg, self.path\n        if self.path.startswith(S):\n            dest_target = scope[UP]\n            dest_path = self.path.from_t()\n        else:\n            dest_target = target\n            dest_path = self.path\n        try:\n            dest = scope[glom](dest_target, dest_path, scope)\n        except PathAccessError as pae:\n            if not self.ignore_missing:\n                raise\n        else:\n            _apply_for_each(lambda dest: self._del_one(dest, op, arg, scope), path, dest)\n\n        return target\n\n### glom.mutation.PathDeleteError.get_message\nsignature: get_message(self)\n    def get_message(self):\n        return ('could not delete %r on object at %r, got error: %r'\n                % (self.dest_name, self.path, self.exc))\n\n### glom.mutation._apply_for_each\nsignature: _apply_for_each(func, path, val)\ndef _apply_for_each(func, path, val):\n    layers = path.path_t.__stars__()\n    if layers:\n        for i in range(layers - 1):\n            val = sum(val, [])  # flatten out the extra layers\n        for inner in val:\n            func(inner)\n    else:\n        func(val)\n\n### glom.mutation._assign_autodiscover\nsignature: _assign_autodiscover(type_obj)\ndef _assign_autodiscover(type_obj):\n    # TODO: issubclass or \"in\"?\n    if issubclass(type_obj, _UNASSIGNABLE_BASE_TYPES):\n        return False\n\n    if callable(getattr(type_obj, '__setitem__', None)):\n        if callable(getattr(type_obj, 'index', None)):\n            return _set_sequence_item\n        return operator.setitem\n\n    return setattr\n\n### glom.mutation._delete_autodiscover\nsignature: _delete_autodiscover(type_obj)\ndef _delete_autodiscover(type_obj):\n    if issubclass(type_obj, _UNASSIGNABLE_BASE_TYPES):\n        return False\n\n    if callable(getattr(type_obj, '__delitem__', None)):\n        if callable(getattr(type_obj, 'index', None)):\n            return _del_sequence_item\n        return operator.delitem\n    return delattr\n\n### glom.mutation.assign\nsignature: assign(obj, path, val, missing=None)\ndef assign(obj, path, val, missing=None):\n    \"\"\"*New in glom 18.3.0*\n\n    The ``assign()`` function provides convenient \"deep set\"\n    functionality, modifying nested data structures in-place::\n\n      >>> target = {'a': [{'b': 'c'}, {'d': None}]}\n      >>> _ = assign(target, 'a.1.d', 'e')  # let's give 'd' a value of 'e'\n      >>> pprint(target)\n      {'a': [{'b': 'c'}, {'d': 'e'}]}\n\n    Missing structures can also be automatically created with the\n    *missing* parameter. For more information and examples, see the\n    :class:`~glom.Assign` specifier type, which this function wraps.\n    \"\"\"\n    return glom(obj, Assign(path, val, missing=missing))\n\n### glom.mutation.delete\nsignature: delete(obj, path, ignore_missing=False)\ndef delete(obj, path, ignore_missing=False):\n    \"\"\"\n    The ``delete()`` function provides \"deep del\" functionality,\n    modifying nested data structures in-place::\n\n      >>> target = {'a': [{'b': 'c'}, {'d': None}]}\n      >>> delete(target, 'a.0.b')\n      {'a': [{}, {'d': None}]}\n\n    Attempting to delete missing keys, attributes, and indexes will\n    raise a :exc:`PathDeleteError`. To ignore these errors, use the\n    *ignore_missing* argument::\n\n      >>> delete(target, 'does_not_exist', ignore_missing=True)\n      {'a': [{}, {'d': None}]}\n\n    For more information and examples, see the :class:`~glom.Delete`\n    specifier type, which this convenience function wraps.\n\n    .. versionadded:: 20.5.0\n    \"\"\"\n    return glom(obj, Delete(path, ignore_missing=ignore_missing))"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "contracts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "inputs": {
+                      "type": "string"
+                    },
+                    "outputs": {
+                      "type": "string"
+                    },
+                    "raises": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "side_effects": {
+                      "type": "string"
+                    },
+                    "invariants": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "inputs",
+                    "outputs",
+                    "raises",
+                    "side_effects"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "contracts"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-22f4dcadbf5349c9b53c463912761422",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"contracts\": [{\"qualname\":\"glom.mutation.Assign.__init__\",\"inputs\":\"self: the Assign instance; path: a string, Path, T, or S specifying the target location to assign to; val: the value to assign; missing: optional callable that returns a default object when intermediate path parts are missing\",\"outputs\":\"none (initializes instance attributes: op, arg, _orig_path, path, val, missing)\",\"raises\":[\"TypeError\",\"ValueError\"],\"side_effects\":\"none\",\"invariants\":\"self.op is one of '[', '.', or 'P' after successful initialization; self.path is the original path with the last element removed\"},{\"qualname\":\"glom.mutation.Assign.glomit\",\"inputs\":\"self: the Assign instance; target: the object being glommed; scope: the current glom scope dictionary\",\"outputs\":\"target (the original target object, after assignment is performed)\",\"raises\":[\"PathAccessError\"],\"side_effects\":\"mutates the destination object by assigning val at the specified path\",\"invariants\":\"if self.path.startswith(S), the destination target is scope[UP] instead of target; if a PathAccessError occurs and self.missing is set, missing() is called to create intermediate structures\"},{\"qualname\":\"glom.mutation.Delete.__init__\",\"inputs\":\"self: the Delete instance; path: a string, Path, T, or S specifying the target location to delete; ignore_missing: boolean flag indicating whether to ignore missing targets\",\"outputs\":\"none (initializes instance attributes: op, arg, _orig_path, path, ignore_missing)\",\"raises\":[\"TypeError\",\"ValueError\"],\"side_effects\":\"none\",\"invariants\":\"self.op is one of '[', '.', or 'P' after successful initialization; self.path is the original path with the last element removed\"},{\"qualname\":\"glom.mutation.Delete._del_one\",\"inputs\":\"self: the Delete instance; dest: the object from which to delete; op: operation character ('[', '.', or 'P'); arg: the key/attribute/index to delete; scope: the current glom scope dictionary\",\"outputs\":\"none\",\"raises\":[\"PathDeleteError\"],\"side_effects\":\"mutates dest by deleting arg according to op\",\"invariants\":\"if ignore_missing is True, exceptions during deletion are suppressed and PathDeleteError is not raised\"},{\"qualname\":\"glom.mutation.Delete.glomit\",\"inputs\":\"self: the Delete instance; target: the object being glommed; scope: the current glom scope dictionary\",\"outputs\":\"target (the original target object, after deletion is performed)\",\"raises\":[\"PathAccessError\"],\"side_effects\":\"mutates the destination object by deleting the specified path\",\"invariants\":\"if self.path.startswith(S), the destination target is scope[UP] instead of target; if a PathAccessError occurs and ignore_missing is True, the error is suppressed\"},{\"qualname\":\"glom.mutation.PathDeleteError.get_message\",\"inputs\":\"self: the PathDeleteError instance\",\"outputs\":\"a formatted string describing the delete failure, including dest_name, path, and the underlying exception\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"the returned string always contains self.dest_name, self.path, and self.exc\"},{\"qualname\":\"glom.mutation._apply_for_each\",\"inputs\":\"func: a callable to apply; path: a Path object; val: the value to apply func to\",\"outputs\":\"none\",\"raises\":[],\"side_effects\":\"calls func on val, or on each inner element if path contains star layers\",\"invariants\":\"if path has star layers, val is flattened layers-1 times before func is applied to each inner element\"},{\"qualname\":\"glom.mutation._assign_autodiscover\",\"inputs\":\"type_obj: a type object to discover assignment handler for\",\"outputs\":\"a callable for assigning to instances of type_obj, or False if type_obj is unassignable\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"returns False for subclasses of _UNASSIGNABLE_BASE_TYPES; otherwise returns a callable based on presence of __setitem__ and index methods, or setattr as fallback\"},{\"qualname\":\"glom.mutation._delete_autodiscover\",\"inputs\":\"type_obj: a type object to discover deletion handler for\",\"outputs\":\"a callable for deleting from instances of type_obj, or False if type_obj is unassignable\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"returns False for subclasses of _UNASSIGNABLE_BASE_TYPES; otherwise returns a callable based on presence of __delitem__ and index methods, or delattr as fallback\"},{\"qualname\":\"glom.mutation.assign\",\"inputs\":\"obj: the target object to mutate; path: the path where val should be assigned; val: the value to assign; missing: optional callable that returns a default object for missing intermediate structures\",\"outputs\":\"the result of glom(obj, Assign(path, val, missing=missing))\",\"raises\":[],\"side_effects\":\"mutates obj by assigning val at the specified path\",\"invariants\":\"this function wraps Assign in a glom call; returns the glom result\"},{\"qualname\":\"glom.mutation.delete\",\"inputs\":\"obj: the target object to mutate; path: the path to delete; ignore_missing: boolean flag to suppress errors on missing targets\",\"outputs\":\"the result of glom(obj, Delete(path, ignore_missing=ignore_missing))\",\"raises\":[],\"side_effects\":\"mutates obj by deleting the item at the specified path\",\"invariants\":\"this function wraps Delete in a glom call; returns the glom result\"}]}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787003698,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 1142,
+      "prompt_tokens": 1995,
+      "total_tokens": 3137,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 785,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 643,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 64,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

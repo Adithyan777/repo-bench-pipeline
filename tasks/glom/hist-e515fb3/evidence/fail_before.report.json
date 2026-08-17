@@ -1,0 +1,123 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 57,
+          "nodeid": "glom/test/test_error.py::test_pae_fallback_for_non_path",
+          "type": "Function"
+        },
+        {
+          "lineno": 42,
+          "nodeid": "glom/test/test_error.py::test_pae_scope_printable",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787005996.8446891,
+  "duration": 0.10224580764770508,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 2,
+    "failed": 2,
+    "total": 2
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 348,
+          "message": "IndexError: tuple index out of range",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.00012733299809042364,
+        "longrepr": "def test_pae_fallback_for_non_path():\n        # get_message() should not crash even if .path lacks a .values() method\n        # (e.g. a manually constructed PathAccessError with a plain string path).\n        exc = PathAccessError(KeyError('z'), 'a.b.c', 0)\n        msg = exc.get_message()\n        assert 'a.b.c' in msg\n        assert \"KeyError\" in msg\n    \n        # Also cover IndexError fallback: part_idx beyond path length\n        exc2 = PathAccessError(KeyError('z'), Path('a', 'b'), 99)\n>       msg2 = exc2.get_message()\n               ^^^^^^^^^^^^^^^^^^\n\nglom/test/test_error.py:68: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = PathAccessError(KeyError('z'), Path('a', 'b'), 99)\n\n    def get_message(self):\n>       path_part = Path(self.path).values()[self.part_idx]\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       IndexError: tuple index out of range\n\nglom/core.py:348: IndexError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 68,
+            "message": "",
+            "path": "glom/test/test_error.py"
+          },
+          {
+            "lineno": 348,
+            "message": "IndexError",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_pae_fallback_for_non_path",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 57,
+      "nodeid": "glom/test/test_error.py::test_pae_fallback_for_non_path",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00033508200431242585,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001114999977289699,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 626,
+          "message": "ValueError: path segment must be path from T, not S",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.0005710810000891797,
+        "longrepr": "def test_pae_scope_printable():\n        # A PathAccessError whose path comes from a Scope/S access must still be\n        # printable: get_message() (and therefore str()) must not raise even\n        # though Path() rejects an S-based path. Regression for #249.\n        with pytest.raises(PathAccessError) as exc_info:\n            glom({}, S['X'], scope={'x': 'y'})\n    \n        exc = exc_info.value\n>       msg = exc.get_message()\n              ^^^^^^^^^^^^^^^^^\n\nglom/test/test_error.py:51: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nglom/core.py:348: in get_message\n    path_part = Path(self.path).values()[self.part_idx]\n                ^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <[AttributeError(\"'Path' object has no attribute 'path_t'\") raised in repr()] Path object at 0xffffa37570e0>\npath_parts = (T['X'],)\n\n    def __init__(self, *path_parts):\n        if not path_parts:\n            self.path_t = T\n            return\n        if isinstance(path_parts[0], TType):\n            path_t = path_parts[0]\n            offset = 1\n        else:\n            path_t = T\n            offset = 0\n        for part in path_parts[offset:]:\n            if isinstance(part, Path):\n                part = part.path_t\n            if isinstance(part, TType):\n                sub_parts = part.__ops__\n                if sub_parts[0] is not T:\n>                   raise ValueError('path segment must be path from T, not %r'\n                                     % sub_parts[0])\nE                   ValueError: path segment must be path from T, not S\n\nglom/core.py:626: ValueError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 51,
+            "message": "",
+            "path": "glom/test/test_error.py"
+          },
+          {
+            "lineno": 348,
+            "message": "in get_message",
+            "path": "glom/core.py"
+          },
+          {
+            "lineno": 626,
+            "message": "ValueError",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_pae_scope_printable",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 42,
+      "nodeid": "glom/test/test_error.py::test_pae_scope_printable",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.508300041081384e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010774999827845022,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_error.py::test_pae_fallback_for_non_path": "failed",
+        "glom/test/test_error.py::test_pae_scope_printable": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_error.py::test_pae_fallback_for_non_path": "failed",
+        "glom/test/test_error.py::test_pae_scope_printable": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "glom/test/test_error.py::test_pae_fallback_for_non_path": "failed",
+        "glom/test/test_error.py::test_pae_scope_printable": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_error.py::test_pae_fallback_for_non_path": "passed",
+        "glom/test/test_error.py::test_pae_scope_printable": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_error.py::test_pae_fallback_for_non_path": "passed",
+        "glom/test/test_error.py::test_pae_scope_printable": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "glom/test/test_error.py::test_pae_fallback_for_non_path": "passed",
+        "glom/test/test_error.py::test_pae_scope_printable": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

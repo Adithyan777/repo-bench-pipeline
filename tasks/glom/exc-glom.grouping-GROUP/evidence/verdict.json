@@ -1,0 +1,104 @@
+{
+  "checks": {
+    "collateral": {
+      "newly_failing": 0,
+      "not_run": 0,
+      "ok": true,
+      "report_present": true
+    },
+    "determinism": {
+      "ok": true,
+      "runs": 3
+    },
+    "fail_before": {
+      "exit_code": 1,
+      "n_failing": 6,
+      "n_passing": 0,
+      "ok": true
+    },
+    "image": {
+      "built_from_input": false,
+      "digest_matches_task": true,
+      "environment_hashes": {
+        "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+        "requirements.lock.txt": "e659c3c6806a0a55a9aa0b99ca31e9dd48a72bc9aead0af5d74100054bd15428"
+      },
+      "live_digest": "sha256:dca64ba3b7231cf251c64edacf424e4859c1e7c526e29755074fe6623c21d998",
+      "ok": true,
+      "present": true
+    },
+    "pass_after": {
+      "exit_code": 0,
+      "n_failing": 0,
+      "n_passing": 6,
+      "ok": true
+    },
+    "right_reason": {
+      "invalid": [],
+      "ok": true,
+      "tests": {
+        "glom/test/test_error.py::test_all_public_errors": {
+          "detail": "GlomError.wrap(NotImplementedError) in glom/core.py",
+          "nodeid": "glom/test/test_error.py::test_all_public_errors",
+          "outcome": "failed",
+          "reason": "exception_in_repo_code",
+          "valid": true
+        },
+        "glom/test/test_grouping.py::test_agg": {
+          "detail": "GlomError.wrap(NotImplementedError) in glom/core.py",
+          "nodeid": "glom/test/test_grouping.py::test_agg",
+          "outcome": "failed",
+          "reason": "exception_in_repo_code",
+          "valid": true
+        },
+        "glom/test/test_grouping.py::test_bucketing": {
+          "detail": "GlomError.wrap(NotImplementedError) in glom/core.py",
+          "nodeid": "glom/test/test_grouping.py::test_bucketing",
+          "outcome": "failed",
+          "reason": "exception_in_repo_code",
+          "valid": true
+        },
+        "glom/test/test_grouping.py::test_corner_cases": {
+          "detail": "GlomError.wrap(NotImplementedError) in glom/core.py",
+          "nodeid": "glom/test/test_grouping.py::test_corner_cases",
+          "outcome": "failed",
+          "reason": "exception_in_repo_code",
+          "valid": true
+        },
+        "glom/test/test_grouping.py::test_limit": {
+          "detail": "GlomError.wrap(NotImplementedError) in glom/core.py",
+          "nodeid": "glom/test/test_grouping.py::test_limit",
+          "outcome": "failed",
+          "reason": "exception_in_repo_code",
+          "valid": true
+        },
+        "glom/test/test_grouping.py::test_sample": {
+          "detail": "GlomError.wrap(NotImplementedError) in glom/core.py",
+          "nodeid": "glom/test/test_grouping.py::test_sample",
+          "outcome": "failed",
+          "reason": "exception_in_repo_code",
+          "valid": true
+        }
+      }
+    },
+    "static_gate": {
+      "ok": true,
+      "violations": []
+    }
+  },
+  "environment_hashes": {
+    "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+    "requirements.lock.txt": "e659c3c6806a0a55a9aa0b99ca31e9dd48a72bc9aead0af5d74100054bd15428"
+  },
+  "image_digest": "sha256:dca64ba3b7231cf251c64edacf424e4859c1e7c526e29755074fe6623c21d998",
+  "image_tag": "bench-glom",
+  "reasons": [],
+  "repeat_count": 3,
+  "task_id": "exc-glom.grouping-GROUP",
+  "task_image_digest": "sha256:dca64ba3b7231cf251c64edacf424e4859c1e7c526e29755074fe6623c21d998",
+  "timestamps": {
+    "finished": "2026-08-17T22:32:57+00:00",
+    "started": "2026-08-17T22:32:50+00:00"
+  },
+  "valid": true
+}

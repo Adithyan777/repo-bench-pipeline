@@ -1,0 +1,132 @@
+{
+  "step": "p2.okf.function_contracts",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "For each function of module `glom.streaming` below, write a behavioral contract: inputs (what each parameter means), outputs (what is returned), raises (list of exception TYPE NAMES it can raise, [] if none), side_effects (\"none\" or a short phrase), invariants (a property that always holds, or \"\"). Base every field ONLY on the code shown. Return one entry per qualname.\n\n### glom.streaming.First.glomit\nsignature: glomit(self, target, scope)\n    def glomit(self, target, scope):\n        return self._first.glomit(target, scope)\n\n### glom.streaming.Iter.__repr__\nsignature: __repr__(self)\n    def __repr__(self):\n        base_args = ()\n        if self.subspec != T:\n            base_args = (self.subspec,)\n        base = format_invocation(self.__class__.__name__, base_args, repr=bbrepr)\n        chunks = [base]\n        for fname, args, _ in reversed(self._iter_stack):\n            meth = getattr(self, fname)\n            fb = FunctionBuilder.from_func(meth)\n            fb.args = fb.args[1:]  # drop self\n            arg_names = fb.get_arg_names()\n            # TODO: something fancier with defaults:\n            kwargs = []\n            if len(args) > 1 and arg_names:\n                args, kwargs = (), zip(arg_names, args)\n            chunks.append('.' + format_invocation(fname, args, kwargs, repr=bbrepr))\n        return ''.join(chunks)\n\n### glom.streaming.Iter._iterate\nsignature: _iterate(self, target, scope)\n    def _iterate(self, target, scope):\n        iterate = scope[TargetRegistry].get_handler('iterate', target, path=scope[Path])\n        try:\n            iterator = iterate(target)\n        except Exception as e:\n            raise TypeError('failed to iterate on instance of type %r at %r (got %r)'\n                            % (target.__class__.__name__, Path(*scope[Path]), e))\n\n        base_path = scope[Path]\n        for i, t in enumerate(iterator):\n            scope[Path] = base_path + [i]\n            yld = (t if self.subspec is T else scope[glom](t, self.subspec, scope))\n            if yld is SKIP:\n                continue\n            elif yld is self.sentinel or yld is STOP:\n                # NB: sentinel defaults to STOP so I was torn whether\n                # to also check for STOP, and landed on the side of\n                # never letting STOP through.\n                return\n            yield yld\n        return\n\n### glom.streaming.Iter.all\nsignature: all(self)\n    def all(self):\n        \"\"\"A convenience method which returns a new spec which turns an\n        iterable into a list.\n\n        >>> glom(range(5), Iter(lambda t: t * 2).all())\n        [0, 2, 4, 6, 8]\n\n        Note that this spec will always consume the whole iterable, and as\n        such, the spec returned is *not* an :class:`Iter()` instance.\n        \"\"\"\n        return Pipe(self, list)\n\n### glom.streaming.Iter.chunked\nsignature: chunked(self, size, fill=_MISSING)\n    def chunked(self, size, fill=_MISSING):\n        \"\"\"Return a new :class:`Iter()` spec which groups elements in the iterable\n        into lists of length *size*.\n\n        If the optional *fill* argument is provided, iterables not\n        evenly divisible by *size* will be padded out by the *fill*\n        constant. Otherwise, the final chunk will be shorter than *size*.\n\n        >>> list(glom(range(10), Iter().chunked(3)))\n        [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]\n        >>> list(glom(range(10), Iter().chunked(3, fill=None)))\n        [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, None, None]]\n        \"\"\"\n        kw = {'size': size}\n        args = size,\n        if fill is not _MISSING:\n            kw['fill'] = fill\n            args += (fill,)\n        return self._add_op(\n            'chunked', args, lambda it, scope: chunked_iter(it, **kw))\n\n### glom.streaming.Iter.dropwhile\nsignature: dropwhile(self, key=T)\n    def dropwhile(self, key=T):\n        \"\"\"Returns a new :class:`Iter()` spec which drops stream items until\n        *key* becomes falsy.\n\n        >>> glom([0, 0, 3, 2, 0], Iter().dropwhile(lambda t: t < 1).all())\n        [3, 2, 0]\n\n        Note that while similar to :meth:`Iter.filter()`, the filter\n        only applies to the beginning of the stream. In a way,\n        :meth:`Iter.dropwhile` can be thought of as\n        :meth:`~str.lstrip()` for streams. See\n        :func:`itertools.dropwhile` for more details.\n\n        \"\"\"\n\n        return self._add_op(\n            'dropwhile',\n            (key,),\n            lambda it, scope: dropwhile(\n                lambda t: scope[glom](t, key, scope), it))\n\n### glom.streaming.Iter.filter\nsignature: filter(self, key=T)\n    def filter(self, key=T):\n        \"\"\"Return a new :class:`Iter()` spec which will include only elements matching the\n        given *key*.\n\n        >>> glom(range(6), Iter().filter(lambda x: x % 2).all())\n        [1, 3, 5]\n\n        Because a spec can be a callable, :meth:`Iter.filter()` does\n        everything the built-in :func:`filter` does, but with the full\n        power of glom specs. For even more power, combine,\n        :meth:`Iter.filter()` with :class:`Check()`.\n\n        >>> # PROTIP: Python's ints know how many binary digits they require, using the bit_length method\n        >>> glom(range(9), Iter().filter(Check(T.bit_length(), one_of=(2, 4), default=SKIP)).all())\n        [2, 3, 8]\n\n        \"\"\"\n        # NB: Check's validate function defaults to bool, and\n        # *default* is returned on access errors as well validation\n        # errors, so the lambda passed to ifilter below works fine.\n        check_spec = key if isinstance(key, Check) else Check(key, default=SKIP)\n        return self._add_op(\n            'filter',\n            (key,),\n            lambda iterable, scope: ifilter(\n                lambda t: scope[glom](t, check_spec, scope) is not SKIP, iterable))\n\n### glom.streaming.Iter.first\nsignature: first(self, key=T, default=None)\n    def first(self, key=T, default=None):\n        \"\"\"A convenience method for lazily yielding a single truthy item from\n        an iterable.\n\n        >>> target = [False, 1, 2, 3]\n        >>> glom(target, Iter().first())\n        1\n\n        This method takes a condition, *key*, which can also be a\n        glomspec, as well as a *default*, in case nothing matches the\n        condition.\n\n        As this spec yields at most one item, and not an iterable, the\n        spec returned from this method is not an :class:`Iter()` instance.\n        \"\"\"\n        return (self, First(key=key, default=default))\n\n### glom.streaming.Iter.flatten\nsignature: flatten(self)\n    def flatten(self):\n        \"\"\"Returns a new :class:`Iter()` instance which combines iterables into a\n        single iterable.\n\n        >>> target = [[1, 2], [3, 4], [5]]\n        >>> list(glom(target, Iter().flatten()))\n        [1, 2, 3, 4, 5]\n        \"\"\"\n        return self._add_op(\n            'flatten',\n            (),\n            lambda it, scope: chain.from_iterable(it))\n\n### glom.streaming.Iter.glomit\nsignature: glomit(self, target, scope)\n    def glomit(self, target, scope):\n        iterator = self._iterate(target, scope)\n\n        for _, _, callback in reversed(self._iter_stack):\n            iterator = callback(iterator, scope)\n\n        return iter(iterator)\n\n### glom.streaming.Iter.limit\nsignature: limit(self, count)\n    def limit(self, count):\n        \"\"\"A convenient alias for :meth:`~Iter.slice`, which takes a single\n        argument, *count*, the max number of items to yield.\n        \"\"\"\n        return self._add_op('limit', (count,), lambda it, scope: islice(it, count))\n\n### glom.streaming.Iter.map\nsignature: map(self, subspec)\n    def map(self, subspec):\n        \"\"\"Return a new :class:`Iter()` spec which will apply the provided\n        *subspec* to each element of the iterable.\n\n        >>> glom(range(5), Iter().map(lambda x: x * 2).all())\n        [0, 2, 4, 6, 8]\n\n        Because a spec can be a callable, :meth:`Iter.map()` does\n        everything the built-in :func:`map` does, but with the full\n        power of glom specs.\n\n        >>> glom(['a', 'B', 'C'], Iter().map(T.islower()).all())\n        [True, False, False]\n        \"\"\"\n        # whatever validation you want goes here\n        # TODO: DRY the self._add_op with a decorator?\n        return self._add_op(\n            'map',\n            (subspec,),\n            lambda iterable, scope: imap(\n                lambda t: scope[glom](t, subspec, scope), iterable))\n\n### glom.streaming.Iter.slice\nsignature: slice(self, *args)\n    def slice(self, *args):\n        \"\"\"Returns a new :class:`Iter()` spec which trims iterables in the\n        same manner as :func:`itertools.islice`.\n\n        >>> target = [0, 1, 2, 3, 4, 5]\n        >>> glom(target, Iter().slice(3).all())\n        [0, 1, 2]\n        >>> glom(target, Iter().slice(2, 4).all())\n        [2, 3]\n\n        This method accepts only positional arguments.\n        \"\"\"\n        # TODO: make a kwarg-compatible version of this (islice takes no kwargs)\n        # TODO: also support slice syntax Iter()[::]\n        try:\n            islice([], *args)\n        except TypeError:\n            raise TypeError(f'invalid slice arguments: {args!r}')\n        return self._add_op('slice', args, lambda it, scope: islice(it, *args))\n\n### glom.streaming.Iter.split\nsignature: split(self, sep=None, maxsplit=None)\n    def split(self, sep=None, maxsplit=None):\n        \"\"\"Return a new :class:`Iter()` spec which will lazily split an iterable based\n        on a separator (or list of separators), *sep*. Like\n        :meth:`str.split()`, but for all iterables.\n\n        ``split_iter()`` yields lists of non-separator values. A separator will\n        never appear in the output.\n\n        >>> target = [1, 2, None, None, 3, None, 4, None]\n        >>> list(glom(target, Iter().split()))\n        [[1, 2], [3], [4]]\n\n        Note that ``split_iter`` is based on :func:`str.split`, so if\n        *sep* is ``None``, ``split()`` **groups** separators. If empty lists\n        are desired between two contiguous ``None`` values, simply use\n        ``sep=[None]``:\n\n        >>> list(glom(target, Iter().split(sep=[None])))\n        [[1, 2], [], [3], [4], []]\n\n        A max number of splits may also be set:\n\n        >>> list(glom(target, Iter().split(maxsplit=2)))\n        [[1, 2], [3], [4, None]]\n\n        \"\"\"\n        return self._add_op(\n            'split',\n            (sep, maxsplit),\n            lambda it, scope: split_iter(it, sep=sep, maxsplit=maxsplit))\n\n### glom.streaming.Iter.takewhile\nsignature: takewhile(self, key=T)\n    def takewhile(self, key=T):\n        \"\"\"Returns a new :class:`Iter()` spec which stops the stream once\n        *key* becomes falsy.\n\n        >>> glom([3, 2, 0, 1], Iter().takewhile().all())\n        [3, 2]\n\n        :func:`itertools.takewhile` for more details.\n        \"\"\"\n        return self._add_op(\n            'takewhile',\n            (key,),\n            lambda it, scope: takewhile(\n                lambda t: scope[glom](t, key, scope), it))\n\n### glom.streaming.Iter.unique\nsignature: unique(self, key=T)\n    def unique(self, key=T):\n        \"\"\"Return a new :class:`Iter()` spec which lazily filters out duplicate\n        values, i.e., only the first appearance of a value in a stream will\n        be yielded.\n\n        >>> target = list('gloMolIcious')\n        >>> out = list(glom(target, Iter().unique(T.lower())))\n        >>> print(''.join(out))\n        gloMIcus\n        \"\"\"\n        return self._add_op(\n            'unique',\n            (key,),\n            lambda it, scope: unique_iter(it, key=lambda t: scope[glom](t, key, scope)))\n\n### glom.streaming.Iter.windowed\nsignature: windowed(self, size)\n    def windowed(self, size):\n        \"\"\"Return a new :class:`Iter()` spec which will yield a sliding window of\n        adjacent elements in the iterable. Each tuple yielded will be\n        of length *size*.\n\n        Useful for getting adjacent pairs and triples.\n\n        >>> list(glom(range(4), Iter().windowed(2)))\n        [(0, 1), (1, 2), (2, 3)]\n        \"\"\"\n        return self._add_op(\n            'windowed', (size,), lambda it, scope: windowed_iter(it, size))"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "contracts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "inputs": {
+                      "type": "string"
+                    },
+                    "outputs": {
+                      "type": "string"
+                    },
+                    "raises": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "side_effects": {
+                      "type": "string"
+                    },
+                    "invariants": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "inputs",
+                    "outputs",
+                    "raises",
+                    "side_effects"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "contracts"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-1d4997c64cb84a22b31cb6f473e448e7",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"contracts\": [{\"qualname\":\"glom.streaming.First.glomit\",\"inputs\":\"self: First instance; target: object to glom; scope: glom scope dict\",\"outputs\":\"result of self._first.glomit(target, scope)\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.__repr__\",\"inputs\":\"self: Iter instance\",\"outputs\":\"string representation of the Iter spec, reconstructing chained method calls\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter._iterate\",\"inputs\":\"self: Iter instance; target: iterable target; scope: glom scope dict containing TargetRegistry, Path, and glom\",\"outputs\":\"generator yielding processed items from target, or None if sentinel/STOP encountered\",\"raises\":[\"TypeError\"],\"side_effects\":\"mutates scope[Path] during iteration\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.all\",\"inputs\":\"self: Iter instance\",\"outputs\":\"Pipe spec combining self and list constructor\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.chunked\",\"inputs\":\"self: Iter instance; size: chunk size int; fill: optional padding value (defaults to _MISSING)\",\"outputs\":\"new Iter spec with chunked operation added\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.dropwhile\",\"inputs\":\"self: Iter instance; key: spec or callable to test items (defaults to T)\",\"outputs\":\"new Iter spec with dropwhile operation added\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.filter\",\"inputs\":\"self: Iter instance; key: spec or callable to test items (defaults to T), or a Check instance\",\"outputs\":\"new Iter spec with filter operation added\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.first\",\"inputs\":\"self: Iter instance; key: spec or callable to test items (defaults to T); default: value returned if no match (defaults to None)\",\"outputs\":\"tuple of (self, First(key=key, default=default))\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.flatten\",\"inputs\":\"self: Iter instance\",\"outputs\":\"new Iter spec with flatten operation added\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.glomit\",\"inputs\":\"self: Iter instance; target: object to iterate over; scope: glom scope dict\",\"outputs\":\"iterator over processed target after applying all stacked operations\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.limit\",\"inputs\":\"self: Iter instance; count: maximum number of items to yield\",\"outputs\":\"new Iter spec with limit operation added\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.map\",\"inputs\":\"self: Iter instance; subspec: spec to apply to each element\",\"outputs\":\"new Iter spec with map operation added\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.slice\",\"inputs\":\"self: Iter instance; *args: positional arguments for itertools.islice\",\"outputs\":\"new Iter spec with slice operation added\",\"raises\":[\"TypeError\"],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.split\",\"inputs\":\"self: Iter instance; sep: separator value or list of values (defaults to None); maxsplit: maximum number of splits (defaults to None)\",\"outputs\":\"new Iter spec with split operation added\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.takewhile\",\"inputs\":\"self: Iter instance; key: spec or callable to test items (defaults to T)\",\"outputs\":\"new Iter spec with takewhile operation added\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.unique\",\"inputs\":\"self: Iter instance; key: spec or callable to determine uniqueness (defaults to T)\",\"outputs\":\"new Iter spec with unique operation added\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"glom.streaming.Iter.windowed\",\"inputs\":\"self: Iter instance; size: window size int\",\"outputs\":\"new Iter spec with windowed operation added\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"}]}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787003708,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 951,
+      "prompt_tokens": 3168,
+      "total_tokens": 4119,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 703,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 289,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 64,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

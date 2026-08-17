@@ -545,7 +545,13 @@ def _gaps_checklist() -> str:
         "The collection-broken baseline path (one repair → treat as no tests) is not "
         "implemented — no in-scope repo hit it; the inert flags for it were removed.",
         "The lint step rebuilds the image and runs the suite twice to prove the linted "
-        "tree still builds green; a formatting change that regresses a test reverts.",
+        "tree still builds green; a change that regresses a test reverts the whole step. "
+        "On glom this fires: its `test_error.py::*_stack` tests assert exact rendered "
+        "source lines, so any edit to `core.py` (fixes or formatting) breaks 7 tests; the "
+        "repo therefore ships un-linted with all findings recorded in `lint.json`.",
+        "Test-gen drops a module when the agent spends its turn budget reading a large "
+        "module without writing tests (glom.core, glom.grouping); no retry with a larger "
+        "budget is attempted automatically.",
     ]
     return (
         "\n"
@@ -614,7 +620,10 @@ def build(
     llm=None,
     draft: bool | None = None,
 ) -> tuple[Path, Path]:
-    """Write output/<repo>/report_summary.json + repo-root REPORT.md; return their paths."""
+    """Write output/<repo>/report_summary.json + output/<repo>/REPORT.md; return their paths.
+
+    The generated report lives in the run dir; the repo-root REPORT.md is hand-maintained
+    (seeded from a generated one) so later runs on other repos never overwrite it."""
     run_dir = Path(run_dir)
     data = collect(run_dir, config)
     data_path = run_dir / config.report.summary_filename
@@ -629,6 +638,6 @@ def build(
         dpath.write_text(json.dumps(decisions, indent=2, sort_keys=True) + "\n")
 
     md = render(data, config, narrative)
-    md_path = Path(config.report.report_md_filename)
+    md_path = run_dir / config.report.report_md_filename
     md_path.write_text(md)
     return data_path, md_path

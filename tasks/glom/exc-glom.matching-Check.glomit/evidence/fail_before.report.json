@@ -1,0 +1,1037 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 10,
+          "nodeid": "glom/test/test_check.py::test_check_basic",
+          "type": "Function"
+        },
+        {
+          "lineno": 71,
+          "nodeid": "glom/test/test_check.py::test_check_multi",
+          "type": "Function"
+        },
+        {
+          "lineno": 458,
+          "nodeid": "glom/test/test_error.py::test_all_public_errors",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[22-glom([1, 2, 3], (reversed, list))\\nglom([1, 2, 3], T[::-1])\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[38-glom([-1, 2, -3], ([abs], tuple))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[53-glom({1:2, 2:3}, Call(dict, args=(T.items(),)))\\nglom({1:2, 2:3}, lambda t: dict(t.items()))\\nglom({1:2, 2:3}, dict)\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[71-glom([1, 2, 3], [Decimal])\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[83-glom([1, 2, 3], Call(deque, args=[T, 10]))\\nglom([1, 2, 3], lambda t: deque(t, 10))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[97-glom([1, 2, 3, 4, 5, 6], lambda t: [i for i in t if i % 2])\\nglom([1, 2, 3, 4, 5, 6], [lambda i: i if i % 2 else SKIP])\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[115-glom(contacts, [Coalesce('primary_email.email', skip=('', None), default=SKIP)])\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[130-glom((1, 2, 3), (\\n    {\\n        \"type\": type,\\n        \"result\": [T + 1]  # arbitrary operation\\n    }, T['type'](T['result'])))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[153-import glom\\nimport django.db.models\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[175-glom(['cat', 1, 'dog', 2], [Check(type=str, default=SKIP)])\\n# ['cat', 'dog']\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[193-class If(object):\\n    def __init__(self, cond, if_, else_=None):\\n        self.cond, self.if_, self.else_ = cond, if_, else_\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[222-class Seq(object):\\n    def __init__(self, *subspecs):\\n        self.subspecs = subspecs\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[238-glom('1', ({1: float, 2: int}, T.values()))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[252-glom(range(10), [(M < 7) | Val(7)])\\n# [0, 1, 2, 3, 4, 5, 6, 7, 7, 7]\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[262-glom(range(10), [(M < 7) | Val(SKIP)])\\n# [0, 1, 2, 3, 4, 5, 6]\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[277-etree2dicts = Ref('ElementTree',\\n    {\"tag\": \"tag\", \"text\": \"text\", \"attrib\": \"attrib\", \"children\": (iter, [Ref('ElementTree')])})\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[285-etree2tuples = Fill(Ref('ElementTree', (T.tag, Iter(Ref('ElementTree')).all())))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[306->>> etree = ElementTree.fromstring(html_text)\\n>>> glom(etree, etree2tuples)\\n('html', [('head', [('title', [])]), ('body', [('p', [])])])\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[323-glom(json.loads(data),\\n    Ref('json',\\n        Match(Switch({\\n            dict: {Ref('json'): Ref('json')},\\n            list: [Ref('json')],\\n            type(u''): Auto(str),\\n            object: T}))\\n        )\\n    )\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[358-glom({}, (A.t, T.update({1: 1}), S.t))\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[371-input_data = {\"a\": {\"b\": {\"c\": 1}}}\\n# transform to:\\noutput_data = [{\"value\": 1, \"grandparent\": \"a\"}]\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "glom/test/test_snippets.py::test_snippet[379-(\\n    T.items(),\\n    [\\n        (\\n            A.globals.gp_item,  # save the grandparent item to the global scope\\n            T[1].values(),      # access the values as usual\\n            [{\"value\": \"c\", \"grandparent\": S.globals.gp_item[0]}],  # access the grandparent item\\n        )\\n    ],\\n    Flatten(),\\n)\\n]",
+          "type": "Function"
+        },
+        {
+          "lineno": 27,
+          "nodeid": "glom/test/test_streaming.py::test_filter",
+          "type": "Function"
+        },
+        {
+          "lineno": 89,
+          "nodeid": "glom/test/test_streaming.py::test_windowed",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787005978.9384193,
+  "duration": 0.2929558753967285,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 27,
+    "failed": 6,
+    "passed": 21,
+    "total": 27
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 2298,
+          "message": "glom.core.GlomError.wrap(NotImplementedError): error raised while processing, details below.\n Target-spec trace (most recent last):\n - Target: [{'id': 0}, {'id': 1}, {'id': 2}]\n - Spec: ([Coalesce(Check('id', equal_to=0), default=Sentinel('SKIP'))], T[0])\n - Spec: [Coalesce(Check('id', equal_to=0), default=Sentinel('SKIP'))]\n - Target: {'id': 0}\n - Spec: Coalesce(Check('id', equal_to=0), default=Sentinel('SKIP'))\n - Spec: Check('id', equal_to=0)\nNotImplementedError: excised",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.0011732450002455153,
+        "longrepr": "def test_check_basic():\n        assert glom([0, SKIP], [T]) == [0]  # sanity check SKIP\n    \n        target = [{'id': 0}, {'id': 1}, {'id': 2}]\n    \n        # check that skipping non-passing values works\n>       assert glom(target, ([Coalesce(Check('id', equal_to=0), default=SKIP)], T[0])) == {'id': 0}\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nglom/test/test_check.py:17: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntarget = [{'id': 0}, {'id': 1}, {'id': 2}]\nspec = ([Coalesce(Check('id', equal_to=0), default=Sentinel('SKIP'))], T[0])\nkwargs = {}\n\n    def glom(target, spec, **kwargs):\n        \"\"\"Access or construct a value from a given *target* based on the\n        specification declared by *spec*.\n    \n        Accessing nested data, aka deep-get:\n    \n        >>> target = {'a': {'b': 'c'}}\n        >>> glom(target, 'a.b')\n        'c'\n    \n        Here the *spec* was just a string denoting a path,\n        ``'a.b'``. As simple as it should be. You can also use\n        :mod:`glob`-like wildcard selectors:\n    \n        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}\n        >>> glom(target, 'a.*.k')\n        ['v1', 'v2']\n    \n        In addition to ``*``, you can also use ``**`` for recursive access:\n    \n        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}\n        >>> glom(target, '**.k')\n        ['v0', 'v3', 'v4']\n    \n        The next example shows how to use nested data to\n        access many fields at once, and make a new nested structure.\n    \n        Constructing, or restructuring more-complicated nested data:\n    \n        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n        >>> output = glom(target, spec)\n        >>> pprint(output)\n        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n    \n        ``glom`` also takes a keyword-argument, *default*. When set,\n        if a ``glom`` operation fails with a :exc:`GlomError`, the\n        *default* will be returned, very much like\n        :meth:`dict.get()`:\n    \n        >>> glom(target, 'a.xx', default='nada')\n        'nada'\n    \n        The *skip_exc* keyword argument controls which errors should\n        be ignored.\n    \n        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n        0.0\n    \n        Args:\n           target (object): the object on which the glom will operate.\n           spec (object): Specification of the output object in the form\n             of a dict, list, tuple, string, other glom construct, or\n             any composition of these.\n           default (object): An optional default to return in the case\n             an exception, specified by *skip_exc*, is raised.\n           skip_exc (Exception): An optional exception or tuple of\n             exceptions to ignore and return *default* (None if\n             omitted). If *skip_exc* and *default* are both not set,\n             glom raises errors through.\n           scope (dict): Additional data that can be accessed\n             via S inside the glom-spec. Read more: :ref:`scope`.\n    \n        It's a small API with big functionality, and glom's power is\n        only surpassed by its intuitiveness. Give it a whirl!\n    \n        \"\"\"\n        # TODO: check spec up front\n        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)\n        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)\n        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)\n        scope = _DEFAULT_SCOPE.new_child({\n            Path: kwargs.pop('path', []),\n            Inspect: kwargs.pop('inspector', None),\n            MODE: AUTO,\n            MIN_MODE: None,\n            CHILD_ERRORS: [],\n            'globals': ScopeVars({}, {}),\n        })\n        scope[UP] = scope\n        scope[ROOT] = scope\n        scope[T] = target\n        scope.update(kwargs.pop('scope', {}))\n        err = None\n        if kwargs:\n            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n        try:\n            try:\n                ret = _glom(target, spec, scope)\n            except skip_exc:\n                if default is _MISSING:\n                    raise\n                ret = default  # should this also be arg_val'd?\n        except Exception as e:\n            if glom_debug:\n                raise\n            if isinstance(e, GlomError):\n                # need to change id or else py3 seems to not let us truncate the\n                # stack trace with the explicit \"raise err\" below\n                err = copy.copy(e)\n                err._set_wrapped(e)\n            else:\n                err = GlomError.wrap(e)\n            if isinstance(err, GlomError):\n                err._finalize(scope[LAST_CHILD_SCOPE])\n            else:  # wrapping failed, fall back to default behavior\n                raise\n    \n        if err:\n>           raise err\nE           glom.core.GlomError.wrap(NotImplementedError): error raised while processing, details below.\nE            Target-spec trace (most recent last):\nE            - Target: [{'id': 0}, {'id': 1}, {'id': 2}]\nE            - Spec: ([Coalesce(Check('id', equal_to=0), default=Sentinel('SKIP'))], T[0])\nE            - Spec: [Coalesce(Check('id', equal_to=0), default=Sentinel('SKIP'))]\nE            - Target: {'id': 0}\nE            - Spec: Coalesce(Check('id', equal_to=0), default=Sentinel('SKIP'))\nE            - Spec: Check('id', equal_to=0)\nE           NotImplementedError: excised\n\nglom/core.py:2298: GlomError.wrap(NotImplementedError)",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 17,
+            "message": "",
+            "path": "glom/test/test_check.py"
+          },
+          {
+            "lineno": 2298,
+            "message": "GlomError.wrap(NotImplementedError)",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_check_basic",
+        "test_check.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 10,
+      "nodeid": "glom/test/test_check.py::test_check_basic",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0003265819977968931,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00015020800492493436,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 2298,
+          "message": "glom.core.GlomError.wrap(NotImplementedError): error raised while processing, details below.\n Target-spec trace (most recent last):\n - Target: 1\n - Spec: Check(instance_of=float, validate=<function test_check_multi.<loca...\nNotImplementedError: excised",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.00040158200135920197,
+        "longrepr": "def test_check_multi():\n        target = 1\n        with raises(CheckError) as exc_info:\n>           glom(target, Check(instance_of=float, validate=lambda x: x > 3.14))\n\nglom/test/test_check.py:75: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntarget = 1\nspec = Check(instance_of=float, validate=<function test_check_multi.<locals>.<lambda> at 0xffff99771c60>)\nkwargs = {}\n\n    def glom(target, spec, **kwargs):\n        \"\"\"Access or construct a value from a given *target* based on the\n        specification declared by *spec*.\n    \n        Accessing nested data, aka deep-get:\n    \n        >>> target = {'a': {'b': 'c'}}\n        >>> glom(target, 'a.b')\n        'c'\n    \n        Here the *spec* was just a string denoting a path,\n        ``'a.b'``. As simple as it should be. You can also use\n        :mod:`glob`-like wildcard selectors:\n    \n        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}\n        >>> glom(target, 'a.*.k')\n        ['v1', 'v2']\n    \n        In addition to ``*``, you can also use ``**`` for recursive access:\n    \n        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}\n        >>> glom(target, '**.k')\n        ['v0', 'v3', 'v4']\n    \n        The next example shows how to use nested data to\n        access many fields at once, and make a new nested structure.\n    \n        Constructing, or restructuring more-complicated nested data:\n    \n        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n        >>> output = glom(target, spec)\n        >>> pprint(output)\n        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n    \n        ``glom`` also takes a keyword-argument, *default*. When set,\n        if a ``glom`` operation fails with a :exc:`GlomError`, the\n        *default* will be returned, very much like\n        :meth:`dict.get()`:\n    \n        >>> glom(target, 'a.xx', default='nada')\n        'nada'\n    \n        The *skip_exc* keyword argument controls which errors should\n        be ignored.\n    \n        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n        0.0\n    \n        Args:\n           target (object): the object on which the glom will operate.\n           spec (object): Specification of the output object in the form\n             of a dict, list, tuple, string, other glom construct, or\n             any composition of these.\n           default (object): An optional default to return in the case\n             an exception, specified by *skip_exc*, is raised.\n           skip_exc (Exception): An optional exception or tuple of\n             exceptions to ignore and return *default* (None if\n             omitted). If *skip_exc* and *default* are both not set,\n             glom raises errors through.\n           scope (dict): Additional data that can be accessed\n             via S inside the glom-spec. Read more: :ref:`scope`.\n    \n        It's a small API with big functionality, and glom's power is\n        only surpassed by its intuitiveness. Give it a whirl!\n    \n        \"\"\"\n        # TODO: check spec up front\n        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)\n        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)\n        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)\n        scope = _DEFAULT_SCOPE.new_child({\n            Path: kwargs.pop('path', []),\n            Inspect: kwargs.pop('inspector', None),\n            MODE: AUTO,\n            MIN_MODE: None,\n            CHILD_ERRORS: [],\n            'globals': ScopeVars({}, {}),\n        })\n        scope[UP] = scope\n        scope[ROOT] = scope\n        scope[T] = target\n        scope.update(kwargs.pop('scope', {}))\n        err = None\n        if kwargs:\n            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n        try:\n            try:\n                ret = _glom(target, spec, scope)\n            except skip_exc:\n                if default is _MISSING:\n                    raise\n                ret = default  # should this also be arg_val'd?\n        except Exception as e:\n            if glom_debug:\n                raise\n            if isinstance(e, GlomError):\n                # need to change id or else py3 seems to not let us truncate the\n                # stack trace with the explicit \"raise err\" below\n                err = copy.copy(e)\n                err._set_wrapped(e)\n            else:\n                err = GlomError.wrap(e)\n            if isinstance(err, GlomError):\n                err._finalize(scope[LAST_CHILD_SCOPE])\n            else:  # wrapping failed, fall back to default behavior\n                raise\n    \n        if err:\n>           raise err\nE           glom.core.GlomError.wrap(NotImplementedError): error raised while processing, details below.\nE            Target-spec trace (most recent last):\nE            - Target: 1\nE            - Spec: Check(instance_of=float, validate=<function test_check_multi.<loca...\nE           NotImplementedError: excised\n\nglom/core.py:2298: GlomError.wrap(NotImplementedError)",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 75,
+            "message": "",
+            "path": "glom/test/test_check.py"
+          },
+          {
+            "lineno": 2298,
+            "message": "GlomError.wrap(NotImplementedError)",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_check_multi",
+        "test_check.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 71,
+      "nodeid": "glom/test/test_check.py::test_check_multi",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00014737499441253021,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00014874999760650098,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 2298,
+          "message": "glom.core.GlomError.wrap(NotImplementedError): error raised while processing, details below.\n Target-spec trace (most recent last):\n - Target: {}\n - Spec: Check(equal_to=[])\nNotImplementedError: excised",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.0003817899996647611,
+        "longrepr": "def test_all_public_errors():\n        \"\"\"test that all errors importable from the top-level glom module\n        pass a basic set of standards.\n    \n        When adding a new public error type, this test will be fail unless\n        that type is also tested below.\n        \"\"\"\n        import glom\n        import copy\n    \n        err_types = [t for t in\n                     [getattr(glom, name) for name in dir(glom)]\n                     if isinstance(t, type) and issubclass(t, Exception)]\n        non_glomerrors = [t for t in err_types if not issubclass(t, glom.GlomError)]\n        assert not non_glomerrors, \"expected all public exception types to subclass GlomError\"\n    \n        err_types = sorted([t for t in err_types if not t is glom.GlomError],\n                           key=lambda t: t.__name__)\n    \n        results = []\n    \n        def _test_exc(exc_type, target, spec):\n            with pytest.raises(exc_type) as exc_info:\n                glom.glom(target, spec)\n            results.append((target, spec, exc_info.value))\n            return exc_info.value\n    \n>       _test_exc(glom.CheckError, {}, glom.Check(equal_to=[]))\n\nglom/test/test_error.py:486: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nglom/test/test_error.py:482: in _test_exc\n    glom.glom(target, spec)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntarget = {}, spec = Check(equal_to=[]), kwargs = {}\n\n    def glom(target, spec, **kwargs):\n        \"\"\"Access or construct a value from a given *target* based on the\n        specification declared by *spec*.\n    \n        Accessing nested data, aka deep-get:\n    \n        >>> target = {'a': {'b': 'c'}}\n        >>> glom(target, 'a.b')\n        'c'\n    \n        Here the *spec* was just a string denoting a path,\n        ``'a.b'``. As simple as it should be. You can also use\n        :mod:`glob`-like wildcard selectors:\n    \n        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}\n        >>> glom(target, 'a.*.k')\n        ['v1', 'v2']\n    \n        In addition to ``*``, you can also use ``**`` for recursive access:\n    \n        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}\n        >>> glom(target, '**.k')\n        ['v0', 'v3', 'v4']\n    \n        The next example shows how to use nested data to\n        access many fields at once, and make a new nested structure.\n    \n        Constructing, or restructuring more-complicated nested data:\n    \n        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n        >>> output = glom(target, spec)\n        >>> pprint(output)\n        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n    \n        ``glom`` also takes a keyword-argument, *default*. When set,\n        if a ``glom`` operation fails with a :exc:`GlomError`, the\n        *default* will be returned, very much like\n        :meth:`dict.get()`:\n    \n        >>> glom(target, 'a.xx', default='nada')\n        'nada'\n    \n        The *skip_exc* keyword argument controls which errors should\n        be ignored.\n    \n        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n        0.0\n    \n        Args:\n           target (object): the object on which the glom will operate.\n           spec (object): Specification of the output object in the form\n             of a dict, list, tuple, string, other glom construct, or\n             any composition of these.\n           default (object): An optional default to return in the case\n             an exception, specified by *skip_exc*, is raised.\n           skip_exc (Exception): An optional exception or tuple of\n             exceptions to ignore and return *default* (None if\n             omitted). If *skip_exc* and *default* are both not set,\n             glom raises errors through.\n           scope (dict): Additional data that can be accessed\n             via S inside the glom-spec. Read more: :ref:`scope`.\n    \n        It's a small API with big functionality, and glom's power is\n        only surpassed by its intuitiveness. Give it a whirl!\n    \n        \"\"\"\n        # TODO: check spec up front\n        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)\n        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)\n        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)\n        scope = _DEFAULT_SCOPE.new_child({\n            Path: kwargs.pop('path', []),\n            Inspect: kwargs.pop('inspector', None),\n            MODE: AUTO,\n            MIN_MODE: None,\n            CHILD_ERRORS: [],\n            'globals': ScopeVars({}, {}),\n        })\n        scope[UP] = scope\n        scope[ROOT] = scope\n        scope[T] = target\n        scope.update(kwargs.pop('scope', {}))\n        err = None\n        if kwargs:\n            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n        try:\n            try:\n                ret = _glom(target, spec, scope)\n            except skip_exc:\n                if default is _MISSING:\n                    raise\n                ret = default  # should this also be arg_val'd?\n        except Exception as e:\n            if glom_debug:\n                raise\n            if isinstance(e, GlomError):\n                # need to change id or else py3 seems to not let us truncate the\n                # stack trace with the explicit \"raise err\" below\n                err = copy.copy(e)\n                err._set_wrapped(e)\n            else:\n                err = GlomError.wrap(e)\n            if isinstance(err, GlomError):\n                err._finalize(scope[LAST_CHILD_SCOPE])\n            else:  # wrapping failed, fall back to default behavior\n                raise\n    \n        if err:\n>           raise err\nE           glom.core.GlomError.wrap(NotImplementedError): error raised while processing, details below.\nE            Target-spec trace (most recent last):\nE            - Target: {}\nE            - Spec: Check(equal_to=[])\nE           NotImplementedError: excised\n\nglom/core.py:2298: GlomError.wrap(NotImplementedError)",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 486,
+            "message": "",
+            "path": "glom/test/test_error.py"
+          },
+          {
+            "lineno": 482,
+            "message": "in _test_exc",
+            "path": "glom/test/test_error.py"
+          },
+          {
+            "lineno": 2298,
+            "message": "GlomError.wrap(NotImplementedError)",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_all_public_errors",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 458,
+      "nodeid": "glom/test/test_error.py::test_all_public_errors",
+      "outcome": "failed",
+      "setup": {
+        "duration": 8.566700125811622e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010954099707305431,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001941660011652857,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[22-glom([1, 2, 3], (reversed, list))\\nglom([1, 2, 3], T[::-1])\\n]",
+        "parametrize",
+        "pytestmark",
+        "22-glom([1, 2, 3], (reversed, list))\\nglom([1, 2, 3], T[::-1])\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[22-glom([1, 2, 3], (reversed, list))\\nglom([1, 2, 3], T[::-1])\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002257490050396882,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.312400314025581e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001366239957860671,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[38-glom([-1, 2, -3], ([abs], tuple))\\n]",
+        "parametrize",
+        "pytestmark",
+        "38-glom([-1, 2, -3], ([abs], tuple))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[38-glom([-1, 2, -3], ([abs], tuple))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014350000128615648,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.045800157357007e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00023279100423678756,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[53-glom({1:2, 2:3}, Call(dict, args=(T.items(),)))\\nglom({1:2, 2:3}, lambda t: dict(t.items()))\\nglom({1:2, 2:3}, dict)\\n]",
+        "parametrize",
+        "pytestmark",
+        "53-glom({1:2, 2:3}, Call(dict, args=(T.items(),)))\\nglom({1:2, 2:3}, lambda t: dict(t.items()))\\nglom({1:2, 2:3}, dict)\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[53-glom({1:2, 2:3}, Call(dict, args=(T.items(),)))\\nglom({1:2, 2:3}, lambda t: dict(t.items()))\\nglom({1:2, 2:3}, dict)\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001420820044586435,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.529100159648806e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011791600263677537,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[71-glom([1, 2, 3], [Decimal])\\n]",
+        "parametrize",
+        "pytestmark",
+        "71-glom([1, 2, 3], [Decimal])\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[71-glom([1, 2, 3], [Decimal])\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014124999870546162,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.049999840091914e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00016087400581454858,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[83-glom([1, 2, 3], Call(deque, args=[T, 10]))\\nglom([1, 2, 3], lambda t: deque(t, 10))\\n]",
+        "parametrize",
+        "pytestmark",
+        "83-glom([1, 2, 3], Call(deque, args=[T, 10]))\\nglom([1, 2, 3], lambda t: deque(t, 10))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[83-glom([1, 2, 3], Call(deque, args=[T, 10]))\\nglom([1, 2, 3], lambda t: deque(t, 10))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001340000017080456,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.733300688210875e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00020041600510012358,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[97-glom([1, 2, 3, 4, 5, 6], lambda t: [i for i in t if i % 2])\\nglom([1, 2, 3, 4, 5, 6], [lambda i: i if i % 2 else SKIP])\\n]",
+        "parametrize",
+        "pytestmark",
+        "97-glom([1, 2, 3, 4, 5, 6], lambda t: [i for i in t if i % 2])\\nglom([1, 2, 3, 4, 5, 6], [lambda i: i if i % 2 else SKIP])\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[97-glom([1, 2, 3, 4, 5, 6], lambda t: [i for i in t if i % 2])\\nglom([1, 2, 3, 4, 5, 6], [lambda i: i if i % 2 else SKIP])\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013433300046017393,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.78329961374402e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00017749999824445695,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[115-glom(contacts, [Coalesce('primary_email.email', skip=('', None), default=SKIP)])\\n]",
+        "parametrize",
+        "pytestmark",
+        "115-glom(contacts, [Coalesce('primary_email.email', skip=('', None), default=SKIP)])\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[115-glom(contacts, [Coalesce('primary_email.email', skip=('', None), default=SKIP)])\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014387400005944073,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001337489957222715,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00025958299374906346,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[130-glom((1, 2, 3), (\\n    {\\n        \"type\": type,\\n        \"result\": [T + 1]  # arbitrary operation\\n    }, T['type'](T['result'])))\\n]",
+        "parametrize",
+        "pytestmark",
+        "130-glom((1, 2, 3), (\\n    {\\n        \"type\": type,\\n        \"result\": [T + 1]  # arbitrary operation\\n    }, T['type'](T['result'])))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[130-glom((1, 2, 3), (\\n    {\\n        \"type\": type,\\n        \"result\": [T + 1]  # arbitrary operation\\n    }, T['type'](T['result'])))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001999160012928769,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.09580014902167e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010516699694562703,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[153-import glom\\nimport django.db.models\\n]",
+        "parametrize",
+        "pytestmark",
+        "153-import glom\\nimport django.db.models\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[153-import glom\\nimport django.db.models\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014583300071535632,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.670800212305039e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 2298,
+          "message": "glom.core.GlomError.wrap(NotImplementedError): error raised while processing, details below.\n Target-spec trace (most recent last):\n - Target: ['cat', 1, 'dog', 2]\n - Spec: [Check(default=Sentinel('SKIP'), type=str)]\n - Target: 'cat'\n - Spec: Check(default=Sentinel('SKIP'), type=str)\nNotImplementedError: excised",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.0005229980015428737,
+        "longrepr": "line = 175\nsource = \"glom(['cat', 1, 'dog', 2], [Check(type=str, default=SKIP)])\\n# ['cat', 'dog']\\n\"\n\n    @pytest.mark.parametrize(\"line,source\", SNIPPETS)\n    def test_snippet(line, source):\n        if '>>>' in source:\n            return  # maybe doctest output checking\n        code = compile(source, 'snippets.rst', 'exec')\n        if 'django' in source:\n            return  # maybe in the future\n>       eval(code, SNIPPETS_GLOBALS)\n\nglom/test/test_snippets.py:58: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsnippets.rst:1: in <module>\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntarget = ['cat', 1, 'dog', 2]\nspec = [Check(default=Sentinel('SKIP'), type=str)], kwargs = {}\n\n    def glom(target, spec, **kwargs):\n        \"\"\"Access or construct a value from a given *target* based on the\n        specification declared by *spec*.\n    \n        Accessing nested data, aka deep-get:\n    \n        >>> target = {'a': {'b': 'c'}}\n        >>> glom(target, 'a.b')\n        'c'\n    \n        Here the *spec* was just a string denoting a path,\n        ``'a.b'``. As simple as it should be. You can also use\n        :mod:`glob`-like wildcard selectors:\n    \n        >>> target = {'a': [{'k': 'v1'}, {'k': 'v2'}]}\n        >>> glom(target, 'a.*.k')\n        ['v1', 'v2']\n    \n        In addition to ``*``, you can also use ``**`` for recursive access:\n    \n        >>> target = {'a': [{'k': 'v3'}, {'k': 'v4'}], 'k': 'v0'}\n        >>> glom(target, '**.k')\n        ['v0', 'v3', 'v4']\n    \n        The next example shows how to use nested data to\n        access many fields at once, and make a new nested structure.\n    \n        Constructing, or restructuring more-complicated nested data:\n    \n        >>> target = {'a': {'b': 'c', 'd': 'e'}, 'f': 'g', 'h': [0, 1, 2]}\n        >>> spec = {'a': 'a.b', 'd': 'a.d', 'h': ('h', [lambda x: x * 2])}\n        >>> output = glom(target, spec)\n        >>> pprint(output)\n        {'a': 'c', 'd': 'e', 'h': [0, 2, 4]}\n    \n        ``glom`` also takes a keyword-argument, *default*. When set,\n        if a ``glom`` operation fails with a :exc:`GlomError`, the\n        *default* will be returned, very much like\n        :meth:`dict.get()`:\n    \n        >>> glom(target, 'a.xx', default='nada')\n        'nada'\n    \n        The *skip_exc* keyword argument controls which errors should\n        be ignored.\n    \n        >>> glom({}, lambda x: 100.0 / len(x), default=0.0, skip_exc=ZeroDivisionError)\n        0.0\n    \n        Args:\n           target (object): the object on which the glom will operate.\n           spec (object): Specification of the output object in the form\n             of a dict, list, tuple, string, other glom construct, or\n             any composition of these.\n           default (object): An optional default to return in the case\n             an exception, specified by *skip_exc*, is raised.\n           skip_exc (Exception): An optional exception or tuple of\n             exceptions to ignore and return *default* (None if\n             omitted). If *skip_exc* and *default* are both not set,\n             glom raises errors through.\n           scope (dict): Additional data that can be accessed\n             via S inside the glom-spec. Read more: :ref:`scope`.\n    \n        It's a small API with big functionality, and glom's power is\n        only surpassed by its intuitiveness. Give it a whirl!\n    \n        \"\"\"\n        # TODO: check spec up front\n        default = kwargs.pop('default', None if 'skip_exc' in kwargs else _MISSING)\n        skip_exc = kwargs.pop('skip_exc', () if default is _MISSING else GlomError)\n        glom_debug = kwargs.pop('glom_debug', GLOM_DEBUG)\n        scope = _DEFAULT_SCOPE.new_child({\n            Path: kwargs.pop('path', []),\n            Inspect: kwargs.pop('inspector', None),\n            MODE: AUTO,\n            MIN_MODE: None,\n            CHILD_ERRORS: [],\n            'globals': ScopeVars({}, {}),\n        })\n        scope[UP] = scope\n        scope[ROOT] = scope\n        scope[T] = target\n        scope.update(kwargs.pop('scope', {}))\n        err = None\n        if kwargs:\n            raise TypeError('unexpected keyword args: %r' % sorted(kwargs.keys()))\n        try:\n            try:\n                ret = _glom(target, spec, scope)\n            except skip_exc:\n                if default is _MISSING:\n                    raise\n                ret = default  # should this also be arg_val'd?\n        except Exception as e:\n            if glom_debug:\n                raise\n            if isinstance(e, GlomError):\n                # need to change id or else py3 seems to not let us truncate the\n                # stack trace with the explicit \"raise err\" below\n                err = copy.copy(e)\n                err._set_wrapped(e)\n            else:\n                err = GlomError.wrap(e)\n            if isinstance(err, GlomError):\n                err._finalize(scope[LAST_CHILD_SCOPE])\n            else:  # wrapping failed, fall back to default behavior\n                raise\n    \n        if err:\n>           raise err\nE           glom.core.GlomError.wrap(NotImplementedError): error raised while processing, details below.\nE            Target-spec trace (most recent last):\nE            - Target: ['cat', 1, 'dog', 2]\nE            - Spec: [Check(default=Sentinel('SKIP'), type=str)]\nE            - Target: 'cat'\nE            - Spec: Check(default=Sentinel('SKIP'), type=str)\nE           NotImplementedError: excised\n\nglom/core.py:2298: GlomError.wrap(NotImplementedError)",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 58,
+            "message": "",
+            "path": "glom/test/test_snippets.py"
+          },
+          {
+            "lineno": 1,
+            "message": "in <module>",
+            "path": "snippets.rst"
+          },
+          {
+            "lineno": 2298,
+            "message": "GlomError.wrap(NotImplementedError)",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_snippet[175-glom(['cat', 1, 'dog', 2], [Check(type=str, default=SKIP)])\\n# ['cat', 'dog']\\n]",
+        "parametrize",
+        "pytestmark",
+        "175-glom(['cat', 1, 'dog', 2], [Check(type=str, default=SKIP)])\\n# ['cat', 'dog']\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[175-glom(['cat', 1, 'dog', 2], [Check(type=str, default=SKIP)])\\n# ['cat', 'dog']\\n]",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0003003739984706044,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012275000335648656,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000161166004545521,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[193-class If(object):\\n    def __init__(self, cond, if_, else_=None):\\n        self.cond, self.if_, self.else_ = cond, if_, else_\\n]",
+        "parametrize",
+        "pytestmark",
+        "193-class If(object):\\n    def __init__(self, cond, if_, else_=None):\\n        self.cond, self.if_, self.else_ = cond, if_, else_\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[193-class If(object):\\n    def __init__(self, cond, if_, else_=None):\\n        self.cond, self.if_, self.else_ = cond, if_, else_\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00017249899974558502,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.049999840091914e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013116600166540593,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[222-class Seq(object):\\n    def __init__(self, *subspecs):\\n        self.subspecs = subspecs\\n]",
+        "parametrize",
+        "pytestmark",
+        "222-class Seq(object):\\n    def __init__(self, *subspecs):\\n        self.subspecs = subspecs\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[222-class Seq(object):\\n    def __init__(self, *subspecs):\\n        self.subspecs = subspecs\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013912499707657844,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.558300083270296e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001821249970817007,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[238-glom('1', ({1: float, 2: int}, T.values()))\\n]",
+        "parametrize",
+        "pytestmark",
+        "238-glom('1', ({1: float, 2: int}, T.values()))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[238-glom('1', ({1: float, 2: int}, T.values()))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013391600077738985,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.54579998808913e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001989579977816902,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[252-glom(range(10), [(M < 7) | Val(7)])\\n# [0, 1, 2, 3, 4, 5, 6, 7, 7, 7]\\n]",
+        "parametrize",
+        "pytestmark",
+        "252-glom(range(10), [(M < 7) | Val(7)])\\n# [0, 1, 2, 3, 4, 5, 6, 7, 7, 7]\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[252-glom(range(10), [(M < 7) | Val(7)])\\n# [0, 1, 2, 3, 4, 5, 6, 7, 7, 7]\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013216600200394168,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.424999446608126e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00016741600120440125,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[262-glom(range(10), [(M < 7) | Val(SKIP)])\\n# [0, 1, 2, 3, 4, 5, 6]\\n]",
+        "parametrize",
+        "pytestmark",
+        "262-glom(range(10), [(M < 7) | Val(SKIP)])\\n# [0, 1, 2, 3, 4, 5, 6]\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[262-glom(range(10), [(M < 7) | Val(SKIP)])\\n# [0, 1, 2, 3, 4, 5, 6]\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013149900041753426,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.766600174363703e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001181250045192428,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[277-etree2dicts = Ref('ElementTree',\\n    {\"tag\": \"tag\", \"text\": \"text\", \"attrib\": \"attrib\", \"children\": (iter, [Ref('ElementTree')])})\\n]",
+        "parametrize",
+        "pytestmark",
+        "277-etree2dicts = Ref('ElementTree',\\n    {\"tag\": \"tag\", \"text\": \"text\", \"attrib\": \"attrib\", \"children\": (iter, [Ref('ElementTree')])})\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[277-etree2dicts = Ref('ElementTree',\\n    {\"tag\": \"tag\", \"text\": \"text\", \"attrib\": \"attrib\", \"children\": (iter, [Ref('ElementTree')])})\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013729100464843214,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.891599670983851e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001115830018534325,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[285-etree2tuples = Fill(Ref('ElementTree', (T.tag, Iter(Ref('ElementTree')).all())))\\n]",
+        "parametrize",
+        "pytestmark",
+        "285-etree2tuples = Fill(Ref('ElementTree', (T.tag, Iter(Ref('ElementTree')).all())))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[285-etree2tuples = Fill(Ref('ElementTree', (T.tag, Iter(Ref('ElementTree')).all())))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013287400361150503,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.354099605232477e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 6.487499922513962e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[306->>> etree = ElementTree.fromstring(html_text)\\n>>> glom(etree, etree2tuples)\\n('html', [('head', [('title', [])]), ('body', [('p', [])])])\\n]",
+        "parametrize",
+        "pytestmark",
+        "306->>> etree = ElementTree.fromstring(html_text)\\n>>> glom(etree, etree2tuples)\\n('html', [('head', [('title', [])]), ('body', [('p', [])])])\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[306->>> etree = ElementTree.fromstring(html_text)\\n>>> glom(etree, etree2tuples)\\n('html', [('head', [('title', [])]), ('body', [('p', [])])])\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001258329939446412,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.524999480461702e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00042129000212298706,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[323-glom(json.loads(data),\\n    Ref('json',\\n        Match(Switch({\\n            dict: {Ref('json'): Ref('json')},\\n            list: [Ref('json')],\\n            type(u''): Auto(str),\\n            object: T}))\\n        )\\n    )\\n]",
+        "parametrize",
+        "pytestmark",
+        "323-glom(json.loads(data),\\n    Ref('json',\\n        Match(Switch({\\n            dict: {Ref('json'): Ref('json')},\\n            list: [Ref('json')],\\n            type(u''): Auto(str),\\n            object: T}))\\n        )\\n    )\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[323-glom(json.loads(data),\\n    Ref('json',\\n        Match(Switch({\\n            dict: {Ref('json'): Ref('json')},\\n            list: [Ref('json')],\\n            type(u''): Auto(str),\\n            object: T}))\\n        )\\n    )\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013924900122219697,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.545799599029124e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001817070005927235,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[358-glom({}, (A.t, T.update({1: 1}), S.t))\\n]",
+        "parametrize",
+        "pytestmark",
+        "358-glom({}, (A.t, T.update({1: 1}), S.t))\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[358-glom({}, (A.t, T.update({1: 1}), S.t))\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.000132123997900635,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.950000144774094e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001067080011125654,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[371-input_data = {\"a\": {\"b\": {\"c\": 1}}}\\n# transform to:\\noutput_data = [{\"value\": 1, \"grandparent\": \"a\"}]\\n]",
+        "parametrize",
+        "pytestmark",
+        "371-input_data = {\"a\": {\"b\": {\"c\": 1}}}\\n# transform to:\\noutput_data = [{\"value\": 1, \"grandparent\": \"a\"}]\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[371-input_data = {\"a\": {\"b\": {\"c\": 1}}}\\n# transform to:\\noutput_data = [{\"value\": 1, \"grandparent\": \"a\"}]\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014170800568535924,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.308299634838477e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001334569969912991,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_snippet[379-(\\n    T.items(),\\n    [\\n        (\\n            A.globals.gp_item,  # save the grandparent item to the global scope\\n            T[1].values(),      # access the values as usual\\n            [{\"value\": \"c\", \"grandparent\": S.globals.gp_item[0]}],  # access the grandparent item\\n        )\\n    ],\\n    Flatten(),\\n)\\n]",
+        "parametrize",
+        "pytestmark",
+        "379-(\\n    T.items(),\\n    [\\n        (\\n            A.globals.gp_item,  # save the grandparent item to the global scope\\n            T[1].values(),      # access the values as usual\\n            [{\"value\": \"c\", \"grandparent\": S.globals.gp_item[0]}],  # access the grandparent item\\n        )\\n    ],\\n    Flatten(),\\n)\\n",
+        "test_snippets.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "glom/test/test_snippets.py::test_snippet[379-(\\n    T.items(),\\n    [\\n        (\\n            A.globals.gp_item,  # save the grandparent item to the global scope\\n            T[1].values(),      # access the values as usual\\n            [{\"value\": \"c\", \"grandparent\": S.globals.gp_item[0]}],  # access the grandparent item\\n        )\\n    ],\\n    Flatten(),\\n)\\n]",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001281669974559918,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012054100079694763,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 959,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/glom/matching.py"
+        },
+        "duration": 0.00012270799925317988,
+        "longrepr": "def test_filter():\n        is_odd = lambda x: x % 2\n        odd_spec = Iter().filter(is_odd)\n        out = glom(RANGE_5, odd_spec)\n>       assert list(out) == [1, 3]\n               ^^^^^^^^^\n\nglom/test/test_streaming.py:32: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nglom/streaming.py:165: in <lambda>\n    lambda t: scope[glom](t, check_spec, scope) is not SKIP, iterable))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nglom/core.py:2352: in _glom\n    return spec.glomit(target, scope)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = Check(<function test_filter.<locals>.<lambda> at 0xffff99773ec0>, default=Sentinel('SKIP'))\ntarget = 0\nscope = ChainMap({T: 0, <class 'glom.core.Spec'>: Check(<function test_filter.<locals>.<lambda> at 0xffff99773ec0>, default=Se...ion _glom at 0xffff9970f9c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffff99961cd0>})\n\n    def glomit(self, target, scope):\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nglom/matching.py:959: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 32,
+            "message": "",
+            "path": "glom/test/test_streaming.py"
+          },
+          {
+            "lineno": 165,
+            "message": "in <lambda>",
+            "path": "glom/streaming.py"
+          },
+          {
+            "lineno": 2352,
+            "message": "in _glom",
+            "path": "glom/core.py"
+          },
+          {
+            "lineno": 959,
+            "message": "NotImplementedError",
+            "path": "glom/matching.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_filter",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 27,
+      "nodeid": "glom/test/test_streaming.py::test_filter",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.9624995123595e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011229099618503824,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 959,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/glom/matching.py"
+        },
+        "duration": 0.00020041599782416597,
+        "longrepr": "def test_windowed():\n        int_list = list(range(5))\n    \n        spec = Iter().windowed(3)\n        out = glom(int_list, spec)\n        assert list(out) == [(0, 1, 2), (1, 2, 3), (2, 3, 4)]\n        assert repr(spec) == 'Iter().windowed(3)'\n    \n        spec = spec.filter(lambda x: bool(x[0] % 2)).map(sum)\n        out = glom(int_list, spec)\n>       assert next(out) == 6\n               ^^^^^^^^^\n\nglom/test/test_streaming.py:100: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nglom/streaming.py:165: in <lambda>\n    lambda t: scope[glom](t, check_spec, scope) is not SKIP, iterable))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nglom/core.py:2352: in _glom\n    return spec.glomit(target, scope)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = Check(<function test_windowed.<locals>.<lambda> at 0xffff98dd0a40>, default=Sentinel('SKIP'))\ntarget = (0, 1, 2)\nscope = ChainMap({T: (0, 1, 2), <class 'glom.core.Spec'>: Check(<function test_windowed.<locals>.<lambda> at 0xffff98dd0a40>, ...ion _glom at 0xffff9970f9c0>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffff99961cd0>})\n\n    def glomit(self, target, scope):\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nglom/matching.py:959: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 100,
+            "message": "",
+            "path": "glom/test/test_streaming.py"
+          },
+          {
+            "lineno": 165,
+            "message": "in <lambda>",
+            "path": "glom/streaming.py"
+          },
+          {
+            "lineno": 2352,
+            "message": "in _glom",
+            "path": "glom/core.py"
+          },
+          {
+            "lineno": 959,
+            "message": "NotImplementedError",
+            "path": "glom/matching.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_windowed",
+        "test_streaming.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 89,
+      "nodeid": "glom/test/test_streaming.py::test_windowed",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.045800157357007e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012479099677875638,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

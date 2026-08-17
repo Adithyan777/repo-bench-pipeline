@@ -1,0 +1,8 @@
+$ python -m pytest -q glom/test/test_check.py::test_check_basic -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=0
+--- stdout ---
+.                                                                        [100%]
+1 passed in 0.03s
+
+--- stderr ---
+

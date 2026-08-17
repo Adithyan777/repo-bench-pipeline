@@ -1,0 +1,107 @@
+{
+  "step": "p3.build.write_instruction",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You write instructions for a coding benchmark task. You see the contract of the touched functions as it stands in the pre-change tree, the verifier tests, a behavior summary and the scope; you never see the solution. Write a Markdown instruction with exactly these sections: `## Goal`, `## Observable behavior` (with the requested number of concrete input -> output examples COPIED verbatim from the verifier tests, as code), `## Constraints` (about the task: API to keep, files in scope), `## How success is measured` (the verifier command). Describe WHAT must hold, never how to implement it or which edit to make; name only identifiers visible in the contract or the tests, never internal names (starting with `_`); do not restate test code beyond the examples; do not copy meta lines of this prompt (title limits, example counts, visibility notes) into the instruction. Also return a short title that names no internal identifier."
+      },
+      {
+        "role": "user",
+        "content": "Task kind: history\nBehavior summary: Check now returns its configured default when a validator function raises the validation error type, instead of only handling non-validation exceptions; previously failing validators wouldn't trigger the default return.\n\nTouched-function contract (as in the current tree; entries marked (internal) must not be named in the instruction):\n- `glom.core.Check.glomit`: `glomit(self, target, scope)`\n\nFiles in scope: glom/__init__.py, glom/core.py, glom/grouping.py, glom/matching.py, glom/mutation.py, glom/reduction.py, glom/streaming.py, glom/test/test_check.py\nVerifier command: `python -m pytest -q glom/test/test_check.py::test_check_basic`\nVerifier visibility: The verifier tests are in `verifier/` and are re-applied before judging.\nExamples to copy from the tests: 2\nTitle max chars: 80\n\n### glom/test/test_check.py (verifier tests: test_check_basic)\n```python\n\nfrom pytest import raises\n\nfrom glom import glom, Check, CheckError, Coalesce, OMIT, STOP, T\n\n\ndef test_check_basic():\n    assert glom([0, OMIT], [T]) == [0]  # sanity check OMIT\n\n    target = [{'id': 0}, {'id': 1}, {'id': 2}]\n\n    # check that skipping non-passing values works\n    assert glom(target, ([Coalesce(Check('id', equal_to=0), default=OMIT)], T[0])) == {'id': 0}\n    assert glom(target, ([Check('id', equal_to=0, default=OMIT)], T[0])) == {'id': 0}\n\n    # check that stopping iteration on non-passing values works\n    assert glom(target, [Check('id', equal_to=0, default=STOP)]) == [{'id': 0}]\n\n    # check that stopping chain execution on non-passing values works\n    spec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])\n    assert glom('hello', spec) == 'h'\n    assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work\n\n    target = [1, 'a']\n    assert glom(target, [Check(type=str, default=OMIT)]) == ['a']\n    assert glom(target, [Check(type=(str, int))]) == [1, 'a']\n    assert glom(target, [Check(instance_of=str, default=OMIT)]) == ['a']\n    assert glom(target, [Check(instance_of=(str, int))]) == [1, 'a']\n\n    target = ['1']\n    assert glom(target, [Check(validate=(int, float))])\n    assert glom(target, [Check()])  # bare check does a truthy check\n\n    failing_checks = [({'a': {'b': 1}}, {'a': ('a', 'b', Check(type=str))},\n                       '''target at path ['a', 'b'] failed check, got error: \"expected type to be 'str', found type 'int'\"'''),\n                      ({'a': {'b': 1}}, {'a': ('a', Check('b', type=str))},\n                       '''target at path ['a'] failed check, subtarget at 'b' got error: \"expected type to be 'str', found type 'int'\"'''),\n                      (1, Check(type=(str, bool))),\n                      (1, Check(instance_of=str)),\n                      (1, Check(instance_of=(str, bool))),\n                      (1, Check(equal_to=0)),\n                      (1, Check(one_of=(0,))),\n                      (1, Check(one_of=(0, 2))),\n                      ('-3.14', Check(validate=int)),\n                      ('', Check(validate=lambda x: False)),]\n\n    for fc in failing_checks:\n        if len(fc) == 2:\n            target, check = fc\n            msg = None\n        else:\n            target, check, msg = fc\n\n        with raises(CheckError) as exc_info:\n            glom(target, check)\n\n        if msg is not None:\n            assert str(exc_info.value) == msg\n        assert repr(exc_info.value)\n\n\ndef test_check_signature():\n    with raises(ValueError):\n        Check(instance_of=())\n    with raises(ValueError):\n        Check(type=())\n\n    with raises(TypeError):\n        Check(fake_kwarg=True)\n\n    with raises(ValueError):\n        Check(one_of=1)\n    with raises(ValueError):\n        Check(one_of=())\n    with raises(TypeError):\n        Check(one_of=(1, 2), equal_to=3)\n\n    with raises(ValueError):\n        Check(validate='bad, not callable, value')\n\n```"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "emit",
+          "description": "Emit the result.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "instruction": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "title",
+              "instruction"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "emit"
+      }
+    }
+  },
+  "response": {
+    "id": "chatcmpl-2538c1cf30204f64a81dfff5030b4dbb",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.emit:0",
+              "function": {
+                "arguments": "{\"title\":\"Check default should apply when validator raises validation error\",\"instruction\":\"## Goal\\n\\nMake `Check` return its configured `default` when a validator function raises the library's validation error type, instead of only handling non-validation exceptions.\\n\\n## Observable behavior\\n\\n```python\\n# check that stopping chain execution on non-passing values works\\nspec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])\\nassert glom('hello', spec) == 'h'\\nassert glom('', spec) == ''  # would fail with IndexError if STOP didn't work\\n```\\n\\n```python\\nfailing_checks = [({'a': {'b': 1}}, {'a': ('a', 'b', Check(type=str))},\\n                   '''target at path ['a', 'b'] failed check, got error: \\\"expected type to be 'str', found type 'int'\\\"'''),\\n                  ({'a': {'b': 1}}, {'a': ('a', Check('b', type=str))},\\n                   '''target at path ['a'] failed check, subtarget at 'b' got error: \\\"expected type to be 'str', found type 'int'\\\"'''),\\n                  (1, Check(type=(str, bool))),\\n                  (1, Check(instance_of=str)),\\n                  (1, Check(instance_of=(str, bool))),\\n                  (1, Check(equal_to=0)),\\n                  (1, Check(one_of=(0,))),\\n                  (1, Check(one_of=(0, 2))),\\n                  ('-3.14', Check(validate=int)),\\n                  ('', Check(validate=lambda x: False)),]\\n\\nfor fc in failing_checks:\\n    if len(fc) == 2:\\n        target, check = fc\\n        msg = None\\n    else:\\n        target, check, msg = fc\\n\\n    with raises(CheckError) as exc_info:\\n        glom(target, check)\\n\\n    if msg is not None:\\n        assert str(exc_info.value) == msg\\n    assert repr(exc_info.value)\\n```\\n\\n## Constraints\\n\\n- Keep the public API of `Check` and `glom` unchanged.\\n- Files in scope: `glom/__init__.py`, `glom/core.py`, `glom/grouping.py`, `glom/matching.py`, `glom/mutation.py`, `glom/reduction.py`, `glom/streaming.py`, `glom/test/test_check.py`.\\n\\n## How success is measured\\n\\nRun `python -m pytest -q glom/test/test_check.py::test_check_basic` and verify it passes.\"}",
+                "name": "emit"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1787004088,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 588,
+      "prompt_tokens": 1262,
+      "total_tokens": 1850,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 436,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 172,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 224,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

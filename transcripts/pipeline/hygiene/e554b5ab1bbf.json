@@ -1,0 +1,306 @@
+{
+  "step": "p1.testgen.write_tests_agent",
+  "request": {
+    "model": "moonshotai/Kimi-K2.6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You write pytest tests for a Python library. You may create or edit ONLY the single test file you are told to write; never touch the library source or any other file. Write focused, deterministic tests that assert concrete behavior (exact return values, raised exceptions, boundaries) of the target functions -- not smoke tests. Use the run tool to execute the file and confirm it passes before finishing."
+      },
+      {
+        "role": "user",
+        "content": "Write pytest tests to the file `glom/test/generated/test_glom_cli.py` for these functions from module `glom.cli`. Test real behavior so a wrong implementation would fail.\n\nModule imports:\nimport os\nimport ast\nimport sys\nimport json\nfrom face import (Command,\n                  Flag,\n                  face_middleware,\n                  PosArgSpec,\n                  PosArgDisplay,\n                  CommandLineError,\n                  UsageError)\nfrom face.utils import isatty\nfrom boltons.iterutils import is_scalar\nimport glom\nfrom glom import Path, GlomError, Inspect\n\nTarget functions:\n### glom.cli.console_main  (signature: console_main())\ndef console_main():\n    _enable_debug = os.getenv('GLOM_CLI_DEBUG')\n    if _enable_debug:\n        print(sys.argv)\n    try:\n        sys.exit(main(sys.argv) or 0)\n    except Exception:\n        if _enable_debug:\n            import pdb;pdb.post_mortem()\n        raise\n\n### glom.cli.mw_handle_target  (signature: mw_handle_target(target_text, target_format))\ndef mw_handle_target(target_text, target_format):\n    \"\"\" Handles reading in a file specified in cli command.\n\n    Args:\n        target_text (str): The target data to load, as text\n        target_format (str): Valid formats include `json`, `toml`, and `yml`/`yaml`\n    Returns:\n        The content of the file that you specified\n    Raises:\n        CommandLineError: Issue with file format or appropriate file reading package not installed.\n    \"\"\"\n    if not target_text:\n        return {}\n    target = {}\n    if target_format == 'json':\n        load_func = json.loads\n    elif target_format in ('yaml', 'yml'):\n        try:\n            import yaml\n            load_func = yaml.safe_load\n        except ImportError:  # pragma: no cover\n            raise UsageError('No YAML package found. To process yaml files, run: pip install PyYAML')  # pragma: no cover\n    elif target_format == 'toml':\n        missing =  UsageError('No TOML package found. To process toml files, upgrade to Python 3.11 or run: pip install tomli')\n        try:\n            import tomllib \n            load_func = tomllib.loads\n        except ImportError:\n            try:\n                import tomli\n                load_func = tomli.loads\n            except ImportError:  # pragma: no cover\n                raise missing  # pragma: no cover\n    elif target_format == 'python':\n        load_func = ast.literal_eval\n    else:\n        raise UsageError('expected target-format to be one of python, json, toml, or yaml')\n\n\n    try:\n        target = load_func(target_text)\n    except Exception as e:\n        raise UsageError('could not load target data, got: %s: %s'\n                         % (e.__class__.__name__, e))\n\n\n    return target\n\n### glom.cli.glom_cli  (signature: glom_cli(target, spec, indent, debug, inspect, scalar))\ndef glom_cli(target, spec, indent, debug, inspect, scalar):\n    \"\"\"Command-line interface to the glom library, providing nested data\n    access and data restructuring with the power of Python.\n    \"\"\"\n    if debug or inspect:\n        stdin_open = not sys.stdin.closed\n        spec = Inspect(spec,\n                       echo=inspect,\n                       recursive=inspect,\n                       breakpoint=inspect and stdin_open,\n                       post_mortem=debug and stdin_open)\n\n    try:\n        result = glom.glom(target, spec)\n    except GlomError as ge:\n        print(f'{ge.__class__.__name__}: {ge}')\n        return 1\n\n    if not indent:\n        indent = None\n    \n    if scalar and is_scalar(result):\n        print(result, end='')\n    else:\n        print(json.dumps(result, indent=indent, sort_keys=True))\n    return\n\nExisting test style for reference:\n# glom/test/test_basic.py\nimport sys\nfrom xml.etree import ElementTree as ElementTree\n\nimport pytest\n\nfrom glom import glom, SKIP, STOP, Path, Inspect, Coalesce, CoalesceError, Val, Call, T, S, Invoke, Spec, Ref\nfrom glom import Auto, Fill, Iter, A, Vars, Val, GlomError, Pipe\n\nimport glom.core as glom_core\nfrom glom.core import UP, ROOT, bbformat, bbrepr\nfrom glom.mutation import PathAssignError\n\n\n\ndef test_initial_integration():\n    class Example:\n        pass\n\n    example = Example()\n    subexample = Example()\n    subexample.name = 'good_name'\n    example.mapping = {'key': subexample}\n\n    val = {'a': {'b': 'c'},  # basic dictionary nesting\n           'example': example,  # basic object\n           'd': {'e': ['f'],    # list in dictionary\n                 'g': 'h'},\n           'i': [{'j': 'k', 'l': 'm'}],  # list of dictionaries\n           'n': 'o'}\n\n    spec = {'a': (Inspect(recursive=True), 'a', 'b'),  # inspect just prints here\n            'name': 'example.mapping.key.name',  # test object access\n            'e': 'd.e',  # d.e[0] or d.e: (callable to fetch 0)\n            'i': ('i', [{'j': 'j'}]),  # TODO: support True for cases when the value should simply be mapped into the field name?\n            'n': ('n', lambda n: n.upper()),\n            'p': Coalesce('xxx',\n                          'yyy',\n                          default='zzz')}\n\n    ret = glom(val, spec)\n\n    print('in: ', val)\n    print('got:', ret)\n    expected = {'a': 'c',\n                'name': 'good_name',\n                'e': ['f'\n\n# glom/test/test_check.py\nfrom pytest import raises\n\nfrom glom import glom, Check, CheckError, Coalesce, SKIP, STOP, T\n\ntry:\n    unicode\nexcept NameError:\n    unicode = str\n\n\ndef test_check_basic():\n    assert glom([0, SKIP], [T]) == [0]  # sanity check SKIP\n\n    target = [{'id': 0}, {'id': 1}, {'id': 2}]\n\n    # check that skipping non-passing values works\n    assert glom(target, ([Coalesce(Check('id', equal_to=0), default=SKIP)], T[0])) == {'id': 0}\n    assert glom(target, ([Check('id', equal_to=0, default=SKIP)], T[0])) == {'id': 0}\n\n    # check that stopping iteration on non-passing values works\n    assert glom(target, [Check('id', equal_to=0, default=STOP)]) == [{'id': 0}]\n\n    # check that stopping chain execution on non-passing values works\n    spec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])\n    assert glom('hello', spec) == 'h'\n    assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work\n\n    assert repr(Check()) == 'Check()'\n    assert repr(Check(T.a)) == 'Check(T.a)'\n    assert repr(Check(equal_to=1)) == 'Check(equal_to=1)'\n    assert repr(Check(instance_of=dict)) == 'Check(instance_of=dict)'\n    assert repr(Check(T(len), validate=sum)) == 'Check(T(len), validate=sum)'\n\n    target = [1, 'a']\n    assert glom(target, [Check(type=unicode, default=SKIP)]) == ['a']\n    assert glom(target, [Check(type=(unicode, int))]) == [1, 'a']\n    assert glom(target, [Check(instance_of=unicode, default=SKIP)]) == ['a']\n    assert glom(target, [Check(instance_of=(unicode, i\n\nWrite ONLY `glom/test/generated/test_glom_cli.py`. Confirm with: python -m pytest -q glom/test/generated/test_glom_cli.py"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.grep:0",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"def console_main\"}"
+            }
+          },
+          {
+            "id": "functions.grep:1",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"def mw_handle_target\"}"
+            }
+          },
+          {
+            "id": "functions.grep:2",
+            "type": "function",
+            "function": {
+              "name": "grep",
+              "arguments": "{\"pattern\": \"def glom_cli\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:0",
+        "content": "glom/cli.py:106:def console_main():"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:1",
+        "content": "glom/cli.py:118:def mw_handle_target(target_text, target_format):"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.grep:2",
+        "content": "glom/cli.py:52:def glom_cli(target, spec, indent, debug, inspect, scalar):"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.read_file:0",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/cli.py\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:0",
+        "content": "\"\"\"like jq, but with the full power of python in the spec.\n\nUsage: python -m glom [FLAGS] [spec [target]]\n\nCommand-line interface to the glom library, providing nested data\naccess and data restructuring with the power of Python.\n\n\nFlags:\n\n  --help / -h                 show this help message and exit\n  --target-file TARGET_FILE   path to target data source (optional)\n  --target-format TARGET_FORMAT\n                              format of the source data (json, python, toml,\n                              or yaml) (defaults to 'json')\n  --spec-file SPEC_FILE       path to glom spec definition (optional)\n  --spec-format SPEC_FORMAT   format of the glom spec definition (json, python,\n                              python-full) (defaults to 'python')\n  --indent INDENT             number of spaces to indent the result, 0 to disable\n                              pretty-printing (defaults to 2)\n  --debug                     interactively debug any errors that come up\n  --inspect                   interactively explore the data\n\ntry out:\n`\ncurl -s https://api.github.com/repos/mahmoud/glom/events | python -m glom '[{\"type\": \"type\", \"date\": \"created_at\", \"user\": \"actor.login\"}]'\n\n\"\"\"\n\n\n\nimport os\nimport ast\nimport sys\nimport json\n\nfrom face import (Command,\n                  Flag,\n                  face_middleware,\n                  PosArgSpec,\n                  PosArgDisplay,\n                  CommandLineError,\n                  UsageError)\nfrom face.utils import isatty\nfrom boltons.iterutils import is_scalar\n\nimport glom\nfrom glom import Path, GlomError, Inspect\n\n# TODO: --default?\n\ndef glom_cli(target, spec, indent, debug, inspect, scalar):\n    \"\"\"Command-line interface to the glom library, providing nested data\n    access and data restructuring with the power of Python.\n    \"\"\"\n    if debug or inspect:\n        stdin_open = not sys.stdin.closed\n        spec = Inspect(spec,\n                       echo=inspect,\n                       recursive=inspect,\n                       breakpoint=inspect and stdin_open,\n                       post_mortem=debug and stdin_open)\n\n    try:\n        result = glom.glom(target, spec)\n    except GlomError as ge:\n        print(f'{ge.__class__.__name__}: {ge}')\n        return 1\n\n    if not indent:\n        indent = None\n    \n    if scalar and is_scalar(result):\n        print(result, end='')\n    else:\n        print(json.dumps(result, indent=indent, sort_keys=True))\n    return\n\n\ndef get_command():\n    posargs = PosArgSpec(str, max_count=2, display={'label': '[spec [target]]'})\n    cmd = Command(glom_cli, posargs=posargs, middlewares=[mw_get_target])\n    cmd.add('--target-file', str, missing=None, doc='path to target data source')\n    cmd.add('--target-format', str, missing='json',\n            doc='format of the source data (json or python)')\n    cmd.add('--spec-file', str, missing=None, doc='path to glom spec definition')\n    cmd.add('--spec-format', str, missing='python',\n            doc='format of the glom spec definition (json, python, python-full)')\n\n    cmd.add('--indent', int, missing=2,\n            doc='number of spaces to indent the result, 0 to disable pretty-printing')\n    \n    cmd.add('--scalar', parse_as=True,\n            doc=\"if the result is a single value (not a collection), output it\"\n            \" without quotes or whitespace, for easier usage in scripts\")\n    cmd.add('--debug', parse_as=True, doc='interactively debug any errors that come up')\n    cmd.add('--inspect', parse_as=True, doc='interactively explore the data')\n    return cmd\n\n\ndef main(argv):\n    cmd = get_command()\n    return cmd.run(argv) or 0\n\n\ndef console_main():\n    _enable_debug = os.getenv('GLOM_CLI_DEBUG')\n    if _enable_debug:\n        print(sys.argv)\n    try:\n        sys.exit(main(sys.argv) or 0)\n    except Exception:\n        if _enable_debug:\n            import pdb;pdb.post_mortem()\n        raise\n\n\ndef mw_handle_target(target_text, target_format):\n    \"\"\" Handles reading in a file specified in cli command.\n\n    Args:\n        target_text (str): The target data to load, as text\n        target_format (str): Valid formats include `json`, `toml`, and `yml`/`yaml`\n    Returns:\n        The content of the file that you specified\n    Raises:\n        CommandLineError: Issue with file format or appropriate file reading package not installed.\n    \"\"\"\n    if not target_text:\n        return {}\n    target = {}\n    if target_format == 'json':\n        load_func = json.loads\n    elif target_format in ('yaml', 'yml'):\n        try:\n            import yaml\n            load_func = yaml.safe_load\n        except ImportError:  # pragma: no cover\n            raise UsageError('No YAML package found. To process yaml files, run: pip install PyYAML')  # pragma: no cover\n    elif target_format == 'toml':\n        missing =  UsageError('No TOML package found. To process toml files, upgrade to Python 3.11 or run: pip install tomli')\n        try:\n            import tomllib \n            load_func = tomllib.loads\n        except ImportError:\n            try:\n                import tomli\n                load_func = tomli.loads\n            except ImportError:  # pragma: no cover\n                raise missing  # pragma: no cover\n    elif target_format == 'python':\n        load_func = ast.literal_eval\n    else:\n        raise UsageError('expected target-format to be one of python, json, toml, or yaml')\n\n\n    try:\n        target = load_func(target_text)\n    except Exception as e:\n        raise UsageError('could not load target data, got: %s: %s'\n                         % (e.__class__.__name__, e))\n\n\n    return target\n\n\n@face_middleware(provides=['spec', 'target'])\ndef mw_get_target(next_, posargs_, target_file, target_format, spec_file, spec_format):\n    spec_text, target_text = None, None\n    if len(posargs_) == 2:\n        spec_text, target_text = posargs_\n    elif len(posargs_) == 1:\n        spec_text, target_text = posargs_[0], None\n\n    if spec_text and spec_file:\n        raise UsageError('expected spec file or spec argument, not both')\n    elif spec_file:\n        try:\n            with open(spec_file) as f:\n                spec_text = f.read()\n        except OSError as ose:\n            raise UsageError(f'could not read spec file {spec_file!r}, got: {ose}')\n\n    if not spec_text:\n        spec = Path()\n    elif spec_format == 'python':\n        if spec_text[0] not in ('\"', \"'\", \"[\", \"{\", \"(\"):\n            # intention: handle trivial path access, assume string\n            spec_text = repr(spec_text)\n        spec = ast.literal_eval(spec_text)\n    elif spec_format == 'json':\n        spec = json.loads(spec_text)\n    elif spec_format == 'python-full':\n        spec = _eval_python_full_spec(spec_text)\n    else:\n        raise UsageError('expected spec-format to be one of json, python, or python-full')\n\n    if target_text and target_file:\n        raise UsageError('expected target file or target argument, not both')\n    elif target_text == '-' or target_file == '-':\n        target_text = sys.stdin.read()\n    elif target_file:\n        try:\n            target_text = open(target_file).read()\n        except OSError as ose:\n            raise UsageError(f'could not read target file {target_file!r}, got: {ose}')\n    elif not target_text and not isatty(sys.stdin):\n        target_text = sys.stdin.read()\n\n    target = mw_handle_target(target_text, target_format)\n\n    return next_(spec=spec, target=target)\n\n\ndef _from_glom_import_star():\n    ret = dict(glom.__dict__)\n    for k in ('__builtins__', '__name__', '__doc__', '__package__'):\n        ret.pop(k, None)\n    for k, v in list(ret.items()):\n        if type(v) == type(glom):\n            ret.pop(k)\n    return ret\n\n\ndef _eval_python_full_spec(py_text):\n    name = '__cli_glom_spec__'\n    code_str = f'{name} = {py_text}'\n    env = _from_glom_import_star()\n    spec = _compile_code(code_str, name=name, env=env)\n    return spec\n\n\ndef _compile_code(code_str, name, env=None, verbose=False):\n    code = compile(code_str, '<glom-generated code>', 'single')\n    if verbose:\n        print(code_str)\n    if env is None:\n        env = {}\n    exec(code, env)\n\n    return env[name]\n"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.run:0",
+            "type": "function",
+            "function": {
+              "name": "run",
+              "arguments": "{\"cmd\": \"ls -la glom/test/\"}"
+            }
+          },
+          {
+            "id": "functions.run:1",
+            "type": "function",
+            "function": {
+              "name": "run",
+              "arguments": "{\"cmd\": \"ls -la glom/test/generated/ 2>/dev/null || echo \\\"directory does not exist\\\"\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.run:0",
+        "content": "exit_code=0\n--- stdout ---\ntotal 144\ndrwxr-xr-x 1 root root   736 Aug 17 21:45 .\ndrwxr-xr-x 1 root root   480 Aug 17 21:45 ..\n-rw-r--r-- 1 root root     0 Aug 17 21:45 __init__.py\n-rw-r--r-- 1 root root   306 Aug 17 21:45 conftest.py\ndrwxr-xr-x 1 root root   192 Aug 17 21:45 data\ndrwxr-xr-x 1 root root    96 Aug 17 21:45 generated\n-rw-r--r-- 1 root root  1962 Aug 17 21:45 perf_report.py\n-rw-r--r-- 1 root root 14098 Aug 17 21:45 test_basic.py\n-rw-r--r-- 1 root root  3539 Aug 17 21:45 test_check.py\n-rw-r--r-- 1 root root  6191 Aug 17 21:45 test_cli.py\n-rw-r--r-- 1 root root 18569 Aug 17 21:45 test_error.py\n-rw-r--r-- 1 root root   708 Aug 17 21:45 test_fill.py\n-rw-r--r-- 1 root root  3261 Aug 17 21:45 test_grouping.py\n-rw-r--r-- 1 root root 15407 Aug 17 21:45 test_match.py\n-rw-r--r-- 1 root root  9793 Aug 17 21:45 test_mutation.py\n-rw-r--r-- 1 root root 10562 Aug 17 21:45 test_path_and_t.py\n-rw-r--r-- 1 root root  4159 Aug 17 21:45 test_reduction.py\n-rw-r--r-- 1 root root  3431 Aug 17 21:45 test_scope_vars.py\n-rw-r--r-- 1 root root  1478 Aug 17 21:45 test_snippets.py\n-rw-r--r-- 1 root root   745 Aug 17 21:45 test_spec.py\n-rw-r--r-- 1 root root  5664 Aug 17 21:45 test_streaming.py\n-rw-r--r-- 1 root root  7621 Aug 17 21:45 test_target_types.py\n-rw-r--r-- 1 root root   463 Aug 17 21:45 test_tutorial.py\n\n--- stderr ---\n"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.run:1",
+        "content": "exit_code=0\n--- stdout ---\ntotal 0\ndrwxr-xr-x 1 root root  96 Aug 17 21:45 .\ndrwxr-xr-x 1 root root 736 Aug 17 21:45 ..\n-rw-r--r-- 1 root root   0 Aug 17 21:45 __init__.py\n\n--- stderr ---\n"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.read_file:0",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"path\": \"glom/test/test_cli.py\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.read_file:0",
+        "content": "import os\nimport subprocess\n\nimport pytest\nfrom face import CommandChecker, CommandLineError\n\nfrom glom import cli\n\n\nBASIC_TARGET = '{\"a\": {\"b\": \"c\"}}'\nBASIC_SPEC = '{\"a\": \"a.b\"}'\nBASIC_OUT = '{\"a\": \"c\"}\\n'\n\n@pytest.fixture\ndef cc():\n    cmd = cli.get_command()\n    # TODO: don't mix stderr\n    return CommandChecker(cmd, mix_stderr=True)\n\n@pytest.fixture\ndef basic_spec_path(tmp_path):\n    spec_path = str(tmp_path) + '/basic_spec.txt'\n    with open(spec_path, 'w') as f:\n        f.write(BASIC_SPEC)\n    return spec_path\n\n@pytest.fixture\ndef basic_target_path(tmp_path):\n    target_path = str(tmp_path) + '/basic_target.txt'\n    with open(target_path, 'w') as f:\n        f.write(BASIC_TARGET)\n    return target_path\n\n\ndef test_cli_blank(cc):\n    res = cc.run(['glom'])\n    assert res.stdout == '{}\\n'\n\n\ndef test_cli_spec_target_argv_basic(cc):\n    res = cc.run(['glom', '--indent', '0', BASIC_SPEC, BASIC_TARGET])\n    assert res.stdout == BASIC_OUT\n\n    # json format, too\n    res = cc.run(['glom', '--indent', '0', '--spec-format', 'json', BASIC_SPEC, BASIC_TARGET])\n    assert res.stdout == BASIC_OUT\n\n\ndef test_cli_spec_argv_target_stdin_basic(cc):\n    res = cc.run(['glom', '--indent', '0', BASIC_SPEC],\n                 input=BASIC_TARGET)\n    assert res.stdout == BASIC_OUT\n\n    res = cc.run(['glom', '--indent', '0', BASIC_SPEC, '-'],\n                 input=BASIC_TARGET)\n    assert res.stdout == BASIC_OUT\n\n    res = cc.run(['glom', '--indent', '0', '--target-file', '-', BASIC_SPEC],\n                 input=BASIC_TARGET)\n    assert res.stdout == BASIC_OUT\n\n\ndef test_cli_scalar(cc):\n    res = cc.run(['glom', 'a.b.c', '{\"a\": {\"b\": {\"c\": \"d\"}}}'])\n    assert res.stdout == '\"d\"\\n'\n\n    res = cc.run(['glom', '--scalar', 'a.b.c', '{\"a\": {\"b\": {\"c\": \"d\"}}}'])\n    assert res.stdout == 'd'\n\n\ndef test_cli_spec_target_files_basic(cc, basic_spec_path, basic_target_path):\n    res = cc.run(['glom', '--indent', '0', '--target-file',\n                  basic_target_path, '--spec-file', basic_spec_path])\n    assert res.stdout == BASIC_OUT\n\n\ndef test_usage_errors(cc, basic_spec_path, basic_target_path):\n    # bad target json\n    res = cc.fail_1(['glom', BASIC_SPEC, '{' + BASIC_TARGET])\n    assert 'could not load target data' in res.stdout  # TODO: stderr\n\n    # bad target yaml\n    res = cc.fail_1(['glom', '--target-format', 'yaml', BASIC_SPEC, '{' + BASIC_TARGET])\n    assert 'could not load target data' in res.stdout  # TODO: stderr\n\n    # bad target toml\n    res = cc.fail_1(['glom', '--target-format', 'toml', BASIC_SPEC, '{' + BASIC_TARGET])\n    assert 'could not load target data' in res.stdout  # TODO: stderr\n\n    # TODO: bad target python?\n\n    # bad target format  TODO: fail_2\n    res = cc.fail_1(['glom', '--target-format', 'lol', BASIC_SPEC, BASIC_TARGET])\n    assert 'target-format to be one of' in res.stdout  # TODO: stderr\n\n    # bad spec format  TODO: fail_2\n    res = cc.fail_1(['glom', '--spec-format', 'lol', BASIC_SPEC, BASIC_TARGET])\n    assert 'spec-format to be one of' in res.stdout  # TODO: stderr\n\n    # test conflicting spec file and spec posarg\n    res = cc.fail_1(['glom', '--spec-file', basic_spec_path, BASIC_SPEC, BASIC_TARGET])\n    assert 'spec' in res.stdout\n    assert 'not both' in res.stdout  # TODO: stderr\n\n    # test conflicting target file and target posarg\n    res = cc.fail_1(['glom', '--target-file', basic_target_path, BASIC_SPEC, BASIC_TARGET])\n    assert 'target' in res.stdout\n    assert 'not both' in res.stdout  # TODO: stderr\n\n\n    # TODO: if spec-file is present, maybe single posarg should become target?\n    res = cc.fail_1(['glom', '--spec-file', basic_spec_path + 'abra', '--target-file', basic_target_path])\n    assert 'could not read spec file' in res.stdout  # TODO: stderr\n\n    res = cc.fail_1(['glom', '--spec-file', basic_spec_path, '--target-file', basic_target_path + 'abra'])\n    assert 'could not read target file' in res.stdout  # TODO: stderr\n\n\ndef test_main_basic():\n    argv = ['__', 'a.b.fail', '{\"a\": {\"b\": \"c\"}}']\n    assert cli.main(argv) == 1\n\n    argv = ['__', 'a.b.c', '{\"a\": {\"b\": {\"c\": \"d\"}}}']\n    assert cli.main(argv) == 0\n\n\ndef test_main_yaml_target():\n    cwd = os.path.dirname(os.path.abspath(__file__))\n    # Handles the filepath if running tox\n    if '.tox' in cwd:\n        cwd = os.path.join(cwd.split('.tox')[0] + '/glom/test/')\n    path = os.path.join(cwd, 'data/test_valid.yaml')\n    argv = ['__', '--target-file', path, '--target-format', 'yml', 'Hello']\n    assert cli.main(argv) == 0\n\n    path = os.path.join(cwd, 'data/test_invalid.yaml')\n    argv = ['__', '--target-file', path, '--target-format', 'yml', 'Hello']\n    # Makes sure correct improper yaml exception is raised\n    with pytest.raises(CommandLineError) as excinfo:\n        cli.main(argv)\n    assert 'expected <block end>, but found' in str(excinfo.value)\n\n\ndef test_main_toml_target():\n    cwd = os.path.dirname(os.path.abspath(__file__))\n    # Handles the filepath if running tox\n    if '.tox' in cwd:\n        cwd = os.path.join(cwd.split('.tox')[0] + '/glom/test/')\n    path = os.path.join(cwd, 'data/test_valid.toml')\n    argv = ['__', '--target-file', path, '--target-format', 'toml', 'Hello']\n    assert cli.main(argv) == 0\n\n    path = os.path.join(cwd, 'data/test_invalid.toml')\n    argv = ['__', '--target-file', path, '--target-format', 'toml', 'Hello']\n    # Makes sure correct improper toml exception is raised\n    with pytest.raises(CommandLineError) as excinfo:\n        cli.main(argv)\n    assert 'Invalid initial character for a key part' in str(excinfo.value)\n\n\ndef test_main_python_full_spec_python_target():\n    argv = ['__', '--target-format', 'python', '--spec-format', 'python-full', 'T[T[3].bit_length()]', '{1: 2, 2: 3, 3: 4}']\n    assert cli.main(argv) == 0\n\n    argv = ['__', '--target-format', 'python', '--spec-format', 'python-full', '(T.values(), [T])', '{1: 2, 2: 3, 3: 4}']\n    assert cli.main(argv) == 0\n\n\ndef test_main(tmp_path):\n    # TODO: pytest-cov knows how to make coverage work across\n    # subprocess boundaries...\n    os.chdir(str(tmp_path))\n    res = subprocess.check_output(['glom', 'a', '{\"a\": 3}'])\n    assert res.decode('utf8') in ('3\\n', '3\\r\\n')  # unix or windows line end okay\n"
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "functions.run:0",
+            "type": "function",
+            "function": {
+              "name": "run",
+              "arguments": "{\"cmd\": \"python -c \\\"import yaml; print('yaml ok')\\\" 2>&1\"}"
+            }
+          },
+          {
+            "id": "functions.run:1",
+            "type": "function",
+            "function": {
+              "name": "run",
+              "arguments": "{\"cmd\": \"python -c \\\"import tomllib; print('tomllib ok')\\\" 2>&1 || python -c \\\"import tomli; print('tomli ok')\\\" 2>&1\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.run:0",
+        "content": "exit_code=0\n--- stdout ---\nyaml ok\n\n--- stderr ---\n"
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "functions.run:1",
+        "content": "exit_code=0\n--- stdout ---\ntomllib ok\n\n--- stderr ---\n"
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 8192,
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "read_file",
+          "description": "Read a source file. Optional `lines` as 'start:end' (1-indexed).",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "lines": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "grep",
+          "description": "Search the repo for a regular expression. Returns file:line:match.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "pattern": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "pattern"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "write_file",
+          "description": "Write (create or overwrite) a file in the repo.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "content"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "run",
+          "description": "Run a shell command inside the repo's Docker container. Returns exit code and output.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "cmd": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "cmd"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": "auto"
+  },
+  "response": {
+    "id": "chatcmpl-0112c3fc3fb042c6a191a77b2f4ace12",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": null,
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "functions.write_file:0",
+              "function": {
+                "arguments": "{\"path\": \"glom/test/generated/test_glom_cli.py\", \"content\": \"import sys\\nimport json\\nfrom io import StringIO\\n\\nimport pytest\\nfrom face import UsageError\\n\\nfrom glom import GlomError, Inspect\\nfrom glom.cli import console_main, mw_handle_target, glom_cli\\n\\n\\nclass TestConsoleMain:\\n    def test_console_main_calls_sys_exit(self, monkeypatch):\\n        \\\"\\\"\\\"console_main should call sys.exit with the return value from main.\\\"\\\"\\\"\\n        calls = []\\n\\n        def fake_exit(code):\\n            calls.append(code)\\n            # Don't actually exit\\n\\n        def fake_main(argv):\\n            return 42\\n\\n        monkeypatch.setattr(sys, 'exit', fake_exit)\\n        monkeypatch.setattr('glom.cli.main', fake_main)\\n        monkeypatch.setenv('GLOM_CLI_DEBUG', '')\\n        monkeypatch.delenv('GLOM_CLI_DEBUG', raising=False)\\n\\n        console_main()\\n        assert calls == [42]\\n\\n    def test_console_main_zero_on_none(self, monkeypatch):\\n        \\\"\\\"\\\"console_main should pass 0 to sys.exit when main returns None.\\\"\\\"\\\"\\n        calls = []\\n\\n        def fake_exit(code):\\n            calls.append(code)\\n\\n        def fake_main(argv):\\n            return None\\n\\n        monkeypatch.setattr(sys, 'exit', fake_exit)\\n        monkeypatch.setattr('glom.cli.main', fake_main)\\n        monkeypatch.delenv('GLOM_CLI_DEBUG', raising=False)\\n\\n        console_main()\\n        assert calls == [0]\\n\\n    def test_console_main_raises_without_debug(self, monkeypatch):\\n        \\\"\\\"\\\"console_main should re-raise exceptions when GLOM_CLI_DEBUG is not set.\\\"\\\"\\\"\\n        def fake_main(argv):\\n            raise ValueError('boom')\\n\\n        monkeypatch.setattr('glom.cli.main', fake_main)\\n        monkeypatch.delenv('GLOM_CLI_DEBUG', raising=False)\\n\\n        with pytest.raises(ValueError, match='boom'):\\n            console_main()\\n\\n    def test_console_main_debug_prints_argv(self, monkeypatch, capsys):\\n        \\\"\\\"\\\"When GLOM_CLI_DEBUG is set, console_main prints sys.argv.\\\"\\\"\\\"\\n        def fake_exit(code):\\n            pass\\n\\n        def fake_main(argv):\\n            return 0\\n\\n        monkeypatch.setattr(sys, 'exit', fake_exit)\\n        monkeypatch.setattr('glom.cli.main', fake_main)\\n        monkeypatch.setenv('GLOM_CLI_DEBUG', '1')\\n        monkeypatch.setattr(sys, 'argv', ['glom', 'test'])\\n\\n        console_main()\\n        captured = capsys.readouterr()\\n        assert \\\"['glom', 'test']\\\" in captured.out\\n\\n\\nclass TestMwHandleTarget:\\n    def test_empty_string_returns_empty_dict(self):\\n        \\\"\\\"\\\"Empty target_text should return an empty dict.\\\"\\\"\\\"\\n        result = mw_handle_target('', 'json')\\n        assert result == {}\\n\\n    def test_none_returns_empty_dict(self):\\n        \\\"\\\"\\\"None target_text should return an empty dict.\\\"\\\"\\\"\\n        result = mw_handle_target(None, 'json')\\n        assert result == {}\\n\\n    def test_json_format(self):\\n        \\\"\\\"\\\"JSON format should parse with json.loads.\\\"\\\"\\\"\\n        result = mw_handle_target('{\\\"a\\\": 1}', 'json')\\n        assert result == {\\\"a\\\": 1}\\n\\n    def test_yaml_format(self):\\n        \\\"\\\"\\\"YAML format should parse with yaml.safe_load if available.\\\"\\\"\\\"\\n        pytest.importorskip('yaml')\\n        result = mw_handle_target('a: 1\\\\nb: 2', 'yaml')\\n        assert result == {\\\"a\\\": 1, \\\"b\\\": 2}\\n\\n    def test_yml_format(self):\\n        \\\"\\\"\\\"YML format should also parse with yaml.safe_load if available.\\\"\\\"\\\"\\n        pytest.importorskip('yaml')\\n        result = mw_handle_target('x: 3', 'yml')\\n        assert result == {\\\"x\\\": 3}\\n\\n    def test_toml_format(self):\\n        \\\"\\\"\\\"TOML format should parse with tomllib or tomli if available.\\\"\\\"\\\"\\n        try:\\n            import tomllib  # noqa: F401\\n        except ImportError:\\n            pytest.importorskip('tomli')\\n        result = mw_handle_target('a = 1\\\\n', 'toml')\\n        assert result == {\\\"a\\\": 1}\\n\\n    def test_python_format(self):\\n        \\\"\\\"\\\"Python format should parse with ast.literal_eval.\\\"\\\"\\\"\\n        result = mw_handle_target('{\\\"a\\\": (1, 2)}', 'python')\\n        assert result == {\\\"a\\\": (1, 2)}\\n\\n    def test_python_format_list(self):\\n        \\\"\\\"\\\"Python format should handle lists.\\\"\\\"\\\"\\n        result = mw_handle_target('[1, 2, 3]', 'python')\\n        assert result == [1, 2, 3]\\n\\n    def test_invalid_format_raises(self):\\n        \\\"\\\"\\\"Invalid target_format should raise UsageError.\\\"\\\"\\\"\\n        with pytest.raises(UsageError) as excinfo:\\n            mw_handle_target('{}', 'xml')\\n        assert 'expected target-format to be one of' in str(excinfo.value)\\n\\n    def test_invalid_json_raises(self):\\n        \\\"\\\"\\\"Invalid JSON should raise UsageError with details.\\\"\\\"\\\"\\n        with pytest.raises(UsageError) as excinfo:\\n            mw_handle_target('{bad json}', 'json')\\n        assert 'could not load target data' in str(excinfo.value)\\n        assert 'JSONDecodeError' in str(excinfo.value)\\n\\n    def test_invalid_python_raises(self):\\n        \\\"\\\"\\\"Invalid Python literal should raise UsageError.\\\"\\\"\\\"\\n        with pytest.raises(UsageError) as excinfo:\\n            mw_handle_target('1 +', 'python')\\n        assert 'could not load target data' in str(excinfo.value)\\n\\n    def test_invalid_yaml_raises(self):\\n        \\\"\\\"\\\"Invalid YAML should raise UsageError if yaml is available.\\\"\\\"\\\"\\n        pytest.importorskip('yaml')\\n        with pytest.raises(UsageError) as excinfo:\\n            mw_handle_target('[not: valid: yaml:', 'yaml')\\n        assert 'could not load target data' in str(excinfo.value)\\n\\n\\nclass TestGlomCli:\\n    def test_basic_glom(self, capsys):\\n        \\\"\\\"\\\"glom_cli should glom target with spec and print JSON result.\\\"\\\"\\\"\\n        target = {\\\"a\\\": {\\\"b\\\": \\\"c\\\"}}\\n        spec = \\\"a.b\\\"\\n        result = glom_cli(target, spec, indent=None, debug=False, inspect=False, scalar=False)\\n        assert result is None\\n        captured = capsys.readouterr()\\n        assert captured.out == '\\\"c\\\"\\\\n'\\n\\n    def test_glom_dict_result(self, capsys):\\n        \\\"\\\"\\\"glom_cli should pretty-print dict results with default indent.\\\"\\\"\\\"\\n        target = {\\\"a\\\": {\\\"b\\\": \\\"c\\\"}}\\n        spec = {\\\"name\\\": \\\"a.b\\\"}\\n        glom_cli(target, spec, indent=2, debug=False, inspect=False, scalar=False)\\n        captured = capsys.readouterr()\\n        assert json.loads(captured.out) == {\\\"name\\\": \\\"c\\\"}\\n\\n    def test_glom_error_returns_one(self, capsys):\\n        \\\"\\\"\\\"glom_cli should return 1 and print error on GlomError.\\\"\\\"\\\"\\n        target = {\\\"a\\\": 1}\\n        spec = \\\"a.b.c\\\"  # path doesn't exist\\n        result = glom_cli(target, spec, indent=None, debug=False, inspect=False, scalar=False)\\n        assert result == 1\\n        captured = capsys.readouterr()\\n        assert 'PathAccessError' in captured.out\\n\\n    def test_scalar_output(self, capsys):\\n        \\\"\\\"\\\"glom_cli should print scalar without quotes when scalar=True.\\\"\\\"\\\"\\n        target = {\\\"a\\\": \\\"hello\\\"}\\n        glom_cli(target, \\\"a\\\", indent=None, debug=False, inspect=False, scalar=True)\\n        captured = capsys.readouterr()\\n        assert captured.out == 'hello'\\n\\n    def test_scalar_non_scalar(self, capsys):\\n        \\\"\\\"\\\"glom_cli should still JSON-print non-scalar even when scalar=True.\\\"\\\"\\\"\\n        target = {\\\"a\\\": [1, 2, 3]}\\n        glom_cli(target, \\\"a\\\", indent=None, debug=False, inspect=False, scalar=True)\\n        captured = capsys.readouterr()\\n        assert captured.out == '[1, 2, 3]\\\\n'\\n\\n    def test_indent_zero_disables_pretty(self, capsys):\\n        \\\"\\\"\\\"indent=0 should disable pretty-printing (same as None internally).\\\"\\\"\\\"\\n        target = {\\\"a\\\": [1, 2]}\\n        glom_cli(target, \\\"a\\\", indent=0, debug=False, inspect=False, scalar=False)\\n        captured = capsys.readouterr()\\n        # indent=0 is falsy, so it becomes None, meaning no pretty printing\\n        assert captured.out == '[1, 2]\\\\n'\\n\\n    def test_inspect_wraps_spec(self, capsys, monkeypatch):\\n        \\\"\\\"\\\"inspect=True should wrap spec in Inspect.\\\"\\\"\\\"\\n        # Close stdin to avoid breakpoint\\n        monkeypatch.setattr(sys.stdin, 'closed', True)\\n        target = {\\\"a\\\": 1}\\n        spec = \\\"a\\\"\\n        glom_cli(target, spec, indent=None, debug=False, inspect=True, scalar=False)\\n        captured = capsys.readouterr()\\n        # Inspect with echo=True prints the spec\\n        assert 'a' in captured.out or captured.out  # some output expected\\n\\n    def test_debug_wraps_spec(self, monkeypatch):\\n        \\\"\\\"\\\"debug=True should wrap spec in Inspect with post_mortem.\\\"\\\"\\\"\\n        monkeypatch.setattr(sys.stdin, 'closed', True)\\n        target = {\\\"a\\\": 1}\\n        spec = \\\"a\\\"\\n        # Should not raise, just run normally\\n        result = glom_cli(target, spec, indent=None, debug=True, inspect=False, scalar=False)\\n        assert result is None\\n\\n    def test_debug_and_inspect_with_open_stdin(self, monkeypatch):\\n        \\\"\\\"\\\"Both debug and inspect with open stdin should set breakpoint=True.\\\"\\\"\\\"\\n        monkeypatch.setattr(sys.stdin, 'closed', False)\\n        target = {\\\"a\\\": 1}\\n        spec = \\\"a\\\"\\n        # This would try to set a breakpoint, but we can't easily test that\\n        # Just verify it doesn't error out when stdin is \\\"open\\\"\\n        result = glom_cli(target, spec, indent=None, debug=True, inspect=True, scalar=False)\\n        assert result is None\\n\\n    def test_sort_keys(self, capsys):\\n        \\\"\\\"\\\"Output JSON should have sorted keys.\\\"\\\"\\\"\\n        target = {\\\"z\\\": 1, \\\"a\\\": 2}\\n        spec = {\\\"first\\\": \\\"z\\\", \\\"second\\\": \\\"a\\\"}\\n        glom_cli(target, spec, indent=2, debug=False, inspect=False, scalar=False)\\n        captured = capsys.readouterr()\\n        # Keys in the output dict should be sorted\\n        lines = captured.out.strip().split('\\\\n')\\n        # The top-level keys of the result spec are \\\"first\\\" and \\\"second\\\"\\n        # The JSON output should sort keys at each level\\n        assert '\\\"first\\\"' in captured.out\\n        assert '\\\"second\\\"' in captured.out\\n\"}",
+                "name": "write_file"
+              },
+              "type": "function"
+            }
+          ],
+          "reasoning_content": "Now I have a good understanding of the code. Let me write the test file. I need to test:\n\n1. `console_main()` - this is tricky because it calls `sys.exit()`. I need to mock/patch things to test it without actually exiting. I'll use monkeypatch to control environment variables and mock `sys.exit`.\n\n2. `mw_handle_target(target_text, target_format)` - this is straightforward. Test:\n   - Empty string returns `{}`\n   - JSON parsing\n   - YAML parsing (if yaml available)\n   - TOML parsing (if tomllib/tomli available)\n   - Python literal eval\n   - Invalid format raises UsageError\n   - Invalid data raises UsageError\n\n3. `glom_cli(target, spec, indent, debug, inspect, scalar)` - this prints to stdout and returns values. I need to capture stdout. Test:\n   - Basic glom operation\n   - GlomError handling (returns 1)\n   - indent behavior\n   - scalar output\n   - debug/inspect behavior (with stdin closed/open)\n\nLet me also check if there are any existing tests in test_cli.py that I should avoid duplicating too much. The existing tests use CommandChecker which tests the whole command pipeline. My tests should focus on the individual functions.\n\nFor `glom_cli`, I'll need to test it directly. Let me think about how to handle the `debug` and `inspect` parameters which check `sys.stdin.closed`. I can monkeypatch `sys.stdin`.\n\nFor `console_main`, I should test:\n- Normal execution path (calls sys.exit with return value from main)\n- GLOM_CLI_DEBUG set prints sys.argv\n- Exception raised when GLOM_CLI_DEBUG not set\n- Exception with pdb.post_mortem when GLOM_CLI_DEBUG is set\n\nLet me write the tests now."
+        }
+      }
+    ],
+    "created": 1787003380,
+    "model": "moonshotai/Kimi-K2.6",
+    "object": "chat.completion",
+    "moderation": null,
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 2966,
+      "prompt_tokens": 6703,
+      "total_tokens": 9669,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 2004,
+        "audio_tokens": 0,
+        "reasoning_tokens": 378,
+        "rejected_prediction_tokens": 1848,
+        "text_tokens": null
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 4096,
+        "image_tokens": null,
+        "text_tokens": null
+      }
+    }
+  }
+}

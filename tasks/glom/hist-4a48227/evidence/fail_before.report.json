@@ -1,0 +1,90 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 6,
+          "nodeid": "glom/test/test_check.py::test_check_basic",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787006011.666574,
+  "duration": 0.0747377872467041,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "failed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 1097,
+          "message": "glom.core.CheckError: target at path [] failed check, got error: \"expected '<lambda>' check to validate target\"",
+          "path": "/repo/glom/core.py"
+        },
+        "duration": 0.0003010399959748611,
+        "longrepr": "def test_check_basic():\n        assert glom([0, OMIT], [T]) == [0]  # sanity check OMIT\n    \n        target = [{'id': 0}, {'id': 1}, {'id': 2}]\n    \n        # check that skipping non-passing values works\n        assert glom(target, ([Coalesce(Check('id', equal_to=0), default=OMIT)], T[0])) == {'id': 0}\n        assert glom(target, ([Check('id', equal_to=0, default=OMIT)], T[0])) == {'id': 0}\n    \n        # check that stopping iteration on non-passing values works\n        assert glom(target, [Check('id', equal_to=0, default=STOP)]) == [{'id': 0}]\n    \n        # check that stopping chain execution on non-passing values works\n        spec = (Check(validate=lambda x: len(x) > 0, default=STOP), T[0])\n        assert glom('hello', spec) == 'h'\n>       assert glom('', spec) == ''  # would fail with IndexError if STOP didn't work\n               ^^^^^^^^^^^^^^\n\nglom/test/test_check.py:22: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nglom/core.py:1408: in glom\n    ret = _glom(target, spec, scope)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^\nglom/core.py:1429: in _glom\n    return _handle_tuple(target, spec, scope)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nglom/core.py:1153: in _handle_tuple\n    nxt = scope[glom](res, subspec, scope)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nglom/core.py:1423: in _glom\n    return spec.glomit(target, scope)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <glom.core.Check object at 0xffff8e742b70>, target = ''\nscope = ChainMap({T: ''}, {T: ''}, {<class 'glom.core.Path'>: [], <class 'glom.core.Inspect'>: None}, {<function glom at 0xfff...ion _glom at 0xffff8e657b00>, <class 'glom.core.TargetRegistry'>: <glom.core.TargetRegistry object at 0xffff8e93fd40>})\n\n    def glomit(self, target, scope):\n        ret = target\n        errs = []\n        if self.spec is not T:\n            target = scope[glom](target, self.spec, scope)\n        if self.types and type(target) not in self.types:\n            if self.default is not RAISE:\n                return self.default\n            errs.append('expected type to be %r, found type %r' %\n                        (self.types[0].__name__ if len(self.types) == 1\n                         else tuple([t.__name__ for t in self.types]),\n                         type(target).__name__))\n    \n        if self.vals and target not in self.vals:\n            if self.default is not RAISE:\n                return self.default\n            if len(self.vals) == 1:\n                errs.append(\"expected {}, found {}\".format(self.vals[0], target))\n            else:\n                errs.append('expected one of {}, found {}'.format(self.vals, target))\n    \n        if self.validators:\n            for i, validator in enumerate(self.validators):\n                try:\n                    res = validator(target)\n                    if res is False:\n                        raise self._ValidationError\n                except Exception as e:\n                    msg = ('expected %r check to validate target'\n                           % getattr(validator, '__name__', None) or ('#%s' % i))\n                    if type(e) is not self._ValidationError:\n                        msg += ' (got exception: %r)' % e\n                    errs.append(msg)\n    \n        if self.instance_of and not isinstance(target, self.instance_of):\n            # TODO: can these early returns be done without so much copy-paste?\n            # (early return to avoid potentially expensive or even error-causeing\n            # string formats)\n            if self.default is not RAISE:\n                return self.default\n            errs.append('expected instance of %r, found instance of %r' %\n                        (self.instance_of[0].__name__ if len(self.instance_of) == 1\n                         else tuple([t.__name__ for t in self.instance_of]),\n                         type(target).__name__))\n    \n        if errs:\n            # TODO: due to the usage of basic path (not a Path\n            # object), the format can be a bit inconsistent here\n            # (e.g., 'a.b' and ['a', 'b'])\n>           raise CheckError(errs, self, scope[Path])\nE           glom.core.CheckError: target at path [] failed check, got error: \"expected '<lambda>' check to validate target\"\n\nglom/core.py:1097: CheckError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 22,
+            "message": "",
+            "path": "glom/test/test_check.py"
+          },
+          {
+            "lineno": 1408,
+            "message": "in glom",
+            "path": "glom/core.py"
+          },
+          {
+            "lineno": 1429,
+            "message": "in _glom",
+            "path": "glom/core.py"
+          },
+          {
+            "lineno": 1153,
+            "message": "in _handle_tuple",
+            "path": "glom/core.py"
+          },
+          {
+            "lineno": 1423,
+            "message": "in _glom",
+            "path": "glom/core.py"
+          },
+          {
+            "lineno": 1097,
+            "message": "CheckError",
+            "path": "glom/core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_check_basic",
+        "test_check.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 6,
+      "nodeid": "glom/test/test_check.py::test_check_basic",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0003518739977153018,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00015470800281036645,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

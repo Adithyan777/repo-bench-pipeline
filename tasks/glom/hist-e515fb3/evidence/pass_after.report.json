@@ -1,0 +1,82 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 57,
+          "nodeid": "glom/test/test_error.py::test_pae_fallback_for_non_path",
+          "type": "Function"
+        },
+        {
+          "lineno": 42,
+          "nodeid": "glom/test/test_error.py::test_pae_scope_printable",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787005997.7038965,
+  "duration": 0.032660484313964844,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 2,
+    "passed": 2,
+    "total": 2
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00011854100011987612,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_pae_fallback_for_non_path",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 57,
+      "nodeid": "glom/test/test_error.py::test_pae_fallback_for_non_path",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00033662399800959975,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.058300252538174e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0009542879997752607,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_pae_scope_printable",
+        "test_error.py",
+        "test",
+        "glom",
+        "repo",
+        ""
+      ],
+      "lineno": 42,
+      "nodeid": "glom/test/test_error.py::test_pae_scope_printable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 6.52919989079237e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011404199904063717,
+        "outcome": "passed"
+      }
+    }
+  ]
+}
