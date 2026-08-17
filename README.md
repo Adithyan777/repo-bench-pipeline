@@ -1,146 +1,205 @@
-# AI Task Benchmark Pipeline
+# AI task benchmark pipeline
 
-Repo-agnostic pipeline that takes a Python repository, makes it reproducible
-(pinned, containerized, tested, lint-clean), emits a machine-readable knowledge
-layer (`repo_graph.json` + `.okf/`), and mines 10 validated benchmark tasks
-for AI coding agents.
+Takes a Python repository, pins its dependencies, containerizes it, runs and
+extends its test suite, builds a machine-readable knowledge layer, and mines
+10 validated benchmark tasks for AI coding agents.
 
-Status: **all three pipelines working end-to-end.** P1 hygiene (detect → pin/lock →
-Dockerfile → build → baseline → test-gen → lint, resumable), P2 knowledge
-(`symbol_index → indexes → repo_graph → verify → okf`), and P3 tasks (excision +
-history funnels → build → validate → instruct → manifest → **select** → report). A full
-`./run.sh <repo> --fresh` produces the repo-root **`tasks.json`** (the final 10),
-**`REPORT.md`**, the transformed clone, and the knowledge bundle. Skip flags:
-`--no-testgen`, `--no-lint`, `--no-report-draft`. See [`docs/PROGRESS.md`](docs/PROGRESS.md).
+```
+./run.sh https://github.com/mahmoud/glom
+```
 
-## Documents
+Three stages run in sequence: **hygiene** (pin, containerize, baseline, test-gen,
+lint), **knowledge** (repo graph, coverage indexes, OKF bundle), and **tasks**
+(excision + history funnels, build, validate, instruct, select). Each step is
+resumable. All target-code execution happens inside a throwaway Docker container
+with no network access. LLM decisions are cached by content hash, so reruns on
+an unchanged repo cost zero tokens.
 
-| Doc | What |
+
+## Results on glom
+
+| Metric | Value |
 |---|---|
-| [`docs/DESIGN.md`](docs/DESIGN.md) | Full system design: architecture, all three pipelines, harness, LLM usage, build order |
-| [`docs/PROGRESS.md`](docs/PROGRESS.md) | Per-session handoff: step status and notes |
-| [`HEURISTICS.md`](HEURISTICS.md) | **Every** heuristic, threshold, filter, flag and default in the pipeline. All values live in [`pipeline/config.py`](pipeline/config.py). |
-| [`docs/HEURISTICS_REVIEW.md`](docs/HEURISTICS_REVIEW.md) | Compact review sheet: which config keys fired on glom, which never fired, which changed from the proposal |
-| `REPORT.md` | Required assignment report (six sections; tables auto-filled, narrative drafted for the author to edit) |
-| [`transcripts/dev/`](transcripts/dev/) | Curated dev session log, prompts, and review-round summaries |
+| Wall clock (full `--fresh` run) | ~13 min |
+| LLM tokens | 779,614 total (big 762,657 / small 16,957) |
+| Baseline tests | 202 passing, 0 quarantined |
+| Generated tests kept | 4 functions across 2 modules (14/16 mutants killed) |
+| Suite after test-gen | 240 tests passing (verify-twice identical) |
+| Graph | 378 nodes, 4,612 edges; verification precision 1.0 all edge types |
+| OKF | 164 pages (106 verified / 44 draft); conformant |
+| Tasks built | 14 (5 excision, 9 history); 13 VALID |
+| Selected 10 | 4 excision + 6 history, 4 distinct modules |
+| Difficulty spread | easy 5, medium 4, hard 1 |
 
-## Run everything (fresh clone)
+
+## Quick start
+
+Prerequisites: Docker (running), Python 3.12, [uv](https://docs.astral.sh/uv/),
+an OpenAI-compatible LLM endpoint.
 
 ```bash
-# 0. setup
+# clone and set up
+git clone <this-repo> && cd lh2ai-assignment
 uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -r requirements-dev.txt
 cp .env.example .env          # fill in LLM_BASE_URL + LLM_API_KEY
 
-# 1. full pipeline: hygiene -> knowledge -> tasks -> select -> REPORT.md
-./run.sh https://github.com/mahmoud/glom --fresh
+# full pipeline
+./run.sh https://github.com/mahmoud/glom
 
-# or per stage (resumable; --force <step> / --fresh override the cache)
-./run.sh <repo_url_or_path> --stage hygiene [--verify-twice]
-./run.sh <repo_url_or_path> --stage knowledge
-./run.sh <repo_url_or_path> --stage tasks
+# or one stage at a time (resumable)
+./run.sh <repo> --stage hygiene
+./run.sh <repo> --stage knowledge
+./run.sh <repo> --stage tasks
 ```
 
-Requires: Docker, Python 3.12, `uv`, and an OpenAI-compatible endpoint via
-`LLM_BASE_URL` + `LLM_API_KEY` (see [`.env.example`](.env.example)). Models default to
-open-source Kimi-K2.6 (BIG) / DeepSeek-V4-Flash (SMALL); override with
-`LLM_MODEL_BIG` / `LLM_MODEL_SMALL`. All target-code execution happens inside the
-pinned `bench-<repo>` container; LLM calls run from the host only.
+Models default to open-source Kimi-K2.6 (BIG tier) and DeepSeek-V4-Flash
+(SMALL tier) via Baseten. Override with `LLM_MODEL_BIG` / `LLM_MODEL_SMALL`
+in `.env`.
 
-Useful flags: `--no-testgen`, `--no-lint`, `--no-report-draft`, `--verify-twice`,
-`--excision-hard`, `--verifier-visibility visible|hidden`, `--min-failing-tests N`,
-`--set section.key=value`, and `--prune-images` (removes ONLY dangling images carrying
-this pipeline's own build label — never your other images/containers).
 
-## Deliverables (what a full run produces / what is committed)
+## What happens per stage
 
-| Path | Committed? |
+**Hygiene** (detect, pin, dockerfile, compose, build, baseline, testgen, lint):
+detects packaging style and Python version, pins all dependencies with hashes
+via `uv pip compile`, writes a digest-pinned Dockerfile, builds a `bench-<repo>`
+image, runs the baseline suite in-container, generates tests for under-covered
+functions (mutation-gated), and runs ruff lint/format (reverted if any test
+regresses). Outputs: `output/<repo>/repo/` (transformed clone with labeled
+commits), `output/<repo>/hygiene/*.json`.
+
+**Knowledge** (symbol_index, indexes, graph, verify, okf): builds a
+deterministic repo graph from AST analysis (nodes for modules/classes/functions,
+edges for imports/calls/contains/inherits/tested_by, each with file+line
+evidence), coverage indexes and test map, history index, hotspots, and an
+OKF v0.2 knowledge bundle with LLM-authored function contracts. Outputs:
+`output/<repo>/knowledge/repo_graph.json`, `.okf/`, verification files.
+
+**Tasks** (excision_funnel, build_excision, history_funnel, build_history,
+validate, instruct, manifest, select): funnels candidate functions and commits,
+builds task folders (`input/`, `solution/`, `verifier/`, evidence), validates
+each (fail-before with right-reason check, pass-after, determinism, collateral),
+writes LLM-authored instructions (leak-gated, reviewer-checked), labels
+difficulty, and selects exactly 10 under hard quotas. Outputs:
+`tasks/<repo>/<task_id>/`, `tasks/<repo>/tasks.json`, root `tasks.json`,
+`output/<repo>/REPORT.md`.
+
+
+## CLI flags
+
+| Flag | Effect |
 |---|---|
-| `tasks.json` (root) — the final 10 | yes |
-| `tasks/<repo>/<id>/` — the 10 selected task folders (see `output/<repo>/tasks/selection.json`) | yes (the selected ones) |
-| `REPORT.md`, `HEURISTICS.md`, `docs/`, `transcripts/dev/` | yes |
-| `output/<repo>/knowledge/repo_graph.json` + `.okf/` | yes |
-| `output/<repo>/repo/` (transformed clone), `report_data.json`, raw `transcripts/pipeline/` | no (regenerable; ignored) |
+| `--stage hygiene\|knowledge\|tasks\|all` | Run one stage (default: all) |
+| `--fresh` | Ignore all cached state, rerun everything |
+| `--force STEP` | Rerun a specific step (repeatable) |
+| `--set section.key=value` | Override a config value (repeatable) |
+| `--no-testgen` | Skip test generation |
+| `--no-lint` | Skip lint/format |
+| `--no-report-draft` | Skip the LLM narrative draft in REPORT.md |
+| `--verify-twice` | Run the test suite a second time after hygiene |
+| `--excision-hard` | Strip docstrings from excised functions |
+| `--verifier-visibility visible\|hidden` | Solver sees verifier tests or not |
+| `--min-failing-tests N` | Minimum failing tests for a valid fail-before |
+| `--llm-cache` | Enable prompt-to-response disk cache |
+| `--prune-images` | Remove dangling images with this pipeline's label |
+| `--quiet` | Stage-level progress only |
 
-## Hygiene stage detail
 
-Produces `output/<repo>/`: a pinned + containerized clone under `repo/` with labeled
-pipeline commits (pin/containerize → baseline → generated tests → lint/format), step
-records under `hygiene/`, and `report_data.json`. The container test command is
-`python -m pytest -q` inside the built `bench-<repo>` image. The **lint** step writes a
-`[tool.ruff]` config into pyproject.toml (creating a minimal one, without breaking a
-setup.py install), runs `ruff check --fix` + `ruff format` inside that image, adds
-`# noqa` for anything unfixable, then rebuilds the image and re-runs the suite twice —
-if a formatting change regressed a baseline-passing test the tree is reverted (recorded
-in `hygiene/lint.json`), so acceptance is never traded for cosmetics. Historical task
-trees (built later from `git archive`) are never linted, so a history task's
-`input/`→`solution/` diff stays the real historical change.
+## Operational knobs (via `--set`)
 
-## Generate, validate, and select tasks
+These are the most commonly tuned values. The full reference with defaults,
+rationale, and glom observations is in [docs/configuration.md](docs/configuration.md).
 
-```
-./run.sh <repo_url_or_path> --stage tasks
-# funnels -> build -> validate -> instruct -> manifest -> select -> REPORT.md
-```
+| Key | Default | What it controls |
+|---|---|---|
+| `testgen.agent_max_turns` | 12 | Turns per test-gen agent run |
+| `testgen.max_agent_runs_per_repo` | 10 | Total agent runs (write + retry) across all modules |
+| `testgen.top_k_modules` | 5 | Modules ranked for test generation |
+| `history.build_target` | 10 | History tasks to build (headroom for selection) |
+| `history.shortlist_size` | 20 | History candidates shortlisted after classify |
+| `history.max_agent_runs_per_repo` | 6 | Verifier/rewrite agent runs per repo |
+| `history.agent_max_turns` | 12 | Turns per history agent run |
+| `harness.min_failing_tests` | 1 | Minimum failing tests in fail-before |
+| `harness.determinism_runs` | 3 | Repeat count for determinism check |
+| `selection.total_tasks` | 10 | Tasks to select |
+| `selection.min_history` | 4 | Minimum history tasks in the final 10 |
+| `selection.max_excision` | 4 | Maximum excision tasks |
+| `selection.min_distinct_modules` | 4 | Minimum distinct modules across the 10 |
+| `llm.max_tokens_per_repo` | 5,000,000 | Per-repo token budget (abort on exceed) |
+| `okf.max_function_pages` | 150 | Cap on individual function pages in the OKF bundle |
+| `lint.format` | true | Whether ruff format runs alongside ruff check |
 
-The **select** step reads `tasks/<repo>/tasks.json` (every built task) and picks exactly
-`selection.total_tasks` VALID + final tasks honoring the quotas (`min_history`,
-`max_excision`, `max_netnew`, `min_distinct_modules`) with the difficulty spread as a
-soft objective, then writes the repo-root **`tasks.json`** (the 10) and
-`output/<repo>/tasks/selection.json` (why each eligible task was picked or not). An
-infeasible quota is a hard error, never a silent short-fall. The **report** builder then
-aggregates every stage's artifacts into `output/<repo>/report_summary.json` (leaving the
-runner's per-stage `report_data.json` untouched) and renders `REPORT.md`; regenerate it
-standalone with `python -m pipeline.report <repo> [--no-draft]`.
+Example: `./run.sh <repo> --set testgen.top_k_modules=3 --set history.build_target=15`
 
-Writes `tasks/<repo>/<task_id>/{task.json,input/,solution/,verifier/,goldenSolution.md,evidence/}`
-(`exc-<module>-<name>` excision tasks, `hist-<sha7>` history tasks whose `input/`/`solution/`
-are the trees at the parent/commit plus the hygiene overlay) and `tasks/<repo>/tasks.json`
-(whose `validation_status` is read from each task's `evidence/verdict.json`). Every candidate
-considered, with its reject reason, is in `output/<repo>/tasks/candidates.json` (functions)
-and `output/<repo>/tasks/history_candidates.json` (commits). VALID tasks get an LLM-authored
-instruction (leak-gated and reviewed; the author never sees the diff), a "why correct" note in
-`goldenSolution.md` and a difficulty label with cited features (`--verifier-visibility
-visible|hidden` changes the instruction's wording); decisions persist in
-`output/<repo>/tasks/instructions.json` so reruns cost no tokens.
 
-### Validate a task standalone
+## Validate a task standalone
 
-A task folder is self-contained: `input/` carries the pinned `Dockerfile` + lock. To
-re-judge one on a fresh machine:
+Each task folder is self-contained. To re-validate on a fresh machine:
 
-```
-docker build -t <image_tag> tasks/<repo>/<task_id>/input      # image_tag is in task.json
-python -m pipeline.validate tasks/<repo>/<task_id> [more task dirs...]
-# or let the harness build it: python -m pipeline.validate --set harness.build_image_if_missing=true <task_dir>
+```bash
+# build the image from the task's own Dockerfile
+docker build -t <image_tag> tasks/<repo>/<task_id>/input
+
+# run the harness
+python -m pipeline.validate tasks/<repo>/<task_id>
 ```
 
-The harness runs, inside that image and on a fresh copy each time: fail-before on `input/`
-(strict right-reason check), pass-after on `solution/`, `harness.determinism_runs` repeats,
-the repo's full baseline suite on `solution/` (collateral), and a static gate on what the
-verifier imports. It always re-copies the canonical `verifier/` over the workdir before
-judging, and writes `evidence/{fail_before.log,pass_after.log,determinism.json,collateral.json,verdict.json}`.
-Inside a workdir, `sh verifier/run.sh` (overlaid at the root: `sh run.sh`) runs the
-verifier tests exactly as the harness does.
+The harness runs fail-before (with right-reason classification), pass-after,
+determinism (3x by default), and collateral checks. It re-copies the canonical
+`verifier/` into the workdir before each run. Results go to
+`<task>/evidence/verdict.json`.
 
-## Development
 
-```
-uv venv --python 3.12 .venv
-uv pip install --python .venv/bin/python -r requirements-dev.txt
-.venv/bin/python -m pytest          # fast: unit + real uv/docker/git (needs Docker)
-.venv/bin/python -m pytest -m slow  # multi-build container tests
+## Pipeline tests
+
+```bash
+.venv/bin/python -m pytest              # default: skips slow
+.venv/bin/python -m pytest -m slow      # multi-build container tests
+.venv/bin/ruff check .
 ```
 
-Tests run against real fixture repos, real Docker, and real git. LLM calls are
-replayed from committed cassettes (`tests/cassettes/`) — no network, no tokens. To
-(re)record cassettes once against the live endpoint (needs `.env` + Docker):
+Tests use real Docker, real uv, real git, and real fixture repos built with
+reproducible history. LLM calls are replayed from committed cassettes (no
+network, no tokens). Last full run: 199 passed, 1 skipped, 3 deselected;
+slow: 3 passed; ruff clean.
 
-```
-LLM_MODE=record .venv/bin/python scripts/record_cassettes.py
-```
 
-## Assignment
+## Deliverables map
 
-See `assignment_sde_ benchmarking_problem_statement.pdf`. Sample target repo:
-https://github.com/mahmoud/glom (`github-repo-url.txt`).
+| Path | Committed | Description |
+|---|---|---|
+| `pipeline/` | yes | Pipeline source |
+| `tests/` | yes | Integration tests, fixtures, cassettes |
+| `docs/` | yes | Architecture, pipeline docs, configuration, decisions, gaps |
+| `transcripts/dev/` | yes | Development methodology, prompts, review rounds |
+| `tasks.json` (root) | yes | The final 10 selected tasks |
+| `tasks/glom/<id>/` | yes | The 10 selected task folders |
+| `tasks/glom/tasks.json` | yes | Full manifest of all built tasks |
+| `output/glom/knowledge/repo_graph.json` | yes | Static knowledge graph |
+| `output/glom/knowledge/.okf/` | yes | OKF v0.2 knowledge bundle |
+| `output/glom/report_summary.json` | yes | Aggregated run data |
+| `REPORT.md` | yes | Assignment report (six sections) |
+| `output/glom/repo/` | no | Transformed clone (regenerable) |
+| `output/glom/hygiene/`, `tasks/`, `audit/` | no | Step records, caches (regenerable) |
+| `transcripts/pipeline/`, `transcripts/agent/` | no | Per-call LLM transcripts (regenerable) |
+
+
+## Documentation index
+
+| Document | Contents |
+|---|---|
+| [docs/architecture.md](docs/architecture.md) | Stages, resumability, Docker model, agent loop, LLM client |
+| [docs/pipeline-1-hygiene.md](docs/pipeline-1-hygiene.md) | Hygiene stage: each step, edge cases, glom outcomes |
+| [docs/pipeline-2-knowledge.md](docs/pipeline-2-knowledge.md) | Knowledge stage: graph, indexes, OKF, verification |
+| [docs/pipeline-3-tasks.md](docs/pipeline-3-tasks.md) | Tasks stage: funnels, harness rules, instructions, selection |
+| [docs/configuration.md](docs/configuration.md) | Every config key with default, meaning, and rationale |
+| [docs/decisions.md](docs/decisions.md) | Design decisions with rejected alternatives |
+| [docs/gaps.md](docs/gaps.md) | Known gaps with evidence and next steps |
+| [REPORT.md](REPORT.md) | Assignment report |
+
+
+## Folder READMEs
+
+Each subfolder has its own README describing its files and purpose:
+`pipeline/`, `pipeline/*/`, `tests/`, `tests/fixtures/`, `tests/cassettes/`,
+`scripts/`, `transcripts/`, `tasks/`, `output/`.
