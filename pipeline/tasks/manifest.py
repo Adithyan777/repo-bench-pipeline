@@ -18,13 +18,20 @@ def task_entry(task_dir: Path, config: Config = DEFAULT) -> dict:
         reasons = verdict.get("reasons", [])
     else:
         status, reasons = "UNVALIDATED", []
-    target = task["provenance"].get("target", "")
+    prov = task["provenance"]
+    target = prov.get("target", "")
+    module = task.get("module") or (
+        ".".join(target.split(".")[:-1]) if target else (prov.get("modules") or [None])[0]
+    )
     return {
         "id": task["id"],
         "title": task["title"],
-        "source_type": task["provenance"]["type"],
-        "module": ".".join(target.split(".")[:-1]) if target else None,
+        "source_type": prov["type"],
+        "module": module,  # primary touched module, never null for a built task
+        "modules": task.get("modules") or prov.get("modules") or ([module] if module else []),
         "difficulty": task.get("difficulty"),
+        "difficulty_status": task.get("difficulty_status"),
+        "instruction_status": task.get("instruction_status"),
         "provenance": task["provenance"],
         "verifier_cmd": task["verifier_cmd"],
         "verifier_on_input": task.get("verifier_on_input"),  # {exit_code, n_failing, n_passing}

@@ -21,6 +21,8 @@ from pipeline.state import code_fingerprint, hash_inputs
 from pipeline.tasks import excision
 from pipeline.tasks import history as H
 from pipeline.tasks.build_excision import BuildInputs, build_task
+from pipeline.tasks import difficulty as D
+from pipeline.tasks import instruction as I
 from pipeline.tasks.build_history import build_history_task
 from pipeline.tasks.harness import validate_tasks
 from pipeline.tasks.manifest import write_manifest
@@ -31,7 +33,23 @@ _STEPS = (
     "history_funnel",
     "build_history",
     "validate",
+    "instruct",
     "manifest",
+)
+
+# task.json fields written by the instruct step; excluded from the validate/instruct input
+# hashes so those steps do not invalidate themselves.
+_INSTRUCT_FIELDS = (
+    "title",
+    "instruction",
+    "instruction_status",
+    "instruction_review",
+    "instruction_attempts",
+    "difficulty",
+    "difficulty_rationale",
+    "difficulty_features",
+    "difficulty_status",
+    "verifier_visibility",
 )
 
 
@@ -155,7 +173,7 @@ def _build_inputs(ctx: HygieneContext, decisions: dict | None = None) -> BuildIn
         llm=ctx.llm,
         cache_dir=ctx.tasks_dir / "agent_cache",
         decisions=decisions,
-        transcripts_dir=ctx.llm.transcripts_dir or Path("transcripts"),
+        transcripts_dir=getattr(ctx.llm, "transcripts_dir", None) or Path("transcripts"),
     )
 
 
@@ -319,6 +337,89 @@ def step_validate(ctx: HygieneContext) -> None:
     }
 
 
+def _decisions_path(ctx: HygieneContext) -> Path:
+    return ctx.tasks_dir / ctx.config.instruction.decisions_filename
+
+
+def _verdict_valid(ctx: HygieneContext, task_dir: Path) -> bool:
+    hc = ctx.config.harness
+    path = task_dir / hc.evidence_dirname / hc.verdict_filename
+    return path.is_file() and bool(json.loads(path.read_text()).get("valid"))
+
+
+def step_instruct(ctx: HygieneContext) -> None:
+    """LLM instruction + leak gates + golden rationale + difficulty for every (VALID) task;
+    each decision persisted in instructions.json by content hash."""
+    cfg = ctx.config
+    dpath = _decisions_path(ctx)
+    forced = ctx.state.fresh or "instruct" in ctx.state.force
+    decisions = json.loads(dpath.read_text()) if dpath.is_file() and not forced else {}
+    kp = knowledge_paths(ctx.run_dir, cfg)
+    graph = json.loads(Path(kp["graph"]).read_text())
+    dirs = [
+        d for d in _task_dirs(ctx) if not cfg.instruction.only_valid_tasks or _verdict_valid(ctx, d)
+    ]
+    stats: dict = {"tasks": len(dirs), "final": 0, "failed": 0, "regenerations": 0, "reused": 0}
+    stats["leak_rejections"] = 0
+    stats["reviewer_rejections"] = 0
+    items: list[tuple[I.TaskFacts, dict]] = []
+    for d in dirs:
+        facts = I.task_facts(d, cfg)
+        rec = I.write_instruction(facts, ctx.llm, cfg, decisions)
+        task = facts.task
+        if rec["status"] == cfg.instruction.status_final:
+            task["title"], task["instruction"] = rec["title"], rec["instruction"]
+        task["instruction_status"] = rec["status"]  # failed: template text stays
+        task["verifier_visibility"] = cfg.harness.verifier_visibility
+        task["instruction_review"] = rec.get("review")
+        task["instruction_attempts"] = rec.get("attempts")
+        stats["final" if rec["status"] == cfg.instruction.status_final else "failed"] += 1
+        stats["reused"] += int(bool(rec.get("reused")))
+        stats["regenerations"] += max(0, len(rec.get("attempts") or []) - 1)
+        for a in rec.get("attempts") or []:
+            if any(not i.startswith("reviewer:") for i in a["issues"]):
+                stats["leak_rejections"] += 1
+            elif a["issues"]:
+                stats["reviewer_rejections"] += 1
+        why = I.golden_rationale(facts, ctx.llm, cfg, decisions)
+        I.apply_golden(d, why, cfg)
+        items.append((facts, D.features(facts, graph, cfg)))
+        _write_task(d, task, cfg)
+        _flush(dpath, decisions)
+    labels = D.label_tasks(items, ctx.llm, cfg, decisions)
+    spread: dict[str, int] = {}
+    for facts, _ in items:
+        lab = labels[facts.task["id"]]
+        task = json.loads((facts.task_dir / cfg.tasks.task_json).read_text())
+        task["difficulty"] = lab["difficulty"]
+        task["difficulty_rationale"] = lab["rationale"]
+        task["difficulty_features"] = lab["features"]
+        task["difficulty_status"] = lab["status"]
+        _write_task(facts.task_dir, task, cfg)
+        spread[lab["difficulty"] or "failed"] = spread.get(lab["difficulty"] or "failed", 0) + 1
+    _flush(dpath, decisions)
+    stats["difficulty_spread"] = dict(sorted(spread.items()))
+    stats["difficulty_failed"] = spread.get("failed", 0)
+    ctx.report.setdefault("tasks", {})["instruct"] = stats
+
+
+def _write_task(task_dir: Path, task: dict, cfg) -> None:
+    (task_dir / cfg.tasks.task_json).write_text(json.dumps(task, indent=2, sort_keys=True) + "\n")
+
+
+def _flush(path: Path, decisions: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(decisions, indent=2, sort_keys=True) + "\n")
+
+
+def _task_projection(task_json: Path) -> str:
+    """task.json minus the instruct-step fields (validate/instruct input hashing)."""
+    if not task_json.is_file():
+        return ""
+    task = json.loads(task_json.read_text())
+    return json.dumps({k: v for k, v in task.items() if k not in _INSTRUCT_FIELDS}, sort_keys=True)
+
+
 def step_manifest(ctx: HygieneContext) -> None:
     out = repo_tasks_dir(ctx)
     out.mkdir(parents=True, exist_ok=True)
@@ -332,6 +433,7 @@ _STEP_FUNCS = {
     "history_funnel": step_history_funnel,
     "build_history": step_build_history,
     "validate": step_validate,
+    "instruct": step_instruct,
     "manifest": step_manifest,
 }
 
@@ -387,13 +489,31 @@ def _step_input_hash(ctx: HygieneContext, step: str) -> str:
     if step == "validate":
         parts: list[Path | str] = [repr(ctx.config.harness), hy / "build.json"]
         for d in _task_dirs(ctx):
-            parts.append(d / ctx.config.tasks.task_json)
+            parts.append(_task_projection(d / ctx.config.tasks.task_json))
             parts.extend(sorted(p for p in (d / "verifier").rglob("*") if p.is_file()))
             parts.extend(sorted(p for p in (d / "input").rglob("*.py") if p.is_file()))
+        return hash_inputs(*parts)
+    if step == "instruct":
+        parts = [
+            repr(ctx.config.instruction),
+            repr(ctx.config.difficulty),
+            ctx.config.harness.verifier_visibility,
+            *(
+                ctx.config.model_for(s)
+                for s in (I.WRITE_STEP, I.REVIEW_STEP, I.GOLDEN_STEP, D.LABEL_STEP)
+            ),
+            Path(kp["graph"]),
+        ]
+        for d in _task_dirs(ctx):
+            parts.append(_task_projection(d / ctx.config.tasks.task_json))
+            parts.append(
+                d / ctx.config.harness.evidence_dirname / ctx.config.harness.verdict_filename
+            )
         return hash_inputs(*parts)
     if step == "manifest":
         parts = []
         for d in _task_dirs(ctx):
+            parts.append(d / ctx.config.tasks.task_json)
             parts.append(
                 d / ctx.config.harness.evidence_dirname / ctx.config.harness.verdict_filename
             )

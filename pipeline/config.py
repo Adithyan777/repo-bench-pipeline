@@ -60,6 +60,7 @@ STEP_MODEL: dict[str, Tier] = {
     "p3.build.netnew_impl_agent": "big",
     "p3.build.write_instruction": "big",
     "p3.build.review_instruction": "big",
+    "p3.build.golden_rationale": "big",  # goldenSolution.md "why correct" (may see the diff)
     "p3.build.difficulty_label": "big",
     # Report
     "report.draft_sections": "big",
@@ -526,6 +527,8 @@ class TasksConfig:
         "pipeline/tasks/build_excision.py",
         "pipeline/tasks/history.py",
         "pipeline/tasks/build_history.py",
+        "pipeline/tasks/instruction.py",
+        "pipeline/tasks/difficulty.py",
         "pipeline/tasks/harness.py",
         "pipeline/tasks/manifest.py",
         "pipeline/tasks/runner.py",
@@ -542,6 +545,25 @@ class InstructionConfig:
     examples_from_verifier: int = 2
     max_regenerations: int = 2
     files_in_scope_include_importers_and_tests: bool = True
+    only_valid_tasks: bool = True  # INVALID tasks keep their template (never selected)
+    tests_max_chars: int = 12_000  # verifier test sources shown to author/reviewer
+    diff_max_chars: int = 8_000  # golden-rationale prompt (the only LLM call that sees it)
+    title_max_chars: int = 80
+    leak_min_identifier_chars: int = 3  # shorter new identifiers are too generic to gate
+    # Gate (b) looks at API-like names the diff introduces (defs, classes, imports, attribute
+    # stores), not local variables/parameters (English words in prose tripped it).
+    leak_api_names_only: bool = True
+    # Gate (a) exempts diff lines that also appear in the verifier tests: examples copied
+    # from the tests are required, and the solver sees the tests anyway.
+    exempt_diff_lines_in_tests: bool = True
+    status_final: str = "final"
+    status_failed: str = "failed"
+    decisions_filename: str = "instructions.json"  # output/<repo>/tasks/, keyed by content hash
+    hidden_phrase: str = (
+        "Hidden tests check the behavior described above; the instruction carries the "
+        "full contract."
+    )
+    visible_phrase: str = "The verifier tests are in `verifier/` and are re-applied before judging."
 
 
 @dataclass
@@ -556,6 +578,9 @@ class DifficultyConfig:
         "test_count",
     )
     justification_must_cite_feature: bool = True
+    max_regenerations: int = 1  # rationale without a cited feature -> regenerate once, then fail
+    batch_size: int = 10  # tasks labelled per BIG call
+    similar_name_min_token_chars: int = 3  # name tokens shorter than this do not count as similar
     target_spread: dict[str, int] = field(
         default_factory=lambda: {"easy": 2, "medium": 5, "hard": 3}
     )

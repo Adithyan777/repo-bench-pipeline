@@ -79,30 +79,30 @@
           "tool_calls": [
             {
               "function": {
-                "arguments": "{\"screens\": [{\"qualname\": \"mini_pkg.calc.clamp\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"The docstring describes behavior (clamping into range, either order) but not the step-by-step swap-and-compare implementation.\"}, {\"qualname\": \"mini_pkg.text.display_width\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring only states the contract; the wcswidth call and fallback logic are not spelled out.\"}, {\"qualname\": \"mini_pkg.core.Registry.register\", \"docstring_leaks_impl\": false, \"trivially_inferable\": true, \"reason\": \"No docstring, and the body is an obvious dict-insertion with a duplicate check that is trivially inferable from the name and signature.\"}, {\"qualname\": \"mini_pkg.calc.ceil_div\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring states the contract but not the divmod/remainder-based implementation.\"}, {\"qualname\": \"mini_pkg.text.truncate\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring describes truncation behavior but not the specific helper call, width<=1 case, or ellipsis character handling.\"}]}",
+                "arguments": "{\"screens\": [{\"qualname\": \"mini_pkg.calc.clamp\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring describes behavior/contract (clamp into range, bounds in either order) but not the step-by-step swap-and-compare implementation.\"}, {\"qualname\": \"mini_pkg.text.display_width\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring only states the behavior; the wcswidth call and fallback to len(s) on negative are not spelled out, and the body is not obvious from name alone.\"}, {\"qualname\": \"mini_pkg.core.Registry.register\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"No docstring present; the duplicate-check and KeyError behavior are not inferable from signature/name alone.\"}, {\"qualname\": \"mini_pkg.calc.ceil_div\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring states the contract (ceil of division) but not the divmod/bool(remainder) trick, which is not obvious from signature alone.\"}, {\"qualname\": \"mini_pkg.text.truncate\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring describes behavior but the ellipsis handling, width<=1 edge case, and _needs_truncation helper are not spelled out and not inferable from name alone.\"}]}",
                 "name": "emit"
               },
-              "id": "chatcmpl-tool-900bd7e641ac4e228742bb8e9dada66c",
+              "id": "chatcmpl-tool-a4072ddf8db940289386ac1710eb1c91",
               "type": "function"
             }
           ]
         }
       }
     ],
-    "created": 1786972340,
-    "id": "chatcmpl-4fd7d309c0c042cab39918d74a7fc31a",
+    "created": 1786977539,
+    "id": "chatcmpl-88c7de7be7964e25857190ebfa95f996",
     "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
     "moderation": null,
     "object": "chat.completion",
     "service_tier": null,
     "system_fingerprint": null,
     "usage": {
-      "completion_tokens": 333,
+      "completion_tokens": 368,
       "completion_tokens_details": {
-        "accepted_prediction_tokens": 257,
+        "accepted_prediction_tokens": 278,
         "audio_tokens": 0,
         "reasoning_tokens": 0,
-        "rejected_prediction_tokens": 128,
+        "rejected_prediction_tokens": 177,
         "text_tokens": null
       },
       "prompt_tokens": 844,
@@ -113,7 +113,7 @@
         "image_tokens": null,
         "text_tokens": null
       },
-      "total_tokens": 1177
+      "total_tokens": 1212
     }
   }
 }

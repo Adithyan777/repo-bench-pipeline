@@ -1,0 +1,122 @@
+{
+  "request": {
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "max_tokens": 8192,
+    "messages": [
+      {
+        "content": "Assign a difficulty (easy | medium | hard) for a competent engineer to each benchmark task below, from its behavior summary, contract and the computed features. The rationale (1-2 sentences) MUST cite at least one feature by name with its value (e.g. `callers_count=12`). Return one entry per task_id.\n\n### exc-mini_pkg.calc-ceil_div\ntitle: Restore ceil_div behavior in mini_pkg.calc\nsummary: The body of `mini_pkg.calc.ceil_div` was removed (it raises NotImplementedError); the original behavior must be restored.\ncontract:\n- `mini_pkg.calc.ceil_div`: `ceil_div(a, b)`\n  Return ceil(a / b) for positive integers.\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 0, 'diff_size': 3, 'similar_named_functions_nearby': 0, 'test_count': 2}\n\n### exc-mini_pkg.calc-clamp\ntitle: Restore clamp function behavior in mini_pkg.calc\nsummary: The body of `mini_pkg.calc.clamp` was removed (it raises NotImplementedError); the original behavior must be restored.\ncontract:\n- `mini_pkg.calc.clamp`: `clamp(value, low, high)`\n  Clamp value into the inclusive range [low, high].\n\nBounds given in either order are accepted.\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 0, 'diff_size': 8, 'similar_named_functions_nearby': 0, 'test_count': 3}\n\n### exc-mini_pkg.core-Registry.register\ntitle: Restore Registry.register to store values and reject duplicates\nsummary: The body of `mini_pkg.core.Registry.register` was removed (it raises NotImplementedError); the original behavior must be restored.\ncontract:\n- `mini_pkg.core.Registry.register`: `register(self, name, value)`\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 0, 'diff_size': 4, 'similar_named_functions_nearby': 0, 'test_count': 2}\n\n### exc-mini_pkg.text-display_width\ntitle: Restore display_width to compute terminal display width\nsummary: The body of `mini_pkg.text.display_width` was removed (it raises NotImplementedError); the original behavior must be restored.\ncontract:\n- `mini_pkg.text.display_width`: `display_width(s)`\n  Return the display width of a string in terminal columns.\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 1, 'cross_module_edges': 0, 'diff_size': 3, 'similar_named_functions_nearby': 0, 'test_count': 3}\n\n### exc-mini_pkg.text-truncate\ntitle: Restore mini_pkg.text.truncate to truncate strings with an ellipsis\nsummary: The body of `mini_pkg.text.truncate` was removed (it raises NotImplementedError); the original behavior must be restored.\ncontract:\n- `mini_pkg.text.truncate`: `truncate(s, width)`\n  Truncate s to at most `width` display columns, adding an ellipsis.\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 0, 'diff_size': 6, 'similar_named_functions_nearby': 0, 'test_count': 2}\n\n### hist-4a8f5e0\ntitle: Fix ceil_div for exact multiples\nsummary: ceil_div now returns the correct ceiling for exact multiples (e.g. ceil_div(6,3) is 2 instead of 3), fixing an off-by-one overshoot.\ncontract:\n- `mini_pkg.calc.ceil_div`: `ceil_div(a, b)`\n  Return ceil(a / b) for positive integers.\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 0, 'diff_size': 3, 'similar_named_functions_nearby': 0, 'test_count': 1}\n\n### hist-7dd152d\ntitle: Make clamp work regardless of bound argument order\nsummary: clamp now accepts low and high bounds in either order, swapping them internally so the returned value is clamped to the inclusive range regardless of argument order.\ncontract:\n- `mini_pkg.calc.clamp`: `clamp(value, low, high)`\n  Clamp value into the inclusive range [low, high].\nfeatures: {'files_touched': 1, 'functions_touched': 1, 'callers_count': 0, 'cross_module_edges': 0, 'diff_size': 5, 'similar_named_functions_nearby': 0, 'test_count': 1}",
+        "role": "user"
+      }
+    ],
+    "model": "moonshotai/Kimi-K2.6",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "properties": {
+              "labels": {
+                "items": {
+                  "properties": {
+                    "difficulty": {
+                      "enum": [
+                        "easy",
+                        "medium",
+                        "hard"
+                      ],
+                      "type": "string"
+                    },
+                    "rationale": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "task_id",
+                    "difficulty",
+                    "rationale"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "labels"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"labels\": [{\"task_id\":\"exc-mini_pkg.calc-ceil_div\",\"difficulty\":\"easy\",\"rationale\":\"The task requires restoring a simple arithmetic function with a tiny diff_size=3 and only test_count=2, making it straightforward for a competent engineer.\"},{\"task_id\":\"exc-mini_pkg.calc-clamp\",\"difficulty\":\"easy\",\"rationale\":\"Restoring a basic utility function with diff_size=8 and test_count=3 is still simple because it involves only files_touched=1 and functions_touched=1 with no external dependencies.\"},{\"task_id\":\"exc-mini_pkg.core-Registry.register\",\"difficulty\":\"easy\",\"rationale\":\"The method to restore is a simple storage/duplicate-rejection routine with diff_size=4, callers_count=0, and minimal scope (files_touched=1), so it is easy to reconstruct.\"},{\"task_id\":\"exc-mini_pkg.text-display_width\",\"difficulty\":\"medium\",\"rationale\":\"Computing terminal display width requires understanding Unicode width semantics; with callers_count=1 and test_count=3, the engineer must handle display rules beyond plain logic, making it moderately harder than tiny arithmetic restores.\"},{\"task_id\":\"exc-mini_pkg.text-truncate\",\"difficulty\":\"medium\",\"rationale\":\"Truncating by display columns with an ellipsis depends on display_width-like semantics, and with diff_size=6 and no similar_named_functions_nearby=0, the engineer must infer width-aware string handling, which is moderately complex.\"},{\"task_id\":\"hist-4a8f5e0\",\"difficulty\":\"easy\",\"rationale\":\"Fixing an exact-multiples off-by-one bug in ceil_div is a small, well-scoped change with diff_size=3 and test_count=1, easy for a competent engineer to pinpoint.\"},{\"task_id\":\"hist-7dd152d\",\"difficulty\":\"easy\",\"rationale\":\"Adding bound-order tolerance to clamp is a localized behavior tweak with diff_size=5 and test_count=1, straightforward to implement within a single function.\"}]}",
+                "name": "emit"
+              },
+              "id": "functions.emit:0",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786977627,
+    "id": "chatcmpl-84d78ae1ba7940c8a42b9ee2d0397a5c",
+    "model": "moonshotai/Kimi-K2.6",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 415,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 255,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 385,
+        "text_tokens": null
+      },
+      "prompt_tokens": 1104,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 128,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 1519
+    }
+  }
+}

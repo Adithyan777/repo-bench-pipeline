@@ -532,12 +532,10 @@ def test_screen_backfills_and_reuses_persisted_decisions() -> None:
 def test_screen_replay_records_a_decision_per_candidate(tmp_path: Path) -> None:
     client = LLMClient(stage=_smoke.SCREEN_STAGE, mode="replay", transcripts_dir=tmp_path / "t")
     selected = _smoke.run_excision_screen(client)
-    assert selected[0] == "mini_pkg.calc.clamp" and len(selected) == 4  # this tape drops one
+    assert selected[0] == "mini_pkg.calc.clamp" and len(selected) == 5  # this tape keeps all
     ranked, cfg = _smoke.mini_pkg_ranked()
     excision.screen(ranked, _smoke.FIXTURE_MINI_PKG, client, cfg)
     assert all(c.screen and c.screen["reason"] and c.screen_key for c in ranked)
-    out = {c.qualname: (c.status, c.reject_reason) for c in ranked}
-    assert out["mini_pkg.core.Registry.register"] == ("screened_out", "trivially-inferable")
 
 
 # --- manifest + static gate (no docker) --------------------------------------------------
@@ -667,6 +665,7 @@ def test_tasks_stage_e2e_valid_and_resumable(mini_env) -> None:
     assert statuses == {
         "exc-mini_pkg.calc-ceil_div": "VALID",
         "exc-mini_pkg.calc-clamp": "VALID",
+        "exc-mini_pkg.core-Registry.register": "VALID",
         "exc-mini_pkg.text-display_width": "VALID",
         "exc-mini_pkg.text-truncate": "VALID",
         f"hist-{bugfix[:7]}": "VALID",
@@ -697,11 +696,16 @@ def test_tasks_stage_e2e_valid_and_resumable(mini_env) -> None:
         "excised_lines": [14, 20],
         "docstring_kept": True,
     }
-    assert task["instruction_status"] == "template-S4" and task["difficulty"] is None
+    assert task["instruction_status"] == "final" and task["difficulty"] in (
+        "easy",
+        "medium",
+        "hard",
+    )
+    assert task["module"] == "mini_pkg.calc" and task["modules"] == ["mini_pkg.calc"]
     assert task["verifier_on_input"] == {"exit_code": 1, "n_failing": 3, "n_passing": 0}
     assert manifest["tasks"][1]["verifier_on_input"]["n_failing"] == 3
-    assert "if value < low" not in task["instruction"]  # no body leak
-    assert "Clamp value into the inclusive range" in task["instruction"]
+    assert "if value < low" not in task["instruction"]  # no body leak (LLM-authored now)
+    assert "## Goal" in task["instruction"] and "## How success is measured" in task["instruction"]
     assert set(task["files_in_scope"]) >= {"mini_pkg/calc.py", "tests/test_calc.py"}
     assert (task_dir / "input/mini_pkg/calc.py").read_text().count("excised") == 1
     assert (task_dir / "solution/mini_pkg/calc.py").read_text() == (
@@ -728,7 +732,7 @@ def test_tasks_stage_e2e_valid_and_resumable(mini_env) -> None:
         "+    if value < low:" in golden and '-    raise NotImplementedError("excised")' in golden
     )
     cands = json.loads((ctx.tasks_dir / "candidates.json").read_text())
-    assert cands["counts"]["selected"] == 4 and cands["counts"]["screened_out"] == 1
+    assert cands["counts"]["selected"] == 5 and "screened_out" not in cands["counts"]
     assert all(c["reject_reason"] for c in cands["candidates"] if c["status"] == "rejected")
     # resumable: a second run skips every step
     ctx.report["stages"] = {}
@@ -741,6 +745,7 @@ def test_tasks_stage_e2e_valid_and_resumable(mini_env) -> None:
             "history_funnel",
             "build_history",
             "validate",
+            "instruct",
             "manifest",
         )
     )
@@ -795,7 +800,14 @@ def _check_history_e2e(ctx, tasks_dir: Path, bugfix: str, merge: str) -> None:
     assert prov["parent"] == H.git(ctx.repo, "rev-parse", f"{bugfix}^").strip()
     assert prov["verifier_source"] == "commit-tests" and prov["classification"]["kind"] == "bugfix"
     assert task["verifier_tests"] == ["tests/test_calc.py::test_ceil_div_exact_multiple"]
-    assert task["instruction_status"] == "template-S5a" and task["difficulty"] is None
+    assert task["instruction_status"] == "final" and task["difficulty_status"] == "final"
+    assert task["difficulty"] in ("easy", "medium", "hard") and task["difficulty_rationale"]
+    assert task["module"] == "mini_pkg.calc" and task["modules"] == ["mini_pkg.calc"]
+    assert set(task["difficulty_features"]) == set(ctx.config.difficulty.features)
+    assert (
+        "quotient" not in task["instruction"] and "divmod" not in task["instruction"]
+    )  # solution text
+    assert task["title"] and task["title"] != task["provenance"]["message"]
     assert task["neutrality"]["decision"]["neutral"] is True and task["neutrality"]["checked"]
     assert (
         task["verifier_on_input"]["n_failing"] == 1
@@ -823,7 +835,18 @@ def _check_history_e2e(ctx, tasks_dir: Path, bugfix: str, merge: str) -> None:
         list(verdict["checks"]["right_reason"]["tests"].values())[0]["reason"] == "AssertionError"
     )
     golden = (task_dir / "goldenSolution.md").read_text()
-    assert "+    quotient, remainder = divmod(a, b)" in golden and "TODO-S5b" in golden
+    assert "+    quotient, remainder = divmod(a, b)" in golden and "TODO-S5" not in golden
+    assert "## Why correct" in golden
+    # every VALID task got a final instruction + difficulty; template markers are gone
+    manifest = json.loads((tasks_dir / "tasks.json").read_text())
+    for entry in manifest["tasks"]:
+        if entry["validation_status"] == "VALID":
+            assert entry["instruction_status"] == "final" and entry["module"], entry["id"]
+            t = json.loads((tasks_dir / entry["path"] / "task.json").read_text())
+            assert not t["instruction_status"].startswith("template"), entry["id"]
+    inst = ctx.report["tasks"]["instruct"]
+    assert inst["final"] == 7 and inst["failed"] == 0 and inst["difficulty_failed"] == 0
+    assert (ctx.tasks_dir / "instructions.json").is_file()
     # PR merge: input = FIRST parent (mainline), solution = the merge
     mtask = json.loads((tasks_dir / f"hist-{merge[:7]}" / "task.json").read_text())
     first_parent = H.git(ctx.repo, "rev-parse", f"{merge}^1").strip()

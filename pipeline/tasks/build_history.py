@@ -786,6 +786,8 @@ def build_history_task(
             "verifier_source": notes["verifier_source"],
             "classification": c.classify,
         },
+        "module": primary_module(c, inp.repo, config),
+        "modules": c.modules,
         "difficulty": None,
         "difficulty_rationale": None,
         "files_in_scope": files_scope,
@@ -855,6 +857,20 @@ def _collateral(
     if not passing:
         return None
     return {"cmd": cmd, "report": report, "baseline_passing": passing, "source": "input-run"}
+
+
+def primary_module(c: H.HistoryCandidate, repo: Path, config: Config) -> str:
+    """The touched source module with the most changed lines (ties: first by path)."""
+    numstat = H.git(
+        repo, "diff", "--no-renames", "--numstat", c.input_sha, c.sha, "--", *c.source_files
+    )
+    changed: dict[str, int] = {}
+    for line in numstat.splitlines():
+        parts = line.split("\t")
+        if len(parts) == 3:
+            changed[parts[2]] = sum(int(p) for p in parts[:2] if p.isdigit())
+    best = max(c.source_files, key=lambda f: (changed.get(f, 0), -c.source_files.index(f)))
+    return path_to_module(best, config.knowledge.source_roots)
 
 
 def _tests_removed_by_commit(c: H.HistoryCandidate, repo: Path, nodeids: list[str]) -> list[str]:

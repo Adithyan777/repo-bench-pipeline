@@ -11,7 +11,7 @@ Legend: `todo` · `in-progress` · `review` (awaiting author review) · `done`
 | S2 | Step 2+2b: P1 core — detect → synthesize requirements → uv lock → Dockerfile/compose → build → baseline + quarantine; `ecosystems/python.py`; run on glom, then toolz + minidump | review | See `### S2` (+ round-2 fixes). glom/toolz/minidump/fixtures green; glom & toolz twice-identical ✓; toolz 0-LLM/no-agent after F1. `pytest` → 72 passed / 3 slow. |
 | S3 | Step 3: P2 static — repo_graph.json, history_index, test_map, coverage, hotspots, graph self-verification | review | See `### S3` (+ review-round fixes). mini_pkg/glom/toolz/minidump all built; graph byte-identical twice; verification precision 1.0 on every edge type, 0 mismatches. `pytest` → 96 passed / 3 slow. NO LLM. |
 | S4 | Step 4: excision funnel + validation harness end-to-end → first VALID task; task folder format, evidence, verdict, tasks.json writer | review | See `### S4`. `--stage tasks` wired (funnel → build → validate → manifest). glom **4/5 VALID**, toolz **5/5** (after review fixes), mini_pkg 3/3 in tests (relaxed thresholds). Harness idempotent. `pytest` → 124 passed / 3 slow, `ruff check .` clean. LLM: SMALL screen (decisions persisted + reused) + one bounded top-up agent. |
-| S5 | Step 5: history funnel + task-builder agent (verifier authoring/neutrality, instruction + leak gates, difficulty) | 5a review | See `### S5`. 5a done: history funnel + builder wired into `--stage tasks` (excision AND history). glom **8/8 history VALID** (15 shortlisted, 8 built; 12/13 overall), toolz 5/5 (2 via the new-symbol getattr convention), mini_pkg 2/2 (bugfix + PR merge). Full `pytest` → 141 passed / 3 deselected; `-m slow` → 3 passed; `ruff check .` clean. 5b (instruction/leak gates/difficulty) pending review. |
+| S5 | Step 5: history funnel + task-builder agent (verifier authoring/neutrality, instruction + leak gates, difficulty) | review | See `### S5`. 5a done: history funnel + builder wired into `--stage tasks` (excision AND history). glom **8/8 history VALID** (15 shortlisted, 8 built; 12/13 overall), toolz 5/5 (2 via the new-symbol getattr convention), mini_pkg 2/2 (bugfix + PR merge). Full `pytest` → 141 passed / 3 deselected; `-m slow` → 3 passed; `ruff check .` clean. 5b (instruction/leak gates/difficulty) pending review. |
 | S6 | Step 6: P1 test-gen + AST mutators + mutation gate | todo | |
 | S7 | Step 7: P2 .okf/ writer + claim verifier | todo | |
 | S8 | Step 8: net-new funnel + builder | todo | |
@@ -865,6 +865,275 @@ error-branches, `94b6375` arg-mode) are now kept and built (both VALID) and thei
 not-classified` (never reached by the classifier under `classify_max_commits=60`) rather than
 superseded; `85a7a3a` (round-1 `verifier-not-implementation-neutral`) is now judged neutral
 under the "exception identity is behavior" prompt and is VALID.
+
+#### 5b — instruction, leak gates, difficulty (review)
+
+**What exists.** `pipeline/tasks/instruction.py`: `task_facts(task_dir)` (contract = touched
+functions' signature + docstring AS IN `input/`, verifier test sources, behavior summary /
+excised-contract note, the input->solution diff of the touched source files — never shown to
+the author), author (`p3.build.write_instruction`, BIG, `complete_json` -> `{title,
+instruction}` with `## Goal` / `## Observable behavior` (`instruction.examples_from_verifier`
+examples copied from the tests) / `## Constraints` / `## How success is measured`), gate (a)
+pure code (`diff_leaks`: added diff lines with >= `leak_min_tokens` tokens present
+whitespace-normalized in the text, lines also present in the tests exempt;
+`identifier_leaks`: API-like names the diff introduces — defs/classes/imports/attribute
+stores — that are neither in `input/`'s public API nor in the tests, whole-word match), gate
+(b) BIG reviewer (`p3.build.review_instruction` -> `{solvable_by_transcription,
+self_contained, implementation_neutral, issues[]}`); issues are fed back and the author is
+re-run up to `instruction.max_regenerations` times; still failing -> `instruction_status:
+"failed"` (kept in tasks.json, excluded by selection). `golden_rationale`
+(`p3.build.golden_rationale`, BIG, may see the diff) replaces the `TODO-S5` line in
+`goldenSolution.md` with `## Why correct`. `pipeline/tasks/difficulty.py`: `features()` from
+the diff + `repo_graph.json` (`files_touched, functions_touched, callers_count,
+cross_module_edges, diff_size, similar_named_functions_nearby, test_count`), `label_tasks()`
+batched BIG (`p3.build.difficulty_label`, `difficulty.batch_size`), rationale must cite a
+feature (`cites_feature`: name with `_`/spaces or `<name-stem>… <value>`), regenerated once,
+then `difficulty_status: "failed"`. Runner step `instruct` (after `validate`, before
+`manifest`): VALID tasks only (`instruction.only_valid_tasks`), writes `title, instruction,
+instruction_status, instruction_review, instruction_attempts, verifier_visibility (current
+flag), difficulty, difficulty_rationale, difficulty_features, difficulty_status` into
+`task.json`; every decision persisted in `output/<repo>/tasks/instructions.json` by content
+hash (author key = what the author sees; a loosened gate reuses decisions, a tightened one
+needs `--force instruct`); the validate/instruct input hashes use `task.json` MINUS these
+fields so the step does not invalidate itself. `task.json.module` (primary touched module:
+excision target's module; history: the source file with the most changed lines) and
+`modules[]` are set by both builders and copied into `tasks.json` (fallback from provenance
+for old folders) — never null. `tasks.json` also carries `instruction_status`.
+
+**Real runs (glom, final code).** 12 VALID tasks -> `instruct` 115 s: **10 final / 2 failed**
+(`hist-94b6375` arg-mode PR: three drafts named the change-introduced API `arg_val` / `mode`
+that the tests do not name -> gate (b); `hist-99e2ece` "replace assert with TypeError": the
+reviewer judged all three drafts `solvable_by_transcription` — a one-line change whose
+faithful description is the change). 7 regenerations (3 leak-gate, 6 reviewer rejections
+across attempts). Difficulty: **easy 5 / medium 5 / hard 2**, 0 failed cite checks (2 batched
+calls). Before the two gate refinements (`leak_api_names_only`, `exempt_diff_lines_in_tests`)
+the same run had 3 failed: `hist-8289b94` was tripped by the local names `child`/`branches`
+used as English in prose and `hist-0d75aab` regenerated into a final draft. toolz (run before
+the refinements): 10 VALID -> 9 final / 1 failed (`hist-639043e`: a data literal `(20, 501,
+16000)` shared by the docstring and the tests tripped gate (a) three times — the exemption
+now covers it), spread easy 5 / medium 4 / hard 1, 5 regenerations. mini_pkg (cassette): 7
+final / 0 failed, all difficulties cited.
+
+Tokens (this run, glom): write 76k, review 56k, golden 38k, difficulty 4.5k ≈ 175k; toolz
+≈ 160k; cassette re-record 24.8k. Timings: instruct 107–115 s per repo (BIG latency).
+
+Exemplar (`tasks/glom/hist-c2acc2b/task.json`, `collateral.baseline_passing` elided):
+```json
+{
+  "base_sha": "30b477ab65560914a38f331614947d0894701044",
+  "collateral": {
+    "baseline_passing": [
+      "glom/test/test_basic.py::test_abstract_iterable",
+      "glom/test/test_basic.py::test_api_repr",
+      "glom/test/test_basic.py::test_bbformat",
+      "... (138 total)"
+    ],
+    "cmd": "python -m pytest -p no:cacheprovider -q --json-report --json-report-file=.pytest-report.json",
+    "report": ".pytest-report.json",
+    "source": "input-run"
+  },
+  "difficulty": "medium",
+  "difficulty_features": {
+    "callers_count": 5,
+    "cross_module_edges": 41,
+    "diff_size": 17,
+    "files_touched": 1,
+    "functions_touched": 3,
+    "similar_named_functions_nearby": 5,
+    "test_count": 1
+  },
+  "difficulty_rationale": "The task touches 3 functions with `callers_count=5`, requires correctly formatting slice indices (including tuples of slices), and spans 17 lines of changes, indicating non-trivial repr logic to fix without breaking existing callers.",
+  "difficulty_status": "final",
+  "dropped_tests": {
+    "failing_on_solution": [],
+    "passing_on_input": []
+  },
+  "files_in_scope": [
+    "glom/__init__.py",
+    "glom/core.py",
+    "glom/grouping.py",
+    "glom/matching.py",
+    "glom/mutation.py",
+    "glom/reduction.py",
+    "glom/streaming.py",
+    "glom/test/test_path_and_t.py"
+  ],
+  "id": "hist-c2acc2b",
+  "image_digest": "sha256:d7716116e9a8638a73aa11cd326995e607f63ad6197ddf0f69d9aa0fe7fd10af",
+  "image_tag": "bench-glom",
+  "instruction": "## Goal\n\nFix the `repr` of `T` specifications that use slice indexing (including tuples of slices) so that the slice is formatted as valid Python syntax instead of showing the raw `slice` object.\n\n## Observable behavior\n\n```python\nassert repr(T['a'].b.c()) == \"T['a'].b.c()\"\nassert repr(T[1:]) == \"T[1:]\"\n```\n\n## Constraints\n\n- Only identifiers visible in the public contract or tests may be referenced: `_BBRepr.repr1`, `_format_t`, `T`, `Path`.\n- The fix must make the verifier test `test_path_t_roundtrip` pass.\n\n## How success is measured\n\n```\npython -m pytest -q glom/test/test_path_and_t.py::test_path_t_roundtrip\n```",
+  "instruction_attempts": [
+    {
+      "attempt": 1,
+      "issues": [],
+      "review": {
+        "implementation_neutral": true,
+        "issues": [],
+        "self_contained": true,
+        "solvable_by_transcription": false
+      }
+    }
+  ],
+  "instruction_review": {
+    "implementation_neutral": true,
+    "issues": [],
+    "self_contained": true,
+    "solvable_by_transcription": false
+  },
+  "instruction_status": "final",
+  "module": "glom.core",
+  "modules": [
+    "glom.core"
+  ],
+  "neutrality": {
+    "checked": true,
+    "decision": {
+      "flagged_tests": [],
+      "issues": [],
+      "neutral": true
+    },
+    "key": "8a4c39c404e99b3d",
+    "reused": true,
+    "step": "p3.build.neutrality_check_rewrite"
+  },
+  "new_symbol_rewrite": null,
+  "overlay_files": {
+    "input": [
+      ".dockerignore",
+      "Dockerfile",
+      "constraints.txt",
+      "pipeline-requirements.in",
+      "requirements.lock.txt"
+    ],
+    "solution": [
+      ".dockerignore",
+      "Dockerfile",
+      "constraints.txt",
+      "pipeline-requirements.in",
+      "requirements.lock.txt"
+    ]
+  },
+  "provenance": {
+    "classification": {
+      "behavior_change_summary": "Fixes the repr of T[slice] specs so that slice indices (including tuples of slices) are formatted correctly instead of showing the raw slice object.",
+      "difficulty_guess": "easy",
+      "kind": "bugfix",
+      "self_contained": true,
+      "sha": "c2acc2b",
+      "verifiable_via_tests": true
+    },
+    "commit": "c2acc2b4fa5ef90bbb781fa03e4e5095dd8f0d8c",
+    "files": [
+      "glom/core.py",
+      "glom/test/test_path_and_t.py"
+    ],
+    "is_merge": false,
+    "message": "fixing T[slice] repr",
+    "modules": [
+      "glom.core"
+    ],
+    "parent": "00293b2d8c1d9e084148b15f17f2c7338fc0e740",
+    "pr_number": null,
+    "source_files": [
+      "glom/core.py"
+    ],
+    "touched_functions": [
+      "glom.core._BBRepr.repr1",
+      "glom.core._format_slice",
+      "glom.core._format_t"
+    ],
+    "type": "history",
+    "verifier_source": "commit-tests"
+  },
+  "repo": "glom",
+  "title": "Fix T[slice] repr to format slice indices correctly",
+  "verifier_agent": null,
+  "verifier_cmd": "python -m pytest -q glom/test/test_path_and_t.py::test_path_t_roundtrip",
+  "verifier_files": [
+    "glom/test/test_path_and_t.py",
+    "run.sh"
+  ],
+  "verifier_on_input": {
+    "exit_code": 1,
+    "n_failing": 1,
+    "n_passing": 0
+  },
+  "verifier_on_solution": {
+    "exit_code": 0,
+    "n_failing": 0,
+    "n_passing": 1
+  },
+  "verifier_tests": [
+    "glom/test/test_path_and_t.py::test_path_t_roundtrip"
+  ],
+  "verifier_visibility": "visible"
+}
+```
+
+**Tests.** `tests/test_instruction.py` (8): facts/contract from `input/`, gate (a) diff-line
+leak + test-line exemption, gate (b) new API identifier (private helper caught, public/test
+names allowed, locals not gated unless `leak_api_names_only=False`), author regeneration
+with feedback + persistence (0 calls on rerun), bounded regeneration -> `failed`, hidden vs
+visible visibility phrase, golden prose applied and TODO markers gone, features on the
+mini_pkg graph (incl. callers/similar names), `cites_feature`, difficulty regenerate-once-
+then-fail + persistence, excision facts. `tests/test_tasks.py` e2e (cassette): every VALID
+task `instruction_status == "final"`, no `template-*` marker, `module`/`modules` set, the
+ceil_div history instruction contains neither `quotient` nor `divmod`, `## Why correct`
+present, difficulty final with all features, `instructions.json` written, second run skips all
+7 steps. Cassettes `s5_tasks` re-recorded (32 tapes, 24.8k tokens: screen, classify, 2
+neutrality, 7 author, 7 review, 7 golden, 1 difficulty batch).
+
+**Things S6–S9 must know.**
+- S8 net-new: build `input/` (current tree) + `solution/` + `verifier/` with the same folder
+  convention, write `provenance{type:"net-new", ...}`, `module`/`modules`, `verifier_tests`,
+  `files_in_scope`, then reuse `harness.validate_task`, `instruction.task_facts` (needs
+  `provenance.source_files` + `touched_functions`, or add a `net-new` branch in
+  `task_facts` for the summary), `write_instruction`, `golden_rationale`, `apply_golden`,
+  `difficulty.features/label_tasks` — the runner's `instruct` step already covers any task
+  dir listed by `_task_dirs` (extend it with a `built_netnew.json`).
+- S9 selection reads from `tasks.json`: `validation_status == "VALID"`, `instruction_status
+  == "final"`, `difficulty` (may be null when `difficulty_status == "failed"` — treat as
+  unlabeled), `module` (primary, never null) / `modules[]` for diversity, `source_type`,
+  `verifier_on_input`, `provenance`. Excision tasks: `instruction_status` was `template-S4`
+  before 5b; INVALID tasks keep their template marker (never selected).
+- S6/S7: `p3.build.golden_rationale` is a new BIG step in `STEP_MODEL`; `.okf` pages (S7)
+  can be added to the author's contract block (`task_facts` -> `contract`).
+
+#### 5b review round — GO-with-fixes applied
+
+1. `apply_golden` idempotent (drops TODO markers and any previous `## Why correct` section);
+   double-apply tested.
+2. `instruction.exempt_diff_lines_in_tests` actually wired (`leak_issues` passes
+   `exempt=facts.tests_source`); tested through `leak_issues`.
+3. The classifier's `behavior_change_summary` is masked of forbidden change-introduced names
+   (`mask_names`) before it enters the author and difficulty prompts; `api_names()` now
+   includes module-level constants (`MIN_MODE`-style, tested).
+4. A failed instruction keeps the template instruction/title in `task.json` (drafts, issues
+   and reviews live only in `instructions.json`); the title is gated by the same leak checks;
+   feedback to the author never echoes a leaked line/identifier (counts + guidance only,
+   details in the record). `hist-94b6375` regenerated → final.
+5. `--force instruct` (or `--fresh`) discards `instructions.json`; the decision key includes
+   a hash of the prompt constants (`PROMPT_VERSION` + system prompts).
+6. Reviewer: `states_mechanical_edit` question added; copied examples are declared required
+   (not transcription); the author sees a "touched-function contract" with `(internal)`
+   markers instead of a "public contract"; the author is told not to copy prompt-meta lines.
+   `hist-99e2ece` re-evaluated → final ("Invoke.star raises TypeError instead of
+   AssertionError…", one reviewer regeneration overall in the run).
+7. `cross_module_edges` counts only edges with a touched FUNCTION endpoint; `cites_feature`
+   requires name AND value; `_key` uses `config.tasks.content_key_chars`; the S4 golden
+   boilerplate line is gone (5b writes `## Why correct`); `difficulty_status` in
+   `tasks.json`; excision template examples deduped; HEURISTICS wording; DESIGN notes only
+   ADDED diff lines are gated.
+
+**Fresh glom run (`--stage tasks --force instruct`):** 12 VALID → **12 final / 0 failed**,
+1 regeneration (reviewer), 0 leak-gate rejections; difficulty **easy 6 / medium 4 / hard 2**,
+0 cite failures. Spend for the instruct step: write 53.5k + review 50.3k + golden 48.6k +
+difficulty 4.6k ≈ **157k tokens** (the run also rebuilt/validated because
+`instruction.py` is in the code fingerprint — 0 tokens there). Cassettes re-recorded (21.6k).
+
+Suite (verbatim): `.venv/bin/python -m pytest` → **150 passed, 3 deselected in 303.89s
+(0:05:03)**; `.venv/bin/python -m pytest -m slow` → **3 passed, 150 deselected in 60.89s
+(0:01:00)**; `ruff check .` clean.
 
 #### S4 review round — GO-with-fixes applied
 

@@ -43,7 +43,7 @@ under `hygiene/` (incl. the documented test command in `hygiene/test_command.txt
 ## Generate and validate tasks
 
 ```
-./run.sh <repo_url_or_path> --stage tasks   # excision + history funnels -> build -> validate -> tasks.json
+./run.sh <repo_url_or_path> --stage tasks   # funnels -> build -> validate -> instruct -> tasks.json
 ```
 
 Writes `tasks/<repo>/<task_id>/{task.json,input/,solution/,verifier/,goldenSolution.md,evidence/}`
@@ -51,7 +51,11 @@ Writes `tasks/<repo>/<task_id>/{task.json,input/,solution/,verifier/,goldenSolut
 are the trees at the parent/commit plus the hygiene overlay) and `tasks/<repo>/tasks.json`
 (whose `validation_status` is read from each task's `evidence/verdict.json`). Every candidate
 considered, with its reject reason, is in `output/<repo>/tasks/candidates.json` (functions)
-and `output/<repo>/tasks/history_candidates.json` (commits).
+and `output/<repo>/tasks/history_candidates.json` (commits). VALID tasks get an LLM-authored
+instruction (leak-gated and reviewed; the author never sees the diff), a "why correct" note in
+`goldenSolution.md` and a difficulty label with cited features (`--verifier-visibility
+visible|hidden` changes the instruction's wording); decisions persist in
+`output/<repo>/tasks/instructions.json` so reruns cost no tokens.
 
 ### Validate a task standalone
 

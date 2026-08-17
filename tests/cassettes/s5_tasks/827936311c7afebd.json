@@ -82,8 +82,8 @@
         }
       }
     ],
-    "created": 1786972351,
-    "id": "chatcmpl-c0db3512fa764023918cff396b10f313",
+    "created": 1786977551,
+    "id": "chatcmpl-8b24096436a84be593773b0a586533e8",
     "model": "moonshotai/Kimi-K2.6",
     "moderation": null,
     "object": "chat.completion",
@@ -102,7 +102,7 @@
       "prompt_tokens_details": {
         "audio_tokens": 0,
         "cache_write_tokens": null,
-        "cached_tokens": 192,
+        "cached_tokens": 224,
         "image_tokens": null,
         "text_tokens": null
       },

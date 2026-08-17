@@ -189,7 +189,8 @@ Tier rule: classification/lookup uses SMALL; authoring/coding/agents/review uses
 | 15 | P3 build | Implement net-new solution | agent | BIG |
 | 16 | P3 build | Write instruction (no diff shown) | direct JSON | BIG |
 | 17 | P3 build | Leak/quality review of instruction | direct JSON | BIG |
-| 18 | P3 build | Difficulty label + justification | direct JSON | BIG |
+| 18 | P3 build | Difficulty label + justification (batched) | direct JSON | BIG |
+| 18b | P3 build | goldenSolution.md "why correct" prose (`p3.build.golden_rationale`; sees the diff) | direct JSON | BIG |
 | 19 | report | Draft REPORT sections from audit data (optional) | direct | BIG |
 
 Estimated volume for glom: ~25-35 agent runs, ~100-150 direct calls.
@@ -592,6 +593,8 @@ Verifier visibility flag: `--verifier-visibility visible|hidden`, default `visib
 Difficulty assignment: code computes features (files touched, functions touched, callers count, cross-module edges, diff size, similar-named functions nearby, test count). LLM (BIG) assigns a label + 1-2 sentence justification that must cite at least 1 computed feature. Selection aims for spread.
 
 goldenSolution.md: diff (code) + "why correct" paragraph (LLM).
+
+S5b implementation notes: the author sees the touched functions' signatures + docstrings AS THEY ARE IN `input/`, the verifier test sources, the behavior summary (history) / excised-contract note (excision), files_in_scope, the verifier command and the visibility phrase; the diff and `solution/` are never in its prompt. Gate (a) is pure code over the input->solution diff of the touched source files (only ADDED lines are gated — removed lines already exist in `input/` — with >= 5 tokens, minus lines that also appear in the verifier tests; plus API-like identifiers introduced by the diff outside input/'s public API and the tests), applied to instruction and title; gate (b) is a BIG reviewer (`solvable_by_transcription`, `self_contained`, `implementation_neutral`, issues). Both feed the next attempt; after `max_regenerations` the task is `instruction_status: failed`. The "why correct" prose is a separate BIG call (`p3.build.golden_rationale`) that may see the diff. Difficulty features come from the diff + `repo_graph.json`; labels are batched; a rationale that cites no feature is regenerated once, then `difficulty_status: failed`. Every decision is persisted by content hash (`output/<repo>/tasks/instructions.json`). `task.json.module` (primary touched module) and `modules[]` are always set.
 
 Dockerfile + lock present inside `input/` and `solution/` (overlay). Image digest recorded in `task.json` and `verdict.json`. Each task is self-contained and re-buildable.
 

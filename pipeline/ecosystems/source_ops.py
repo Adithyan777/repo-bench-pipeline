@@ -301,6 +301,37 @@ def defined_names(source: str) -> set[str]:
     return names
 
 
+def api_names(source: str) -> set[str]:
+    """Names that read as API in a module: def/class names, imported names, attribute
+    stores (``self.x = ...``) at any depth and module-level constants -- not local
+    variables or parameters."""
+    names: set[str] = set()
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return names
+    for stmt in tree.body:
+        if isinstance(stmt, ast.Assign | ast.AnnAssign | ast.AugAssign):
+            targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+            for target in targets:
+                for node in ast.walk(target):
+                    if isinstance(node, ast.Name):
+                        names.add(node.id)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
+            names.add(node.name)
+        elif isinstance(node, ast.Attribute) and isinstance(node.ctx, ast.Store):
+            names.add(node.attr)
+        elif isinstance(node, ast.alias):
+            names.add((node.asname or node.name).split(".")[0])
+    return names
+
+
+def new_api_names(old_source: str | None, new_source: str) -> set[str]:
+    """API-like names the new version introduces (the instruction leak gate)."""
+    return api_names(new_source) - (api_names(old_source) if old_source else set())
+
+
 def new_identifiers(old_source: str | None, new_source: str) -> set[str]:
     """Identifiers the new version introduces (defs, classes, bindings, imports)."""
     return defined_names(new_source) - (defined_names(old_source) if old_source else set())

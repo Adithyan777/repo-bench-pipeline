@@ -133,6 +133,8 @@ def build_task(c: Candidate, inp: BuildInputs, tasks_root: Path, config: Config 
             "excised_lines": [excised.body_start, excised.body_end],
             "docstring_kept": excised.kept_docstring,
         },
+        "module": c.module,
+        "modules": [c.module],
         "difficulty": None,
         "difficulty_rationale": None,
         "files_in_scope": files_in_scope,
@@ -231,8 +233,6 @@ def _golden(c: Candidate, original: str, excised: str, config: Config) -> str:
         f"(lines {c.line}-{c.end_line}); the excised input raises "
         f"`{config.excision.excision_body}` in its place.\n\n"
         "```diff\n" + diff + "```\n\n"
-        "Why correct: the solution is the repository's own implementation, which passes "
-        "the verifier tests and the full baseline suite (see evidence/).\n\n"
         "<!-- TODO-S5: LLM-authored 'why correct' rationale -->\n"
     )
 
@@ -243,7 +243,7 @@ def _examples(c: Candidate, verifier: Path, nodeids: list[str], limit: int) -> l
     for rel in sorted({n.split("::", 1)[0] for n in nodeids}):
         for line in read_source(verifier / rel).splitlines():
             s = line.strip()
-            if s.startswith("assert") and name in s and len(s) < 160:
+            if s.startswith("assert") and name in s and len(s) < 160 and s not in out:
                 out.append(s)
             if len(out) >= limit:
                 return out

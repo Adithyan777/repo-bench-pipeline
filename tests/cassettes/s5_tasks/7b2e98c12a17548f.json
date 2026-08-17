@@ -1,0 +1,98 @@
+{
+  "request": {
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "max_tokens": 8192,
+    "messages": [
+      {
+        "content": "Write 2-4 sentences explaining WHY this change is correct for the task below, grounded on the diff and the verifier tests (what behavior it establishes and why the tests pass). Plain prose, no bullet list.\n\nTask: Restore Registry.register to store values and reject duplicates\nBehavior summary: The body of `mini_pkg.core.Registry.register` was removed (it raises NotImplementedError); the original behavior must be restored.\nContract:\n- `mini_pkg.core.Registry.register`: `register(self, name, value)`\n\n```diff\n--- input/mini_pkg/core.py\n+++ solution/mini_pkg/core.py\n@@ -19,7 +19,9 @@\n         self._items = {}\n \n     def register(self, name, value):\n-        raise NotImplementedError(\"excised\")\n+        if name in self._items:\n+            raise KeyError(f\"already registered: {name}\")\n+        self._items[name] = value\n \n     def get(self, name):\n         return self._items[name]\n\n```\n\n### tests/test_core.py (verifier tests: test_registry_duplicate_raises, test_registry_register_and_get)\n```python\nimport pytest\n\nfrom mini_pkg.core import Registry, dedupe, first\n\n\ndef test_dedupe_preserves_order():\n    assert dedupe([3, 1, 3, 2, 1]) == [3, 1, 2]\n\n\ndef test_registry_register_and_get():\n    reg = Registry()\n    reg.register(\"a\", 1)\n    assert reg.get(\"a\") == 1\n\n\ndef test_registry_duplicate_raises():\n    reg = Registry()\n    reg.register(\"a\", 1)\n    with pytest.raises(KeyError):\n        reg.register(\"a\", 2)\n\n\ndef test_first_match_and_default():\n    assert first([1, 4, 6], lambda x: x % 2 == 0) == 4\n    assert first([1, 3], lambda x: x % 2 == 0, default=-1) == -1\n\n```",
+        "role": "user"
+      }
+    ],
+    "model": "moonshotai/Kimi-K2.6",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "properties": {
+              "why_correct": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "why_correct"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"why_correct\": \"The change restores the original behavior of `Registry.register` by first checking if the name already exists in `self._items` and raising a `KeyError` if it does, which satisfies `test_registry_duplicate_raises`. If the name is not present, it stores the value in the dictionary, which satisfies `test_registry_register_and_get` by allowing a subsequent `get` call to retrieve the stored value. This directly replaces the removed `NotImplementedError` with the intended duplicate-rejection and value-storage logic that the verifier tests validate.\"}",
+                "name": "emit"
+              },
+              "id": "functions.emit:0",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786977592,
+    "id": "chatcmpl-dfc89f8bbe3442b7b698cf9892af4a3d",
+    "model": "moonshotai/Kimi-K2.6",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 122,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 77,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 103,
+        "text_tokens": null
+      },
+      "prompt_tokens": 461,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 64,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 583
+    }
+  }
+}
