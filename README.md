@@ -39,7 +39,7 @@ an OpenAI-compatible LLM endpoint.
 
 ```bash
 # clone and set up
-git clone <this-repo> && cd lh2ai-assignment
+git clone https://github.com/Adithyan777/repo-bench-pipeline.git && cd repo-bench-pipeline
 uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -r requirements-dev.txt
 cp .env.example .env          # fill in LLM_BASE_URL + LLM_API_KEY
