@@ -33,6 +33,8 @@ class AgentRunner(ABC):
 
 
 class Agent(AgentRunner):
+    MAX_TURNS_SUMMARY = "stopped: reached max turns"
+
     def __init__(
         self,
         llm: LLMClient,
@@ -78,7 +80,7 @@ class Agent(AgentRunner):
                     }
                 )
         else:
-            summary = "stopped: reached max turns"
+            summary = self.MAX_TURNS_SUMMARY
         trajectory = self._write_trajectory(goal, messages)
         return AgentResult(sorted(self.files_changed), summary, trajectory)
 

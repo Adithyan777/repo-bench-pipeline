@@ -7,7 +7,9 @@ By default each stage is SKIPPED if it already has cassettes (so re-runs don't
 re-spend tokens or churn multi-turn tapes). Pass --rerecord <stage> to force one,
 or --rerecord all to force everything. Secrets are read from .env, never printed.
 
-Stages: s1_smoke, s1_agent, s2_pin, s2_baseline, s2_reask, s4_screen.
+Stages: s1_smoke, s1_agent, s2_pin, s2_baseline, s2_reask, s5_tasks (the full
+`--stage tasks` run on the mini_pkg fixture: excision screen + history classify +
+neutrality check; needs Docker).
 """
 
 from __future__ import annotations
@@ -71,7 +73,22 @@ def main(argv: list[str] | None = None) -> int:
     stage(_smoke.PIN_STAGE, _smoke.run_alias_map)
     stage(_smoke.BASELINE_STAGE, _smoke.run_classify)
     stage(_smoke.REASK_STAGE, _smoke.run_reask)
-    stage(_smoke.SCREEN_STAGE, _smoke.run_excision_screen)
+    if not (
+        _has_cassettes(_smoke.TASKS_STAGE)
+        and _smoke.TASKS_STAGE not in rerecord
+        and "all" not in rerecord
+    ):
+        import shutil
+        import tempfile
+
+        root = Path(tempfile.mkdtemp(prefix="bench-record-"))
+        ctx = _smoke.run_tasks_stage(root, "record")
+        summary = ctx.report.get("tasks", {})
+        print(f"[{_smoke.TASKS_STAGE}] {summary.get('validate', {}).get('valid')} VALID tasks")
+        clients.append(ctx.llm)
+        shutil.rmtree(root, ignore_errors=True)
+    else:
+        print(f"[{_smoke.TASKS_STAGE}] skip (cassette exists; --rerecord to force)")
 
     total = 0
     for client in clients:

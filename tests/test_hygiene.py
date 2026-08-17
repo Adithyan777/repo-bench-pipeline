@@ -525,7 +525,7 @@ def test_dockerfile_renders_with_real_digest(tmp_path: Path, docker_available: N
 def test_build_and_baseline_mini_pkg(tmp_path: Path, docker_available: None) -> None:
     ctx = _hygiene_on_fixture(tmp_path, "mini_pkg")
     data = ctx.load("baseline")
-    assert data["counts"]["passed"] == 11
+    assert data["counts"]["passed"] == 13
     assert data["counts"]["quarantined"] == 0
     assert (ctx.hygiene_dir / "pipeline_base.json").is_file()
 

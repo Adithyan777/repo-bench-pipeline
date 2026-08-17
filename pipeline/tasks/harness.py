@@ -24,6 +24,7 @@ from pipeline.ecosystems.python import PythonAdapter
 from pipeline.ecosystems.source_ops import (
     is_private_dotted,
     module_bound_names,
+    private_getattr_names,
     read_source,
     verifier_imports,
 )
@@ -282,7 +283,8 @@ def static_gate_violations(
     input_dir: Path, verifier_dir: Path, config: Config = DEFAULT
 ) -> list[dict]:
     """Verifier tests may only import (a) repo modules that exist in input/ and (b) names
-    those modules bind at top level, none starting with '_'."""
+    those modules bind at top level, none starting with '_'. Reaching new public API via
+    ``getattr(existing_public_module, name)`` is accepted; a private literal name is not."""
     symbols = build_symbol_index(input_dir, config)
     modules = {m["name"]: m for m in symbols["modules"]}
     top_pkgs = {m.split(".")[0] for m in modules}
@@ -305,7 +307,19 @@ def static_gate_violations(
     for test_file in sorted(verifier_dir.rglob("*.py")):
         rel = str(test_file.relative_to(verifier_dir))
         package = _package_of(rel, modules)
-        for use in verifier_imports(read_source(test_file), package):
+        source = read_source(test_file)
+        uses = verifier_imports(source, package)
+        module_aliases = {  # names this file binds to repo modules (asname not tracked)
+            use.module.split(".")[0] if use.name is None else use.name
+            for use in uses
+            if use.module.split(".")[0] in top_pkgs
+            and (use.name is None or f"{use.module}.{use.name}" in modules)
+        }
+        for line, name in private_getattr_names(source, module_aliases):
+            violations.append(
+                {"file": rel, "line": line, "import": f"getattr:{name}", "reason": "private-symbol"}
+            )
+        for use in uses:
             top = use.module.split(".")[0]
             if top not in top_pkgs:
                 continue  # third-party / stdlib: not our concern

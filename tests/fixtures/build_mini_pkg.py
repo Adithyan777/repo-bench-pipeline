@@ -5,9 +5,12 @@ Run: ``python tests/fixtures/build_mini_pkg.py``. Rebuilds
 each time. .git dirs are created here, never committed to the outer repo.
 
 mini_pkg: 3 core modules, a setup.py manifest with one small third-party dep, real
-pytest tests covering some (not all) functions, and 8 commits including a genuine
+pytest tests covering some (not all) functions, and 12 commits including a genuine
 bugfix (test added in the same commit), a dependency change, a docs-only commit,
-a refactor, and a file rename (exercises history's --no-renames handling).
+a refactor, a file rename (exercises history's --no-renames handling), a two-commit
+PR branch merged with --no-ff (exercises PR-merge first-parent handling) and a feature
+commit adding a NEW public function whose test imports it at module level (exercises the
+new-symbol getattr convention).
 
 mini_pkg_notests: same shape, no tests and no manifest, and it imports
 third-party modules (one alias-mapped) so the AST-inferred-deps path has work.
@@ -62,7 +65,18 @@ class RunningStats:
 
 CALC_FIXED = CALC_BUGGY.replace(
     "    return (a + b) // b  # off-by-one: overshoots when b divides a exactly",
-    "    return (a + b - 1) // b",
+    "    quotient, remainder = divmod(a, b)\n    return quotient + bool(remainder)",
+)
+
+CALC_CLAMP_ORDER = CALC_FIXED.replace(
+    '''    """Clamp value into the inclusive range [low, high]."""
+    if value < low:''',
+    '''    """Clamp value into the inclusive range [low, high].
+
+    Bounds given in either order are accepted."""
+    if low > high:
+        low, high = high, low
+    if value < low:''',
 )
 
 CORE = '''"""Ordering-preserving collection helpers."""
@@ -96,6 +110,19 @@ class Registry:
     def names(self):
         return sorted(self._items)
 '''
+
+CORE_WITH_FIRST = (
+    CORE
+    + '''
+
+def first(items, pred, default=None):
+    """Return the first item for which pred(item) is true, else default."""
+    for item in items:
+        if pred(item):
+            return item
+    return default
+'''
+)
 
 TEXT_LEN = '''"""Text width and truncation helpers."""
 
@@ -221,6 +248,16 @@ def test_ceil_div_exact_multiple():
 """
 )
 
+TEST_CALC_WITH_CLAMP_ORDER = (
+    TEST_CALC_WITH_BUGFIX
+    + """
+
+def test_clamp_inverted_bounds():
+    assert clamp(5, 10, 0) == 5
+    assert clamp(-1, 10, 0) == 0
+"""
+)
+
 TEST_CORE = """import pytest
 
 from mini_pkg.core import Registry, dedupe
@@ -257,6 +294,19 @@ def test_truncate_short_string_unchanged():
 def test_truncate_adds_ellipsis():
     assert truncate("hello world", 5) == "hell\\u2026"
 """
+
+TEST_CORE_WITH_FIRST = (
+    TEST_CORE.replace(
+        "from mini_pkg.core import Registry, dedupe",
+        "from mini_pkg.core import Registry, dedupe, first",
+    )
+    + """
+
+def test_first_match_and_default():
+    assert first([1, 4, 6], lambda x: x % 2 == 0) == 4
+    assert first([1, 3], lambda x: x % 2 == 0, default=-1) == -1
+"""
+)
 
 GEOMETRY = '''"""Standalone geometry helper (renamed across a commit)."""
 
@@ -388,8 +438,17 @@ def _build(repo: Path, commits: list[dict]) -> None:
     repo.mkdir(parents=True)
     _git(repo, "init", "-q", "-b", "main")
     for i, commit in enumerate(commits):
-        _apply(repo, commit["files"])
         date = f"2026-01-{i + 1:02d}T12:00:00 +0000"
+        if "merge" in commit:  # PR-style merge of a branch built from `commits`
+            _git(repo, "checkout", "-q", "-b", commit["branch"])
+            for j, sub in enumerate(commit["merge"]):
+                _apply(repo, sub["files"])
+                _git(repo, "add", "-A")
+                _git(repo, "commit", "-q", "-m", sub["msg"], date=date.replace("12:00", f"1{j}:00"))
+            _git(repo, "checkout", "-q", "main")
+            _git(repo, "merge", "-q", "--no-ff", "-m", commit["msg"], commit["branch"], date=date)
+            continue
+        _apply(repo, commit["files"])
         _git(repo, "add", "-A")
         _git(repo, "commit", "-q", "-m", commit["msg"], date=date)
 
@@ -443,6 +502,32 @@ def build_mini_pkg(root: Path) -> Path:
             # mini_pkg.shapes.area (added).
             "msg": "Rename geometry module to shapes",
             "files": {"mini_pkg/geometry.py": None, "mini_pkg/shapes.py": GEOMETRY},
+        },
+        {
+            # PR branch: the fix and its test land in two commits; only the merge (diff vs
+            # first parent) is a complete unit. history: constituents superseded-by-merge.
+            "msg": "Merge pull request #7 from fixture/clamp-order",
+            "branch": "clamp-order",
+            "merge": [
+                {
+                    "msg": "Accept inverted bounds in clamp",
+                    "files": {"mini_pkg/calc.py": CALC_CLAMP_ORDER},
+                },
+                {
+                    "msg": "Test clamp with inverted bounds",
+                    "files": {"tests/test_calc.py": TEST_CALC_WITH_CLAMP_ORDER},
+                },
+            ],
+        },
+        {
+            # Feature adding a NEW public function; its test imports `first` at module
+            # level, which the pre-change tree cannot satisfy (ImportError) -> the history
+            # builder must rewrite it to the getattr convention.
+            "msg": "Add core.first helper for first-match lookup",
+            "files": {
+                "mini_pkg/core.py": CORE_WITH_FIRST,
+                "tests/test_core.py": TEST_CORE_WITH_FIRST,
+            },
         },
     ]
     _build(repo, commits)

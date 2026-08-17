@@ -153,6 +153,32 @@ def verifier_imports(source: str, package: str) -> list[ImportUse]:
     return uses
 
 
+def private_getattr_names(source: str, module_names: set[str]) -> list[tuple[int, str]]:
+    """``getattr(<module>, "_name")`` / ``hasattr`` on one of ``module_names`` (names bound
+    to repo modules in this file) with a private, non-dunder literal: (line, name)."""
+    out: list[tuple[int, str]] = []
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return out
+    for node in ast.walk(tree):
+        if not (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id in ("getattr", "hasattr")
+            and len(node.args) >= 2
+            and isinstance(node.args[0], ast.Name)
+            and node.args[0].id in module_names
+            and isinstance(node.args[1], ast.Constant)
+            and isinstance(node.args[1].value, str)
+        ):
+            continue
+        name = node.args[1].value
+        if name.startswith("_") and not (name.startswith("__") and name.endswith("__")):
+            out.append((node.lineno, name))
+    return out
+
+
 def count_assertions(source: str, test_names: set[str] | None = None) -> int:
     """`assert` statements + `pytest.raises` blocks inside the named test functions
     (all functions when ``test_names`` is None)."""
@@ -187,6 +213,97 @@ def test_functions_in(source: str) -> list[str]:
         ):
             out.append(node.name)
     return out
+
+
+def _test_defs(source: str) -> dict[str, str]:
+    """``Class::name`` / ``name`` -> normalized AST dump for every test function."""
+    out: dict[str, str] = {}
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return out
+
+    def visit(body: list[ast.stmt], prefix: str) -> None:
+        for node in body:
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+                if node.name.startswith("test"):
+                    out[f"{prefix}{node.name}"] = ast.dump(node)
+            elif isinstance(node, ast.ClassDef):
+                visit(node.body, f"{prefix}{node.name}::")
+
+    visit(tree.body, "")
+    return out
+
+
+def test_nodeid_suffixes(source: str) -> list[str]:
+    """Every test function as a pytest nodeid suffix (``name`` or ``Class::name``)."""
+    return sorted(_test_defs(source))
+
+
+def changed_test_functions(old_source: str | None, new_source: str) -> list[str]:
+    """Test functions added or changed between two versions of a test file, as nodeid
+    suffixes (``name`` or ``Class::name``). Formatting-only edits do not count (AST
+    dumps are compared)."""
+    before = _test_defs(old_source) if old_source is not None else {}
+    after = _test_defs(new_source)
+    return sorted(k for k, dump in after.items() if before.get(k) != dump)
+
+
+def function_contracts(source: str, module: str) -> list[dict]:
+    """Signature + docstring of every function/method as written in ``source``:
+    ``{qualname, signature, docstring, line, end_line, is_public}``."""
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return []
+    out: list[dict] = []
+
+    def visit(body: list[ast.stmt], parent: str) -> None:
+        for node in body:
+            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+                qual = f"{parent}.{node.name}"
+                out.append(
+                    {
+                        "qualname": qual,
+                        "signature": f"{node.name}({ast.unparse(node.args)})",
+                        "docstring": ast.get_docstring(node),
+                        "line": node.lineno,
+                        "end_line": node.end_lineno or node.lineno,
+                        "is_public": not any(
+                            p.startswith("_") for p in qual[len(module) + 1 :].split(".")
+                        ),
+                    }
+                )
+                visit(node.body, qual)
+            elif isinstance(node, ast.ClassDef):
+                visit(node.body, f"{parent}.{node.name}")
+
+    visit(tree.body, module)
+    return out
+
+
+def defined_names(source: str) -> set[str]:
+    """Every def/class/assigned/imported name in a module, at any nesting depth."""
+    names: set[str] = set()
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return names
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
+            names.add(node.name)
+        elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+            names.add(node.id)
+        elif isinstance(node, ast.arg):
+            names.add(node.arg)
+        elif isinstance(node, ast.alias):
+            names.add((node.asname or node.name).split(".")[0])
+    return names
+
+
+def new_identifiers(old_source: str | None, new_source: str) -> set[str]:
+    """Identifiers the new version introduces (defs, classes, bindings, imports)."""
+    return defined_names(new_source) - (defined_names(old_source) if old_source else set())
 
 
 def read_source(path: Path) -> str:

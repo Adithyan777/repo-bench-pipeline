@@ -45,8 +45,10 @@ def _node_ids(graph: dict) -> set[str]:
 def _git(repo: Path, *args: str) -> str:
     env = {
         **os.environ,
-        "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
-        "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t",
+        "GIT_AUTHOR_NAME": "t",
+        "GIT_AUTHOR_EMAIL": "t@t",
+        "GIT_COMMITTER_NAME": "t",
+        "GIT_COMMITTER_EMAIL": "t@t",
     }
     return subprocess.run(
         ["git", "-C", str(repo), *args], check=True, capture_output=True, text=True, env=env
@@ -73,7 +75,7 @@ def test_symbol_index_mini_pkg() -> None:
     idx = build_symbol_index(FIXTURES / "mini_pkg")
     quals = {f["qualname"]: f for f in idx["functions"]}
     assert "mini_pkg.calc.ceil_div" in quals
-    assert quals["mini_pkg.calc.clamp"]["complexity"] == 3
+    assert quals["mini_pkg.calc.clamp"]["complexity"] == 4
     assert quals["mini_pkg.calc.ceil_div"]["complexity"] == 1
     test_modules = {m["name"] for m in idx["modules"] if m["is_test"]}
     assert test_modules == {"test_calc", "test_core", "test_text"}
@@ -102,9 +104,9 @@ def test_relative_and_aliased_imports_resolve(tmp_path: Path) -> None:
                 "import pkg\n"
                 "import pkg.a\n\n\n"
                 "def use():\n"
-                "    helper()\n"     # relative from-import
-                "    a.helper()\n"   # relative module alias
-                "    pkg.top()\n"    # top package defines top
+                "    helper()\n"  # relative from-import
+                "    a.helper()\n"  # relative module alias
+                "    pkg.top()\n"  # top package defines top
                 "    pkg.a.helper()\n"  # dotted chain off `import pkg.a`
             ),
         },
@@ -200,15 +202,28 @@ def test_graph_expected_nodes_and_edges() -> None:
     graph = graph_mod.build_graph(idx)  # structural: no test_map/coverage
 
     expected_nodes = {
-        "mini_pkg", "mini_pkg.calc", "mini_pkg.core", "mini_pkg.text", "mini_pkg.shapes",
-        "mini_pkg.calc.RunningStats", "mini_pkg.core.Registry",
-        "mini_pkg.calc.ceil_div", "mini_pkg.calc.clamp",
-        "mini_pkg.calc.RunningStats.__init__", "mini_pkg.calc.RunningStats.add",
-        "mini_pkg.calc.RunningStats.mean", "mini_pkg.calc.RunningStats.count",
-        "mini_pkg.core.dedupe", "mini_pkg.core.Registry.__init__",
-        "mini_pkg.core.Registry.register", "mini_pkg.core.Registry.get",
-        "mini_pkg.core.Registry.names", "mini_pkg.text.display_width",
-        "mini_pkg.text._needs_truncation", "mini_pkg.text.truncate",
+        "mini_pkg",
+        "mini_pkg.calc",
+        "mini_pkg.core",
+        "mini_pkg.text",
+        "mini_pkg.shapes",
+        "mini_pkg.calc.RunningStats",
+        "mini_pkg.core.Registry",
+        "mini_pkg.calc.ceil_div",
+        "mini_pkg.calc.clamp",
+        "mini_pkg.calc.RunningStats.__init__",
+        "mini_pkg.calc.RunningStats.add",
+        "mini_pkg.calc.RunningStats.mean",
+        "mini_pkg.calc.RunningStats.count",
+        "mini_pkg.core.dedupe",
+        "mini_pkg.core.first",
+        "mini_pkg.core.Registry.__init__",
+        "mini_pkg.core.Registry.register",
+        "mini_pkg.core.Registry.get",
+        "mini_pkg.core.Registry.names",
+        "mini_pkg.text.display_width",
+        "mini_pkg.text._needs_truncation",
+        "mini_pkg.text.truncate",
         "mini_pkg.shapes.area",
     }
     assert _node_ids(graph) == expected_nodes  # setup.py excluded as non-source
@@ -226,7 +241,7 @@ def test_graph_expected_nodes_and_edges() -> None:
     contains = _edges(graph, "contains")
     assert ("mini_pkg.calc", "mini_pkg.calc.ceil_div") in contains
     assert ("mini_pkg.calc.RunningStats", "mini_pkg.calc.RunningStats.mean") in contains
-    assert len(contains) == 17  # 16 + shapes.area
+    assert len(contains) == 18  # 16 + shapes.area + core.first
     for edge in graph["edges"]:
         assert edge["evidence"]["file"] and edge["evidence"]["line"] >= 1
 
@@ -280,8 +295,11 @@ def test_tested_by_collapses_parametrized_cases() -> None:
     }
     idx = build_symbol_index(FIXTURES / "mini_pkg")
     graph = graph_mod.build_graph(idx, test_map)
-    tb = [e["target"] for e in graph["edges"]
-          if e["type"] == "tested_by" and e["source"] == "mini_pkg.calc.ceil_div"]
+    tb = [
+        e["target"]
+        for e in graph["edges"]
+        if e["type"] == "tested_by" and e["source"] == "mini_pkg.calc.ceil_div"
+    ]
     assert tb == ["tests/test_calc.py::test_ceil_div"]
 
 
@@ -392,9 +410,7 @@ def test_verify_tested_by_from_coverage_contexts() -> None:
     contexts = {
         "files": {
             "mini_pkg/calc.py": {
-                "contexts": {
-                    str(fn["end_line"]): ["tests/test_calc.py::test_ceil_div_rounds_up"]
-                }
+                "contexts": {str(fn["end_line"]): ["tests/test_calc.py::test_ceil_div_rounds_up"]}
             }
         }
     }
@@ -403,11 +419,14 @@ def test_verify_tested_by_from_coverage_contexts() -> None:
     )
     assert report["by_edge_type"]["tested_by"]["precision"] == 1.0
     # a fabricated tested_by edge fails against the raw contexts
-    graph["edges"].append({
-        "type": "tested_by", "source": "mini_pkg.calc.clamp",
-        "target": "tests/test_calc.py::test_ceil_div_rounds_up",
-        "evidence": {"file": "tests/test_calc.py", "line": 1},
-    })
+    graph["edges"].append(
+        {
+            "type": "tested_by",
+            "source": "mini_pkg.calc.clamp",
+            "target": "tests/test_calc.py::test_ceil_div_rounds_up",
+            "evidence": {"file": "tests/test_calc.py", "line": 1},
+        }
+    )
     report2 = verify.verify_graph(
         FIXTURES / "mini_pkg", graph, idx, coverage_contexts=contexts, image=None
     )
@@ -432,7 +451,7 @@ def _tool_ctx(tmp_path: Path) -> ToolContext:
 
 def test_agent_graph_tools(tmp_path: Path) -> None:
     tools = {t.name: t for t in graph_tools(_tool_ctx(tmp_path))}
-    assert "mini_pkg/calc.py:4-6" in tools["show_symbol"].func(qualname="mini_pkg.calc.ceil_div")
+    assert "mini_pkg/calc.py:4-7" in tools["show_symbol"].func(qualname="mini_pkg.calc.ceil_div")
     assert "mini_pkg.text._needs_truncation" in tools["callers"].func(
         qualname="mini_pkg.text.display_width"
     )
@@ -490,7 +509,9 @@ def test_knowledge_e2e_mini_pkg(tmp_path: Path, docker_available: None) -> None:
 
     first = (kdir / "repo_graph.json").read_bytes()
     forced = build_context(
-        str(src), output_root=tmp_path / "out", llm_mode="replay",
+        str(src),
+        output_root=tmp_path / "out",
+        llm_mode="replay",
         force=("symbol_index", "indexes", "graph", "verify"),
     )
     run_knowledge(forced)

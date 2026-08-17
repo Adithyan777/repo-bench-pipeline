@@ -43,13 +43,15 @@ under `hygiene/` (incl. the documented test command in `hygiene/test_command.txt
 ## Generate and validate tasks
 
 ```
-./run.sh <repo_url_or_path> --stage tasks        # excision funnel -> build -> validate -> tasks.json
+./run.sh <repo_url_or_path> --stage tasks   # excision + history funnels -> build -> validate -> tasks.json
 ```
 
 Writes `tasks/<repo>/<task_id>/{task.json,input/,solution/,verifier/,goldenSolution.md,evidence/}`
-and `tasks/<repo>/tasks.json` (whose `validation_status` is read from each task's
-`evidence/verdict.json`). Every candidate considered, with its reject reason, is in
-`output/<repo>/tasks/candidates.json`.
+(`exc-<module>-<name>` excision tasks, `hist-<sha7>` history tasks whose `input/`/`solution/`
+are the trees at the parent/commit plus the hygiene overlay) and `tasks/<repo>/tasks.json`
+(whose `validation_status` is read from each task's `evidence/verdict.json`). Every candidate
+considered, with its reject reason, is in `output/<repo>/tasks/candidates.json` (functions)
+and `output/<repo>/tasks/history_candidates.json` (commits).
 
 ### Validate a task standalone
 

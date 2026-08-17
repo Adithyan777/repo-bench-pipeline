@@ -33,6 +33,34 @@ def docker_available() -> None:
         pytest.skip("docker daemon not available")
 
 
+@pytest.fixture(scope="session")
+def mini_env(tmp_path_factory, docker_available: None):
+    """One hygiene+knowledge run of mini_pkg shared by the tasks/harness/history tests
+    (same config as the recorded ``s5_tasks`` cassettes)."""
+    import shutil
+
+    from pipeline.hygiene.context import build_context
+    from pipeline.hygiene.runner import run_hygiene
+    from pipeline.knowledge.runner import run_knowledge
+    from tests import _smoke
+
+    root = tmp_path_factory.mktemp("tasks")
+    src = root / "mini_pkg"
+    shutil.copytree(FIXTURES / "mini_pkg", src)
+    cfg = _smoke.mini_pkg_excision_config()
+    cfg.tasks.tasks_root = str(root / "tasks")
+    ctx = build_context(
+        str(src),
+        config=cfg,
+        output_root=root / "out",
+        llm_mode="replay",
+        llm_stage=_smoke.TASKS_STAGE,
+    )
+    run_hygiene(ctx)
+    run_knowledge(ctx)
+    return ctx
+
+
 @pytest.fixture
 def mini_pkg(tmp_path: Path) -> Path:
     """A throwaway copy of the mini_pkg fixture (safe to mutate)."""

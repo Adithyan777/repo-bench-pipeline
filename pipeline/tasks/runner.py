@@ -1,8 +1,9 @@
-"""P3 stage runner: excision funnel -> build -> validate -> manifest (S4 scope).
+"""P3 stage runner: excision funnel -> build -> history funnel -> build -> validate ->
+manifest.
 
 Mirrors the hygiene/knowledge runners: resumable via state.py with a pipeline-code
 fingerprint in every step's input hash; per-step timing + LLM usage into
-report_data.json. History/net-new funnels, LLM instructions and selection land later.
+report_data.json. Net-new funnel, LLM instructions and selection land later.
 """
 
 from __future__ import annotations
@@ -18,11 +19,20 @@ from pipeline.hygiene.context import HygieneContext
 from pipeline.knowledge.runner import knowledge_paths
 from pipeline.state import code_fingerprint, hash_inputs
 from pipeline.tasks import excision
+from pipeline.tasks import history as H
 from pipeline.tasks.build_excision import BuildInputs, build_task
+from pipeline.tasks.build_history import build_history_task
 from pipeline.tasks.harness import validate_tasks
 from pipeline.tasks.manifest import write_manifest
 
-_STEPS = ("excision_funnel", "build_excision", "validate", "manifest")
+_STEPS = (
+    "excision_funnel",
+    "build_excision",
+    "history_funnel",
+    "build_history",
+    "validate",
+    "manifest",
+)
 
 
 def tasks_root(ctx: HygieneContext) -> Path:
@@ -64,6 +74,14 @@ def _candidates_path(ctx: HygieneContext) -> Path:
 
 def _built_path(ctx: HygieneContext) -> Path:
     return ctx.tasks_dir / "built.json"
+
+
+def _history_candidates_path(ctx: HygieneContext) -> Path:
+    return ctx.tasks_dir / ctx.config.tasks.history_candidates_filename
+
+
+def _built_history_path(ctx: HygieneContext) -> Path:
+    return ctx.tasks_dir / "built_history.json"
 
 
 def step_excision_funnel(ctx: HygieneContext) -> None:
@@ -121,12 +139,10 @@ def _prior_screen_decisions(ctx: HygieneContext) -> dict[str, dict]:
     }
 
 
-def step_build_excision(ctx: HygieneContext) -> None:
-    data = json.loads(_candidates_path(ctx).read_text())
-    by_name = {c["qualname"]: c for c in data["candidates"]}
+def _build_inputs(ctx: HygieneContext, decisions: dict | None = None) -> BuildInputs:
     kp = knowledge_paths(ctx.run_dir, ctx.config)
     build = ctx.load("build")
-    inp = BuildInputs(
+    return BuildInputs(
         repo=ctx.repo,
         repo_name=ctx.run_dir.name,
         base_sha=ctx.report.get("base_sha", ""),
@@ -137,7 +153,16 @@ def step_build_excision(ctx: HygieneContext) -> None:
         knowledge_dir=ctx.knowledge_dir,
         audit_dir=ctx.audit_dir,
         llm=ctx.llm,
+        cache_dir=ctx.tasks_dir / "agent_cache",
+        decisions=decisions,
+        transcripts_dir=ctx.llm.transcripts_dir or Path("transcripts"),
     )
+
+
+def step_build_excision(ctx: HygieneContext) -> None:
+    data = json.loads(_candidates_path(ctx).read_text())
+    by_name = {c["qualname"]: c for c in data["candidates"]}
+    inp = _build_inputs(ctx)
     built: dict[str, dict] = {}
     for qual in data["selected"]:
         c = excision.Candidate(**{k: v for k, v in by_name[qual].items()})
@@ -150,7 +175,11 @@ def step_build_excision(ctx: HygieneContext) -> None:
             by_name[qual]["reject_reason"] = f"unsplittable({exc})"
     data["counts"] = _counts(data["candidates"])
     data["selected"] = [q for q in data["selected"] if built[q]["task_dir"]]
-    _prune_stale(ctx, {b["task_id"] for b in built.values() if b["task_dir"]})
+    _prune_stale(
+        ctx,
+        ctx.config.tasks.excision_id_prefix,
+        {b["task_id"] for b in built.values() if b["task_dir"]},
+    )
     _candidates_path(ctx).write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
     _built_path(ctx).write_text(json.dumps(built, indent=2, sort_keys=True) + "\n")
     ctx.report.setdefault("tasks", {})["build_excision"] = {
@@ -159,16 +188,122 @@ def step_build_excision(ctx: HygieneContext) -> None:
     }
 
 
-def _prune_stale(ctx: HygieneContext, keep: set[str]) -> None:
-    """Excision task folders from an earlier build that were not rebuilt are removed,
-    so tasks/<repo>/ and tasks.json reflect exactly this run's selection."""
-    prefix = ctx.config.tasks.excision_id_prefix + "-"
+def _prune_stale(ctx: HygieneContext, prefix: str, keep: set[str]) -> None:
+    """Task folders (of one source type) from an earlier build that were not rebuilt are
+    removed, so tasks/<repo>/ and tasks.json reflect exactly this run's selection."""
     root = repo_tasks_dir(ctx)
     if not root.is_dir():
         return
     for path in root.iterdir():
-        if path.is_dir() and path.name.startswith(prefix) and path.name not in keep:
+        if path.is_dir() and path.name.startswith(prefix + "-") and path.name not in keep:
             shutil.rmtree(path)
+
+
+def step_history_funnel(ctx: HygieneContext) -> None:
+    kp = knowledge_paths(ctx.run_dir, ctx.config)
+    history = json.loads(Path(kp["history_index"]).read_text())
+    test_map = json.loads(Path(kp["test_map"]).read_text())
+    symbols = json.loads(Path(kp["symbols"]).read_text())
+    results = _baseline(ctx).get("results") or {}
+    passing = {t for t, r in results.items() if r.get("status") == "pass"}
+    base_sha = ctx.report.get("base_sha", "")
+    cands = H.funnel(history, test_map, passing, ctx.repo, base_sha, ctx.config, symbols)
+    order = H.ranked(cands)
+    decisions = _prior_classify_decisions(ctx)
+    prior_keys = set(decisions)
+    kept = H.classify(order, ctx.repo, ctx.llm, ctx.config, decisions)
+    if ctx.config.history.prefer_pr_merge_over_constituents:
+        kept = H.supersede_constituents(cands, kept, ctx.repo)
+    short = H.shortlist(kept, ctx.config)
+    ctx.tasks_dir.mkdir(parents=True, exist_ok=True)
+    data = {
+        "shortlist": [c.sha for c in short],
+        "kept": [c.sha for c in kept],
+        "counts": _counts(cands),
+        "classify_reused": sum(1 for c in order if c.classify_key in prior_keys),
+        "candidates": H.candidates_json(cands),
+    }
+    _history_candidates_path(ctx).write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
+    ctx.report.setdefault("tasks", {})["history_funnel"] = {
+        "considered": len(cands),
+        "survivors": len(order),
+        "classified": sum(1 for c in order if c.classify is not None),
+        "kept": len(kept),
+        "shortlisted": len(short),
+        "counts": data["counts"],
+    }
+
+
+def _prior_classify_decisions(ctx: HygieneContext) -> dict[str, dict]:
+    path = _history_candidates_path(ctx)
+    if not ctx.config.history.reuse_classify_decisions or not path.is_file():
+        return {}
+    if ctx.state.fresh or "history_funnel" in ctx.state.force:
+        return {}
+    prior = json.loads(path.read_text())
+    return {
+        c["classify_key"]: c["classify"]
+        for c in prior.get("candidates", [])
+        if c.get("classify_key") and c.get("classify")
+    }
+
+
+def _prior_build_decisions(ctx: HygieneContext) -> dict[str, dict]:
+    path = _built_history_path(ctx)
+    if not path.is_file() or ctx.state.fresh or "build_history" in ctx.state.force:
+        return {}
+    return json.loads(path.read_text()).get("_decisions", {})
+
+
+def step_build_history(ctx: HygieneContext) -> None:
+    data = json.loads(_history_candidates_path(ctx).read_text())
+    by_sha = {c["sha"]: c for c in data["candidates"]}
+    decisions = _prior_build_decisions(ctx)
+    inp = _build_inputs(ctx, decisions)
+    built: dict[str, dict] = {}
+    n_built = 0
+    for sha in data["shortlist"]:
+        if n_built >= ctx.config.history.build_target:
+            break
+        c = H.HistoryCandidate(**by_sha[sha])
+        result = build_history_task(c, inp, tasks_root(ctx), ctx.config)
+        if result.task_dir:
+            n_built += 1
+            by_sha[sha]["status"] = "built"
+            built[sha] = {"task_dir": str(result.task_dir), "task_id": result.task_id}
+        else:
+            by_sha[sha]["status"] = "rejected"
+            by_sha[sha]["reject_reason"] = result.reject_reason
+            built[sha] = {"task_dir": None, "reject_reason": result.reject_reason}
+        built[sha]["notes"] = {k: v for k, v in result.notes.items() if k != "overlay"}
+    for sha in data["shortlist"]:
+        if sha not in built:
+            by_sha[sha]["status"] = "surplus"
+    data["counts"] = _counts(data["candidates"])
+    data["built"] = [s for s in data["shortlist"] if built.get(s, {}).get("task_dir")]
+    _prune_stale(
+        ctx,
+        ctx.config.tasks.history_id_prefix,
+        {b["task_id"] for b in built.values() if b.get("task_dir")},
+    )
+    _history_candidates_path(ctx).write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
+    built["_decisions"] = decisions
+    _built_history_path(ctx).write_text(json.dumps(built, indent=2, sort_keys=True) + "\n")
+    rejected: dict[str, int] = {}
+    for b in built.values():
+        if isinstance(b, dict) and b.get("task_dir") is None and b.get("reject_reason"):
+            key = b["reject_reason"].split("(")[0]
+            rejected[key] = rejected.get(key, 0) + 1
+    ctx.report.setdefault("tasks", {})["build_history"] = {
+        "attempted": len(built) - 1,
+        "built": n_built,
+        "rejected": dict(sorted(rejected.items())),
+        "verifier_source": {
+            b["task_id"]: b["notes"].get("verifier_source")
+            for b in built.values()
+            if isinstance(b, dict) and b.get("task_dir")
+        },
+    }
 
 
 def step_validate(ctx: HygieneContext) -> None:
@@ -194,6 +329,8 @@ def step_manifest(ctx: HygieneContext) -> None:
 _STEP_FUNCS = {
     "excision_funnel": step_excision_funnel,
     "build_excision": step_build_excision,
+    "history_funnel": step_history_funnel,
+    "build_history": step_build_history,
     "validate": step_validate,
     "manifest": step_manifest,
 }
@@ -228,6 +365,25 @@ def _step_input_hash(ctx: HygieneContext, step: str) -> str:
             repr(ctx.config.tasks),
             repr(ctx.config.harness),
         )
+    if step == "history_funnel":
+        return hash_inputs(
+            Path(kp["history_index"]),
+            Path(kp["test_map"]),
+            Path(kp["symbols"]),
+            hy / "baseline.json",
+            repr(ctx.config.history),
+            repr(ctx.config.llm.classify_batch_size),
+            ctx.config.model_for(H.CLASSIFY_STEP),
+        )
+    if step == "build_history":
+        return hash_inputs(
+            _history_build_input(ctx),
+            hy / "build.json",
+            _head(ctx.repo),
+            repr(ctx.config.history),
+            repr(ctx.config.tasks),
+            repr(ctx.config.harness),
+        )
     if step == "validate":
         parts: list[Path | str] = [repr(ctx.config.harness), hy / "build.json"]
         for d in _task_dirs(ctx):
@@ -245,11 +401,33 @@ def _step_input_hash(ctx: HygieneContext, step: str) -> str:
     raise KeyError(step)
 
 
+def _history_build_input(ctx: HygieneContext) -> str:
+    """The shortlist as the funnel produced it; the build step's own status updates in
+    history_candidates.json must not invalidate the step."""
+    path = _history_candidates_path(ctx)
+    if not path.is_file():
+        return ""
+    data = json.loads(path.read_text())
+    short = set(data.get("shortlist", []))
+    cands = [
+        {k: v for k, v in c.items() if k not in ("status", "reject_reason")}
+        for c in data.get("candidates", [])
+        if c["sha"] in short
+    ]
+    return json.dumps({"shortlist": data.get("shortlist", []), "candidates": cands}, sort_keys=True)
+
+
 def _task_dirs(ctx: HygieneContext) -> list[Path]:
-    if not _built_path(ctx).is_file():
-        return []
-    built = json.loads(_built_path(ctx).read_text())
-    return sorted(Path(b["task_dir"]) for b in built.values() if b.get("task_dir"))
+    dirs: list[Path] = []
+    for path in (_built_path(ctx), _built_history_path(ctx)):
+        if path.is_file():
+            built = json.loads(path.read_text())
+            dirs.extend(
+                Path(b["task_dir"])
+                for b in built.values()
+                if isinstance(b, dict) and b.get("task_dir")
+            )
+    return sorted(dirs)
 
 
 def _baseline(ctx: HygieneContext) -> dict:

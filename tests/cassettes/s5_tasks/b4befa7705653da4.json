@@ -1,0 +1,119 @@
+{
+  "request": {
+    "extra_body": {
+      "reasoning_effort": "low"
+    },
+    "max_tokens": 2048,
+    "messages": [
+      {
+        "content": "You screen candidate functions for a 'reimplement this function' benchmark task. The task hides the body but keeps the signature and docstring, and the solver must reimplement it so the existing tests pass. For EACH function answer:\n- docstring_leaks_impl: does the docstring spell out the implementation step by step (so a solver could transcribe it without understanding)? Describing behavior or the contract is NOT a leak.\n- trivially_inferable: is it a trivial wrapper/one-liner whose body is obvious from the signature and name alone (delegation, attribute access, constant)?\nReturn one entry per function, same qualname, with a one-sentence reason.\n\n### mini_pkg.calc.clamp\n```python\ndef clamp(value, low, high):\n    \"\"\"Clamp value into the inclusive range [low, high].\n\n    Bounds given in either order are accepted.\"\"\"\n    if low > high:\n        low, high = high, low\n    if value < low:\n        return low\n    if value > high:\n        return high\n    return value\n```\n\n### mini_pkg.text.display_width\n```python\ndef display_width(s):\n    \"\"\"Return the display width of a string in terminal columns.\"\"\"\n    width = wcswidth(s)\n    return len(s) if width < 0 else width\n```\n\n### mini_pkg.core.Registry.register\n```python\n    def register(self, name, value):\n        if name in self._items:\n            raise KeyError(f\"already registered: {name}\")\n        self._items[name] = value\n```\n\n### mini_pkg.calc.ceil_div\n```python\ndef ceil_div(a, b):\n    \"\"\"Return ceil(a / b) for positive integers.\"\"\"\n    quotient, remainder = divmod(a, b)\n    return quotient + bool(remainder)\n```\n\n### mini_pkg.text.truncate\n```python\ndef truncate(s, width):\n    \"\"\"Truncate s to at most `width` display columns, adding an ellipsis.\"\"\"\n    if not _needs_truncation(s, width):\n        return s\n    if width <= 1:\n        return \".\"[:width]\n    return s[: width - 1] + \"\\u2026\"\n```",
+        "role": "user"
+      }
+    ],
+    "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "properties": {
+              "screens": {
+                "items": {
+                  "properties": {
+                    "docstring_leaks_impl": {
+                      "type": "boolean"
+                    },
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "trivially_inferable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "docstring_leaks_impl",
+                    "trivially_inferable",
+                    "reason"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "screens"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"screens\": [{\"qualname\": \"mini_pkg.calc.clamp\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"The docstring describes behavior (clamping into range, either order) but not the step-by-step swap-and-compare implementation.\"}, {\"qualname\": \"mini_pkg.text.display_width\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring only states the contract; the wcswidth call and fallback logic are not spelled out.\"}, {\"qualname\": \"mini_pkg.core.Registry.register\", \"docstring_leaks_impl\": false, \"trivially_inferable\": true, \"reason\": \"No docstring, and the body is an obvious dict-insertion with a duplicate check that is trivially inferable from the name and signature.\"}, {\"qualname\": \"mini_pkg.calc.ceil_div\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring states the contract but not the divmod/remainder-based implementation.\"}, {\"qualname\": \"mini_pkg.text.truncate\", \"docstring_leaks_impl\": false, \"trivially_inferable\": false, \"reason\": \"Docstring describes truncation behavior but not the specific helper call, width<=1 case, or ellipsis character handling.\"}]}",
+                "name": "emit"
+              },
+              "id": "chatcmpl-tool-900bd7e641ac4e228742bb8e9dada66c",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786972340,
+    "id": "chatcmpl-4fd7d309c0c042cab39918d74a7fc31a",
+    "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 333,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 257,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 128,
+        "text_tokens": null
+      },
+      "prompt_tokens": 844,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 1177
+    }
+  }
+}

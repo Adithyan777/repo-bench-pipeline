@@ -10,6 +10,7 @@ target_repo/
 
 # local tooling
 .claude/
+.DS_Store
 
 # python
 __pycache__/
@@ -28,7 +29,7 @@ htmlcov/
 output/
 transcripts/
 # generated task folders: dry-run output for now; final tasks/glom + tasks.json are committed in S9
-tasks/
+/tasks/
 scripts/_record_workdir/
 
 # fixture repos are rebuilt by tests/fixtures/build_mini_pkg.py; don't commit .git

@@ -43,7 +43,9 @@ def test_rebuild_is_deterministic(tmp_path: Path) -> None:
 
 def test_history_shape() -> None:
     messages = _log(FIXTURES / "mini_pkg")
-    assert len(messages) == 8
+    assert len(messages) == 12
+    assert any("Merge pull request #7" in m for m in messages)
+    assert any("Add core.first" in m for m in messages)
     assert any("docs:" in m for m in messages)
     assert any("Fix" in m for m in messages)
     assert any("wcwidth" in m for m in messages)
@@ -65,7 +67,7 @@ def test_bugfix_commit_adds_test_and_fixes_behavior() -> None:
     parent_test = _show(repo, f"{sha}~1", "tests/test_calc.py")
     fixed_test = _show(repo, sha, "tests/test_calc.py")
 
-    assert "(a + b) // b" in parent_calc and "(a + b - 1) // b" in fixed_calc
+    assert "(a + b) // b" in parent_calc and "quotient + bool(remainder)" in fixed_calc
     assert "exact_multiple" not in parent_test and "exact_multiple" in fixed_test
 
     ns_buggy: dict = {}

@@ -96,9 +96,13 @@ def build_agent(client: LLMClient, workdir: Path, image: str, transcripts_dir: P
     )
 
 
-# --- S4 excision screen (SMALL tier), replayed by tests/test_tasks.py ---
+# --- S4/S5 tasks stage on the mini_pkg fixture, replayed by tests/test_tasks.py ---
+# One cassette stage holds every LLM call the `--stage tasks` run makes on the fixture:
+# the SMALL excision screen (S4), the SMALL history classify and the BIG neutrality
+# check (S5a). Recorded by running the real stage (scripts/record_cassettes.py).
 
-SCREEN_STAGE = "s4_screen"
+TASKS_STAGE = "s5_tasks"
+SCREEN_STAGE = TASKS_STAGE
 FIXTURE_MINI_PKG = Path(__file__).resolve().parent / "fixtures" / "mini_pkg"
 
 # The real mini_pkg test_map (knowledge stage output); pinned here so the recorded
@@ -107,6 +111,7 @@ MINI_PKG_TEST_MAP = {
     "tests/test_calc.py::test_ceil_div_exact_multiple": ["mini_pkg.calc.ceil_div"],
     "tests/test_calc.py::test_ceil_div_rounds_up": ["mini_pkg.calc.ceil_div"],
     "tests/test_calc.py::test_clamp_bounds": ["mini_pkg.calc.clamp"],
+    "tests/test_calc.py::test_clamp_inverted_bounds": ["mini_pkg.calc.clamp"],
     "tests/test_calc.py::test_clamp_within": ["mini_pkg.calc.clamp"],
     "tests/test_calc.py::test_running_stats_mean": [
         "mini_pkg.calc.RunningStats.__init__",
@@ -114,6 +119,7 @@ MINI_PKG_TEST_MAP = {
         "mini_pkg.calc.RunningStats.mean",
     ],
     "tests/test_core.py::test_dedupe_preserves_order": ["mini_pkg.core.dedupe"],
+    "tests/test_core.py::test_first_match_and_default": ["mini_pkg.core.first"],
     "tests/test_core.py::test_registry_duplicate_raises": [
         "mini_pkg.core.Registry.__init__",
         "mini_pkg.core.Registry.register",
@@ -137,15 +143,36 @@ MINI_PKG_TEST_MAP = {
 }
 
 
+def fixture_sha(message_prefix: str, repo: Path | None = None) -> str:
+    """Full sha of the fixture commit whose subject starts with ``message_prefix``."""
+    import subprocess
+
+    out = subprocess.run(
+        ["git", "-C", str(repo or FIXTURE_MINI_PKG), "log", "--format=%H %s"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+    for line in out.splitlines():
+        sha, _, subject = line.partition(" ")
+        if subject.startswith(message_prefix):
+            return sha
+    raise LookupError(message_prefix)
+
+
 def mini_pkg_excision_config():
-    """mini_pkg functions are all < 8 lines; relax the size/complexity floors so the
-    fixture exercises the funnel + screen (thresholds themselves are tested separately)."""
+    """Only ``clamp`` meets the default size/complexity floors; relax them so the fixture
+    exercises the funnel + screen (thresholds themselves are tested separately)."""
     from pipeline.config import Config
 
     cfg = Config()
     cfg.excision.min_lines = 3
     cfg.excision.min_complexity = 1
     cfg.excision.min_assertions_touching_fn = 0  # no BIG top-up agent in the fixture run
+    # Agent rewrites cannot be replayed from cassettes (container output differs per run);
+    # the fixture run records their absence (`budget-exhausted`) and the scripted-endpoint
+    # tests exercise them.
+    cfg.history.max_neutrality_rewrites_per_repo = 0
     return cfg
 
 
@@ -159,6 +186,30 @@ def mini_pkg_ranked(repo: Path | None = None):
     passing = set(MINI_PKG_TEST_MAP)
     cands = excision.funnel(symbols, MINI_PKG_TEST_MAP, passing, cfg, repo=repo)
     return excision.rank(cands, cfg), cfg
+
+
+def run_tasks_stage(root: Path, mode: str, stage: str = TASKS_STAGE):
+    """hygiene -> knowledge -> tasks on a throw-away copy of the fixture (Docker). Returns
+    the context; ``ctx.llm`` carries the usage. Same config as the tests' ``mini_env``."""
+    import shutil
+
+    from pipeline.hygiene.context import build_context
+    from pipeline.hygiene.runner import run_hygiene
+    from pipeline.knowledge.runner import run_knowledge
+    from pipeline.tasks.runner import run_tasks
+
+    src = root / "mini_pkg"
+    if not src.exists():
+        shutil.copytree(FIXTURE_MINI_PKG, src)
+    cfg = mini_pkg_excision_config()
+    cfg.tasks.tasks_root = str(root / "tasks")
+    ctx = build_context(
+        str(src), config=cfg, output_root=root / "out", llm_mode=mode, llm_stage=stage
+    )
+    run_hygiene(ctx)
+    run_knowledge(ctx)
+    run_tasks(ctx)
+    return ctx
 
 
 def run_excision_screen(client: LLMClient, repo: Path | None = None) -> list[str]:

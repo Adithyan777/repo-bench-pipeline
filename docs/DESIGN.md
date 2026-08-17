@@ -491,6 +491,8 @@ Build:
 - Verifier = tests added/changed by the commit (agent checks and rewrites for implementation-neutrality; BIG). If no tests were added by the commit, the agent authors tests.
 - Old-commit dependency drift: reuse the current lock; fallback: re-lock at that commit (per-task image variant).
 
+S5a implementation notes: only PR merges (a `#N` in the subject) are candidates among merges (`input/` = first parent); the commits on a surviving PR merge's branch are `superseded-by-merge`. Reverts are a hard reject (`reverted-by`) when named in a later revert body or matched by reverse `git patch-id`. The SMALL classifier walks the score-ranked survivors in batches until `shortlist_size` are kept (cap `classify_max_commits`), decisions persisted by content hash. Build gates run in the container BEFORE any BIG call and reject with a reason instead of producing an INVALID task: static gate on `verifier/` vs `input/`, verifier on `solution/` (import/collection failure = `env-drift`, other failing tests dropped), verifier on `input/` (invalid fail reason = reject, passing tests dropped, `harness.min_failing_tests` must remain); the shortlist is walked until `build_target` tasks are built. Verifier tests are the commit's added/changed test FUNCTIONS (AST diff, whole file at commit state overlaid, nodeids selected) + conftest ancestors; the collateral baseline is the suite run on `input/` (the parent), not HEAD's baseline. Re-locking at an old commit is out of scope: `env-drift` is recorded, never worked around.
+
 
 ### Excision funnel (step 5.3)
 

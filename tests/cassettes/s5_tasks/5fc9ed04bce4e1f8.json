@@ -1,0 +1,112 @@
+{
+  "request": {
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "max_tokens": 8192,
+    "messages": [
+      {
+        "content": "You review verifier tests for a benchmark task: the solver gets the tree BEFORE a change and must reimplement the change so these tests pass. Tests are acceptable only if they assert BEHAVIOR through the public interface. Flag a test if it: imports or calls private helpers (`_name`), references identifiers newly introduced by the change (listed below) that a solver could name differently, asserts implementation details (internal call order, private state, exact repr of internals), or merely mirrors the patch. Testing public functions/classes that already exist before the change is fine, and so is reaching NEW public API through the convention `getattr(existing_public_module, 'name', None)` + a presence assert (new public API is part of the task's contract; only its private helpers are not). Which exception type is raised, and exception identity/chaining observable by a caller (`e is cause`, `__cause__`), IS behavior, not an implementation detail.\n\nCommit: Merge pull request #7 from fixture/clamp-order\nTouched functions:\n- mini_pkg.calc.clamp: `clamp(value, low, high)`\n  Clamp value into the inclusive range [low, high].\n\nBounds given in either order are accepted.\nIdentifiers introduced by the change: (none)\n\n### tests/test_calc.py (tests: test_clamp_inverted_bounds)\n```python\nfrom mini_pkg.calc import RunningStats, ceil_div, clamp\n\n\ndef test_clamp_within():\n    assert clamp(5, 0, 10) == 5\n\n\ndef test_clamp_bounds():\n    assert clamp(-1, 0, 10) == 0\n    assert clamp(11, 0, 10) == 10\n\n\ndef test_ceil_div_rounds_up():\n    assert ceil_div(5, 2) == 3\n    assert ceil_div(1, 3) == 1\n\n\ndef test_running_stats_mean():\n    stats = RunningStats()\n    stats.add(2).add(4)\n    assert stats.mean() == 3\n\n\ndef test_ceil_div_exact_multiple():\n    assert ceil_div(4, 2) == 2\n    assert ceil_div(6, 3) == 2\n\n\ndef test_clamp_inverted_bounds():\n    assert clamp(5, 10, 0) == 5\n    assert clamp(-1, 10, 0) == 0\n\n```\n\nReturn neutral=true when nothing is flagged; otherwise list issues and the flagged test nodeids (file::name).",
+        "role": "user"
+      }
+    ],
+    "model": "moonshotai/Kimi-K2.6",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "properties": {
+              "flagged_tests": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "issues": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "neutral": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "neutral",
+              "issues",
+              "flagged_tests"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"neutral\": true, \"issues\": [], \"flagged_tests\": []}",
+                "name": "emit"
+              },
+              "id": "functions.emit:0",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786972354,
+    "id": "chatcmpl-45f4b8a7ccc44fa6aee637f88c047535",
+    "model": "moonshotai/Kimi-K2.6",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 24,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 17,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 11,
+        "text_tokens": null
+      },
+      "prompt_tokens": 567,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 224,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 591
+    }
+  }
+}

@@ -364,26 +364,26 @@ def _fixture_symbols(cfg: Config) -> dict:
     return build_symbol_index(FIXTURES / "mini_pkg", cfg)
 
 
-def test_funnel_defaults_reject_every_mini_pkg_function_with_reasons() -> None:
+def test_funnel_defaults_reject_all_but_clamp_with_reasons() -> None:
     cfg = Config()
     cands = excision.funnel(
         _fixture_symbols(cfg), _smoke.MINI_PKG_TEST_MAP, set(_smoke.MINI_PKG_TEST_MAP), cfg
     )
     by = {c.qualname: c for c in cands}
-    assert all(c.status == "rejected" for c in cands)
-    assert by["mini_pkg.calc.clamp"].reject_reason == "too-short(7<8)"
+    assert [c.qualname for c in cands if c.status != "rejected"] == ["mini_pkg.calc.clamp"]
+    assert by["mini_pkg.calc.ceil_div"].reject_reason == "too-short(4<8)"
     assert by["mini_pkg.core.dedupe"].reject_reason == "few-covering-tests(1<2)"
     assert by["mini_pkg.text._needs_truncation"].reject_reason == "private"
     assert by["mini_pkg.shapes.area"].reject_reason == "uncovered"
     assert by["mini_pkg.calc.RunningStats.__init__"].reject_reason == "private"
     assert by["test_calc.test_clamp_bounds"].reject_reason == "test-code"
-    assert excision.rank(cands, cfg) == []
+    assert [c.qualname for c in excision.rank(cands, cfg)] == ["mini_pkg.calc.clamp"]
 
 
 def test_funnel_relaxed_selects_and_ranks_deterministically() -> None:
     ranked, cfg = _smoke.mini_pkg_ranked()
     names = [c.qualname for c in ranked]
-    assert names[0] == "mini_pkg.calc.clamp"  # score 6, module round-robin from calc
+    assert names[0] == "mini_pkg.calc.clamp"  # score 12, module round-robin from calc
     assert set(names) == {
         "mini_pkg.calc.clamp",
         "mini_pkg.text.display_width",
@@ -528,20 +528,16 @@ def test_screen_backfills_and_reuses_persisted_decisions() -> None:
     assert [c.qualname for c in again] == names and llm2.calls == 0
 
 
-@pytest.mark.skipif(not _cassettes(_smoke.SCREEN_STAGE), reason="s4_screen cassette not recorded")
-def test_screen_replay_marks_screened_out_with_reasons(tmp_path: Path) -> None:
+@pytest.mark.skipif(not _cassettes(_smoke.SCREEN_STAGE), reason="s5_tasks cassette not recorded")
+def test_screen_replay_records_a_decision_per_candidate(tmp_path: Path) -> None:
     client = LLMClient(stage=_smoke.SCREEN_STAGE, mode="replay", transcripts_dir=tmp_path / "t")
     selected = _smoke.run_excision_screen(client)
-    assert selected == [
-        "mini_pkg.calc.clamp",
-        "mini_pkg.text.display_width",
-        "mini_pkg.text.truncate",
-    ]
+    assert selected[0] == "mini_pkg.calc.clamp" and len(selected) == 4  # this tape drops one
     ranked, cfg = _smoke.mini_pkg_ranked()
     excision.screen(ranked, _smoke.FIXTURE_MINI_PKG, client, cfg)
+    assert all(c.screen and c.screen["reason"] and c.screen_key for c in ranked)
     out = {c.qualname: (c.status, c.reject_reason) for c in ranked}
-    assert out["mini_pkg.calc.ceil_div"] == ("screened_out", "trivially-inferable")
-    assert all(c.screen and c.screen["reason"] for c in ranked)
+    assert out["mini_pkg.core.Registry.register"] == ("screened_out", "trivially-inferable")
 
 
 # --- manifest + static gate (no docker) --------------------------------------------------
@@ -606,30 +602,6 @@ def test_static_gate_violations(tmp_path: Path) -> None:
 # --- docker: runner e2e + harness variants ----------------------------------------------
 
 
-@pytest.fixture(scope="module")
-def mini_env(tmp_path_factory, docker_available: None):
-    """One hygiene+knowledge run of mini_pkg shared by the harness tests."""
-    from pipeline.hygiene.context import build_context
-    from pipeline.hygiene.runner import run_hygiene
-    from pipeline.knowledge.runner import run_knowledge
-
-    root = tmp_path_factory.mktemp("s4")
-    src = root / "mini_pkg"
-    shutil.copytree(FIXTURES / "mini_pkg", src)
-    cfg = _smoke.mini_pkg_excision_config()
-    cfg.tasks.tasks_root = str(root / "tasks")
-    ctx = build_context(
-        str(src),
-        config=cfg,
-        output_root=root / "out",
-        llm_mode="replay",
-        llm_stage=_smoke.SCREEN_STAGE,
-    )
-    run_hygiene(ctx)
-    run_knowledge(ctx)
-    return ctx
-
-
 def _inputs(ctx) -> BuildInputs:
     from pipeline.knowledge.runner import knowledge_paths
 
@@ -675,13 +647,14 @@ def test_funnel_on_real_test_map(mini_env) -> None:
     symbols = json.loads(Path(kp["symbols"]).read_text())
     tmap = json.loads(Path(kp["test_map"]).read_text())
     assert tmap == _smoke.MINI_PKG_TEST_MAP  # the cassette prompt is built from this
-    assert excision.rank(excision.funnel(symbols, tmap, None, Config()), Config()) == []
+    defaults = excision.rank(excision.funnel(symbols, tmap, None, Config()), Config())
+    assert [c.qualname for c in defaults] == ["mini_pkg.calc.clamp"]
     ranked = excision.rank(excision.funnel(symbols, tmap, None, ctx.config), ctx.config)
     assert ranked[0].qualname == "mini_pkg.calc.clamp"
 
 
 @pytest.mark.docker
-@pytest.mark.skipif(not _cassettes(_smoke.SCREEN_STAGE), reason="s4_screen cassette not recorded")
+@pytest.mark.skipif(not _cassettes(_smoke.TASKS_STAGE), reason="s5_tasks cassette not recorded")
 def test_tasks_stage_e2e_valid_and_resumable(mini_env) -> None:
     from pipeline.tasks.runner import repo_tasks_dir, run_tasks
 
@@ -690,11 +663,17 @@ def test_tasks_stage_e2e_valid_and_resumable(mini_env) -> None:
     tasks_dir = repo_tasks_dir(ctx)
     manifest = json.loads((tasks_dir / "tasks.json").read_text())
     statuses = {t["id"]: t["validation_status"] for t in manifest["tasks"]}
+    bugfix, merge = _smoke.fixture_sha("Fix ceil_div"), _smoke.fixture_sha("Merge pull request")
     assert statuses == {
+        "exc-mini_pkg.calc-ceil_div": "VALID",
         "exc-mini_pkg.calc-clamp": "VALID",
         "exc-mini_pkg.text-display_width": "VALID",
         "exc-mini_pkg.text-truncate": "VALID",
+        f"hist-{bugfix[:7]}": "VALID",
+        f"hist-{merge[:7]}": "VALID",
     }
+    assert {t["source_type"] for t in manifest["tasks"]} == {"excision", "history"}
+    _check_history_e2e(ctx, tasks_dir, bugfix, merge)
     task_dir = tasks_dir / "exc-mini_pkg.calc-clamp"
     for name in (
         "task.json",
@@ -714,13 +693,13 @@ def test_tasks_stage_e2e_valid_and_resumable(mini_env) -> None:
         "type": "excision",
         "target": "mini_pkg.calc.clamp",
         "file": "mini_pkg/calc.py",
-        "span": [9, 15],
-        "excised_lines": [11, 15],
+        "span": [10, 20],
+        "excised_lines": [14, 20],
         "docstring_kept": True,
     }
     assert task["instruction_status"] == "template-S4" and task["difficulty"] is None
-    assert task["verifier_on_input"] == {"exit_code": 1, "n_failing": 2, "n_passing": 0}
-    assert manifest["tasks"][0]["verifier_on_input"]["n_failing"] == 2
+    assert task["verifier_on_input"] == {"exit_code": 1, "n_failing": 3, "n_passing": 0}
+    assert manifest["tasks"][1]["verifier_on_input"]["n_failing"] == 3
     assert "if value < low" not in task["instruction"]  # no body leak
     assert "Clamp value into the inclusive range" in task["instruction"]
     assert set(task["files_in_scope"]) >= {"mini_pkg/calc.py", "tests/test_calc.py"}
@@ -738,7 +717,7 @@ def test_tasks_stage_e2e_valid_and_resumable(mini_env) -> None:
     assert (task_dir / "evidence/fail_before.report.json").is_file()
     assert (
         json.loads((task_dir / "evidence/pass_after.report.json").read_text())["summary"]["passed"]
-        == 2
+        == 3
     )
     assert all(
         r["reason"] == "NotImplementedError"
@@ -749,22 +728,133 @@ def test_tasks_stage_e2e_valid_and_resumable(mini_env) -> None:
         "+    if value < low:" in golden and '-    raise NotImplementedError("excised")' in golden
     )
     cands = json.loads((ctx.tasks_dir / "candidates.json").read_text())
-    assert cands["counts"]["selected"] == 3 and cands["counts"]["screened_out"] == 2
-    assert all(
-        c["reject_reason"]
-        for c in cands["candidates"]
-        if c["status"] in ("rejected", "screened_out")
-    )
+    assert cands["counts"]["selected"] == 4 and cands["counts"]["screened_out"] == 1
+    assert all(c["reject_reason"] for c in cands["candidates"] if c["status"] == "rejected")
     # resumable: a second run skips every step
     ctx.report["stages"] = {}
     run_tasks(ctx)
     assert all(
         ctx.report["stages"][s]["skipped"]
-        for s in ("excision_funnel", "build_excision", "validate", "manifest")
+        for s in (
+            "excision_funnel",
+            "build_excision",
+            "history_funnel",
+            "build_history",
+            "validate",
+            "manifest",
+        )
     )
     # harness idempotent: same folder, identical verdict (timestamps aside)
     again = validate_task(task_dir, ctx.config)
     assert _strip_ts(again) == _strip_ts(verdict)
+    _check_classify_reuse(ctx)
+
+
+def _check_history_e2e(ctx, tasks_dir: Path, bugfix: str, merge: str) -> None:
+    from pipeline.tasks import history as H
+
+    hist = json.loads((ctx.tasks_dir / "history_candidates.json").read_text())
+    by = {c["sha"]: c for c in hist["candidates"]}
+    reasons = {c["message"][:20]: c["reject_reason"] for c in hist["candidates"]}
+    assert reasons["docs: add README wit"] == "docs-or-ci-only"
+    assert reasons["Use wcwidth for accu"] == "dependency-changing"
+    assert reasons["Refactor: extract _n"] == "kind:refactor"  # SMALL classify (cassette)
+    assert reasons["Rename geometry modu"] == "uncovered-and-no-tests"
+    assert reasons["Initial package: cal"] == "root-commit"
+    assert reasons["Accept inverted boun"] == f"superseded-by-merge({merge[:7]})"
+    assert reasons["Test clamp with inve"] == "no-source-change"
+    assert reasons["Add text module with"] == "verifier-on-input:ModuleNotFoundError"
+    assert reasons["Add core.first helpe"] == (
+        "verifier-imports-symbol-missing-in-input(mini_pkg.core.first; rewrite:budget-exhausted)"
+    )
+    assert by[bugfix]["status"] == "built" and by[bugfix]["kind"] == "bugfix"
+    assert by[bugfix]["score_breakdown"] == {
+        "fix_keyword": 1.0,
+        "adds_tests": 2.0,
+        "public_fn": 1.0,
+        "single_function": 1.0,
+    }
+    assert hist["shortlist"][:2] == [bugfix, merge]  # both score 5; bugfix beats feature
+    built = json.loads((ctx.tasks_dir / "built_history.json").read_text())
+    assert built["_decisions"] and all(len(k) == 16 for k in built["_decisions"])
+    task_dir = tasks_dir / f"hist-{bugfix[:7]}"
+    for name in (
+        "goldenSolution.md",
+        "verifier/run.sh",
+        "verifier/tests/test_calc.py",
+        "evidence/fail_before.log",
+        "evidence/pass_after.log",
+        "evidence/determinism.json",
+        "evidence/collateral.json",
+        "evidence/verdict.json",
+    ):
+        assert (task_dir / name).exists(), name
+    task = json.loads((task_dir / "task.json").read_text())
+    prov = task["provenance"]
+    assert prov["type"] == "history" and prov["commit"] == bugfix
+    assert prov["parent"] == H.git(ctx.repo, "rev-parse", f"{bugfix}^").strip()
+    assert prov["verifier_source"] == "commit-tests" and prov["classification"]["kind"] == "bugfix"
+    assert task["verifier_tests"] == ["tests/test_calc.py::test_ceil_div_exact_multiple"]
+    assert task["instruction_status"] == "template-S5a" and task["difficulty"] is None
+    assert task["neutrality"]["decision"]["neutral"] is True and task["neutrality"]["checked"]
+    assert (
+        task["verifier_on_input"]["n_failing"] == 1
+        and task["verifier_on_solution"]["n_passing"] == 1
+    )
+    assert (
+        task["collateral"]["source"] == "input-run"
+        and len(task["collateral"]["baseline_passing"]) == 10
+    )
+    assert set(task["files_in_scope"]) >= {"mini_pkg/calc.py", "tests/test_calc.py"}
+    assert task["overlay_files"]["input"] == task["overlay_files"]["solution"]
+    assert "Dockerfile" in task["overlay_files"]["input"]
+    assert not any(".egg-info" in f for f in task["overlay_files"]["input"])
+    # input/solution are the historical trees; the overlay never overwrites
+    assert (task_dir / "input/mini_pkg/calc.py").read_text() == H.show(
+        ctx.repo, f"{bugfix}^", "mini_pkg/calc.py"
+    )
+    assert (task_dir / "solution/mini_pkg/calc.py").read_text() == H.show(
+        ctx.repo, bugfix, "mini_pkg/calc.py"
+    )
+    assert (task_dir / "input/setup.py").read_text() == H.show(ctx.repo, f"{bugfix}^", "setup.py")
+    verdict = json.loads((task_dir / "evidence/verdict.json").read_text())
+    assert verdict["valid"] and verdict["checks"]["collateral"]["ok"]
+    assert (
+        list(verdict["checks"]["right_reason"]["tests"].values())[0]["reason"] == "AssertionError"
+    )
+    golden = (task_dir / "goldenSolution.md").read_text()
+    assert "+    quotient, remainder = divmod(a, b)" in golden and "TODO-S5b" in golden
+    # PR merge: input = FIRST parent (mainline), solution = the merge
+    mtask = json.loads((tasks_dir / f"hist-{merge[:7]}" / "task.json").read_text())
+    first_parent = H.git(ctx.repo, "rev-parse", f"{merge}^1").strip()
+    assert mtask["provenance"]["is_merge"] and mtask["provenance"]["parent"] == first_parent
+    assert mtask["provenance"]["pr_number"] == 7
+    assert (
+        "low > high" not in (tasks_dir / f"hist-{merge[:7]}" / "input/mini_pkg/calc.py").read_text()
+    )
+    assert (
+        "low > high" in (tasks_dir / f"hist-{merge[:7]}" / "solution/mini_pkg/calc.py").read_text()
+    )
+    assert mtask["verifier_tests"] == ["tests/test_calc.py::test_clamp_inverted_bounds"]
+
+
+def _check_classify_reuse(ctx) -> None:
+    """A forced funnel rerun reuses every persisted classify decision: zero LLM calls."""
+    from pipeline.tasks.runner import step_history_funnel
+
+    hist = json.loads((ctx.tasks_dir / "history_candidates.json").read_text())
+    real_llm, ctx.llm = ctx.llm, _NoLLM()
+    try:
+        step_history_funnel(ctx)
+    finally:
+        ctx.llm = real_llm
+    again = json.loads((ctx.tasks_dir / "history_candidates.json").read_text())
+    assert again["classify_reused"] == 6 and again["shortlist"] == hist["shortlist"]
+
+
+class _NoLLM:
+    def complete_json(self, *a, **k):
+        raise AssertionError("LLM must not be called: decisions are persisted")
 
 
 @pytest.mark.docker
@@ -819,12 +909,12 @@ def test_harness_collateral_breakage(mini_env, tmp_path: Path) -> None:
     ctx = mini_env
     task_dir = _clamp_task(ctx, tmp_path)
     calc = task_dir / "solution/mini_pkg/calc.py"
-    calc.write_text(calc.read_text().replace("return (a + b - 1) // b", "return a // b"))
+    calc.write_text(calc.read_text().replace("quotient + bool(remainder)", "quotient"))
     v = validate_task(task_dir, ctx.config)
     assert v["reasons"] == ["collateral-breakage"]
     col = json.loads((task_dir / "evidence/collateral.json").read_text())
     assert col["newly_failing"] == ["tests/test_calc.py::test_ceil_div_rounds_up"]
-    assert col["baseline_passing"] == 11
+    assert col["baseline_passing"] == 13
 
 
 @pytest.mark.docker
@@ -960,5 +1050,5 @@ def test_build_step_prunes_stale_excision_folders(tmp_path: Path) -> None:
     for name in ("exc-a", "exc-stale", "hist-keep"):
         (root / name).mkdir(parents=True)
     ctx = SimpleNamespace(config=cfg, run_dir=tmp_path / "out" / "repo")
-    _prune_stale(ctx, {"exc-a"})
+    _prune_stale(ctx, "exc", {"exc-a"})
     assert sorted(p.name for p in root.iterdir()) == ["exc-a", "hist-keep"]

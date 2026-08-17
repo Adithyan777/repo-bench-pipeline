@@ -13,7 +13,7 @@ import difflib
 import json
 import shutil
 import tempfile
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from pipeline.agent.loop import Agent
@@ -52,6 +52,10 @@ class BuildInputs:
     knowledge_dir: Path
     audit_dir: Path
     llm: object | None = None  # LLMClient; None disables the top-up agent
+    cache_dir: Path | None = None  # agent-authored verifier files, keyed by content hash
+    decisions: dict | None = None  # persisted LLM decisions (content hash -> decision)
+    counters: dict = field(default_factory=dict)  # per-build-step budgets (agent runs)
+    transcripts_dir: Path = Path("transcripts")  # from the LLM client (agent trajectories)
 
 
 def task_id_for(c: Candidate, config: Config = DEFAULT) -> str:
@@ -198,12 +202,17 @@ def _collateral(baseline: dict, adapter: PythonAdapter, config: Config) -> dict 
 
 
 def _files_in_scope(c: Candidate, graph: dict, test_files: list[str]) -> list[str]:
-    files = {c.file, *test_files}
+    return files_in_scope({c.file, *test_files}, {c.module}, graph)
+
+
+def files_in_scope(files: set[str], modules: set[str], graph: dict) -> list[str]:
+    """Touched files + their direct importers (repo graph ``imports`` edges)."""
+    out = set(files)
     node_file = {n["id"]: n["file"] for n in graph.get("nodes", [])}
     for e in graph.get("edges", []):
-        if e["type"] == "imports" and e["target"] == c.module and e["source"] in node_file:
-            files.add(node_file[e["source"]])
-    return sorted(files)
+        if e["type"] == "imports" and e["target"] in modules and e["source"] in node_file:
+            out.add(node_file[e["source"]])
+    return sorted(out)
 
 
 def _golden(c: Candidate, original: str, excised: str, config: Config) -> str:
@@ -250,7 +259,8 @@ def _instruction(c: Candidate, verifier: Path, nodeids: list[str], cmd: str, con
     )
     examples = _examples(c, verifier, nodeids, config.instruction.examples_from_verifier)
     ex_block = "\n".join(f"- `{e}`" for e in examples) or "- (see the verifier tests listed below)"
-    tests = "\n".join(f"- `{n}`" for n in nodeids[:12]) + ("\n- ..." if len(nodeids) > 12 else "")
+    k = config.tasks.instruction_tests_listed
+    tests = "\n".join(f"- `{n}`" for n in nodeids[:k]) + ("\n- ..." if len(nodeids) > k else "")
     return (
         f"# Reimplement `{c.qualname}`\n\n"
         f"## Goal\n"
@@ -295,7 +305,7 @@ def _top_up_tests(
                 VERIFIER_AGENT_SYSTEM,
                 [*concrete_tools(tctx), *graph_tools(tctx)],
                 tctx.files_changed,
-                transcripts_dir=Path("transcripts"),
+                transcripts_dir=inp.transcripts_dir,
             )
             goal = (
                 f"Create `{rel}` with 3-5 pytest edge-case tests for `{c.qualname}` "
@@ -313,14 +323,14 @@ def _top_up_tests(
                     "outcome": "added" if names else "no_tests",
                     "tests_added": len(names),
                     "files_changed": result.files_changed,
-                    "summary": result.summary[:300],
+                    "summary": result.summary[: config.tasks.audit_summary_chars],
                 }
             )
         _audit(
             inp.audit_dir,
             {
                 "stage": VERIFIER_AGENT_STEP,
-                "goal": goal[:500],
+                "goal": goal[: config.tasks.audit_goal_chars],
                 "task": task_id_for(c, config),
                 **note,
             },

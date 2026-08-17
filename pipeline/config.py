@@ -356,6 +356,50 @@ class HistoryFunnelConfig:
     shortlist_size: int = 15
     build_target: int = 8  # built; expect ~5-6 to validate
     pr_merge_input_is_first_parent: bool = True
+    # Only PR merges (a pr_number in the subject) are candidates; other merges
+    # (back-merges of master into a branch) diff against an arbitrary first parent.
+    reject_non_pr_merges: bool = True
+    reject_root_commits: bool = True  # no parent -> no input/ tree
+    # Commits that are part of a surviving PR merge's branch are superseded by the merge
+    # (the merge is the complete unit); they stand alone only when the merge is rejected.
+    prefer_pr_merge_over_constituents: bool = True
+    # Reverted commits (a later "Revert ... This reverts commit <sha>" or an exact
+    # reverse patch-id) are dropped; when False they only take score_reverted_penalty.
+    reject_reverted: bool = True
+    revert_message_regex: str = r"^Revert\b|This reverts commit ([0-9a-f]{7,40})"
+    # SMALL classifier: source diff shown per commit is capped; the classifier walks the
+    # scored survivors in classify_batch_size batches until shortlist_size are kept, never
+    # past classify_max_commits (rest: not-classified). Decisions persist by content hash.
+    classify_diff_max_chars: int = 3000
+    classify_max_commits: int = 60
+    reuse_classify_decisions: bool = True
+    # Build-time verifier gates (all in-container): the commit's own changed test
+    # functions are the verifier when present; else a bounded BIG agent authors tests.
+    # Tests that pass on input/ are dropped; harness.min_failing_tests must remain.
+    neutrality_check: bool = True  # BIG check of the commit's tests (public interface?)
+    neutrality_rewrite_max_attempts: int = 1  # bounded agent rewrite when flagged
+    # Agent budgets per build step (cached/reused runs do not count): total agent runs
+    # (verifier author + rewrites) and, within it, rewrites.
+    max_agent_runs_per_repo: int = 6
+    max_neutrality_rewrites_per_repo: int = 2  # beyond -> reject on flag / missing symbol
+    prompt_new_names_max: int = 20  # change-introduced identifiers listed in agent prompts
+    neutrality_recheck_after_rewrite: bool = True  # one more complete_json on the rewrite
+    # New public API introduced by the change may be verified through the getattr
+    # convention (import an existing public module, `getattr(mod, name, None)`, assert
+    # presence + behavior -> AssertionError on input/ is a right reason). Commit tests that
+    # top-level import such a name are routed to the rewrite agent instead of rejected.
+    allow_new_symbol_features: bool = True
+    verifier_agent_max_attempts: int = 1  # bounded agent when the commit has no tests
+    verifier_agent_when_no_tests: bool = True
+    agent_max_turns: int = 12  # P3 agents (verifier author, rewrite): BIG turns are costly
+    agent_test_file_prefix: str = "test_hist_"
+    agent_diff_max_chars: int = 6000  # source diff shown to the verifier agent
+    # Collateral baseline for a history task = tests that PASS on input/ (the parent
+    # tree) in one build-time run; the HEAD baseline lists tests that may not exist yet.
+    collateral_baseline_from_input: bool = True
+    # A history task is built with build_target tasks by walking the shortlist in order;
+    # build-time rejects (env-drift, tests pass on input, ...) are backfilled.
+    reuse_agent_outputs: bool = True  # verifier files from agents cached by content hash
 
 
 @dataclass
@@ -456,13 +500,32 @@ class TasksConfig:
     golden_solution: str = "goldenSolution.md"
     verifier_run_script: str = "run.sh"
     excision_id_prefix: str = "exc"  # exc-<module>-<func>
+    history_id_prefix: str = "hist"  # hist-<sha7>
+    history_candidates_filename: str = "history_candidates.json"
     # Trees copied into input/ and solution/ skip these (never .git: tasks are self-contained)
     tree_ignore: tuple[str, ...] = (".git", "__pycache__", "*.egg-info", ".pytest_cache")
     instruction_status_template: str = "template-S4"  # LLM-authored instruction lands in S5
+    history_instruction_status_template: str = "template-S5a"
+    # Hygiene artifacts overlaid (additively, never overwriting) onto historical trees so
+    # every task ships its own environment; the pipeline commit's file list wins when known.
+    title_max_chars: int = 100  # task title = first subject line, truncated
+    instruction_tests_listed: int = 12  # nodeids listed in the structural instruction
+    audit_goal_chars: int = 500  # agent goal excerpt kept in agent_actions.jsonl
+    audit_summary_chars: int = 300  # agent summary excerpt kept in agent_actions.jsonl
+    content_key_chars: int = 16  # sha256 prefix used as content-hash key
+    hygiene_overlay_files: tuple[str, ...] = (
+        "Dockerfile",
+        ".dockerignore",
+        "requirements.lock.txt",
+        "pipeline-requirements.in",
+        "constraints.txt",
+    )
     # Pipeline sources whose contents fingerprint every tasks step's input hash.
     code_fingerprint_files: tuple[str, ...] = (
         "pipeline/tasks/excision.py",
         "pipeline/tasks/build_excision.py",
+        "pipeline/tasks/history.py",
+        "pipeline/tasks/build_history.py",
         "pipeline/tasks/harness.py",
         "pipeline/tasks/manifest.py",
         "pipeline/tasks/runner.py",

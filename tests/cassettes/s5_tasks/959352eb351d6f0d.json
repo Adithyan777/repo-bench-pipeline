@@ -1,0 +1,139 @@
+{
+  "request": {
+    "extra_body": {
+      "reasoning_effort": "low"
+    },
+    "max_tokens": 2048,
+    "messages": [
+      {
+        "content": "You classify commits of a Python repository as material for a 'reproduce this change' benchmark task: the solver gets the tree BEFORE the commit and must make hidden or visible tests pass. For EACH commit return:\n- kind: bugfix | feature | refactor | chore | test-only\n- self_contained: the change is understandable from the touched code alone (no dependency bump, no multi-PR migration, no generated code)\n- verifiable_via_tests: an observable behavior change that unit tests can pin down (refactors and pure renames are not)\n- behavior_change_summary: 1-2 sentences describing WHAT changes for a caller, in black-box terms (no line-level implementation details)\n- difficulty_guess: easy | medium | hard for a competent engineer\nReturn one entry per commit with the same sha.\n\n### 7dd152d\nmessage: Merge pull request #7 from fixture/clamp-order\nsource files: mini_pkg/calc.py\ntest files touched: tests/test_calc.py\ntouched functions: mini_pkg.calc.clamp\n```diff\ndiff --git a/mini_pkg/calc.py b/mini_pkg/calc.py\nindex e5ab357..6a355d8 100644\n--- a/mini_pkg/calc.py\n+++ b/mini_pkg/calc.py\n@@ -8,7 +8,11 @@ def ceil_div(a, b):\n \n \n def clamp(value, low, high):\n-    \"\"\"Clamp value into the inclusive range [low, high].\"\"\"\n+    \"\"\"Clamp value into the inclusive range [low, high].\n+\n+    Bounds given in either order are accepted.\"\"\"\n+    if low > high:\n+        low, high = high, low\n     if value < low:\n         return low\n     if value > high:\n\n```\n\n### 4a8f5e0\nmessage: Fix ceil_div off-by-one on exact multiples (add test)\nsource files: mini_pkg/calc.py\ntest files touched: tests/test_calc.py\ntouched functions: mini_pkg.calc.ceil_div\n```diff\ndiff --git a/mini_pkg/calc.py b/mini_pkg/calc.py\nindex 8c34ed8..e5ab357 100644\n--- a/mini_pkg/calc.py\n+++ b/mini_pkg/calc.py\n@@ -3,7 +3,8 @@\n \n def ceil_div(a, b):\n     \"\"\"Return ceil(a / b) for positive integers.\"\"\"\n-    return (a + b) // b  # off-by-one: overshoots when b divides a exactly\n+    quotient, remainder = divmod(a, b)\n+    return quotient + bool(remainder)\n \n \n def clamp(value, low, high):\n\n```\n\n### 22d878c\nmessage: Add core.first helper for first-match lookup\nsource files: mini_pkg/core.py\ntest files touched: tests/test_core.py\ntouched functions: mini_pkg.core.first\n```diff\ndiff --git a/mini_pkg/core.py b/mini_pkg/core.py\nindex d0e615a..55c75af 100644\n--- a/mini_pkg/core.py\n+++ b/mini_pkg/core.py\n@@ -28,3 +28,11 @@ class Registry:\n \n     def names(self):\n         return sorted(self._items)\n+\n+\n+def first(items, pred, default=None):\n+    \"\"\"Return the first item for which pred(item) is true, else default.\"\"\"\n+    for item in items:\n+        if pred(item):\n+            return item\n+    return default\n\n```\n\n### ab5c9af\nmessage: Add text module with width and truncation helpers\nsource files: mini_pkg/__init__.py, mini_pkg/text.py\ntest files touched: tests/test_text.py\ntouched functions: mini_pkg.text.display_width, mini_pkg.text.truncate\n```diff\ndiff --git a/mini_pkg/__init__.py b/mini_pkg/__init__.py\nindex 64d7fde..80f95f2 100644\n--- a/mini_pkg/__init__.py\n+++ b/mini_pkg/__init__.py\n@@ -2,5 +2,6 @@\n \n from mini_pkg.calc import RunningStats, ceil_div, clamp\n from mini_pkg.core import Registry, dedupe\n+from mini_pkg.text import display_width, truncate\n \n-__all__ = ['RunningStats', 'ceil_div', 'clamp', 'Registry', 'dedupe']\n+__all__ = ['RunningStats', 'ceil_div', 'clamp', 'Registry', 'dedupe', 'display_width', 'truncate']\ndiff --git a/mini_pkg/text.py b/mini_pkg/text.py\nnew file mode 100644\nindex 0000000..fd7dd0e\n--- /dev/null\n+++ b/mini_pkg/text.py\n@@ -0,0 +1,15 @@\n+\"\"\"Text width and truncation helpers.\"\"\"\n+\n+\n+def display_width(s):\n+    \"\"\"Return the display width of a string in columns.\"\"\"\n+    return len(s)\n+\n+\n+def truncate(s, width):\n+    \"\"\"Truncate s to at most `width` display columns, adding an ellipsis.\"\"\"\n+    if display_width(s) <= width:\n+        return s\n+    if width <= 1:\n+        return \".\"[:width]\n+    return s[: width - 1] + \"\\u2026\"\n\n```\n\n### 0f6eacb\nmessage: Accept inverted bounds in clamp\nsource files: mini_pkg/calc.py\ntest files touched: (none)\ntouched functions: mini_pkg.calc.clamp\n```diff\ndiff --git a/mini_pkg/calc.py b/mini_pkg/calc.py\nindex e5ab357..6a355d8 100644\n--- a/mini_pkg/calc.py\n+++ b/mini_pkg/calc.py\n@@ -8,7 +8,11 @@ def ceil_div(a, b):\n \n \n def clamp(value, low, high):\n-    \"\"\"Clamp value into the inclusive range [low, high].\"\"\"\n+    \"\"\"Clamp value into the inclusive range [low, high].\n+\n+    Bounds given in either order are accepted.\"\"\"\n+    if low > high:\n+        low, high = high, low\n     if value < low:\n         return low\n     if value > high:\n\n```\n\n### a92d03f\nmessage: Refactor: extract _needs_truncation helper in text\nsource files: mini_pkg/text.py\ntest files touched: (none)\ntouched functions: mini_pkg.text._needs_truncation, mini_pkg.text.truncate\n```diff\ndiff --git a/mini_pkg/text.py b/mini_pkg/text.py\nindex e346de1..0b1b859 100644\n--- a/mini_pkg/text.py\n+++ b/mini_pkg/text.py\n@@ -9,9 +9,13 @@ def display_width(s):\n     return len(s) if width < 0 else width\n \n \n+def _needs_truncation(s, width):\n+    return display_width(s) > width\n+\n+\n def truncate(s, width):\n     \"\"\"Truncate s to at most `width` display columns, adding an ellipsis.\"\"\"\n-    if display_width(s) <= width:\n+    if not _needs_truncation(s, width):\n         return s\n     if width <= 1:\n         return \".\"[:width]\n\n```",
+        "role": "user"
+      }
+    ],
+    "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "properties": {
+              "classifications": {
+                "items": {
+                  "properties": {
+                    "behavior_change_summary": {
+                      "type": "string"
+                    },
+                    "difficulty_guess": {
+                      "enum": [
+                        "easy",
+                        "medium",
+                        "hard"
+                      ],
+                      "type": "string"
+                    },
+                    "kind": {
+                      "enum": [
+                        "bugfix",
+                        "feature",
+                        "refactor",
+                        "chore",
+                        "test-only"
+                      ],
+                      "type": "string"
+                    },
+                    "self_contained": {
+                      "type": "boolean"
+                    },
+                    "sha": {
+                      "type": "string"
+                    },
+                    "verifiable_via_tests": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "sha",
+                    "kind",
+                    "self_contained",
+                    "verifiable_via_tests",
+                    "behavior_change_summary",
+                    "difficulty_guess"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "classifications"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"classifications\": [{\"sha\": \"7dd152d\", \"kind\": \"feature\", \"self_contained\": true, \"verifiable_via_tests\": true, \"behavior_change_summary\": \"clamp now accepts low/high bounds in either order and normalizes them before clamping, so passing inverted bounds yields the same result as correctly ordered bounds.\", \"difficulty_guess\": \"easy\"}, {\"sha\": \"4a8f5e0\", \"kind\": \"bugfix\", \"self_contained\": true, \"verifiable_via_tests\": true, \"behavior_change_summary\": \"ceil_div now returns the correct ceiling for exact multiples instead of overshooting by one, e.g. ceil_div(4, 2) now returns 2 instead of 3.\", \"difficulty_guess\": \"easy\"}, {\"sha\": \"22d878c\", \"kind\": \"feature\", \"self_contained\": true, \"verifiable_via_tests\": true, \"behavior_change_summary\": \"Adds a new first() helper that returns the first item in an iterable satisfying a predicate, or a default value if none match.\", \"difficulty_guess\": \"easy\"}, {\"sha\": \"ab5c9af\", \"kind\": \"feature\", \"self_contained\": true, \"verifiable_via_tests\": true, \"behavior_change_summary\": \"Adds a new text module with display_width() and truncate() helpers, and exports them from the package, giving callers new string width and truncation utilities.\", \"difficulty_guess\": \"easy\"}, {\"sha\": \"0f6eacb\", \"kind\": \"feature\", \"self_contained\": true, \"verifiable_via_tests\": true, \"behavior_change_summary\": \"clamp now accepts low/high bounds in either order and normalizes them before clamping, so inverted bounds produce the same result as correctly ordered bounds.\", \"difficulty_guess\": \"easy\"}, {\"sha\": \"a92d03f\", \"kind\": \"refactor\", \"self_contained\": true, \"verifiable_via_tests\": false, \"behavior_change_summary\": \"Internal refactor extracting the truncation check into a private _needs_truncation helper; no observable behavior change for callers.\", \"difficulty_guess\": \"easy\"}]}",
+                "name": "emit"
+              },
+              "id": "chatcmpl-tool-b7e9ef4b9b7f408c8960c1ffd7f07c2c",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786972348,
+    "id": "chatcmpl-d6803d4d3ab54bdbb66196c2bca24caa",
+    "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 515,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 402,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 168,
+        "text_tokens": null
+      },
+      "prompt_tokens": 2086,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 2601
+    }
+  }
+}

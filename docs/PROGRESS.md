@@ -11,7 +11,7 @@ Legend: `todo` · `in-progress` · `review` (awaiting author review) · `done`
 | S2 | Step 2+2b: P1 core — detect → synthesize requirements → uv lock → Dockerfile/compose → build → baseline + quarantine; `ecosystems/python.py`; run on glom, then toolz + minidump | review | See `### S2` (+ round-2 fixes). glom/toolz/minidump/fixtures green; glom & toolz twice-identical ✓; toolz 0-LLM/no-agent after F1. `pytest` → 72 passed / 3 slow. |
 | S3 | Step 3: P2 static — repo_graph.json, history_index, test_map, coverage, hotspots, graph self-verification | review | See `### S3` (+ review-round fixes). mini_pkg/glom/toolz/minidump all built; graph byte-identical twice; verification precision 1.0 on every edge type, 0 mismatches. `pytest` → 96 passed / 3 slow. NO LLM. |
 | S4 | Step 4: excision funnel + validation harness end-to-end → first VALID task; task folder format, evidence, verdict, tasks.json writer | review | See `### S4`. `--stage tasks` wired (funnel → build → validate → manifest). glom **4/5 VALID**, toolz **5/5** (after review fixes), mini_pkg 3/3 in tests (relaxed thresholds). Harness idempotent. `pytest` → 124 passed / 3 slow, `ruff check .` clean. LLM: SMALL screen (decisions persisted + reused) + one bounded top-up agent. |
-| S5 | Step 5: history funnel + task-builder agent (verifier authoring/neutrality, instruction + leak gates, difficulty) | todo | |
+| S5 | Step 5: history funnel + task-builder agent (verifier authoring/neutrality, instruction + leak gates, difficulty) | 5a review | See `### S5`. 5a done: history funnel + builder wired into `--stage tasks` (excision AND history). glom **8/8 history VALID** (15 shortlisted, 8 built; 12/13 overall), toolz 5/5 (2 via the new-symbol getattr convention), mini_pkg 2/2 (bugfix + PR merge). Full `pytest` → 141 passed / 3 deselected; `-m slow` → 3 passed; `ruff check .` clean. 5b (instruction/leak gates/difficulty) pending review. |
 | S6 | Step 6: P1 test-gen + AST mutators + mutation gate | todo | |
 | S7 | Step 7: P2 .okf/ writer + claim verifier | todo | |
 | S8 | Step 8: net-new funnel + builder | todo | |
@@ -614,6 +614,257 @@ file kept, audit written).
 **LLM spend this session:** ~75k tokens total (incl. the review-round reruns: glom 5.9k, toolz 6.6k, one earlier toolz/glom pass each) — pre-review figure was ~56k (Baseten): SMALL screen ~46k across all runs (glom 3× ~4.5k, toolz 3× ~3.5k,
 mini_pkg 2× ~1.1k, cassette 1.1k) + BIG top-up agent 28k (two mini_pkg fixture runs, 11.6k +
 16.6k). Zero LLM calls in the harness.
+
+### S5
+
+#### 5a — history-derived funnel + builder (review)
+
+**Scope delivered.** `pipeline/tasks/history.py` (funnel), `pipeline/tasks/build_history.py`
+(builder), runner steps `history_funnel → build_history` between the excision steps and
+`validate → manifest`; `--stage tasks` now produces both `exc-*` and `hist-*` tasks, both
+listed in `tasks.json`, both candidate files feed `report_data.tasks`. Harness unchanged.
+No instruction/leak gates/difficulty yet (5b): history tasks carry `instruction_status:
+"template-S5a"`, `difficulty: null`, `goldenSolution.md` has the real `parent→commit` diff +
+a `TODO-S5b` "why correct" line.
+
+**Funnel (code + git, then SMALL).** Over `knowledge/history_index.json` (original history
+at/under `base_sha`, so pipeline commits are excluded by construction). Hard rejects, in
+order: `root-commit`, `non-pr-merge` (merges without a `#N` are back-merges whose first-parent
+diff is arbitrary; PR merges are candidates with `input/` = first parent, exactly as
+DESIGN), `docs-or-ci-only` (every file matches `history.ignore_paths`), `dependency-changing`
+(`touches_manifest`), `no-source-change` (no non-test `.py` outside ignore_paths — test-only
+commits land here), `too-many-files`, `too-small`/`too-large` (`git diff --numstat` over the
+source files only), `uncovered-and-no-tests` (touched functions ∩ baseline-passing test_map
+empty AND no test file touched), `unparseable(<file>@input|solution)` (AST at both states),
+`reverted-by(<sha7>)` (a later commit naming it in a `This reverts commit` body, or carrying
+the exact reverse `git patch-id --stable`; forward ids for the whole history come from ONE
+`git log -p --diff-merges=first-parent | git patch-id` pass), `superseded-by-merge(<sha7>)`
+(commits on a surviving PR merge's branch: the merge is the complete unit — the fixture's
+fix + test split across two commits is exactly this case). Score = `fix_keyword` (regex on
+the subject) + `adds_tests` + `public_fn` + `single_function` (+ `reverted` penalty when
+`reject_reverted=False`), all recorded in `score_breakdown`. SMALL classify
+(`p3.history.classify_commit`, `complete_json`, batched `llm.classify_batch_size`, per commit:
+subject, files, touched functions, source diff capped at `classify_diff_max_chars`) walks the
+score-ranked survivors until `shortlist_size` are kept (cap `classify_max_commits`; the rest
+`surplus/not-classified`); keep = kind ∈ `keep_kinds` ∧ `self_contained` ∧
+`verifiable_via_tests` (`classified_out` with `kind:<k>` / `not-self-contained` /
+`not-verifiable-via-tests`). Decisions persist in `history_candidates.json`
+(`classify_key` = sha256(sha + prompt block)) and are reused on rerun (glom rerun: 30 reused,
+0 calls). Shortlist = greedy top-`shortlist_size` by score with `score_module_diversity` for
+unrepresented modules, bugfix beating feature on ties.
+
+**Builder (per shortlisted commit, walking the shortlist until `build_target` are built).**
+`input/` = `git archive <first parent>`, `solution/` = `git archive <commit>` (never the working
+tree); hygiene overlay ADDITIVE on both (the recorded pipeline commit's files ∪
+`tasks.hygiene_overlay_files`, minus `tree_ignore` — the fixture's pipeline commit had
+committed `mini_pkg.egg-info/`, filtered out; a file present in the historical tree is never
+overwritten; no lint) — asserted in tests: `input/`→`solution/` differing files == `git diff
+--name-only parent commit`, byte-identical to `git show`. Verifier: (a) the commit's
+added/changed test FUNCTIONS by AST diff of each touched test file (`ast.dump` comparison,
+formatting-only edits do not count) — the file at commit state is overlaid at its
+repo-relative path (+ conftest ancestors at commit state), the changed nodeids are the
+verifier command; (b) no test change → ONE bounded BIG agent
+(`p3.build.verifier_agent`, `history.agent_max_turns=12`) writes `<nearest test
+dir>/test_hist_<sha7>.py` from the behavior summary + touched contracts (signature +
+docstring at solution) + the source diff (verifier author may see the diff); only that file
+is kept; cached under `output/<repo>/tasks/agent_cache/<key>/` and reused on rerun.
+Build-time gates, all in-container and BEFORE any BIG call: static gate `verifier/` vs
+`input/` (`verifier-imports-non-public-or-missing(...)`), verifier on `solution/` (any
+import/collection/syntax failure → `env-drift(<reasons>)`; tests failing for other reasons
+are dropped, `dropped_tests.failing_on_solution`), verifier on `input/` (an invalid STRICT
+reason → `verifier-on-input:<reason>`; tests passing on input dropped,
+`dropped_tests.passing_on_input`; fewer than `harness.min_failing_tests` left →
+`commit-tests-pass-on-input` / `agent-authored-pass-on-input`). Then, for commit tests, the
+BIG neutrality check (`p3.build.neutrality_check_rewrite`, `complete_json`: `{neutral,
+issues[], flagged_tests[]}` over the test sources, touched contracts and the identifiers the
+diff introduces); flagged → ONE bounded agent rewrite of the flagged files (audited, cached),
+re-gated on solution+input; still failing → `neutrality-rewrite-failed`; agent left the files
+untouched → `verifier-not-implementation-neutral`. Decisions (`neutrality`, rewrite outcome,
+agent no-output outcomes) persist in `built_history.json._decisions` by content hash. Then
+ONE full-suite run on `input/` gives the collateral baseline (`collateral.source:
+"input-run"`; tests the commit itself removed/renamed in its test files are excluded) —
+comparing the commit against ITS parent, since HEAD's baseline lists tests that do not exist
+at old commits and misses tests already broken by env drift there. `task.json` adds
+`provenance{type:"history", commit, parent, pr_number, is_merge, message, files,
+source_files, touched_functions, modules, verifier_source, classification}`,
+`verifier_on_solution`, `dropped_tests`, `neutrality`, `verifier_agent`, `overlay_files`;
+`files_in_scope` = touched source + test files + verifier files + direct importers of the
+touched modules (`build_excision.files_in_scope`, generalized). Task ids `hist-<sha7>`.
+
+**Per-repo results (fresh outputs from the final code)**
+
+| Repo | commits | hard-rejected by reason | survivors → classified → kept → shortlisted | attempted → built (reject reasons) | VALID | tokens |
+|---|---|---|---|---|---|---|
+| glom | 1049 | superseded-by-merge 140, docs-or-ci-only 136, uncovered-and-no-tests 135, no-source-change 128, dependency-changing 96, too-small 64, non-pr-merge 39, too-large 8, root-commit 1, unparseable 1 | 301 → 30 (2 SMALL calls) → 23 (classified_out 7: kind 7) → 15 | 15 → **6** (verifier-fails-on-solution 4, commit-tests-pass-on-input 3, verifier-not-implementation-neutral 1, verifier-on-input:error_before_repo_call 1) | **6/6** (`hist-99e2ece`, `hist-a32abdd`, `hist-c2acc2b`, `hist-e355bce`, `hist-e515fb3`, `hist-e6a06a5`; all `commit-tests`) | classify 22.0k; neutrality: 7 checks ≈ 7k + 2 rewrite agents (first run 301k at 25 turns — one hit the cap; after `agent_max_turns=12` the retried one cost 74k) |
+| toolz | 1230 | no-source-change 218, docs-or-ci-only 211, superseded-by-merge 206, uncovered-and-no-tests 167, too-small 157, dependency-changing 54, non-pr-merge 36, unparseable 23 (py2 syntax), too-large 7, too-many-files 4, reverted-by 3, root-commit 1 | 143 → 30 → 25 (classified_out 5) → 15 | 15 → **3** (verifier-imports-non-public-or-missing 5 — features adding new public symbols the pre-change tree lacks; env-drift(SyntaxError) 2 — 2013-era trees; verifier-fails-on-solution 2 — drift-polluted tests; verifier-on-input:error_before_repo_call 2; commit-tests-pass-on-input 1) | **3/3** (`hist-2bd9139`, `hist-386c750`, `hist-5a7e078`) | classify 19.7k; neutrality 20.9k (3 checks + 1 rewrite) |
+| mini_pkg (fixture, cassette) | 11 | root-commit 1, docs-or-ci-only 1, dependency-changing 1, uncovered-and-no-tests 2, no-source-change 1 (test-only PR commit), superseded-by-merge 1 (the PR's source commit) | 4 → 4 (1 call) → 3 (refactor classified_out) → 3 | 3 → **2** (`Add text module`: verifier-on-input:ModuleNotFoundError — a new-module feature) | **2/2** (`hist-<bugfix>` ceil_div, `hist-<merge>` PR #7 with `input/` = first parent) | 2.1k classify + 1.0k neutrality (recorded once) |
+
+Timings: glom funnel 61-67 s (301 survivors × numstat/parse/reverse-patch-id git calls),
+build_history 254 s first run (incl. two agents) / 127 s rerun, validate 11 tasks 50-57 s;
+toolz funnel 68 s, build 63 s. glom `--stage tasks` twice: identical selection, `classify_reused
+30`, zero SMALL calls; the only rerun spend was the retried rewrite agent (its "unchanged"
+outcome is now persisted too, so a third run costs 0).
+
+- glom rejects worth reading: `verifier-fails-on-solution` ×4 are commits whose changed tests
+  fail even at their own commit in the current image (boltons/PyYAML/3.12 repr drift in
+  `test_error.py`/`test_match.py`, matches the probe); `commit-tests-pass-on-input` ×3 are
+  test edits that do not discriminate the change; `85a7a3a` (`**` root-element iteration) was
+  flagged for referencing the change-introduced `PATH_STAR` flag and the rewrite agent left
+  the file untouched → rejected, recorded. `hist-e355bce` was INVALID on the first run
+  (`collateral-breakage`: the commit renamed `test_match.py::test`, which passed at the parent
+  → `not_run`); tests removed/renamed by the commit in its own test files are now excluded from
+  the input-run baseline → VALID.
+- toolz: the shortlist is exhausted at 3 built (target 8); most losses are structural
+  (feature commits whose tests import the new symbol → INVALID by the strict classifier's
+  design, see below; py2-era trees). Not hacked around.
+- mini_pkg: the ceil_div fix is `+2/-1` (a pure one-liner would be `too-small(2<3)` under
+  DESIGN's `< 3` rule — the fixture fix now uses `divmod`); the PR merge builds from its FIRST
+  parent and its constituents are `superseded-by-merge` / `no-source-change`.
+
+**Deviations / decisions (flag for author)**
+1. Merges: only PR merges (`#N` in the subject) are candidates; other merges rejected
+   (`history.reject_non_pr_merges`). Constituents of a surviving PR merge are superseded
+   (`prefer_pr_merge_over_constituents`).
+2. Reverted commits are a hard reject (`reject_reverted=True`); DESIGN listed "later
+   reverted" both as a filter and as a score penalty — the flag picks (penalty when False).
+3. Feature commits that add NEW public symbols cannot become VALID: their tests import the
+   symbol → `ImportError`/`ModuleNotFoundError` on `input/`, which the STRICT classifier
+   rejects by design (DESIGN 5.5 "zero tolerance"). The build-time gate records it
+   (`verifier-imports-non-public-or-missing` / `verifier-on-input:ModuleNotFoundError`); no
+   workaround. History tasks are therefore mostly bugfixes / behavior changes of existing
+   symbols. If the author wants new-symbol features as tasks, the classifier rule (not the
+   funnel) is the thing to relax.
+4. Collateral baseline for history tasks = the suite on `input/` at build time (one extra
+   container run per built task), not HEAD's baseline (`history.collateral_baseline_from_input`).
+5. Old-commit dependency drift: recorded as `env-drift(<reasons>)`; re-locking at that
+   commit (per-task image variant) is out of scope, as agreed.
+6. Neutrality: agent turn cap `history.agent_max_turns=12` (a 25-turn Kimi rewrite cost
+   ~150k tokens). Rewrite/no-output outcomes are persisted so reruns never re-run an agent.
+7. `.gitignore` had `tasks/` (matched `pipeline/tasks/` too — new modules were silently
+   ignored); now `/tasks/`.
+
+**Exact test command**
+```
+.venv/bin/python -m pytest -m "not docker and not slow"   # 114 passed
+.venv/bin/python -m pytest -m docker                       # 30 collected; tests/test_tasks.py + tests/test_history.py = 15 passed (~4 min)
+.venv/bin/ruff check .
+```
+`tests/test_history.py`: source ops (AST test-function diff, new identifiers, contracts);
+funnel on the fixture history (every reject reason, score breakdown, ranking, PR-merge input =
+first parent, size/merge knobs); revert detection on a synthetic repo (revert message + reverse
+patch-id, penalty mode); classify backfill/persistence/zero-call rerun with a fake endpoint +
+cassette replay (refactor → `kind:refactor`, bugfix kept); shortlist diversity/tie rule;
+`commit_test_nodeids` on the fixture; archive + additive overlay == git diff exactly, no
+overwrite, no lint; test-dir affinity + contracts; docker: agent-authored verifier via a
+scripted endpoint (non-discriminating test dropped, audit, cache reuse with zero calls),
+agent tests passing on input → reject, synthetic env-drift (solution cannot collect), flagged
+neutrality with rewrite disabled → reject + persisted decision, commit-tests build + run.sh +
+new-module feature reject. `tests/test_tasks.py` e2e now covers both source types (7 VALID),
+every history reject reason, evidence files, provenance/parent/first-parent, resumable
+second run (all six steps skipped) and a forced funnel rerun with zero LLM calls. Cassettes:
+`tests/cassettes/s5_tasks/` (screen + classify + 2 neutrality, 4.2k tokens; recorded by
+running the real stage on the fixture — `scripts/record_cassettes.py`); `s4_screen` removed
+(the fixture's `clamp` changed with the PR merge and the tape is re-recorded in `s5_tasks`).
+
+**LLM spend (5a, round 1):** ≈ 505k tokens CUMULATIVE across all runs (glom 330k first run,
+of which 301k = two neutrality rewrite agents at 25 turns; glom rerun 74k = the capped retry;
+toolz 47k; mini_pkg cassette 4.2k). The last glom run alone was 102k (`llm_usage._total` for
+that run); funnel/build reruns with persisted decisions cost 0.
+
+**Review round (author decisions applied)**
+- Q1: `history.reject_reverted=True` stays (hard reject).
+- Q2: `history.allow_new_symbol_features=True` — the getattr convention: a verifier never
+  imports a name absent from `input/` at module level; it imports an existing public module
+  and does `fn = getattr(mod, "name", None); assert fn is not None` + behavior asserts, so
+  the pre-change tree fails with `AssertionError` (a right reason). Commit tests whose only
+  static-gate violations are `symbol-missing-in-input` are routed to a bounded rewrite agent
+  (`new_symbol_rewrite`, same step/budget as the neutrality rewrite); the verifier agent
+  and the neutrality/rewrite prompts carry the rule (`NEW_SYMBOL_RULE`); the static gate
+  accepts getattr on an existing public module and flags `getattr(<repo module>,
+  "_private")` (dunders excluded). Rewrite/no-output outcomes are persisted by content hash.
+- Q3: rewrite kept at 1 attempt / `agent_max_turns=12`, plus
+  `history.max_neutrality_rewrites_per_repo=2` (per build step; beyond → plain reject with
+  `rewrite:budget-exhausted`; cached/reused rewrites do not count).
+- Fixture: commit 12 "Add core.first helper" (new public function, test imports it at
+  module level). In the cassette e2e the budget is 0 (agent runs cannot replay: container
+  output differs per run) → recorded reject
+  `verifier-imports-symbol-missing-in-input(mini_pkg.core.first; rewrite:budget-exhausted)`;
+  the docker test `test_build_new_symbol_feature_via_getattr_convention` drives the rewrite
+  with a scripted endpoint → task builds → harness VALID with `AssertionError` as the reason,
+  and the exhausted-budget reject.
+- Re-runs: **glom** unchanged 6/6 history VALID — its 15-shortlist holds only 2 feature
+  commits, neither is a missing-symbol case (`24c21dc` CLI test → `error_before_repo_call`
+  through face; `ed56c05` tests fail on solution = drift), so **0 glom feature commits
+  changed status**; the one flagged bugfix (`85a7a3a`) was retried under the new prompt (12
+  turns, unchanged → still rejected, ~16k). **toolz** is where the rule bites: 5 of its 15
+  shortlisted are features that top-level-import the new symbol; 2 were rewritten by the
+  agent (`hist-639043e` `functoolz.apply`, `hist-8cdc7fe` `sandbox.core.unzip`: verifier now
+  `getattr(toolz.functoolz, 'apply', None)` + asserts, fail-before reason `AssertionError`)
+  and are **VALID** → toolz **5/5 history VALID** (was 3/3); 2 more hit the per-repo budget
+  (`rewrite:budget-exhausted`, recorded), 1 imports a private helper (plain reject). Cost:
+  ~103k tokens for the two toolz rewrites (~50k each at 12 turns).
+- Static-gate false-positive guard: the getattr rule only fires on names bound to repo
+  modules in the verifier file, so repo tests probing `_attrs` of instances (glom/toolz
+  suites do) are unaffected — all 5 glom + 5 toolz excision tasks still VALID.
+
+**Per-repo after the review round:** glom 6/6 history (10/11 overall), toolz 5/5 history
+(10/10 overall), mini_pkg 2/2 (+1 recorded budget reject). LLM spend for the round: ≈ 4.6k
+(cassette re-record) + 16k (glom) + 103k (toolz).
+
+#### 5a review round 2 — fixes 1–9 applied
+
+1. `tests/test_hygiene.py` baseline count → 13 (fixture now has 13 tests). Whole suite run:
+   `.venv/bin/python -m pytest` → **141 passed, 3 deselected in 212.85s (0:03:32)**;
+   `.venv/bin/python -m pytest -m slow` → **3 passed, 141 deselected in 49.92s**.
+2. Nodeids are rebuilt from `source_ops.test_nodeid_suffixes()` (`Class::name`) after a
+   rewrite, for agent-authored files and for the commit-removed-tests rule; `test_functions_in`
+   is no longer used in `build_history.py`.
+3. `history.max_agent_runs_per_repo=6` (verifier-author + rewrite agents per build step;
+   cached/reused runs do not count) alongside `history.max_neutrality_rewrites_per_repo=2` (the
+   rewrite sub-budget); both documented in HEURISTICS; `budget-exhausted` outcomes recorded.
+4. A rewrite (or verifier-author) agent that hits `agent_max_turns` without a clean summary has
+   its files discarded (`rewrite:max-turns` / `max-turns`); after a kept rewrite ONE
+   `complete_json` re-check runs on the rewritten tests
+   (`history.neutrality_recheck_after_rewrite`; `rewrite:still-not-neutral` reject); the
+   neutrality prompt now states that exception type / identity / chaining observable by a
+   caller IS behavior. Reject strings carry the rewrite outcome:
+   `verifier-not-implementation-neutral(rewrite:<unchanged|disabled|max-turns|still-not-neutral|budget-exhausted>)`.
+   `hist-e6a06a5` re-evaluated: it is now `surplus` / `not-classified` — see the ranking note
+   below (its PR merge is what got built).
+5. Every test file touched by the commit is overlaid at commit state (helpers, fixtures,
+   conftests included, deleted files skipped); only the changed nodeids are selected.
+6. `superseded-by-merge` is applied AFTER classification and only to constituents of a KEPT
+   PR merge (`history.supersede_constituents`); constituents of rejected/classified-out merges
+   stand alone. glom: 140 → 45 superseded, toolz 206 → 45.
+7. Kept-but-not-shortlisted candidates carry `reject_reason: "kept-not-shortlisted"`
+   (unclassified ones keep `not-classified`); `public_fn` uses the symbol index's `is_public`
+   for the node (fallback: every component below the module public); the `10**9` sentinel is
+   gone.
+8. Agent trajectories go to the LLM client's `transcripts_dir` (`BuildInputs.transcripts_dir`);
+   literals moved to config (`tasks.title_max_chars`, `tasks.instruction_tests_listed`,
+   `tasks.audit_goal_chars`, `tasks.audit_summary_chars`, `tasks.content_key_chars`,
+   `history.prompt_new_names_max`); `.DS_Store` gitignored.
+9. Spend note corrected above (505k cumulative, last run 102k); reason strings below are
+   verbatim from `history_candidates.json` / `built_history.json`.
+- Also: the new-symbol rewrite now probes the solution tree for env-drift BEFORE spending an
+  agent (this run wasted two toolz rewrites on 2013-era trees that then failed
+  `env-drift(SyntaxError)`).
+
+**Per-repo after round 2 (fresh runs, verbatim reasons)**
+
+| Repo | funnel counts | attempted → built (reject_reason: n) | VALID | this run's tokens |
+|---|---|---|---|---|
+| glom | `rejected:docs-or-ci-only` 136, `rejected:uncovered-and-no-tests` 135, `rejected:no-source-change` 128, `rejected:dependency-changing` 96, `rejected:too-small` 64, `rejected:superseded-by-merge` 45, `rejected:non-pr-merge` 39, `rejected:too-large` 8, `classified_out` 8, `rejected:root-commit` 1, `rejected:unparseable` 1, `shortlisted` 15, `surplus` 373 | 15 → **8**: `verifier-on-input:error_before_repo_call` 2 (`032f252`, `24c21dc`), `commit-tests-pass-on-input` 2 (`bd2e529`, `dd28dc4`), `verifier-fails-on-solution` 2 (`3cdf4e7`, `e70637c`), `verifier-not-implementation-neutral(rewrite:unchanged)` 1 (`de604f5`) | **8/8** (`hist-0d75aab`, `hist-4a48227`, `hist-8289b94` PR #170, `hist-85a7a3a`, `hist-94b6375` PR #196, `hist-99e2ece`, `hist-c2acc2b`, `hist-e515fb3`); overall 12/13 | 274k (`p3.build.neutrality_check_rewrite` 256k: new checks + 3 rewrite agents at ≤12 turns; classify 11k new batch) |
+| toolz | `rejected:no-source-change` 218, `rejected:docs-or-ci-only` 211, `rejected:uncovered-and-no-tests` 167, `rejected:too-small` 157, `rejected:dependency-changing` 54, `rejected:superseded-by-merge` 45, `rejected:non-pr-merge` 36, `rejected:unparseable` 23, `rejected:too-large` 7, `classified_out` 5, `rejected:too-many-files` 4, `rejected:reverted-by` 3, `rejected:root-commit` 1, `shortlisted` 15, `surplus` 284 | 15 → **5**: `env-drift(SyntaxError)` 4 (`0d3639b`, `3b7c54a`, `a55ce46`, `bf0f253` — the last two after a wasted rewrite, now probed first), `verifier-fails-on-solution` 2, `verifier-imports-non-public-or-missing(toolz.functoolz._num_required_args)` / `(...core._num_required_args)` 2, `verifier-on-input:error_before_repo_call` 1, `commit-tests-pass-on-input` 1 | **5/5** (`hist-2bd9139`, `hist-386c750`, `hist-5a7e078`, `hist-639043e` + `hist-8cdc7fe` via reused getattr rewrites); overall 10/10 | 317k (308k neutrality: two 12-turn rewrites ≈ 150k each — a Kimi turn with tool output is ~12k tokens; bounded by the per-repo budgets) |
+| mini_pkg (cassette, 12 commits) | `rejected:root-commit` 1, `rejected:docs-or-ci-only` 1, `rejected:dependency-changing` 1, `rejected:uncovered-and-no-tests` 2, `rejected:no-source-change` 1, `rejected:superseded-by-merge` 1 (after classify), `classified_out` 1 (`kind:refactor`) | 4 → **2**: `verifier-on-input:ModuleNotFoundError` (`Add text module`), `verifier-imports-symbol-missing-in-input(mini_pkg.core.first; rewrite:budget-exhausted)` (`Add core.first`, budget 0 in the cassette run; VALID under the scripted-agent docker test) | **2/2** | 4.9k (re-recorded) |
+
+Ranking note (glom): with `public_fn` now taken from the symbol index and supersede applied
+after classification, the classifier's 30-commit window shifted: two PR merges (`8289b94`
+error-branches, `94b6375` arg-mode) are now kept and built (both VALID) and their constituents
+— including round-1's `hist-e6a06a5`, `hist-a32abdd`, `hist-e355bce` — are `surplus /
+not-classified` (never reached by the classifier under `classify_max_commits=60`) rather than
+superseded; `85a7a3a` (round-1 `verifier-not-implementation-neutral`) is now judged neutral
+under the "exception identity is behavior" prompt and is VALID.
 
 #### S4 review round — GO-with-fixes applied
 
