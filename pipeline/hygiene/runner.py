@@ -12,7 +12,7 @@ import json
 import time
 from pathlib import Path
 
-from pipeline.hygiene import baseline, build, compose, detect, dockerfile, pin
+from pipeline.hygiene import baseline, build, compose, detect, dockerfile, pin, testgen
 from pipeline.hygiene.context import (
     HygieneContext,
     commit_pipeline_changes,
@@ -28,6 +28,7 @@ _STEPS = [
     ("compose", compose, "pipeline: pin dependencies and containerize"),
     ("build", build, None),
     ("baseline", baseline, "pipeline: baseline and quarantine"),
+    ("testgen", testgen, "pipeline: generated tests"),
 ]
 
 
@@ -88,4 +89,6 @@ def hygiene_paths(run_dir: Path) -> dict:
         "baseline": str(run_dir / "hygiene" / "baseline.json"),
         "pipeline_base": str(run_dir / "hygiene" / "pipeline_base.json"),
         "build": str(run_dir / "hygiene" / "build.json"),
+        "testgen": str(run_dir / "hygiene" / "testgen.json"),
+        "testgen_targets": str(run_dir / "hygiene" / "testgen_targets.json"),
     }

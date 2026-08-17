@@ -87,6 +87,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--verify-twice", action="store_true", help="after hygiene, run the test command twice"
     )
+    p.add_argument("--no-testgen", action="store_true", help="skip P1 test generation")
     return p
 
 
@@ -98,6 +99,8 @@ def main(argv: list[str] | None = None) -> int:
     config.llm.disk_cache = config.llm.disk_cache or args.llm_cache
     config.excision.strip_docstring = config.excision.strip_docstring or args.excision_hard
     config.harness.verifier_visibility = args.verifier_visibility
+    if args.no_testgen:
+        config.testgen.enabled = False
 
     stages = STAGES if args.stage == "all" else (args.stage,)
     for stage in stages:

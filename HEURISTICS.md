@@ -85,7 +85,14 @@ All values are **PROPOSED** and require user confirmation before finalization.
 | `testgen.min_mutants_killed` | `1` | Min mutants a generated test must kill to be kept | Proves test is meaningful; mirrors graders' bug-injection eval | PROPOSED -- needs user confirmation |
 | `testgen.mutators` | `("comparison_flip", "comparison_boundary", "arithmetic_swap", "and_or_swap", "return_none", "constant_tweak", "statement_delete")` | AST mutation operators applied | Covers the most common real-bug patterns | PROPOSED -- needs user confirmation |
 | `agent.testgen_max_retries` | `2` | Retries with mutation-survival feedback | Gives the agent a fair shot at writing discriminating tests | PROPOSED -- needs user confirmation |
-| `(not in config.py yet)` | `uncovered_ratio * log(1+total_lines) * (1 + complexity/5) * public_bonus * not_dunder * not_test_file` | Ranking formula for test-gen candidates (composed from component weights above) | Prioritizes large, complex, public, uncovered code | PROPOSED -- needs user confirmation |
+| `testgen.enabled` | `True` | Master switch for the step (`--no-testgen` sets False) | Fast reruns can skip generation | PROPOSED -- needs user confirmation |
+| `testgen.place_beside_existing_tests` | `True` | Put generated tests in a `generated/` subdir of the repo's primary test dir (else `generated_tests_dir`) | Guarantees the repo's own runner collects them (glom uses `glom/test/`, not `tests/`) | PROPOSED -- needs user confirmation |
+| `testgen.max_agent_runs_per_repo` | `10` | Cap on write+retry agent runs across all modules | Bounds token/time spend per repo | PROPOSED -- needs user confirmation |
+| `testgen.agent_max_turns` | `12` | Per-agent tool-turn cap | Same bound P3 build agents use | PROPOSED -- needs user confirmation |
+| `testgen.generated_subdir` | `"generated"` | Subdir name for generated tests + marker excluded from input hashes / ranking coverage | Keeps generated tests out of their own ranking so reruns are idempotent | PROPOSED -- needs user confirmation |
+| `testgen.mutant_timeout_s` | `120` | A mutant run past this is `invalid`, not a kill | An infinite-loop mutant must not count as discrimination | PROPOSED -- needs user confirmation |
+| `testgen.lock_filename` | `".testgen.lock"` | Run-dir lock; fail fast if another process holds it | Prevents two concurrent test-gen runs corrupting the repo | PROPOSED -- needs user confirmation |
+| test-gen ranking score | `uncovered_ratio * log(1+total_lines) * (1 + complexity/complexity_weight) * public_bonus` | Only candidates with `score > 0` (some uncovered lines) are selectable; `uncovered_ratio = missed_in_span / measurable_in_span` from testgen's own in-container coverage run | Prioritizes large, complex, public, uncovered code; never re-tests fully-covered functions | PROPOSED -- needs user confirmation |
 
 ### P1: Lint
 

@@ -337,6 +337,17 @@ Mutants are applied in-container on a fresh copy. Feedback loop: up to 2 retries
 
 Rationale: the mutation gate is the only automated evidence that tests are meaningful. It mirrors the graders' "inject bugs" evaluation approach.
 
+Implementation notes (S6), where the build deviates from the sketch above:
+
+- **Self-contained coverage.** Test-gen is a P1 step (after baseline, before the P2 knowledge layer exists), so it runs its OWN `coverage run -m pytest` (reusing `knowledge.indexes.run_coverage`) and computes `uncovered_ratio = missed_in_span / measurable_in_span` from the missed lines — it does NOT read `knowledge/coverage.json`. Only candidates with `score > 0` (some uncovered line) are selectable, so fully-covered functions are never re-tested.
+- **Generated-test location.** Files go to a `generated/` subdir of the repo's PRIMARY existing test dir (glom → `glom/test/generated/`, mini_pkg → `tests/generated/`), falling back to `testgen.generated_tests_dir` when the repo has no tests. This guarantees the repo's own `pytest -q` collects them. Committed as a separate `pipeline: generated tests` commit.
+- **Agent tools.** The write agent gets `read_file/grep/write_file/run` only — not the graph tools (`show_symbol/callers/tests_for`), which need the P2 graph that does not yet exist; every fact it needs (target source, signatures, imports, example tests) is in the prompt.
+- **Kill detection.** A mutant is killed when at least one generated test FAILS with collection intact (from the pytest-json-report), not merely a non-zero exit; timeouts and broken collection are `mutant-invalid` and excluded from the denominator (they are properties of the mutant/env, not evidence the tests discriminate).
+- **Drop granularity.** A module file is dropped whole if it fails on real code, is never written, or kills zero mutants across gateable targets (pure theater); otherwise it is kept and each target gets `kept` / `weak` / `no_mutants` by its own mutant-kill count. There is no per-test trimming — the whole-file zero-kill drop already prevents theater, and name-based trimming was fragile.
+- **After generation** test-gen runs the documented suite once, records `suite_after` + `twice_identical`, and re-records `baseline.json` (the stable test set grew). Generated tests are excluded from the test-gen/baseline input hashes and from the ranking coverage run, so a resume is 0-token and idempotent.
+- **Testing.** The container-driven multi-turn agent is exercised with a scripted endpoint (real Docker + real mutation), not cassettes — the same approach the P3 verifier agent uses, because a tool-loop that branches on container output cannot be replayed byte-for-byte.
+- **`statement_delete`** never deletes the def/class under test (that breaks imports rather than testing behavior).
+
 
 ### Lint and format (step 3.7)
 

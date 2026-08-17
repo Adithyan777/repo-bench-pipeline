@@ -492,6 +492,13 @@ def test_baseline_hash_invalidates_on_test_change(tmp_path: Path) -> None:
 # --- real build + baseline (docker) -------------------------------------------
 
 
+def _offline_cfg() -> Config:
+    # Test-gen needs the BIG agent (no cassette); its own tests cover it (test_testgen.py).
+    cfg = Config()
+    cfg.testgen.enabled = False
+    return cfg
+
+
 def _hygiene_on_fixture(tmp_path: Path, fixture: str) -> HygieneContext:
     import shutil
 
@@ -500,7 +507,9 @@ def _hygiene_on_fixture(tmp_path: Path, fixture: str) -> HygieneContext:
 
     src = tmp_path / fixture
     shutil.copytree(FIXTURES / fixture, src)
-    ctx = build_context(str(src), output_root=tmp_path / "out", llm_mode="replay")
+    ctx = build_context(
+        str(src), config=_offline_cfg(), output_root=tmp_path / "out", llm_mode="replay"
+    )
     run_hygiene(ctx)
     return ctx
 
@@ -553,8 +562,8 @@ def test_resumability_second_run_skips(tmp_path: Path, docker_available: None) -
     src = tmp_path / "mini_pkg"
     shutil.copytree(FIXTURES / "mini_pkg", src)
     out = tmp_path / "out"
-    run_hygiene(build_context(str(src), output_root=out, llm_mode="replay"))
-    ctx2 = build_context(str(src), output_root=out, llm_mode="replay")
+    run_hygiene(build_context(str(src), config=_offline_cfg(), output_root=out, llm_mode="replay"))
+    ctx2 = build_context(str(src), config=_offline_cfg(), output_root=out, llm_mode="replay")
     run_hygiene(ctx2)
     assert all(s.get("skipped") for s in ctx2.report["stages"].values())
 
@@ -588,7 +597,9 @@ def test_quarantine_failing_test(tmp_path: Path, monkeypatch, docker_available: 
     monkeypatch.setattr(
         baseline, "_classify", lambda ctx, failures: ({t: "genuine" for t in failures}, [])
     )
-    ctx = build_context(str(src), output_root=tmp_path / "out", llm_mode="replay")
+    ctx = build_context(
+        str(src), config=_offline_cfg(), output_root=tmp_path / "out", llm_mode="replay"
+    )
     ctx.config.agent.baseline_fix_max_attempts = 0  # skip agent-fix; test quarantine directly
     run_hygiene(ctx)
 

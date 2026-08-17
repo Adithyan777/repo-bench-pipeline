@@ -72,6 +72,14 @@ class HygieneContext:
         return json.loads((self.hygiene_dir / f"{name}.json").read_text())
 
 
+def append_agent_action(audit_dir: Path, record: dict) -> None:
+    """Append one agent-action record to ``audit/agent_actions.jsonl`` (shared by every
+    step that runs a bounded agent)."""
+    audit_dir.mkdir(parents=True, exist_ok=True)
+    with (audit_dir / "agent_actions.jsonl").open("a") as fh:
+        fh.write(json.dumps(record) + "\n")
+
+
 def provision_repo(repo_arg: str, run_dir: Path, fresh: bool) -> str:
     """Clone (URL) or copy (local path) the repo into run_dir/repo. Returns base SHA."""
     repo = run_dir / "repo"

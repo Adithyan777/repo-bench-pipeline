@@ -173,6 +173,9 @@ def mini_pkg_excision_config():
     # the fixture run records their absence (`budget-exhausted`) and the scripted-endpoint
     # tests exercise them.
     cfg.history.max_neutrality_rewrites_per_repo = 0
+    # Test-gen is exercised by its own stage (s6_testgen); the shared task-fixture run
+    # keeps it off so this cassette stage carries only the S4/S5 calls.
+    cfg.testgen.enabled = False
     return cfg
 
 

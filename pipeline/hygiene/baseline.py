@@ -22,7 +22,7 @@ from pipeline.agent.loop import Agent
 from pipeline.agent.tools import ToolContext, concrete_tools
 from pipeline.docker.image import build_image
 from pipeline.docker.runner import fresh_workdir, run_in_container
-from pipeline.hygiene.context import HygieneContext
+from pipeline.hygiene.context import HygieneContext, append_agent_action
 from pipeline.state import hash_inputs
 
 NO_TESTS_EXIT = 5  # pytest: no tests collected
@@ -65,7 +65,18 @@ def input_hash(ctx: HygieneContext) -> str:
     for tests_dir in ctx.repo.rglob("tests"):
         if tests_dir.is_dir():
             parts += tests_dir.rglob("*.py")
-    files = sorted({p.resolve() for p in parts if p.is_file()})
+    # Test-gen writes generated tests AFTER baseline; excluding them keeps baseline
+    # resumable (it must not re-run just because test-gen added files). Only repo-relative
+    # paths carry the marker; build.json (in hygiene/) is kept as-is.
+    marker = ctx.config.testgen.generated_subdir
+
+    def is_generated(p) -> bool:
+        try:
+            return marker in p.relative_to(ctx.repo).parts
+        except ValueError:
+            return False
+
+    files = sorted({p.resolve() for p in parts if p.is_file() and not is_generated(p)})
     return hash_inputs(*files)
 
 
@@ -221,9 +232,7 @@ def _agent_fix(ctx: HygieneContext) -> dict:
         "outcome": outcome,
         "summary": result.summary[:500],
     }
-    ctx.audit_dir.mkdir(parents=True, exist_ok=True)
-    with (ctx.audit_dir / "agent_actions.jsonl").open("a") as fh:
-        fh.write(json.dumps(record) + "\n")
+    append_agent_action(ctx.audit_dir, record)
     return {"outcome": outcome, "reverted_disallowed": reverted}
 
 

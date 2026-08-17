@@ -481,13 +481,16 @@ def test_agent_okf_still_stubbed(tmp_path: Path) -> None:
 
 @pytest.mark.docker
 def test_knowledge_e2e_mini_pkg(tmp_path: Path, docker_available: None) -> None:
+    from pipeline.config import Config
     from pipeline.hygiene.context import build_context
     from pipeline.hygiene.runner import run_hygiene
     from pipeline.knowledge.runner import run_knowledge
 
+    cfg = Config()
+    cfg.testgen.enabled = False  # test-gen needs the BIG agent; covered by test_testgen.py
     src = tmp_path / "mini_pkg"
     shutil.copytree(FIXTURES / "mini_pkg", src)
-    ctx = build_context(str(src), output_root=tmp_path / "out", llm_mode="replay")
+    ctx = build_context(str(src), config=cfg, output_root=tmp_path / "out", llm_mode="replay")
     run_hygiene(ctx)
     run_knowledge(ctx)
 

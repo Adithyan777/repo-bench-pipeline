@@ -244,6 +244,20 @@ class TestGenConfig:
         "constant_tweak",
         "statement_delete",
     )
+    enabled: bool = True  # --no-testgen turns the step into a no-op
+    place_beside_existing_tests: bool = True  # else always generated_tests_dir
+    generated_subdir: str = "generated"  # subdir name + marker excluded from input hashes
+    max_agent_runs_per_repo: int = 10  # write + retry agent runs, all modules
+    agent_max_turns: int = 12
+    mutant_timeout_s: int = 120  # a mutant run past this is "invalid", not a kill
+    run_output_chars: int = 2000  # agent-visible tail of a failed test run
+    example_test_chars: int = 1500  # per existing test shown for style
+    summary_chars: int = 500  # persisted agent summary
+    targets_filename: str = "testgen_targets.json"
+    results_filename: str = "testgen.json"
+    decisions_filename: str = "testgen_decisions.json"
+    lock_filename: str = ".testgen.lock"
+    commit_label: str = "pipeline: generated tests"
 
 
 @dataclass
@@ -629,6 +643,8 @@ class Config:
         "pipeline/hygiene/compose.py",
         "pipeline/hygiene/build.py",
         "pipeline/hygiene/baseline.py",
+        "pipeline/hygiene/testgen.py",
+        "pipeline/hygiene/mutate.py",
     )
 
     def model_for(self, step: str) -> str:

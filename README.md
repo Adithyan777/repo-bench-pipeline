@@ -6,7 +6,9 @@ layer (`repo_graph.json` + `.okf/`), and mines 10 validated benchmark tasks
 for AI coding agents.
 
 Status: **P1 hygiene working end-to-end** (detect → pin/lock → Dockerfile → build →
-baseline, resumable). Verified green on glom, toolz, minidump, and the fixtures.
+baseline → test-gen, resumable). Verified green on glom, toolz, minidump, and the
+fixtures. Test generation writes mutation-gated tests into the repo's own test dir
+(a `pipeline: generated tests` commit); skip it with `--no-testgen`.
 Knowledge (P2) and tasks (P3) land from S3 on. See [`docs/PROGRESS.md`](docs/PROGRESS.md).
 
 ## Documents

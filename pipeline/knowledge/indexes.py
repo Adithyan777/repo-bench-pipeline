@@ -56,15 +56,22 @@ class CoverageRun:
 
 
 def run_coverage(
-    repo: Path, image: str, deselect: list[str], config: Config = DEFAULT
+    repo: Path,
+    image: str,
+    deselect: list[str],
+    config: Config = DEFAULT,
+    ignore: tuple[str, ...] = (),
 ) -> CoverageRun:
     """Run the suite once under coverage keyed by pytest nodeid; return the parsed
-    contexts JSON plus an explicit status (never a silent empty dict)."""
+    contexts JSON plus an explicit status (never a silent empty dict). ``ignore`` paths
+    are dropped from collection (e.g. generated tests, so test-gen ranks on the original
+    coverage only)."""
     kc = config.knowledge
     with fresh_workdir(repo) as work:
         (work / kc.coveragerc_filename).write_text(_coveragerc())
         (work / f"{kc.ctx_plugin_module}.py").write_text(_CTX_PLUGIN)
         deselect_args = " ".join(f"--deselect {q}" for q in deselect)
+        deselect_args += "".join(f" --ignore={p}" for p in ignore)
         # `-i`: some suites doctest transient files (e.g. glom's .rst snippets in a
         # temp dir); coverage json would otherwise abort with "No source for code".
         cmd = (

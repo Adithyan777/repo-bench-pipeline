@@ -469,7 +469,11 @@ class PythonAdapter(EcosystemAdapter):
         return build_symbol_index(Path(repo), self.config)
 
     def mutators(self) -> list:
-        raise NotImplementedError("mutators land in S6")
+        """AST mutation operators named in ``testgen.mutators``. Each is a callable
+        ``(function_span_source) -> [mutant_span_source, ...]`` whose mutants parse and
+        differ from the original; the driver in ``hygiene/mutate.py`` splices them back
+        by line span so the rest of the file stays byte-identical."""
+        return [_MUTATORS[name] for name in self.config.testgen.mutators if name in _MUTATORS]
 
     # --- helpers --------------------------------------------------------------
 
@@ -620,3 +624,193 @@ def _constraints_from_lock(lock_text: str) -> str:
         if raw and not raw[0].isspace() and not raw.startswith("#") and "==" in raw:
             lines.append(raw.split(" ")[0].split(";")[0].strip())
     return "\n".join(lines) + "\n"
+
+
+# --- AST mutation operators (S6 test-gen + verifier discrimination) ------------
+#
+# Each operator takes a function's source span and returns mutants that parse and
+# differ from it. Operators work on the dedented span (so method bodies parse),
+# mutate one site per mutant, and re-emit via ``ast.unparse`` re-indented to the
+# original column; the driver splices the whole span back by line range, so text
+# outside the mutated function is untouched. Formatting inside the mutant is not
+# preserved -- only behavior-changing edits matter for the mutation gate.
+
+_CMP_FLIP = {
+    ast.Lt: ast.Gt, ast.Gt: ast.Lt, ast.LtE: ast.GtE, ast.GtE: ast.LtE,
+    ast.Eq: ast.NotEq, ast.NotEq: ast.Eq, ast.Is: ast.IsNot, ast.IsNot: ast.Is,
+    ast.In: ast.NotIn, ast.NotIn: ast.In,
+}  # fmt: skip
+_CMP_BOUNDARY = {ast.Lt: ast.LtE, ast.LtE: ast.Lt, ast.Gt: ast.GtE, ast.GtE: ast.Gt}
+_ARITH = {ast.Add: ast.Sub, ast.Sub: ast.Add, ast.Mult: ast.Div, ast.Div: ast.Mult}
+_BOOL = {ast.And: ast.Or, ast.Or: ast.And}
+
+
+def _dedent_span(span: str) -> tuple[str, str]:
+    """Strip the common leading indentation (the def's column) so the span parses;
+    return the dedented text and the stripped prefix."""
+    lines = span.splitlines()
+    indents = [len(ln) - len(ln.lstrip()) for ln in lines if ln.strip()]
+    pad = min(indents) if indents else 0
+    dedented = "\n".join(ln[pad:] if ln.strip() else "" for ln in lines)
+    return dedented, " " * pad
+
+
+def _reindent(text: str, prefix: str) -> str:
+    body = "\n".join(prefix + ln if ln.strip() else "" for ln in text.splitlines())
+    return body + "\n"
+
+
+def _variants(span: str, collect, mutate) -> list[str]:
+    """For each site ``collect`` finds, re-parse the span, mutate that one site and
+    unparse; keep mutants that parse and differ from the original."""
+    dedented, prefix = _dedent_span(span)
+    try:
+        base = ast.parse(dedented)
+    except SyntaxError:
+        return []
+    original = ast.unparse(base)
+    count = len(collect(base))
+    out: list[str] = []
+    for i in range(count):
+        tree = ast.parse(dedented)
+        mutate(collect(tree)[i])
+        try:
+            emitted = ast.unparse(ast.fix_missing_locations(tree))
+        except (ValueError, TypeError):
+            continue
+        if emitted != original:
+            out.append(_reindent(emitted, prefix))
+    return out
+
+
+def _compare_sites(tree: ast.AST, table: dict) -> list[tuple[ast.Compare, int]]:
+    sites = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Compare):
+            sites.extend((node, i) for i, op in enumerate(node.ops) if type(op) in table)
+    return sites
+
+
+def _cmp_mutator(table: dict):
+    def run(span: str) -> list[str]:
+        def mutate(site):
+            node, i = site
+            node.ops[i] = table[type(node.ops[i])]()
+
+        return _variants(span, lambda t: _compare_sites(t, table), mutate)
+
+    return run
+
+
+def _binop_mutator(table: dict):
+    def collect(tree):
+        return [
+            n for n in ast.walk(tree) if isinstance(n, ast.BinOp) and type(n.op) in table
+        ]
+
+    def run(span: str) -> list[str]:
+        def mutate(node):
+            node.op = table[type(node.op)]()
+
+        return _variants(span, collect, mutate)
+
+    return run
+
+
+def _boolop_mutator(span: str) -> list[str]:
+    def collect(tree):
+        return [n for n in ast.walk(tree) if isinstance(n, ast.BoolOp) and type(n.op) in _BOOL]
+
+    def mutate(node):
+        node.op = _BOOL[type(node.op)]()
+
+    return _variants(span, collect, mutate)
+
+
+def _return_none_mutator(span: str) -> list[str]:
+    def collect(tree):
+        return [
+            n
+            for n in ast.walk(tree)
+            if isinstance(n, ast.Return)
+            and n.value is not None
+            and not (isinstance(n.value, ast.Constant) and n.value.value is None)
+        ]
+
+    def mutate(node):
+        node.value = ast.Constant(value=None)
+
+    return _variants(span, collect, mutate)
+
+
+def _tweakable(node: ast.AST) -> bool:
+    return isinstance(node, ast.Constant) and (
+        isinstance(node.value, bool) or isinstance(node.value, (int, float))
+    )
+
+
+def _constant_tweak_mutator(span: str) -> list[str]:
+    def collect(tree):
+        return [n for n in ast.walk(tree) if _tweakable(n)]
+
+    def mutate(node):
+        node.value = (not node.value) if isinstance(node.value, bool) else node.value + 1
+
+    return _variants(span, collect, mutate)
+
+
+_UNDELETABLE = (ast.Pass, ast.Return, ast.Raise, ast.Break, ast.Continue)
+# def/class statements define the code under test; deleting them breaks imports.
+_NOT_A_STATEMENT_MUTANT = (*_UNDELETABLE, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+
+
+def _statement_delete_mutator(span: str) -> list[str]:
+    """Delete one statement; ``pass``/control-flow statements and docstrings are left
+    alone (deleting them rarely changes behavior). Emptied blocks get a ``pass``."""
+
+    def bodies(tree):
+        # Skip the module body: its statements are the def/class under test, and
+        # deleting those breaks imports instead of testing behavior.
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Module):
+                continue
+            for attr in ("body", "orelse", "finalbody"):
+                block = getattr(node, attr, None)
+                if isinstance(block, list) and all(isinstance(s, ast.stmt) for s in block):
+                    yield node, attr, block
+
+    def collect(tree):
+        sites = []
+        for node, attr, block in bodies(tree):
+            for i, stmt in enumerate(block):
+                if isinstance(stmt, _NOT_A_STATEMENT_MUTANT):
+                    continue
+                if i == 0 and isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant):
+                    continue  # docstring
+                sites.append((node, attr, i))
+        return sites
+
+    def mutate(site):
+        node, attr, i = site
+        block = getattr(node, attr)
+        del block[i]
+        if not block:
+            block.append(ast.Pass())
+
+    return _variants(span, collect, mutate)
+
+
+def _named(name: str, fn):
+    fn.__name__ = name
+    return fn
+
+
+_MUTATORS = {
+    "comparison_flip": _named("comparison_flip", _cmp_mutator(_CMP_FLIP)),
+    "comparison_boundary": _named("comparison_boundary", _cmp_mutator(_CMP_BOUNDARY)),
+    "arithmetic_swap": _named("arithmetic_swap", _binop_mutator(_ARITH)),
+    "and_or_swap": _named("and_or_swap", _boolop_mutator),
+    "return_none": _named("return_none", _return_none_mutator),
+    "constant_tweak": _named("constant_tweak", _constant_tweak_mutator),
+    "statement_delete": _named("statement_delete", _statement_delete_mutator),
+}

@@ -12,7 +12,7 @@ Legend: `todo` · `in-progress` · `review` (awaiting author review) · `done`
 | S3 | Step 3: P2 static — repo_graph.json, history_index, test_map, coverage, hotspots, graph self-verification | review | See `### S3` (+ review-round fixes). mini_pkg/glom/toolz/minidump all built; graph byte-identical twice; verification precision 1.0 on every edge type, 0 mismatches. `pytest` → 96 passed / 3 slow. NO LLM. |
 | S4 | Step 4: excision funnel + validation harness end-to-end → first VALID task; task folder format, evidence, verdict, tasks.json writer | review | See `### S4`. `--stage tasks` wired (funnel → build → validate → manifest). glom **4/5 VALID**, toolz **5/5** (after review fixes), mini_pkg 3/3 in tests (relaxed thresholds). Harness idempotent. `pytest` → 124 passed / 3 slow, `ruff check .` clean. LLM: SMALL screen (decisions persisted + reused) + one bounded top-up agent. |
 | S5 | Step 5: history funnel + task-builder agent (verifier authoring/neutrality, instruction + leak gates, difficulty) | review | See `### S5`. 5a done: history funnel + builder wired into `--stage tasks` (excision AND history). glom **8/8 history VALID** (15 shortlisted, 8 built; 12/13 overall), toolz 5/5 (2 via the new-symbol getattr convention), mini_pkg 2/2 (bugfix + PR merge). Full `pytest` → 141 passed / 3 deselected; `-m slow` → 3 passed; `ruff check .` clean. 5b (instruction/leak gates/difficulty) pending review. |
-| S6 | Step 6: P1 test-gen + AST mutators + mutation gate | todo | |
+| S6 | Step 6: P1 test-gen + AST mutators + mutation gate | review | See `### S6` (+ review-round fixes). `testgen` step wired after baseline (own commit, `--no-testgen`). Real runs (testgen-step tokens): mini_pkg_notests 0→34 (15/15 mutants, 46k), glom `top_k=3` 202→248 (4 kept, `glom.core` dropped, 14/16 valid, 238k), minidump 0→120 (24 kept, 92/93, 1.018M). Kill = ≥1 test failed w/ collection OK (json-report); resume proven 0-token + `testgen.json` byte-identical. Honest drops (no theater). Full `pytest` → 165 passed / 3 deselected (4:21); `-m slow` → 3 passed / 165 deselected; `ruff check .` clean. Scripted-endpoint tests (no cassettes, per verifier-agent precedent). |
 | S7 | Step 7: P2 .okf/ writer + claim verifier | todo | |
 | S8 | Step 8: net-new funnel + builder | todo | |
 | S9 | Step 9: lint/format, selection & quotas, tasks.json, report_data → REPORT skeleton, transcripts curation, HEURISTICS review with author | todo | |
@@ -1173,3 +1173,112 @@ Suite (verbatim): `.venv/bin/python -m pytest` → **150 passed, 3 deselected in
   live glom rerun (15 reused, 0 calls). Not done / noted: `harness.min_failing_tests` is not yet
   surfaced as a CLI flag (use `--set`); the top-up agent's dropped-on-input rule is exercised only
   by the unit path (no live candidate needed it after the pre-gate).
+
+### S6
+
+Step 6: P1 test generation + AST mutators + mutation gate. Wired as a resumable hygiene
+step `testgen` after `baseline` (its own `pipeline: generated tests` commit); `--stage
+hygiene` runs it; `--no-testgen` / `testgen.enabled=False` skips it.
+
+What exists:
+- `pipeline/ecosystems/python.py` `PythonAdapter.mutators()` + 7 AST operators
+  (`comparison_flip/comparison_boundary/arithmetic_swap/and_or_swap/return_none/
+  constant_tweak/statement_delete`). Each takes a function span, mutates one site,
+  re-emits via `ast.unparse` re-indented; `statement_delete` never removes the def/class
+  itself. `pipeline/hygiene/mutate.py` = ecosystem-agnostic driver: splices mutants back
+  by line range (rest of file byte-identical), deterministic interleave-then-take-N
+  selection.
+- `pipeline/hygiene/testgen.py`:
+  - `rank_targets` — deterministic. Joins testgen's OWN in-container coverage run
+    (`knowledge.indexes.run_coverage`, missed lines per file) with the AST symbol index:
+    `score = uncovered_ratio * log(1+lines) * (1 + complexity/complexity_weight) *
+    public_bonus`, `uncovered_ratio = missed_in_span / measurable_in_span`. Filters
+    (dunder, init re-export, cli main, too-small, private-low-complexity, no-executable-
+    lines) and only `score > 0` candidates are selectable (never re-tests covered code).
+    Emits `hygiene/testgen_targets.json` (every function's score + skip reason).
+  - Generation loop — BIG agent (`p1.testgen.write_tests_agent`) per selected module,
+    tools `read_file/grep/write_file/run` (run only in-container), writes ONLY the
+    generated file; per-target mutation gate (pass on real code AND kill
+    >= `min_mutants_killed`); surviving mutants drive `p1.testgen.mutation_retry_agent`
+    up to `agent.testgen_max_retries`; whole file dropped if it fails on real code or
+    kills zero mutants; weak-only test functions trimmed. Every outcome audited to
+    `agent_actions.jsonl` and reused by content hash (`hygiene/testgen_decisions.json`,
+    0-token reruns). `hygiene/testgen.json` = per-module/-function kept/weak + mutants
+    killed/total.
+- Generated tests live in a `generated/` subdir of each repo's PRIMARY test dir so the
+  repo's own `pytest -q` collects them (glom → `glom/test/generated/`, mini_pkg →
+  `tests/generated/`, bootstrap → `tests/generated/`).
+
+Real runs (live BIG agent, real Docker). Tokens are the **testgen-step only**
+(`p1.testgen.*` in `llm_usage.json`; the file `_total` also carries earlier sessions):
+
+| repo | coverage | modules sel | targets | functions kept | mutants killed/valid | testgen tokens |
+|---|---|---|---|---|---|---|
+| mini_pkg_notests | bootstrap (0 tests) | 3 | 4 | 4 (3/3 modules) | 15/15 | 46k |
+| glom (`top_k=3`) | 202-test suite | 3 | 8 | 4 (`glom.core` dropped) | 14/16 | 238k |
+| minidump | bootstrap (0 tests) | 5 | 30 | 24 (`aminidumpreader` dropped) | 92/93 | 1.018M |
+
+Documented command still green with generated tests: mini_pkg_notests 0→34 passed,
+glom 202→248 passed, minidump 0→120 passed. `glom.core` and minidump's async reader were
+honestly DROPPED (agent tests failed on the real code / proved nothing) rather than
+shipped as coverage theater — the mutation gate working as designed. glom run with
+`--set testgen.top_k_modules=3` to bound spend. minidump's `_total` equals its testgen
+total (no earlier LLM steps); it was launched twice in S6 (a bad fixture-path attempt with
+no LLM calls, then the real URL run) — only the real run's tokens count.
+
+Review-round fixes (all applied):
+1. Generated tests excluded from testgen + baseline input hashes AND from the ranking
+   coverage run (`--ignore=<gen_dir>`); `_primary_test_dir` ignores the generated subdir so
+   `gen_dir` never nests. **Resume proven**: `--stage hygiene` twice on mini_pkg_notests →
+   second run skips testgen, `testgen.json` byte-identical, 0 new tokens.
+2. After generation testgen runs the documented suite once (`baseline._run_suite`), records
+   `suite_after` + `twice_identical` in `testgen.json`, and re-records `baseline.json`
+   (`testgen_refreshed: true`) since the stable test set grew.
+3. `_revert_disallowed(repo, gen_dir, allowed)`: tracked edits checked out, untracked files
+   removed and emptied parents pruned (`-uall` so a fresh gen_dir is not collapsed/rmtree'd),
+   any gen_dir file that is not an allowed module test file removed; `reverted` audited.
+4. `testgen_decisions.json` persisted after every module.
+5. Kill = ≥1 test **failed with collection intact** (pytest-json-report), not exit!=0;
+   timeouts / broken collection are `mutant-invalid` (excluded from denominator, not kills).
+6. `cov.status not in (ok, no_tests)` → skip with recorded status (no ranking on garbage);
+   `no_tests` is the legitimate bootstrap path and still proceeds.
+7. Lows: distinct drop labels (`dropped_no_file`/`dropped_failed_on_real`/`dropped_zero_kill`);
+   run-dir lock file; `no_mutants` status for undedentable/mutant-less spans; magic numbers →
+   config; one shared `append_agent_action` helper (context.py, used by baseline + testgen);
+   theater-trimming removed (fragile; whole-file zero-kill drop already prevents theater);
+   test cruft removed.
+
+Deviations from the S6 sketch (all noted in DESIGN 3.6 "Implementation notes"):
+1. Test-gen computes its OWN coverage in-container (it is P1, before the P2 knowledge
+   layer builds `coverage.json`); it does not read `knowledge/coverage.json`.
+2. Generated tests placed beside existing tests (see above), not always `tests/generated`.
+3. Write agent gets `read_file/grep/write_file/run` only, not the P2 graph tools
+   (`show_symbol/callers/tests_for`) — the graph is not built yet; all facts are in the
+   prompt (DESIGN 3.6 already specifies in-prompt facts).
+4. The container-driven agent is tested with a SCRIPTED endpoint (real Docker + real
+   mutation), not cassettes — same precedent as the P3 verifier agent; a tool loop that
+   branches on container output cannot be replayed byte-for-byte. So NO new cassette stage.
+
+Tests (`tests/test_testgen.py`, 14): each mutator parses/differs/keeps its def; driver
+leaves the rest of the file byte-identical; ranking skip reasons + selection + score>0 +
+uncovered-ratio; disabled no-op; `_revert_disallowed` undoes source edits + new dirs + stray
+gen files (git-only, offline); weak-survives/strong-kills (real container); generation keeps
+strong + drops zero-kill (scripted agent, real Docker). Shared `mini_env` fixture + three
+pre-S6 hygiene/knowledge tests run with `testgen.enabled=False` so the S5 cassette stage is
+undisturbed.
+
+Suite (whole repo, once at end of the review round): `pytest` → 165 passed / 3 deselected
+(4:21); `-m slow` → 3 passed / 165 deselected; `ruff check .` clean.
+
+Config added: `testgen.enabled/place_beside_existing_tests/generated_subdir/
+max_agent_runs_per_repo/agent_max_turns/mutant_timeout_s/run_output_chars/example_test_chars/
+summary_chars/{targets,results,decisions,lock}_filename/commit_label`; `run_coverage` gained
+an `ignore` param; `testgen.py`+`mutate.py` in `hygiene_code_files`; `--no-testgen` CLI flag.
+HEURISTICS rows added.
+
+Things S7+ must know: generated tests are a pipeline commit AFTER `base_sha`, so P3/history
+mining (at/under base_sha) is unaffected. `hygiene/testgen.json` carries the mutation
+scores REPORT should cite. The collateral baseline for FUTURE tasks now includes generated
+tests (recorded in the commit); existing built tasks are self-contained (own trees) and
+were NOT re-validated. Not done: generated tests are not fed back into P2 coverage/test_map
+unless the knowledge stage is re-run (go through the runner, don't hand-edit).
