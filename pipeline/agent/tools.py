@@ -1,11 +1,8 @@
-"""Progressive-disclosure agent toolset.
+"""Agent toolset.
 
-``concrete_tools`` operate on a copied repo workdir; ``run`` executes ONLY inside the
-Docker container. ``graph_tools`` are backed by the repo graph / history index / git
-(show_symbol, callers, callees, tests_for, show_commit); ``okf`` reads a page from the
-.okf knowledge bundle (S7), sandboxed to the bundle dir. A tool that needs a
-not-yet-built artifact raises a clear error, which the loop turns into a text
-observation for the model -- never faked.
+``concrete_tools``: read_file/grep/write_file on the workdir, ``run`` only inside Docker.
+``graph_tools``: repo graph / history index / git navigation plus the sandboxed ``okf``
+page reader. Missing artifacts raise; the loop returns the error to the model as text.
 """
 
 from __future__ import annotations
@@ -124,7 +121,7 @@ def _stub(name: str, needs: str) -> Callable[..., str]:
 
 
 def concrete_tools(ctx: ToolContext) -> list[Tool]:
-    """The tools implemented in S1: read_file, grep, write_file, run."""
+    """Filesystem/container tools: read_file, grep, write_file, run."""
     return [
         Tool(
             "read_file",
@@ -177,14 +174,14 @@ def concrete_tools(ctx: ToolContext) -> list[Tool]:
 
 def _graph_path(ctx: ToolContext) -> Path:
     if ctx.knowledge_dir is None:
-        raise RuntimeError("show_symbol requires the repo graph (S3); knowledge_dir not set")
+        raise RuntimeError("show_symbol requires the repo graph; knowledge_dir not set")
     return ctx.knowledge_dir / ctx.config.knowledge.graph_filename
 
 
 def _okf(ctx: ToolContext, path: str) -> str:
     """Read one OKF page by bundle-relative path, sandboxed to the .okf bundle."""
     if ctx.knowledge_dir is None:
-        raise RuntimeError("okf requires the .okf bundle (S7); knowledge_dir not set")
+        raise RuntimeError("okf requires the .okf bundle; knowledge_dir not set")
     bundle = (ctx.knowledge_dir / ctx.config.okf.bundle_dirname).resolve()
     target = (bundle / path.lstrip("/")).resolve()
     if not target.is_relative_to(bundle):
@@ -242,9 +239,7 @@ def _calls_edges(ctx: ToolContext, *, source: str | None = None, target: str | N
     if not hits:
         return "none"
     key = "source" if target else "target"
-    return "\n".join(
-        f"{e[key]}  ({e['evidence']['file']}:{e['evidence']['line']})" for e in hits
-    )
+    return "\n".join(f"{e[key]}  ({e['evidence']['file']}:{e['evidence']['line']})" for e in hits)
 
 
 def _tests_for(ctx: ToolContext, qualname: str) -> str:
@@ -271,11 +266,9 @@ def _show_commit(ctx: ToolContext, sha: str) -> str:
         for commit in json.loads(history.read_text()):
             if commit["sha"].startswith(sha):  # sha is a validated non-empty prefix
                 return _format_commit(commit)
-    # --end-of-options guarantees the sha is parsed as a revision, never an option
-    # (`git show -- <sha>` would instead treat it as a pathspec and show nothing).
+    # --end-of-options: sha is parsed as a revision, never an option or pathspec.
     result = subprocess.run(
-        ["git", "-C", str(root), "show", "--stat", "--format=%H%n%s%n%an",
-         "--end-of-options", sha],
+        ["git", "-C", str(root), "show", "--stat", "--format=%H%n%s%n%an", "--end-of-options", sha],
         capture_output=True,
         text=True,
         check=False,
@@ -301,21 +294,37 @@ def _format_commit(commit: dict) -> str:
 
 
 def graph_tools(ctx: ToolContext) -> list[Tool]:
-    """Graph/history-backed navigation tools (S3). okf stays stubbed until S7."""
+    """Graph/history-backed navigation tools plus the okf page reader."""
     one = {
         "type": "object",
         "properties": {"qualname": {"type": "string"}},
         "required": ["qualname"],
     }
     return [
-        Tool("show_symbol", "Look up a function/class from the repo graph by qualname.", one,
-             lambda qualname: _show_symbol(ctx, qualname)),
-        Tool("callers", "List call sites that call the given qualname.", one,
-             lambda qualname: _calls_edges(ctx, target=qualname)),
-        Tool("callees", "List intra-repo symbols the given qualname calls.", one,
-             lambda qualname: _calls_edges(ctx, source=qualname)),
-        Tool("tests_for", "List tests that execute the given qualname.", one,
-             lambda qualname: _tests_for(ctx, qualname)),
+        Tool(
+            "show_symbol",
+            "Look up a function/class from the repo graph by qualname.",
+            one,
+            lambda qualname: _show_symbol(ctx, qualname),
+        ),
+        Tool(
+            "callers",
+            "List call sites that call the given qualname.",
+            one,
+            lambda qualname: _calls_edges(ctx, target=qualname),
+        ),
+        Tool(
+            "callees",
+            "List intra-repo symbols the given qualname calls.",
+            one,
+            lambda qualname: _calls_edges(ctx, source=qualname),
+        ),
+        Tool(
+            "tests_for",
+            "List tests that execute the given qualname.",
+            one,
+            lambda qualname: _tests_for(ctx, qualname),
+        ),
         Tool(
             "show_commit",
             "Inspect a commit from the history index (or git).",

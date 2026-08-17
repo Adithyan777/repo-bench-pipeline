@@ -1,9 +1,7 @@
-"""S6 test-generation + mutation gate.
+"""Test generation + mutation gate.
 
-Deterministic parts (ranking, mutators) run offline. The generation loop runs the
-real BIG agent against a SCRIPTED endpoint (no tokens) with real Docker/mutation
-runs -- the same pattern the P3 verifier-agent tests use, because a container-driven
-multi-turn agent cannot be replayed byte-for-byte from cassettes.
+Ranking/mutators offline; the generation loop runs the real agent against a scripted
+endpoint with real Docker (multi-turn container agents are not cassette-replayable).
 """
 
 from __future__ import annotations
@@ -81,20 +79,26 @@ def test_mutants_leave_rest_of_file_byte_identical():
 
 def _fn(qual, file, line, end, cx, pub, method=False):
     return {
-        "qualname": qual, "module": qual.rsplit(".", 1)[0], "name": qual.rsplit(".", 1)[-1],
-        "file": file, "line": line, "end_line": end, "complexity": cx,
-        "is_public": pub, "is_method": method,
+        "qualname": qual,
+        "module": qual.rsplit(".", 1)[0],
+        "name": qual.rsplit(".", 1)[-1],
+        "file": file,
+        "line": line,
+        "end_line": end,
+        "complexity": cx,
+        "is_public": pub,
+        "is_method": method,
     }
 
 
 def test_rank_skips_and_selects():
     cfg = Config()
     functions = [
-        _fn("pkg.a.big_public", "pkg/a.py", 1, 20, 5, True),      # strong target
-        _fn("pkg.a.tiny", "pkg/a.py", 30, 31, 1, True),           # too_small
-        _fn("pkg.a._helper", "pkg/a.py", 40, 60, 1, False),       # private_low_complexity
+        _fn("pkg.a.big_public", "pkg/a.py", 1, 20, 5, True),  # strong target
+        _fn("pkg.a.tiny", "pkg/a.py", 30, 31, 1, True),  # too_small
+        _fn("pkg.a._helper", "pkg/a.py", 40, 60, 1, False),  # private_low_complexity
         _fn("pkg.a.__eq__", "pkg/a.py", 70, 74, 1, False, True),  # dunder
-        _fn("pkg.b.covered", "pkg/b.py", 1, 10, 3, True),         # fully covered -> score 0
+        _fn("pkg.b.covered", "pkg/b.py", 1, 10, 3, True),  # fully covered -> score 0
     ]
     cov = {
         "pkg/a.py": {"executed_lines": [], "missing_lines": list(range(1, 75))},
@@ -142,8 +146,7 @@ def test_weak_test_survives_strong_test_kills(mini_env):
     assert mutants
 
     weak = (  # calls clamp but asserts nothing about its result -> catches no mutant
-        "from mini_pkg.calc import clamp\n\n"
-        "def test_w():\n    clamp(5, 0, 10)\n    assert True\n"
+        "from mini_pkg.calc import clamp\n\ndef test_w():\n    clamp(5, 0, 10)\n    assert True\n"
     )
     strong = (
         "from mini_pkg.calc import clamp\n\n"

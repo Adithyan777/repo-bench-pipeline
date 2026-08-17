@@ -1,26 +1,12 @@
-"""Step 4.2 (verifier): re-check the model's OKF claims against the AST + graph.
+"""Step 4.2 verifier: re-check OKF claims against the AST + graph.
 
-The model authors only the purpose and the per-function contract; this verifier re-derives
-the checkable claims from source and stamps each page:
-
-  - >= 1 claim actually CHECKED and all supported -> ``verified: [{by, at, checks: [...]}]``
-    + ``status: stable``.
-  - a claim unsupported, OR nothing checkable on the page -> stays ``status: draft``.
-
-A page whose only content is unverifiable prose (``inputs`` / ``outputs`` / ``invariants``)
-is never stamped -- those fields are listed once in ``okf_verification.json`` as the
-kinds we never machine-check.
-
-Checked claims:
-  - raises (semantic): each claimed exception must be raised in the function or a one-hop
-    intra-repo callee; a page claiming ``none`` while the function has an explicit ``raise``
-    is unsupported (negative check, function's OWN raises only).
-  - side_effects "none" (semantic): rejected if the function has global/nonlocal writes,
-    attribute stores, or IO-like calls (``okf.side_effect_call_names``).
-  - callees (semantic): each linked callee's name must appear as an ``ast.Call`` in the
-    function (independent re-parse, not just the graph edge).
-  - callers, links (by_construction): graph-derived / structural -- verified but reported
-    separately, since they are true by construction, not independent evidence.
+Page stamping: >= 1 checked claim, all supported -> ``verified: [...]`` + ``status:
+stable``; anything unsupported or nothing checkable -> ``status: draft``. Prose-only
+fields (inputs/outputs/invariants) are never checked; listed in okf_verification.json.
+Semantic checks: raises (claimed exception raised in the function or a one-hop callee;
+``none`` rejected only if the function's OWN body raises), side_effects ``none``
+(no global/nonlocal writes, attribute stores, IO-like calls), callees (name appears as
+``ast.Call``). callers/links are by-construction and reported separately.
 """
 
 from __future__ import annotations
@@ -234,8 +220,7 @@ def _verify_page(ctx, graph, qual, body, md, tally, config) -> tuple[list[str], 
         return ["unknown-qualname"], checks
     contract = _contract(body)
 
-    # raises (semantic): positive claims confirmed against truth; a "none" claim rejected
-    # only if the function's OWN body raises (a callee raising does not mean this fn does).
+    # raises: "none" is rejected only if the function's OWN body raises.
     truth = raises_truth(ctx.repo, graph, qual)
     if contract["raises"]:
         checks.add("raises")

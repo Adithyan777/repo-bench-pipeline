@@ -1,15 +1,8 @@
-"""EcosystemAdapter: the only ecosystem-specific surface in the pipeline.
+"""EcosystemAdapter: the only ecosystem-specific surface; everything else is agnostic.
 
-Everything else (agent loop, harness, funnels, okf writer, docker runner) is
-ecosystem-agnostic. Adding a JS adapter means implementing these methods.
-
-Construction contract: adapters are constructed per-repo with run context —
-``Adapter(config, work_dir, llm)`` — where ``work_dir`` is the clean repo clone the
-adapter writes ecosystem files into (requirements.in, lock, Dockerfile, …) and
-``llm`` is an optional ``LLMClient`` for ecosystem-specific model calls (e.g. the
-import→PyPI fallback). The abstract methods below therefore keep a ``(repo)``
-signature and read their run context from the instance, not from arguments.
-See ``ecosystems/python.py`` for the reference implementation.
+Constructed per repo as ``Adapter(config, work_dir, llm)``: ``work_dir`` is the clean
+clone that receives ecosystem files, ``llm`` an optional client for model fallbacks.
+Reference implementation: ``ecosystems/python.py``.
 """
 
 from __future__ import annotations
@@ -55,14 +48,8 @@ class EcosystemAdapter(ABC):
 
     @abstractmethod
     def lint_and_format(self, repo: Path, run: Any) -> dict[str, Any]:
-        """Lint + format ``repo`` in place; return a structured report.
-
-        ``run(cmd) -> CommandResult`` executes a shell command inside the pinned
-        container (so the exact, pinned linter version is used and no target code
-        runs on the host). The adapter writes its lint config into the tree, runs
-        the fix/format commands via ``run``, and adds suppressions for unfixable
-        findings; the caller syncs the mutated tree back and verifies the build.
-        """
+        """Lint + format ``repo`` in place via ``run(cmd)`` (executes inside the pinned
+        container); return a structured report. Caller syncs the tree back and rebuilds."""
 
     @abstractmethod
     def parse_test_report(self, path: Path) -> dict[str, dict[str, str]]:

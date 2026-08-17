@@ -1,15 +1,8 @@
-"""Step 3.5: run the baseline suite in the container and handle failures.
+"""Step 3.5: baseline suite in the container; classify failures (SMALL model).
 
-Flow (DESIGN 3.5, hardened):
-  detect framework; bootstrap if none; run in-container with a structured report;
-  classify failures (env vs genuine) with the SMALL model. Then:
-  - env failures WITH a missing dep -> one automatic env-fix (add dep, re-lock,
-    rebuild). If the env-fix's lock/build fails, record it and fall through.
-  - GENUINE failures -> one bounded agent-fix. The agent may only touch
-    tests/config/deps (allowed globs); any edit outside them is reverted and audited.
-    It must never patch the code under test.
-  - everything still failing (incl. env-classified with no actionable dep) -> quarantine.
-  Never delete a test, never fake a pass. Skips are not failures.
+env + missing dep -> one env-fix (add dep, re-lock, rebuild); genuine -> one bounded
+agent-fix limited to tests/config/deps (edits elsewhere reverted + audited); anything
+still failing -> quarantine. Never delete a test or fake a pass; skips are not failures.
 """
 
 from __future__ import annotations
@@ -23,6 +16,7 @@ from pipeline.agent.tools import ToolContext, concrete_tools
 from pipeline.docker.image import build_image
 from pipeline.docker.runner import fresh_workdir, run_in_container
 from pipeline.hygiene.context import HygieneContext, append_agent_action
+from pipeline.log import log
 from pipeline.state import hash_inputs
 
 NO_TESTS_EXIT = 5  # pytest: no tests collected
@@ -65,9 +59,7 @@ def input_hash(ctx: HygieneContext) -> str:
     for tests_dir in ctx.repo.rglob("tests"):
         if tests_dir.is_dir():
             parts += tests_dir.rglob("*.py")
-    # Test-gen writes generated tests AFTER baseline; excluding them keeps baseline
-    # resumable (it must not re-run just because test-gen added files). Only repo-relative
-    # paths carry the marker; build.json (in hygiene/) is kept as-is.
+    # Generated tests (written after baseline) are excluded so baseline stays resumable.
     marker = ctx.config.testgen.generated_subdir
 
     def is_generated(p) -> bool:
@@ -101,22 +93,35 @@ def run(ctx: HygieneContext) -> dict:
     quarantined: list[str] = []
     categories: dict[str, str] = {}
     notes: dict[str, object] = {}
+    log("hygiene", "baseline", f"suite: {len(results)} tests, {len(failures)} failing")
 
     if failures:
         categories, deps = _classify(ctx, failures)
+        log("hygiene", "baseline", f"classified: {_category_counts(categories)}")
         if deps:
             notes["env_fix"] = _env_fix(ctx, deps)
             results, _ = _run_suite(ctx)
             failures = {tid: r for tid, r in results.items() if _is_failure(r)}
+            log(
+                "hygiene",
+                "baseline",
+                f"env-fix {notes['env_fix'].get('outcome')}: {len(failures)} still failing",
+            )
         genuine = [tid for tid in failures if categories.get(tid) == "genuine"]
         if genuine and ctx.config.agent.baseline_fix_max_attempts >= 1:
             notes["agent_fix"] = _agent_fix(ctx)
             results, _ = _run_suite(ctx)
             failures = {tid: r for tid, r in results.items() if _is_failure(r)}
+            log(
+                "hygiene",
+                "baseline",
+                f"agent-fix {notes['agent_fix'].get('outcome')}: {len(failures)} still failing",
+            )
         if failures:
             quarantined = sorted(failures)
             _write_quarantine(ctx, quarantined)
             results, _ = _run_suite(ctx, deselect=quarantined)
+            log("hygiene", "baseline", f"quarantined {len(quarantined)}")
 
     still_failing = sorted(tid for tid, r in results.items() if _is_failure(r))
     _write_test_command(ctx, quarantined)
@@ -138,6 +143,13 @@ def run(ctx: HygieneContext) -> dict:
     if still_failing:
         raise SystemExit(f"{repo.name}: {len(still_failing)} tests still failing after quarantine")
     return data
+
+
+def _category_counts(categories: dict[str, str]) -> str:
+    counts: dict[str, int] = {}
+    for cat in categories.values():
+        counts[cat] = counts.get(cat, 0) + 1
+    return " ".join(f"{k}={v}" for k, v in sorted(counts.items())) or "none"
 
 
 def _run_suite(
@@ -255,7 +267,9 @@ def _porcelain(repo) -> list[tuple[str, str]]:
     # Raw stdout (not stripped): the leading status column can be a space.
     proc = subprocess.run(
         ["git", "-C", str(repo), "status", "--porcelain"],
-        capture_output=True, text=True, check=False,
+        capture_output=True,
+        text=True,
+        check=False,
     )
     entries = []
     for line in proc.stdout.splitlines():

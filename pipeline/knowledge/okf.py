@@ -1,26 +1,11 @@
-"""Step 4.2: write an Open Knowledge Format (OKF v0.2) bundle for the repo.
+"""Step 4.2: Open Knowledge Format (OKF v0.2) bundle under ``knowledge/.okf/``.
 
-The bundle under ``knowledge/.okf/`` is a directory of cross-linked Markdown pages
-with YAML frontmatter:
-
-    .okf/
-      index.md                       (reserved) progressive-disclosure listing
-      repo.md                        entrypoints, test command, layout, conventions
-      modules/<mod>.md               purpose + public API + callers/callees + tests
-      functions/<mod>/<qualname>.md   contract + links to callers/callees/tests
-      log.md                         (reserved) generation log
-
-The STATIC skeleton (structure, signatures, resources, callers/callees/tests) comes
-entirely from repo_graph.json + symbol_index -- deterministic, no model. The BIG model
-writes ONLY the module purpose and the per-function contract; each claim is persisted by
-content hash so a rerun is 0-token and byte-identical. ``okf_verify`` then re-checks the
-model's claims against the AST/graph and stamps ``verified``.
-
-Determinism: pages are emitted in sorted order and ``generated.at`` is pinned to the base
-commit's date (stable for a given repo state), so two runs are byte-identical.
-
-Frontmatter values are emitted as inline JSON (``key: <json>``) -- valid YAML that any
-consumer parses, and that ``parse_frontmatter`` reads back with ``json.loads``.
+Pages: index.md (listing), repo.md, modules/<mod>.md, functions/<mod>/<qualname>.md,
+log.md; Markdown with frontmatter values as inline JSON (``key: <json>``).
+Skeleton (structure, signatures, callers/callees/tests) is derived from repo_graph +
+symbol_index; the BIG model writes only module purpose and function contracts, each
+persisted by content hash (rerun = 0 tokens). ``okf_verify`` stamps ``verified``.
+Sorted emission + ``generated.at`` pinned to the base commit date: byte-identical runs.
 """
 
 from __future__ import annotations
@@ -38,7 +23,7 @@ from pipeline.config import Config
 
 MODULE_PURPOSE_STEP = "p2.okf.module_purpose"
 FUNCTION_CONTRACTS_STEP = "p2.okf.function_contracts"
-PROMPT_VERSION = "s7.1"
+PROMPT_VERSION = "okf.1"  # bump when the prompts change: keys of persisted decisions
 
 _FIELD_ORDER = [
     "okf_version", "type", "title", "description", "resource",
@@ -124,15 +109,12 @@ def _module_of(nid: str, node: dict) -> str:
 
 
 def modules(graph: Graph) -> list[dict]:
-    return sorted(
-        (n for n in graph.nodes.values() if n["type"] == "module"), key=lambda n: n["id"]
-    )
+    return sorted((n for n in graph.nodes.values() if n["type"] == "module"), key=lambda n: n["id"])
 
 
 def select_function_pages(graph: Graph, config: Config) -> list[dict]:
-    """public functions/methods + any whose complexity >= min_private_page_complexity,
-    capped at max_function_pages (highest-complexity first). Trivial private helpers and
-    dunders are left to their module page."""
+    """Public functions + private ones with complexity >= min_private_page_complexity,
+    capped at max_function_pages (highest complexity first)."""
     okf = config.okf
     worthy = [
         n
@@ -202,7 +184,7 @@ _CONTRACTS_SCHEMA = {
 
 
 def _key(config: Config, *parts: str) -> str:
-    return hashlib.sha256("\n".join(parts).encode()).hexdigest()[: 16]
+    return hashlib.sha256("\n".join(parts).encode()).hexdigest()[:16]
 
 
 def _cached(llm, decisions, key, step, prompt, schema):
@@ -244,8 +226,7 @@ def _module_identifiers(module: str, members: list[dict]) -> set[str]:
 
 
 def _hallucinated_identifiers(purpose: str, allowed: set[str]) -> list[str]:
-    """Backticked code identifiers in the purpose that are not in the module (and not a
-    Python builtin) — a name the model invented rather than read from the source."""
+    """Backticked identifiers in the purpose that are neither in the module nor builtins."""
     bad = []
     for tok in _IDENT_RE.findall(purpose):
         leaf = tok.split(".")[-1]
@@ -262,8 +243,8 @@ def _contracts_prompt(module: str, fns: list[tuple[dict, str]]) -> str:
     return (
         f"For each function of module `{module}` below, write a behavioral contract: "
         "inputs (what each parameter means), outputs (what is returned), raises (list of "
-        "exception TYPE NAMES it can raise, [] if none), side_effects (\"none\" or a short "
-        "phrase), invariants (a property that always holds, or \"\"). Base every field ONLY "
+        'exception TYPE NAMES it can raise, [] if none), side_effects ("none" or a short '
+        'phrase), invariants (a property that always holds, or ""). Base every field ONLY '
         "on the code shown. Return one entry per qualname.\n\n" + "\n\n".join(blocks)
     )
 
@@ -292,13 +273,9 @@ def _chunks(fns: list[tuple[dict, str]], config: Config) -> list[list[tuple[dict
 
 
 def author_claims(graph: Graph, repo: Path, pages: list[dict], llm, config, decisions):
-    """module -> purpose; qualname -> contract.
-
-    LLM calls are batched per module and CHUNKED so a module's contracts never exceed
-    ``llm.okf_module_chunk_tokens`` in one prompt. Each call's decision key is the hash of
-    the exact rendered prompt (+ model + prompt version), so a prompt change re-runs only
-    the affected call and everything else is reused 0-token. A chunk's returned contracts
-    are scoped to that chunk's qualnames (the model cannot leak entries for other funcs)."""
+    """module -> purpose; qualname -> contract. Calls are per module, chunked to
+    ``llm.okf_module_chunk_tokens``; keyed by hash(prompt, model, PROMPT_VERSION).
+    Returned contracts are scoped to the chunk's qualnames."""
     by_module: dict[str, list[dict]] = {}
     for n in pages:
         by_module.setdefault(_module_of(n["id"], n), []).append(n)
@@ -328,12 +305,22 @@ def author_claims(graph: Graph, repo: Path, pages: list[dict], llm, config, deci
         fns = [(n, _function_source(repo, n)) for n in by_module.get(module, [])]
         for chunk in _chunks(fns, config):
             chunk_quals = {n["id"] for n, _ in chunk}
-            # Chunk-level contract cache keyed by the per-function spans in the chunk, so a
-            # source change re-runs only the chunk it touches; unrelated chunks reuse.
-            ckey = _key(config, PROMPT_VERSION, "contracts", module,
-                        *[f"{n['id']}:{src}" for n, src in chunk])
-            res = _cached(llm, decisions, ckey, FUNCTION_CONTRACTS_STEP,
-                          _contracts_prompt(module, chunk), _CONTRACTS_SCHEMA)
+            # Cache keyed by the chunk's function spans: a source change re-runs one chunk.
+            ckey = _key(
+                config,
+                PROMPT_VERSION,
+                "contracts",
+                module,
+                *[f"{n['id']}:{src}" for n, src in chunk],
+            )
+            res = _cached(
+                llm,
+                decisions,
+                ckey,
+                FUNCTION_CONTRACTS_STEP,
+                _contracts_prompt(module, chunk),
+                _CONTRACTS_SCHEMA,
+            )
             for c in (res or {}).get("contracts", []):
                 if c["qualname"] in chunk_quals:  # scope output to this chunk's functions
                     contracts[c["qualname"]] = c
@@ -402,9 +389,9 @@ def render_function(graph, node, module, contract, page_ids, at, config) -> str:
     fm = {
         "type": "python-function",
         "title": leaf,
-        "description": (
-            node.get("docstring") or (contract or {}).get("outputs") or leaf
-        ).split("\n")[0][:200],
+        "description": (node.get("docstring") or (contract or {}).get("outputs") or leaf).split(
+            "\n"
+        )[0][:200],
         "resource": resource(node),
         "sources": [{"resource": resource(node)}],
         "tags": _tags(module),
@@ -424,8 +411,10 @@ def render_function(graph, node, module, contract, page_ids, at, config) -> str:
     if c.get("invariants"):
         lines.append(f"- **invariants**: {c['invariants']}")
     lines.append("")
-    for label, ids in (("Callers", graph.callers(node["id"])),
-                       ("Callees", graph.callees(node["id"]))):
+    for label, ids in (
+        ("Callers", graph.callers(node["id"])),
+        ("Callees", graph.callees(node["id"])),
+    ):
         present = [i for i in ids if i in graph.nodes]
         if present:
             links = ", ".join(_member_link(graph, page_ids, rel, i) for i in present)
@@ -450,8 +439,12 @@ def render_repo(ctx, graph, at, config) -> str:
         "verified": [],
         "status": config.okf.unverified_status,
     }
-    lines = [f"# `{repo_name}`\n", f"- **test command**: `{test_cmd}`",
-             f"- **modules**: {len(mods)}\n", "## Layout\n"]
+    lines = [
+        f"# `{repo_name}`\n",
+        f"- **test command**: `{test_cmd}`",
+        f"- **modules**: {len(mods)}\n",
+        "## Layout\n",
+    ]
     for m in mods:
         lines.append(f"- `{m['id']}` — `{m['file']}`")
     return page(fm, "\n".join(lines))
@@ -462,15 +455,16 @@ def _first_line(text: str | None, fallback: str = "") -> str:
 
 
 def render_index(ctx, graph, pages, purposes, config) -> str:
-    """Reserved page: no ``generated`` frontmatter (only okf_version), a progressive-
-    disclosure listing as ``* [title](./path) - description``."""
+    """Listing page (``* [title](./path) - description``); frontmatter has only okf_version."""
     repo_name = ctx.run_dir.name
     fm = {"okf_version": config.okf.okf_version}
-    lines = [f"# OKF bundle — `{repo_name}`\n",
-             f"OKF v{config.okf.okf_version} progressive-disclosure knowledge for `{repo_name}`.\n",
-             "## Start here\n",
-             "* [Repository overview](./repo.md) - test command, layout and modules\n",
-             "## Modules\n"]
+    lines = [
+        f"# OKF bundle — `{repo_name}`\n",
+        f"OKF v{config.okf.okf_version} progressive-disclosure knowledge for `{repo_name}`.\n",
+        "## Start here\n",
+        "* [Repository overview](./repo.md) - test command, layout and modules\n",
+        "## Modules\n",
+    ]
     for m in modules(graph):
         desc = _first_line(purposes.get(m["id"]) or m.get("docstring"), "module")
         lines.append(f"* [{m['id']}](./{_module_page_rel(m['id'])}) - {desc}")
@@ -482,9 +476,12 @@ def render_log(ctx, n_modules: int, n_functions: int, at, config) -> str:
     """Reserved page: a date-grouped generation log."""
     model = config.model_for(MODULE_PURPOSE_STEP)
     date = at.split("T")[0] if at else "unknown-date"
-    lines = ["# Log\n", f"## {date}\n",
-             f"- generated by `pipeline/{model}`: repo.md, {n_modules} module pages, "
-             f"{n_functions} function pages."]
+    lines = [
+        "# Log\n",
+        f"## {date}\n",
+        f"- generated by `pipeline/{model}`: repo.md, {n_modules} module pages, "
+        f"{n_functions} function pages.",
+    ]
     return "\n".join(lines) + "\n"
 
 
@@ -504,7 +501,9 @@ def _base_at(ctx) -> str:
         try:
             return subprocess.run(
                 ["git", "-C", str(ctx.repo), "show", "-s", "--format=%cI", base],
-                capture_output=True, text=True, check=True,
+                capture_output=True,
+                text=True,
+                check=True,
             ).stdout.strip()
         except subprocess.CalledProcessError:
             pass
@@ -540,13 +539,25 @@ def build_okf(ctx, graph_json: dict, llm=None, decisions=None) -> dict:
     mods = modules(graph)
     for m in mods:
         module = m["id"]
-        write(_module_page_rel(module),
-              render_module(graph, module, m, graph.module_members(module),
-                            purposes.get(module), page_ids, at, config))
+        write(
+            _module_page_rel(module),
+            render_module(
+                graph,
+                module,
+                m,
+                graph.module_members(module),
+                purposes.get(module),
+                page_ids,
+                at,
+                config,
+            ),
+        )
     for n in pages:
         module = _module_of(n["id"], n)
-        write(_function_page_rel(n["id"], module),
-              render_function(graph, n, module, contracts.get(n["id"]), page_ids, at, config))
+        write(
+            _function_page_rel(n["id"], module),
+            render_function(graph, n, module, contracts.get(n["id"]), page_ids, at, config),
+        )
     write("repo.md", render_repo(ctx, graph, at, config))
     write("index.md", render_index(ctx, graph, pages, purposes, config))
     write("log.md", render_log(ctx, len(mods), len(pages), at, config))

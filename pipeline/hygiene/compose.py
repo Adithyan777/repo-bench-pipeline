@@ -1,9 +1,6 @@
-"""Step 3.3 (compose): deterministic service detection.
-
-Detects postgres/redis/etc. from imports/deps, .env.example service URLs, and any
-existing compose files. Emits compose.json findings; writes a docker-compose.yml
-template only for supported services (postgres/redis). Anything else is reported
-as unsupported. For glom and the fixtures nothing fires.
+"""Step 3.3 (compose): deterministic service detection from imports/deps, .env.example
+URLs and existing compose files. Writes docker-compose.yml only for supported services
+(postgres/redis); others are reported as unsupported in compose.json.
 """
 
 from __future__ import annotations

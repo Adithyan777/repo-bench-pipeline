@@ -1,15 +1,6 @@
-"""PythonAdapter: the Python implementation of EcosystemAdapter.
-
-All Python/packaging-specific logic lives here. The hygiene modules orchestrate
-(state, audit, container steps); this class turns a repo into a canonical
-requirements.in, a fully pinned lock, a Dockerfile, and parses test reports.
-
-The adapter writes ecosystem files (requirements.in, lock, constraints, Dockerfile,
-.dockerignore) into ``work_dir`` — the clean repo clone that becomes the build
-context — so each task is self-contained. Step JSON records are written by the
-hygiene layer, not here.
-
-lint_and_format / symbol_index / mutators land in later sessions (S6/S9).
+"""PythonAdapter: all Python/packaging-specific logic (requirements.in, pinned lock,
+Dockerfile, test reports, lint, AST mutators). Ecosystem files are written into
+``work_dir`` (the clean clone / build context); step JSON records belong to hygiene.
 """
 
 from __future__ import annotations
@@ -206,8 +197,7 @@ class PythonAdapter(EcosystemAdapter):
         self.unresolved_imports = []
         proc = self._compile(pyver, extras, lock_path, inputs)
         if proc.returncode != 0 and extras:
-            # Bounded fallback: an extra may pull an unresolvable/heavy dep. Retry once
-            # without extras and record what was dropped so it is visible downstream.
+            # An extra may pull an unresolvable dep: retry once without extras, record the drop.
             self.dropped_extras = extras
             proc = self._compile(pyver, [], lock_path, inputs)
         proc = self._resolve_inferred_failures(proc, pyver, req_in, lock_path, inputs)
@@ -220,9 +210,8 @@ class PythonAdapter(EcosystemAdapter):
         return lock_path
 
     def _resolve_inferred_failures(self, proc, pyver, req_in, lock_path, inputs):
-        """On lock failure from an INFERRED import, re-ask the model once for the right
-        PyPI name; if it still won't resolve, drop the import and record it. Only
-        touches names we inferred (never a manifest dependency)."""
+        """Lock failed on an INFERRED import: re-ask the model once; still unresolved ->
+        drop and record. Never touches manifest dependencies."""
         attempts = self.config.pin.alias_reask_attempts
         while proc.returncode != 0:
             pkg = _parse_unresolvable(proc.stderr)
@@ -412,8 +401,7 @@ class PythonAdapter(EcosystemAdapter):
         return " ".join([self.test_command(Path(".")), *(shlex.quote(n) for n in nodeids)])
 
     def with_report(self, cmd: str, report_rel: str) -> str:
-        """Same run, plus the structured report the harness parses (pytest accepts
-        options after positional nodeids)."""
+        """Test command plus the structured report the harness parses."""
         return f"{cmd} -p no:cacheprovider --json-report --json-report-file={report_rel}"
 
     def test_framework_bootstrap(self, repo: Path) -> None:
@@ -422,7 +410,7 @@ class PythonAdapter(EcosystemAdapter):
         tests.mkdir(exist_ok=True)
         conftest = tests / "conftest.py"
         if not conftest.exists():
-            conftest.write_text("# bootstrapped by pipeline; generated tests land here (S6)\n")
+            conftest.write_text("# bootstrapped by pipeline; generated tests land here\n")
 
     def parse_test_report(self, path: Path) -> dict[str, dict[str, str]]:
         return self.parse_test_report_data(json.loads(Path(path).read_text()))
@@ -458,13 +446,11 @@ class PythonAdapter(EcosystemAdapter):
                 )
         return results
 
-    # --- deferred to later sessions -------------------------------------------
+    # --- lint / format ---------------------------------------------------------
 
     def lint_and_format(self, repo: Path, run) -> dict[str, Any]:
-        """ruff check --fix + ruff format, driven by a ``[tool.ruff]`` config we write
-        into the tree. Unfixable findings get a per-file ``# noqa`` (when configured);
-        the exact ruff comes from the pinned image via ``run``. Historical task trees
-        live outside this tree and are never touched here."""
+        """ruff check --fix + ruff format via ``run`` (pinned image), driven by the
+        ``[tool.ruff]`` config written into the tree; unfixable findings get ``# noqa``."""
         repo = Path(repo)
         lint = self.config.lint
         created = self._ensure_ruff_config(repo)
@@ -486,9 +472,8 @@ class PythonAdapter(EcosystemAdapter):
         findings = self._ruff_findings(run)
         report["unfixable"] = _finding_summary(findings)
         if findings and lint.allow_noqa_for_unfixable:
-            # Apply the noqa edits IN-CONTAINER: a host write to the bind-mounted tree can
-            # be read mid-flush by the next container as a truncated file (spurious
-            # F841/W292). Container-write → container-read is coherent.
+            # noqa edits are applied in-container: a host write to the bind mount can be read
+            # mid-flush by the next container (spurious F841/W292).
             report["noqa"] = _apply_noqa_in_container(run, findings)
             findings = self._ruff_findings(run)
         report["remaining"] = _finding_summary(findings)
@@ -503,10 +488,8 @@ class PythonAdapter(EcosystemAdapter):
         return py.is_file() and "[tool.ruff" in py.read_text(errors="replace")
 
     def _ensure_ruff_config(self, repo: Path) -> bool:
-        """Write a ``[tool.ruff.lint]`` config into pyproject.toml (creating a minimal
-        pyproject with NO ``[build-system]`` if absent, so a legacy setup.py install is
-        unaffected). Returns True iff a pyproject.toml was created. An existing ruff
-        config is respected (never clobbered)."""
+        """Write ``[tool.ruff.lint]`` into pyproject.toml (minimal file without
+        ``[build-system]`` if absent; existing ruff config kept). True iff created."""
         if self._ruff_config_present(repo):
             return False
         select = ", ".join(f'"{r}"' for r in self.config.lint.rules)
@@ -539,10 +522,8 @@ class PythonAdapter(EcosystemAdapter):
         return build_symbol_index(Path(repo), self.config)
 
     def mutators(self) -> list:
-        """AST mutation operators named in ``testgen.mutators``. Each is a callable
-        ``(function_span_source) -> [mutant_span_source, ...]`` whose mutants parse and
-        differ from the original; the driver in ``hygiene/mutate.py`` splices them back
-        by line span so the rest of the file stays byte-identical."""
+        """Operators named in ``testgen.mutators``: ``(span_source) -> [mutant_span, ...]``,
+        spliced back by ``hygiene/mutate.py``."""
         return [_MUTATORS[name] for name in self.config.testgen.mutators if name in _MUTATORS]
 
     # --- helpers --------------------------------------------------------------
@@ -574,19 +555,16 @@ def valid_requirement(spec: str) -> bool:
 
 
 def _shq(rules: tuple[str, ...]) -> str:
-    """`--select E,F,W,...` so the CLI enforces our rule set regardless of any
-    stray repo config, matching the ``[tool.ruff.lint] select`` we write."""
+    """`--select ...` matching the written ``[tool.ruff.lint] select`` (overrides repo config)."""
     return "--select " + shlex.quote(",".join(rules)) if rules else ""
 
 
-# The synced tree is bind-mounted at this path inside the container (see docker/runner),
-# so ruff's absolute `filename` (e.g. /repo/pkg/mod.py) maps back by stripping this prefix.
+# Bind-mount path of the tree inside the container (docker/runner); ruff paths are relative to it.
 CONTAINER_MOUNT = "/repo"
 
 
 def _container_rel(filename: str) -> str:
-    """Map a ruff-reported path (absolute `/repo/...` or relative `./...`) to a
-    tree-relative path, so a host-side edit lands on the right file."""
+    """ruff-reported path (`/repo/...` or `./...`) -> tree-relative path."""
     name = filename.removeprefix(CONTAINER_MOUNT).lstrip("/")
     return name[2:] if name.startswith("./") else name
 
@@ -612,8 +590,7 @@ def _code_counts(summary: list[dict]) -> dict[str, int]:
 
 
 def _noqa_plan(findings: list[dict]) -> dict[str, dict[int, list[str]]]:
-    """{repo-relative file -> {row -> sorted codes}} from ruff's JSON. ruff reports paths
-    inside the container mount (``/repo/...``); ``_container_rel`` maps them back."""
+    """{repo-relative file -> {row -> sorted codes}} from ruff's JSON."""
     by_line: dict[str, dict[int, set[str]]] = {}
     for f in findings:
         name = _container_rel(f.get("filename", ""))
@@ -642,8 +619,7 @@ def _apply_plan_to_text(text: str, rows: dict[int, list[str]]) -> str:
 
 
 def _apply_noqa(repo: Path, findings: list[dict]) -> dict[str, list[str]]:
-    """Host-side ``# noqa`` application (used off-container and unit-tested). Returns
-    {repo-relative file: sorted codes applied}."""
+    """Host-side ``# noqa`` application. Returns {repo-relative file: sorted codes}."""
     plan = _noqa_plan(findings)
     applied: dict[str, list[str]] = {}
     for name, rows in plan.items():
@@ -655,9 +631,7 @@ def _apply_noqa(repo: Path, findings: list[dict]) -> dict[str, list[str]]:
     return applied
 
 
-# In-container noqa applier: the same edit, but performed by the container so it never
-# races a host write against the next container's read. The plan is embedded as base64
-# (no shell-quoting hazards) and applied by a small python program run via ``run``.
+# In-container noqa applier (avoids host-write/container-read races); plan passed as base64.
 _NOQA_APPLIER = r"""
 import base64, json, sys
 plan = json.loads(base64.b64decode(sys.argv[1]).decode())
@@ -691,8 +665,7 @@ def _apply_noqa_in_container(run, findings: list[dict]) -> dict[str, list[str]]:
     prog = base64.b64encode(_NOQA_APPLIER.encode()).decode()
     run(f"python3 -c \"import base64;exec(base64.b64decode('{prog}').decode())\" {data}")
     return {
-        name: sorted({c for codes in rows.values() for c in codes})
-        for name, rows in plan.items()
+        name: sorted({c for codes in rows.values() for c in codes}) for name, rows in plan.items()
     }
 
 
@@ -822,14 +795,9 @@ def _constraints_from_lock(lock_text: str) -> str:
     return "\n".join(lines) + "\n"
 
 
-# --- AST mutation operators (S6 test-gen + verifier discrimination) ------------
-#
-# Each operator takes a function's source span and returns mutants that parse and
-# differ from it. Operators work on the dedented span (so method bodies parse),
-# mutate one site per mutant, and re-emit via ``ast.unparse`` re-indented to the
-# original column; the driver splices the whole span back by line range, so text
-# outside the mutated function is untouched. Formatting inside the mutant is not
-# preserved -- only behavior-changing edits matter for the mutation gate.
+# --- AST mutation operators (test-gen mutation gate + verifier discrimination) --
+# Each takes a function span, mutates one site per mutant on the dedented text and
+# re-emits via ``ast.unparse`` at the original column; mutants must parse and differ.
 
 _CMP_FLIP = {
     ast.Lt: ast.Gt, ast.Gt: ast.Lt, ast.LtE: ast.GtE, ast.GtE: ast.LtE,
@@ -842,8 +810,7 @@ _BOOL = {ast.And: ast.Or, ast.Or: ast.And}
 
 
 def _dedent_span(span: str) -> tuple[str, str]:
-    """Strip the common leading indentation (the def's column) so the span parses;
-    return the dedented text and the stripped prefix."""
+    """Dedent the span to the def's column; return (text, stripped prefix)."""
     lines = span.splitlines()
     indents = [len(ln) - len(ln.lstrip()) for ln in lines if ln.strip()]
     pad = min(indents) if indents else 0
@@ -857,8 +824,7 @@ def _reindent(text: str, prefix: str) -> str:
 
 
 def _variants(span: str, collect, mutate) -> list[str]:
-    """For each site ``collect`` finds, re-parse the span, mutate that one site and
-    unparse; keep mutants that parse and differ from the original."""
+    """Mutate one ``collect``-found site per mutant; keep those that parse and differ."""
     dedented, prefix = _dedent_span(span)
     try:
         base = ast.parse(dedented)
@@ -900,9 +866,7 @@ def _cmp_mutator(table: dict):
 
 def _binop_mutator(table: dict):
     def collect(tree):
-        return [
-            n for n in ast.walk(tree) if isinstance(n, ast.BinOp) and type(n.op) in table
-        ]
+        return [n for n in ast.walk(tree) if isinstance(n, ast.BinOp) and type(n.op) in table]
 
     def run(span: str) -> list[str]:
         def mutate(node):
@@ -961,12 +925,10 @@ _NOT_A_STATEMENT_MUTANT = (*_UNDELETABLE, ast.FunctionDef, ast.AsyncFunctionDef,
 
 
 def _statement_delete_mutator(span: str) -> list[str]:
-    """Delete one statement; ``pass``/control-flow statements and docstrings are left
-    alone (deleting them rarely changes behavior). Emptied blocks get a ``pass``."""
+    """Delete one statement (not pass/control-flow/docstrings); emptied blocks get ``pass``."""
 
     def bodies(tree):
-        # Skip the module body: its statements are the def/class under test, and
-        # deleting those breaks imports instead of testing behavior.
+        # Module body is skipped: deleting the def/class under test breaks imports.
         for node in ast.walk(tree):
             if isinstance(node, ast.Module):
                 continue

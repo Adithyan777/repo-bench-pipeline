@@ -1,4 +1,4 @@
-"""Ecosystem adapters. Base interface here; python.py in S2."""
+"""Ecosystem adapters. Base interface here; the Python adapter is in python.py."""
 
 from pipeline.ecosystems.base import EcosystemAdapter
 

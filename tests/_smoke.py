@@ -1,8 +1,5 @@
-"""Shared smoke definitions used by BOTH the cassette recorder and the tests.
-
-Keeping the request-building here guarantees the recorder and the replay tests
-produce byte-identical requests, so cassette keys match.
-"""
+"""Request builders shared by the cassette recorder and the replay tests, so both
+produce byte-identical requests (cassette keys match)."""
 
 from __future__ import annotations
 
@@ -14,7 +11,7 @@ from pipeline.llm.client import LLMClient
 
 # --- direct schema-forced JSON smoke (SMALL tier) ---
 
-JSON_STAGE = "s1_smoke"
+JSON_STAGE = "llm_smoke"
 JSON_STEP = "p1.pin.import_to_pypi"  # small
 JSON_SCHEMA = {
     "type": "object",
@@ -31,7 +28,7 @@ def run_smoke_json(client: LLMClient) -> dict:
 
 # --- agent loop smoke (BIG tier), executes in a container ---
 
-AGENT_STAGE = "s1_agent"
+AGENT_STAGE = "agent_toy"
 AGENT_STEP = "p1.docker.repair_agent"  # big
 AGENT_SYSTEM = (
     "You are a coding agent. Use the tools to complete the task, then reply with a "
@@ -43,10 +40,10 @@ AGENT_GOAL = (
 )
 
 
-# --- S2 hygiene LLM smokes (SMALL tier) ---
+# --- hygiene LLM smokes (SMALL tier) ---
 
-PIN_STAGE = "s2_pin"
-BASELINE_STAGE = "s2_baseline"
+PIN_STAGE = "pin_alias"
+BASELINE_STAGE = "baseline_classify"
 
 # An import whose PyPI name differs and is NOT in the alias table -> needs the model.
 ALIAS_UNKNOWN = ["serial"]  # -> pyserial
@@ -63,7 +60,7 @@ def run_alias_map(client: LLMClient) -> dict:
     return PythonAdapter(llm=client)._llm_map_imports(ALIAS_UNKNOWN)
 
 
-REASK_STAGE = "s2_reask"
+REASK_STAGE = "pin_reask"
 REASK_IMPORT = "zzznonexistent9876"  # an invented import that cannot resolve on PyPI
 
 
@@ -96,17 +93,15 @@ def build_agent(client: LLMClient, workdir: Path, image: str, transcripts_dir: P
     )
 
 
-# --- S4/S5 tasks stage on the mini_pkg fixture, replayed by tests/test_tasks.py ---
-# One cassette stage holds every LLM call the `--stage tasks` run makes on the fixture:
-# the SMALL excision screen (S4), the SMALL history classify and the BIG neutrality
-# check (S5a). Recorded by running the real stage (scripts/record_cassettes.py).
+# --- tasks stage on the mini_pkg fixture (replayed by tests/test_tasks.py) ---
+# One cassette stage holds every LLM call of the fixture tasks run: excision screen,
+# history classify, neutrality check.
 
-TASKS_STAGE = "s5_tasks"
+TASKS_STAGE = "tasks_fixture"
 SCREEN_STAGE = TASKS_STAGE
 FIXTURE_MINI_PKG = Path(__file__).resolve().parent / "fixtures" / "mini_pkg"
 
-# The real mini_pkg test_map (knowledge stage output); pinned here so the recorded
-# prompt (pool + order) is byte-identical to what the replay tests build.
+# Real mini_pkg test_map, pinned so recorded prompts (pool + order) match the tests.
 MINI_PKG_TEST_MAP = {
     "tests/test_calc.py::test_ceil_div_exact_multiple": ["mini_pkg.calc.ceil_div"],
     "tests/test_calc.py::test_ceil_div_rounds_up": ["mini_pkg.calc.ceil_div"],
@@ -169,13 +164,9 @@ def mini_pkg_excision_config():
     cfg.excision.min_lines = 3
     cfg.excision.min_complexity = 1
     cfg.excision.min_assertions_touching_fn = 0  # no BIG top-up agent in the fixture run
-    # Agent rewrites cannot be replayed from cassettes (container output differs per run);
-    # the fixture run records their absence (`budget-exhausted`) and the scripted-endpoint
-    # tests exercise them.
+    # Agent rewrites are not replayable (container output varies); scripted tests cover them.
     cfg.history.max_neutrality_rewrites_per_repo = 0
-    # Test-gen (S6), OKF (S7) and lint (S9) are exercised by their own tests; the shared
-    # task-fixture run keeps them off so this cassette stage carries only the S4/S5 calls
-    # and the source (hence spans/nodeids the cassettes were recorded against) is untouched.
+    # Test-gen/OKF/lint have their own tests; off here so source spans/nodeids stay as recorded.
     cfg.testgen.enabled = False
     cfg.okf.enabled = False
     cfg.lint.enabled = False
@@ -226,10 +217,10 @@ def run_tasks_stage(root: Path, mode: str, stage: str = TASKS_STAGE):
     return ctx
 
 
-S7_OKF_STAGE = "s7_okf"
+OKF_STAGE = "okf_fixture"
 
 
-def run_okf_stage(root: Path, mode: str, stage: str = S7_OKF_STAGE):
+def run_okf_stage(root: Path, mode: str, stage: str = OKF_STAGE):
     """hygiene -> knowledge (with the OKF bundle enabled) on a throwaway mini_pkg copy.
     Same graph every time, so the okf LLM prompts are byte-identical for record/replay."""
     import shutil

@@ -1,10 +1,7 @@
-"""S5a: history-derived funnel + task builder.
+"""History-derived funnel + task builder.
 
-Real fixture git history (mini_pkg: bugfix, docs-only, dependency change, refactor,
-rename, two-commit PR merge), real AST diffs, real Docker for the build gates; the
-SMALL classify and BIG neutrality check replay from the ``s5_tasks`` cassettes. The
-agent paths run against a scripted endpoint (no tokens); the live agent is exercised
-on glom/toolz (PROGRESS).
+Real fixture git history, AST diffs and Docker gates; classify/neutrality replay from
+``tasks_fixture`` cassettes; agent paths use a scripted endpoint.
 """
 
 from __future__ import annotations
@@ -268,7 +265,7 @@ def test_classify_backfills_persists_and_shortlists() -> None:
     assert again.calls == 0
 
 
-@pytest.mark.skipif(not _cassettes(_smoke.TASKS_STAGE), reason="s5_tasks cassette not recorded")
+@pytest.mark.skipif(not _cassettes(_smoke.TASKS_STAGE), reason="tasks_fixture cassette missing")
 def test_classify_replay_rejects_refactor_keeps_bugfix(tmp_path: Path) -> None:
     client = LLMClient(stage=_smoke.TASKS_STAGE, mode="replay", transcripts_dir=tmp_path / "t")
     cands, cfg = _fixture_funnel(_smoke.mini_pkg_excision_config())

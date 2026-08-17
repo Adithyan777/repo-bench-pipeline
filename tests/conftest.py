@@ -36,7 +36,7 @@ def docker_available() -> None:
 @pytest.fixture(scope="session")
 def mini_env(tmp_path_factory, docker_available: None):
     """One hygiene+knowledge run of mini_pkg shared by the tasks/harness/history tests
-    (same config as the recorded ``s5_tasks`` cassettes)."""
+    (same config as the recorded ``tasks_fixture`` cassettes)."""
     import shutil
 
     from pipeline.hygiene.context import build_context

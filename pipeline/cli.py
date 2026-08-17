@@ -1,17 +1,21 @@
 """Entry point: arg parsing, stages, per-repo run directory + state.
 
-Stages (hygiene/knowledge/tasks) are implemented from S2 onward; S1 provides the
-skeleton, resumable state, and config overrides. ``run.sh`` wraps this module.
+Dispatches the hygiene/knowledge/tasks/report stages over a resumable per-repo state
+file, with config overrides from the command line. ``run.sh`` wraps this module.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+import time
 from dataclasses import fields, is_dataclass
 from pathlib import Path
 
+from pipeline import log as plog
 from pipeline.config import DEFAULT, Config
+from pipeline.log import STAGE, log
 
 STAGES = ("hygiene", "knowledge", "tasks")
 OUTPUT_ROOT = Path("output")
@@ -103,6 +107,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="after the run, prune ONLY dangling images carrying this pipeline's build label",
     )
+    p.add_argument("--quiet", action="store_true", help="stage-level progress lines only")
     return p
 
 
@@ -122,20 +127,29 @@ def main(argv: list[str] | None = None) -> int:
         config.report.draft_narrative = False
     if args.min_failing_tests is not None:
         config.harness.min_failing_tests = args.min_failing_tests
+    if args.quiet:
+        plog.threshold = STAGE
 
     stages = STAGES if args.stage == "all" else (args.stage,)
+    run_dir = OUTPUT_ROOT / repo_name(args.repo)
+    log("run", "", f"repo {args.repo} run_dir {run_dir} stages {','.join(stages)}", STAGE)
+    t0 = time.monotonic()
     for stage in stages:
+        ts = time.monotonic()
+        log(stage, "", "start", STAGE)
         if stage == "hygiene":
             _run_hygiene(args, config)
         elif stage == "knowledge":
             _run_knowledge(args, config)
         else:
             _run_tasks(args, config)
+        log(stage, "", f"done in {time.monotonic() - ts:.1f}s", STAGE)
     if args.prune_images:
         from pipeline.docker.image import prune_dangling_bench_images
 
         removed = prune_dangling_bench_images()
         print(f"pruned {removed} dangling bench-pipeline image(s)")
+    _print_summary(run_dir, config, stages, time.monotonic() - t0)
     return 0
 
 
@@ -146,9 +160,12 @@ def _run_hygiene(args: argparse.Namespace, config: Config) -> None:
     ctx = build_context(
         args.repo, config=config, force=tuple(args.force), fresh=args.fresh, output_root=OUTPUT_ROOT
     )
+    base = (ctx.report.get("base_sha") or "")[:7]
+    log("hygiene", "", f"run_dir {ctx.run_dir} image {ctx.image_tag} base {base}", STAGE)
     run_hygiene(ctx)
     print(f"hygiene done: {ctx.run_dir}")
     if args.verify_twice:
+        log("hygiene", "verify_twice", "start", STAGE)
         ok = verify_twice(ctx)
         print(f"verify-twice identical: {ok}")
         if not ok:
@@ -183,6 +200,68 @@ def _run_tasks(args: argparse.Namespace, config: Config) -> None:
     valid, total = summary.get("valid", 0), summary.get("tasks", 0)
     print(f"tasks done: {repo_tasks_dir(ctx)} ({valid}/{total} VALID)")
     _build_report(ctx)
+
+
+def _stage_steps() -> dict[str, tuple[str, ...]]:
+    from pipeline.hygiene import runner as hy
+    from pipeline.knowledge import runner as kn
+    from pipeline.tasks import runner as tk
+
+    return {
+        "hygiene": tuple(name for name, _, _ in hy._STEPS),
+        "knowledge": tuple(kn._STEPS),
+        "tasks": tuple(tk._STEPS),
+    }
+
+
+def _print_summary(run_dir: Path, config: Config, stages: tuple[str, ...], elapsed: float) -> None:
+    """Compact end-of-run summary from report_data.json + audit/llm_usage.json; never raises."""
+    log("summary", "", f"total {elapsed:.0f}s", STAGE)
+    try:
+        _summary_lines(run_dir, config, stages)
+    except Exception as exc:  # noqa: BLE001 - summary is best effort
+        log("summary", "", f"unavailable ({type(exc).__name__})", STAGE)
+
+
+def _read_json(path: Path) -> dict:
+    return json.loads(path.read_text()) if path.is_file() else {}
+
+
+def _summary_lines(run_dir: Path, config: Config, stages: tuple[str, ...]) -> None:
+    data = _read_json(run_dir / "report_data.json")
+    usage = _read_json(run_dir / "audit" / "llm_usage.json")
+    steps = data.get("stages") or {}
+    for stage in stages:
+        parts = []
+        for name in _stage_steps().get(stage, ()):
+            rec = steps.get(name) or {}
+            if rec.get("skipped"):
+                parts.append(f"{name}=skipped")
+            elif "duration_s" in rec:
+                parts.append(f"{name}={rec['duration_s']:.0f}s")
+        if parts:
+            log("summary", stage, " ".join(parts), STAGE)
+    by_tier: dict[str, int] = {}
+    for step, u in usage.items():
+        if step == "_total" or not isinstance(u, dict):
+            continue
+        tier = config.step_model.get(step, "other")
+        by_tier[tier] = by_tier.get(tier, 0) + int(u.get("total_tokens") or 0)
+    total = (usage.get("_total") or {}).get("total_tokens", sum(by_tier.values()))
+    tiers = " ".join(f"{t}={n}" for t, n in sorted(by_tier.items()))
+    log("summary", "llm", f"tokens total={total} {tiers}".rstrip(), STAGE)
+    tasks = data.get("tasks") or {}
+    val = tasks.get("validate") or {}
+    if val:
+        log("summary", "tasks", f"VALID {val.get('valid')}/{val.get('tasks')}", STAGE)
+    sel = tasks.get("select") or {}
+    if sel.get("selected"):
+        log(
+            "summary",
+            "select",
+            f"{len(sel['selected'])} selected: {', '.join(sel['selected'])}",
+            STAGE,
+        )
 
 
 def _build_report(ctx) -> None:

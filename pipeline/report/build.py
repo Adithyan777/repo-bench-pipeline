@@ -1,13 +1,9 @@
-"""REPORT.md production (DESIGN "REPORT.md production").
+"""REPORT.md production.
 
-``collect()`` aggregates every stage's artifacts under output/<repo>/ into a single
-enriched ``report_data.json`` (detected/changed, quarantines, dropped extras, image
-digest, test-gen mutation scores, lint counts, graph/okf precision, funnel counts +
-reject reasons, instruction/difficulty stats, per-stage timings, LLM tokens by step,
-agent-run audit summary). ``render()`` turns that into a six-section REPORT.md with
-every table auto-filled; the narrative paragraphs are DRAFTED by one BIG call
-(``report.draft_sections``, cached by content hash) and clearly marked for the author
-to finish. Nothing here invents data — missing artifacts simply omit their rows.
+``collect()`` aggregates output/<repo>/ artifacts (incl. the runner's report_data.json)
+into ``report_summary.json``; ``render()`` writes the six-section REPORT.md with tables
+auto-filled and narrative drafted by one cached BIG call, marked ``AUTHOR`` for a human.
+Missing artifacts omit their rows; nothing is invented.
 """
 
 from __future__ import annotations
@@ -30,9 +26,7 @@ _SECTIONS = (
 
 _DRAFT_SCHEMA = {
     "type": "object",
-    "properties": {
-        s[0]: {"type": "string"} for s in _SECTIONS
-    },
+    "properties": {s[0]: {"type": "string"} for s in _SECTIONS},
     "required": [s[0] for s in _SECTIONS],
 }
 
@@ -183,9 +177,7 @@ def _lint_summary(lint: dict) -> dict:
 
 def _graph_verify_summary(gv: dict) -> dict:
     by_type = gv.get("by_edge_type") or {}
-    precision = {
-        et: v.get("precision") for et, v in by_type.items() if isinstance(v, dict)
-    }
+    precision = {et: v.get("precision") for et, v in by_type.items() if isinstance(v, dict)}
     return {
         "sample_size": gv.get("sample_size"),
         "precision_by_edge_type": precision,
@@ -270,7 +262,7 @@ def render(data: dict, config: Config = DEFAULT, narrative: dict | None = None) 
     a(
         "Tables in this report are generated from `output/"
         f"{data['repo']}/{config.report.summary_filename}`. Narrative paragraphs are DRAFTED "
-        "and marked with `AUTHOR` comments for the author to finish.\n"
+        "and marked with `AUTHOR` comments for a human to finish.\n"
     )
     a(f"Base commit (original HEAD, P3 mines at/under this): `{data['base_sha']}`\n")
     if data.get("missing_artifacts"):
@@ -281,58 +273,73 @@ def render(data: dict, config: Config = DEFAULT, narrative: dict | None = None) 
 
     # 1
     a(f"\n## {_SECTIONS[0][1]}\n")
-    a(_para(narrative, "broken", "Summarize each class of problem the pipeline detected and "
-                                 "the automated fix, grounded in the tables below."))
+    a(
+        _para(
+            narrative,
+            "broken",
+            "Summarize each class of problem the pipeline detected and "
+            "the automated fix, grounded in the tables below.",
+        )
+    )
     a("\n**Environment & hygiene**\n\n")
-    a(_table(
-        ["Aspect", "Value"],
-        [
-            ["Packaging style", hy["packaging_style"]],
-            ["Python version", hy["python_version"]],
-            ["Test framework", hy["test_framework"]],
-            ["Extras folded into lock", hy["extras_used"]],
-            ["Dropped (unresolvable) extras", hy["dropped_extras"]],
-            ["Unresolved inferred imports", hy["unresolved_imports"]],
-            ["Image tag", hy["image_tag"]],
-            ["Image digest", hy["image_digest"]],
-            ["Baseline", _fmt(hy["baseline"]["counts"])],
-            ["Quarantined tests", len(hy["baseline"]["quarantined"])],
-        ],
-    ))
+    a(
+        _table(
+            ["Aspect", "Value"],
+            [
+                ["Packaging style", hy["packaging_style"]],
+                ["Python version", hy["python_version"]],
+                ["Test framework", hy["test_framework"]],
+                ["Extras folded into lock", hy["extras_used"]],
+                ["Dropped (unresolvable) extras", hy["dropped_extras"]],
+                ["Unresolved inferred imports", hy["unresolved_imports"]],
+                ["Image tag", hy["image_tag"]],
+                ["Image digest", hy["image_digest"]],
+                ["Baseline", _fmt(hy["baseline"]["counts"])],
+                ["Quarantined tests", len(hy["baseline"]["quarantined"])],
+            ],
+        )
+    )
     a("\n**Generated tests (mutation gate)**\n\n")
     tg = hy["testgen"]
     if tg.get("enabled") is False:
         a("_test-gen disabled for this run_\n")
     else:
-        a(_table(
-            ["Metric", "Value"],
-            [
-                ["Modules selected", tg.get("modules_selected")],
-                ["Functions targeted", tg.get("targets")],
-                ["Functions kept", tg.get("functions_kept")],
-                ["Functions weak/dropped", tg.get("functions_weak")],
-                ["Mutants killed / valid", f"{tg.get('mutants_killed')}/{tg.get('mutants_valid')}"],
-                ["Mutation score", tg.get("mutation_score")],
-                ["Suite after", _fmt(tg.get("suite_after"))],
-            ],
-        ))
+        a(
+            _table(
+                ["Metric", "Value"],
+                [
+                    ["Modules selected", tg.get("modules_selected")],
+                    ["Functions targeted", tg.get("targets")],
+                    ["Functions kept", tg.get("functions_kept")],
+                    ["Functions weak/dropped", tg.get("functions_weak")],
+                    [
+                        "Mutants killed / valid",
+                        f"{tg.get('mutants_killed')}/{tg.get('mutants_valid')}",
+                    ],
+                    ["Mutation score", tg.get("mutation_score")],
+                    ["Suite after", _fmt(tg.get("suite_after"))],
+                ],
+            )
+        )
     a("\n**Lint / format**\n\n")
     ln = hy["lint"]
     if ln.get("enabled") is False:
         a("_lint disabled for this run_\n")
     else:
-        a(_table(
-            ["Metric", "Value"],
-            [
-                ["pyproject created", ln.get("config_created")],
-                ["Files changed", ln.get("files_changed")],
-                ["Unfixable findings", ln.get("unfixable")],
-                ["Files given noqa", ln.get("noqa_files")],
-                ["Codes", _fmt(ln.get("codes"))],
-                ["ruff clean in container", ln.get("clean")],
-                ["Reverted (regression)", ln.get("regressed")],
-            ],
-        ))
+        a(
+            _table(
+                ["Metric", "Value"],
+                [
+                    ["pyproject created", ln.get("config_created")],
+                    ["Files changed", ln.get("files_changed")],
+                    ["Unfixable findings", ln.get("unfixable")],
+                    ["Files given noqa", ln.get("noqa_files")],
+                    ["Codes", _fmt(ln.get("codes"))],
+                    ["ruff clean in container", ln.get("clean")],
+                    ["Reverted (regression)", ln.get("regressed")],
+                ],
+            )
+        )
 
     a("\n**Knowledge layer (accuracy)**\n\n")
     gv = kn.get("graph_verification") or {}
@@ -340,20 +347,25 @@ def render(data: dict, config: Config = DEFAULT, narrative: dict | None = None) 
     byc = (okf.get("by_construction") or {}).get("precision")
     conf = okf.get("conformance")
     conf = conf.get("conformant", conf) if isinstance(conf, dict) else conf
-    a(_table(
-        ["Metric", "Value"],
-        [
-            ["Source modules", kn.get("source_module_count")],
-            ["Graph node/edge counts", _fmt(kn.get("graph"))],
-            ["Graph edge precision", _fmt(gv.get("precision_by_edge_type"))],
-            ["Graph mismatches", gv.get("mismatches")],
-            ["OKF pages verified / draft", f"{okf.get('pages_verified')}/{okf.get('pages_draft')}"],
-            ["OKF semantic precision", _fmt(okf.get("semantic_precision"))],
-            ["OKF by-construction (callers/link)", _fmt(byc)],
-            ["OKF unchecked (prose)", _fmt(okf.get("unchecked_claim_kinds"))],
-            ["OKF conformance", conf],
-        ],
-    ))
+    a(
+        _table(
+            ["Metric", "Value"],
+            [
+                ["Source modules", kn.get("source_module_count")],
+                ["Graph node/edge counts", _fmt(kn.get("graph"))],
+                ["Graph edge precision", _fmt(gv.get("precision_by_edge_type"))],
+                ["Graph mismatches", gv.get("mismatches")],
+                [
+                    "OKF pages verified / draft",
+                    f"{okf.get('pages_verified')}/{okf.get('pages_draft')}",
+                ],
+                ["OKF semantic precision", _fmt(okf.get("semantic_precision"))],
+                ["OKF by-construction (callers/link)", _fmt(byc)],
+                ["OKF unchecked (prose)", _fmt(okf.get("unchecked_claim_kinds"))],
+                ["OKF conformance", conf],
+            ],
+        )
+    )
     a(
         "\n_by-construction (callers / internal links) are graph-derived and reported "
         "separately from independently re-derived semantic checks (callees / raises / "
@@ -362,41 +374,68 @@ def render(data: dict, config: Config = DEFAULT, narrative: dict | None = None) 
 
     # 2
     a(f"\n## {_SECTIONS[1][1]}\n")
-    a(_para(narrative, "decisions", "Explain the key automated-vs-manual decisions and "
-                                    "trade-offs (LLM proposes / code disposes; mutation gate; "
-                                    "strict right-reason classifier; determinism from gates)."))
+    a(
+        _para(
+            narrative,
+            "decisions",
+            "Explain the key automated-vs-manual decisions and "
+            "trade-offs (LLM proposes / code disposes; mutation gate; "
+            "strict right-reason classifier; determinism from gates).",
+        )
+    )
 
     # 3
     a(f"\n## {_SECTIONS[2][1]}\n")
-    a(_para(narrative, "selection", "Describe what was mined and rejected and on what grounds, "
-                                    "citing the funnel counts and the final selection below."))
+    a(
+        _para(
+            narrative,
+            "selection",
+            "Describe what was mined and rejected and on what grounds, "
+            "citing the funnel counts and the final selection below.",
+        )
+    )
     a("\n**Excision funnel** (every function considered → status/reject reason)\n\n")
     a(_counts_table(tk.get("excision_funnel_counts")))
     a("\n**History funnel** (every commit considered → status/reject reason)\n\n")
     a(_counts_table(tk.get("history_funnel_counts")))
     a("\n**Validation**\n\n")
     val = tk.get("validate") or {}
-    a(_table(["Metric", "Value"], [
-        ["Tasks validated", val.get("tasks")],
-        ["VALID", val.get("valid")],
-    ]))
+    a(
+        _table(
+            ["Metric", "Value"],
+            [
+                ["Tasks validated", val.get("tasks")],
+                ["VALID", val.get("valid")],
+            ],
+        )
+    )
     a("\n**Instruction authoring**\n\n")
     ins = tk.get("instruct") or {}
-    a(_table(["Metric", "Value"], [
-        ["Tasks", ins.get("tasks")],
-        ["Final", ins.get("final")],
-        ["Failed", ins.get("failed")],
-        ["Regenerations", ins.get("regenerations")],
-        ["Difficulty spread", _fmt(ins.get("difficulty_spread"))],
-    ]))
+    a(
+        _table(
+            ["Metric", "Value"],
+            [
+                ["Tasks", ins.get("tasks")],
+                ["Final", ins.get("final")],
+                ["Failed", ins.get("failed")],
+                ["Regenerations", ins.get("regenerations")],
+                ["Difficulty spread", _fmt(ins.get("difficulty_spread"))],
+            ],
+        )
+    )
     a("\n**Final selection (the 10)**\n\n")
     sel = tk.get("selection") or {}
     spread = f"{_fmt(sel.get('achieved_spread'))} (target {_fmt(sel.get('target_spread'))})"
-    a(_table(["Metric", "Value"], [
-        ["Selected", _fmt(sel.get("counts"))],
-        ["Difficulty spread", spread],
-        ["Distinct modules", _fmt(sel.get("distinct_modules"))],
-    ]))
+    a(
+        _table(
+            ["Metric", "Value"],
+            [
+                ["Selected", _fmt(sel.get("counts"))],
+                ["Difficulty spread", spread],
+                ["Distinct modules", _fmt(sel.get("distinct_modules"))],
+            ],
+        )
+    )
     a("\nSelected task ids: " + ", ".join(f"`{i}`" for i in (sel.get("selected") or [])) + "\n")
 
     # 4
@@ -407,22 +446,32 @@ def render(data: dict, config: Config = DEFAULT, narrative: dict | None = None) 
     a(f"\n## {_SECTIONS[4][1]}\n")
     a("\n**Measured cost of this run**\n\n")
     llm = data["llm"]
-    a(_table(["Metric", "Value"], [
-        ["Total LLM tokens", llm.get("total_tokens")],
-        ["Reasoning tokens", llm.get("reasoning_tokens")],
-        ["Agent runs", data["agents"]["runs"]],
-    ]))
+    a(
+        _table(
+            ["Metric", "Value"],
+            [
+                ["Total LLM tokens", llm.get("total_tokens")],
+                ["Reasoning tokens", llm.get("reasoning_tokens")],
+                ["Agent runs", data["agents"]["runs"]],
+            ],
+        )
+    )
     a("\n**LLM tokens by step**\n\n")
     a(_table(["Step", "Tokens"], [[k, v] for k, v in (llm.get("by_step") or {}).items()]))
     a("\n**Per-stage timing (s)**\n\n")
     timing = [
-        [k, v.get("duration_s", "-"), v.get("skipped")]
-        for k, v in sorted(data["stages"].items())
+        [k, v.get("duration_s", "-"), v.get("skipped")] for k, v in sorted(data["stages"].items())
     ]
     a(_table(["Stage", "Duration", "Skipped"], timing))
-    a(_para(narrative, "scale", "Given the timings/tokens above, describe what breaks at 100 "
-                                "repos and what you would build differently (job queue, image "
-                                "registry, triage, human-review sampling)."))
+    a(
+        _para(
+            narrative,
+            "scale",
+            "Given the timings/tokens above, describe what breaks at 100 "
+            "repos and what you would build differently (job queue, image "
+            "registry, triage, human-review sampling).",
+        )
+    )
 
     # 6
     a(f"\n## {_SECTIONS[5][1]}\n")
@@ -480,7 +529,7 @@ def _run_instructions(repo: str) -> str:
 
 def _gaps_checklist() -> str:
     items = [
-        "Net-new tasks were CUT by decision (S8 not built); history + excision fill the 10.",
+        "Net-new tasks are not generated; history + excision fill the 10.",
         "`apt-get git` in git-versioned images makes those images not byte-reproducible "
         "(env fix so the version resolves; digests are recorded, not gated).",
         "OKF `raises`/`side_effects` precision is conservative (implicit/under-claimed "
@@ -488,7 +537,7 @@ def _gaps_checklist() -> str:
         "independent evidence.",
         "`test_map` excludes doctests.",
         "Test-gen coverage-theater guard: whole-file zero-kill drop (no per-test trimming).",
-        "The minidump S6 run was launched twice; only the real run's tokens count.",
+        "The test-gen run on minidump was launched twice; only the real run's tokens count.",
         "Verifier visibility defaults to `visible` (hack-proof via harness re-copy).",
         "History new-symbol features rely on the getattr convention; pure new-symbol "
         "imports on `input/` remain INVALID by the strict classifier's design.",
@@ -498,8 +547,10 @@ def _gaps_checklist() -> str:
         "The lint step rebuilds the image and runs the suite twice to prove the linted "
         "tree still builds green; a formatting change that regresses a test reverts.",
     ]
-    return "\n" + "".join(f"- {i}\n" for i in items) + _author(
-        "expand each gap with a concrete next step."
+    return (
+        "\n"
+        + "".join(f"- {i}\n" for i in items)
+        + _author("expand each gap with a concrete next step.")
     )
 
 
@@ -509,8 +560,7 @@ def _gaps_checklist() -> str:
 def draft_narrative(
     data: dict, llm, config: Config = DEFAULT, decisions: dict | None = None
 ) -> dict:
-    """One BIG call producing short, grounded paragraphs for the six sections. Cached by
-    a hash of the compact data summary so reruns cost no tokens."""
+    """One BIG call drafting the six section paragraphs; cached by data-summary hash."""
     import hashlib
 
     decisions = {} if decisions is None else decisions
@@ -527,9 +577,7 @@ def draft_narrative(
         "Return one paragraph per section key.\n\n"
         f"Metrics:\n{compact}\n"
     )
-    result = llm.complete_json(
-        DRAFT_STEP, [{"role": "user", "content": prompt}], _DRAFT_SCHEMA
-    )
+    result = llm.complete_json(DRAFT_STEP, [{"role": "user", "content": prompt}], _DRAFT_SCHEMA)
     decisions[key] = result
     return result
 
@@ -566,8 +614,7 @@ def build(
     llm=None,
     draft: bool | None = None,
 ) -> tuple[Path, Path]:
-    """Write output/<repo>/report_summary.json (the aggregate; the runner's per-stage
-    report_data.json is left untouched) + repo-root REPORT.md. Returns their paths."""
+    """Write output/<repo>/report_summary.json + repo-root REPORT.md; return their paths."""
     run_dir = Path(run_dir)
     data = collect(run_dir, config)
     data_path = run_dir / config.report.summary_filename

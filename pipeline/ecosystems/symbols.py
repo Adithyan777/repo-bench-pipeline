@@ -1,18 +1,9 @@
 """Deterministic Python AST indexing — the static facts behind repo_graph.json.
 
-One `.py` file = one module; a directory with `__init__.py` is a package. For every
-module we extract classes, functions and methods (file, qualname, line span,
-signature, docstring, complexity, is_public, decorators), module- and function-level
-imports, inheritance, and intra-repo call sites resolved BY NAME only. Calls that
-cannot be resolved to a symbol defined in this repo are kept in a separate list and
-never guessed.
-
-Complexity is our own McCabe branch counter (config `graph.complexity_metric`), not
-radon: no third-party dependency, version-stable, fully deterministic. Counted
-constructs are listed in `_complexity` and documented in HEURISTICS.md.
-
-Test files are indexed separately from the source set (they are needed for the
-`tested_by` join) and never contribute source nodes to the graph.
+Per module: classes/functions/methods (span, signature, docstring, complexity, is_public,
+decorators), imports, inheritance, intra-repo calls resolved by name only (unresolved
+calls listed, never guessed). Complexity = in-house McCabe counter (see HEURISTICS.md).
+Test files are indexed separately for the `tested_by` join, never as source nodes.
 """
 
 from __future__ import annotations
@@ -27,13 +18,8 @@ from pipeline.config import DEFAULT, Config
 
 
 def module_name(repo: Path, path: Path) -> str:
-    """Importable dotted name of `path`, matching how Python/coverage name it.
-
-    A directory contributes to the dotted name only while it is a package (has
-    `__init__.py`). So `mini_pkg/calc.py` -> `mini_pkg.calc`, but `tests/test_x.py`
-    (no `tests/__init__.py`) -> `test_x`, which is exactly the module name coverage's
-    dynamic contexts report.
-    """
+    """Importable dotted name as Python/coverage name it; directories count only while they
+    are packages (`mini_pkg/calc.py` -> `mini_pkg.calc`, `tests/test_x.py` -> `test_x`)."""
     repo = repo.resolve()
     path = path.resolve()
     stem_parts: list[str] = [] if path.name == "__init__.py" else [path.stem]
@@ -52,11 +38,8 @@ def is_test_path(repo: Path, path: Path, config: Config = DEFAULT) -> bool:
 
 
 def is_source_path(repo: Path, path: Path, config: Config = DEFAULT) -> bool:
-    """True if ``path`` is importable library source: under a package root (a dir with
-    ``__init__.py``) or a ``knowledge.source_roots`` entry, not a test, not a packaging
-    script (``graph.nonsource_files``), and not under a non-source dir (``docs/``,
-    ``examples/``, ...). Top-level scripts like ``docs/conf.py`` or a root ``setup.py``
-    are NOT source, so they never become graph module nodes or OKF pages."""
+    """Importable library source: under a package root or ``knowledge.source_roots``, not a
+    test, not ``graph.nonsource_files`` (setup.py), not under ``graph.nonsource_dirs`` (docs/)."""
     repo = repo.resolve()
     rel = path.resolve().relative_to(repo)
     parts = rel.parts
@@ -144,13 +127,8 @@ _BRANCH_NODES = (
 
 
 def _complexity(node: ast.AST) -> int:
-    """McCabe branch count: 1 + decision points.
-
-    +1 for each: if/elif, for, while, except handler, ternary (IfExp), each match
-    case, and each boolean operator beyond the first in a BoolOp chain. Each
-    comprehension clause adds +1 for its `for` and +1 per `if` filter. Nested
-    function/class bodies are counted within their own nodes, not here.
-    """
+    """McCabe: 1 + if/for/while/except/IfExp/match_case, + extra BoolOp operands,
+    + comprehension `for` and each `if` filter. Nested defs count in their own nodes."""
     total = 1
     for child in _walk_own(node):
         if isinstance(child, _BRANCH_NODES):
@@ -218,9 +196,7 @@ class _Indexer:
         self._pending: list[tuple] = []  # (FunctionRec, ast node, module)
 
     def build(self) -> dict:
-        files = sorted(
-            p for p in self.repo.rglob("*.py") if ".git" not in p.parts and p.is_file()
-        )
+        files = sorted(p for p in self.repo.rglob("*.py") if ".git" not in p.parts and p.is_file())
         parsed = []
         for path in files:
             try:
@@ -313,11 +289,8 @@ class _Indexer:
         return ".".join(base_parts)
 
     def _finalize_imports(self) -> None:
-        """Set each import's intra-repo target module once all modules are known.
-
-        A `from pkg.sub import name` resolves to module `pkg.sub`; if `pkg.sub.name`
-        is itself a submodule (package re-export), that submodule is preferred.
-        """
+        """Resolve each import's intra-repo target; `from pkg.sub import name` prefers the
+        submodule `pkg.sub.name` when it exists (package re-export)."""
         universe = self._all_module_names()
         for rec in self.modules.values():
             for imp in rec.imports:
@@ -360,9 +333,7 @@ class _Indexer:
                 self._add_function(mod, rel, child, parent=qual, is_method=True)
                 self._method_owner[f"{qual}.{child.name}"] = qual
 
-    def _add_function(
-        self, mod: str, rel: str, node, parent: str, is_method: bool
-    ) -> None:
+    def _add_function(self, mod: str, rel: str, node, parent: str, is_method: bool) -> None:
         qual = f"{parent}.{node.name}"
         rec = FunctionRec(
             qualname=qual,
@@ -391,9 +362,7 @@ class _Indexer:
             if target is not None:
                 rec.calls.append({"target": target, "line": call.lineno})
             else:
-                rec.unresolved_calls.append(
-                    {"text": ast.unparse(call.func), "line": call.lineno}
-                )
+                rec.unresolved_calls.append({"text": ast.unparse(call.func), "line": call.lineno})
         rec.calls = _dedup_sorted(rec.calls, ("target", "line"))
         rec.unresolved_calls = _dedup_sorted(rec.unresolved_calls, ("text", "line"))
 
@@ -401,11 +370,7 @@ class _Indexer:
         if isinstance(func, ast.Name):
             return self._resolve_name(func.id, mod)
         if isinstance(func, ast.Attribute):
-            if (
-                isinstance(func.value, ast.Name)
-                and func.value.id == "self"
-                and enclosing_class
-            ):
+            if isinstance(func.value, ast.Name) and func.value.id == "self" and enclosing_class:
                 cand = f"{enclosing_class}.{func.attr}"
                 return cand if cand in self._function_quals else None
             return self._resolve_attr_chain(func, mod)
@@ -504,10 +469,8 @@ def build_symbol_index(repo: Path, config: Config = DEFAULT) -> dict:
 
 
 def path_to_module(rel_path: str, source_roots: tuple[str, ...] = ()) -> str:
-    """Best-effort dotted module name from a repo-relative path (no filesystem access,
-    for historical blobs where package layout can't be probed cheaply). A leading
-    src-layout root is stripped so the name matches the graph's package-aware naming
-    (e.g. src/pkg/mod.py -> pkg.mod)."""
+    """Dotted module name from a repo-relative path, no filesystem access (historical
+    blobs); a leading source root is stripped (src/pkg/mod.py -> pkg.mod)."""
     stem = rel_path[:-3] if rel_path.endswith(".py") else rel_path
     if stem.endswith("/__init__"):
         stem = stem[: -len("/__init__")]
@@ -518,11 +481,8 @@ def path_to_module(rel_path: str, source_roots: tuple[str, ...] = ()) -> str:
 
 
 def functions_in_source(source: str, module: str) -> list[dict]:
-    """Function/method spans in one source string: {qualname, line, end_line}.
-
-    Used to resolve diff hunks to functions at a historical commit — parse the file
-    as it was, never reuse HEAD spans.
-    """
+    """Function/method spans {qualname, line, end_line} of one source string (historical
+    commits: parse the file as it was, never reuse HEAD spans)."""
     try:
         tree = ast.parse(source)
     except SyntaxError:

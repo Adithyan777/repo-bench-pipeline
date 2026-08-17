@@ -1,10 +1,8 @@
 """Validation harness (DESIGN 5.5): ``validate_task(task_dir) -> verdict``.
 
-Pure code. Every command runs via ``run_in_container`` against the image recorded in
-task.json, on a fresh workdir per run. The canonical ``verifier/`` is ALWAYS re-copied
-over the workdir before judging. Evidence (real container stdout/stderr + structured
-JSON) is written to ``<task>/evidence/``; ``verdict.json`` is the only place a task's
-validation status comes from.
+Pure code; every command runs via ``run_in_container`` against the image in task.json on
+a fresh workdir, with the canonical ``verifier/`` re-copied before judging. Evidence goes
+to ``<task>/evidence/``; ``verdict.json`` is the only source of validation status.
 """
 
 from __future__ import annotations
@@ -147,8 +145,7 @@ class Harness:
         results = self.adapter.parse_test_report_data(run.report) if run.report else {}
         status = {t: results.get(t, {}).get("status", "missing") for t in col["baseline_passing"]}
         newly_failing = sorted(t for t, st in status.items() if st in ("fail", "error"))
-        # A baseline-passing test that is now skipped or not collected did not run on the
-        # solution: treated as failure-to-run (strict), listed separately.
+        # Baseline-passing test now skipped/uncollected = failure-to-run (strict), listed apart.
         not_run = sorted(t for t, st in status.items() if st not in ("pass", "fail", "error"))
         ok = run.report is not None and not newly_failing and not not_run
         data = {
@@ -198,8 +195,8 @@ class Harness:
         }
 
     def _environment_hashes(self) -> dict:
-        """sha256 of the environment definition shipped inside input/ (Dockerfile + lock),
-        so a verdict pins WHAT was built even though image Ids change on rebuild."""
+        """sha256 of the environment definition in input/ (Dockerfile + lock): pins WHAT was
+        built even though image Ids change on rebuild."""
         out = {}
         for name in ("Dockerfile", self.config.pin.lock_filename):
             path = self.task_dir / "input" / name
@@ -282,9 +279,8 @@ class Harness:
 def static_gate_violations(
     input_dir: Path, verifier_dir: Path, config: Config = DEFAULT
 ) -> list[dict]:
-    """Verifier tests may only import (a) repo modules that exist in input/ and (b) names
-    those modules bind at top level, none starting with '_'. Reaching new public API via
-    ``getattr(existing_public_module, name)`` is accepted; a private literal name is not."""
+    """Verifier tests may import only repo modules present in input/ and their public
+    top-level names; ``getattr(existing_public_module, name)`` is accepted."""
     symbols = build_symbol_index(input_dir, config)
     modules = {m["name"]: m for m in symbols["modules"]}
     top_pkgs = {m.split(".")[0] for m in modules}
@@ -331,9 +327,8 @@ def static_gate_violations(
                 )
                 continue
             if use.name is None or use.module not in modules:
-                # `import pkg.sub` / a module we cannot see statically (toolz's `tlz` builds
-                # its submodules at import time): existence is proven by the container
-                # runs (fail-before / pass-after), not judged here.
+                # Modules not visible statically (e.g. built at import time): existence is
+                # proven by the container runs, not judged here.
                 continue
             if use.name == "*":
                 continue
@@ -373,10 +368,20 @@ def validate_task(task_dir: Path, config: Config = DEFAULT) -> dict:
     return Harness(task_dir, config).run()
 
 
-def validate_tasks(task_dirs: list[Path], config: Config = DEFAULT) -> dict[str, dict]:
+def validate_tasks(
+    task_dirs: list[Path], config: Config = DEFAULT, on_verdict=None
+) -> dict[str, dict]:
+    """``on_verdict(task_dir, verdict)`` (optional) is called from the worker as each finishes."""
     workers = max(1, config.docker.harness_parallel_workers)
+
+    def one(d: Path) -> dict:
+        verdict = validate_task(d, config)
+        if on_verdict is not None:
+            on_verdict(d, verdict)
+        return verdict
+
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        results = list(pool.map(lambda d: validate_task(d, config), task_dirs))
+        results = list(pool.map(one, task_dirs))
     return {str(d): v for d, v in zip(task_dirs, results, strict=True)}
 
 

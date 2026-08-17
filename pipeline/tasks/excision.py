@@ -1,6 +1,6 @@
-"""Excision funnel (DESIGN 5.3): deterministic candidate selection from the knowledge
-artifacts, then a SMALL-model screen. Every function considered gets a status and,
-when dropped, a ``reject_reason`` (feeds REPORT "what you rejected and why").
+"""Excision funnel (DESIGN 5.3): deterministic candidate selection from knowledge artifacts,
+then a SMALL-model screen. Every function gets a status and, when dropped, a
+``reject_reason``.
 """
 
 from __future__ import annotations
@@ -61,8 +61,7 @@ def base_nodeid(nodeid: str) -> str:
 
 
 def covering_tests(test_map: dict[str, list[str]], passing: set[str] | None) -> dict[str, set[str]]:
-    """qualname -> distinct base test nodeids that exercise it (and passed at baseline
-    when a passing set is given)."""
+    """qualname -> distinct base test nodeids exercising it (passing at baseline when given)."""
     out: dict[str, set[str]] = {}
     for nodeid, funcs in test_map.items():
         if passing is not None and nodeid not in passing:
@@ -133,10 +132,9 @@ def funnel(
     config: Config = DEFAULT,
     repo: Path | None = None,
 ) -> list[Candidate]:
-    """Deterministic stage: every function becomes a Candidate; survivors are ranked
-    (status ``considered``, ``score`` set) and losers carry ``reject_reason``. With
-    ``repo``, covering test files that import private repo symbols/modules reject the
-    candidate (``verifier-imports-private``) before any LLM is spent."""
+    """Deterministic stage: every function -> Candidate; survivors ranked (``considered``,
+    ``score``), losers carry ``reject_reason``. With ``repo``, covering tests importing private
+    symbols reject the candidate (``verifier-imports-private``) before any LLM spend."""
     tests_for = covering_tests(test_map, baseline_passing)
     test_modules = {m["name"] for m in symbols["modules"] if m["is_test"]}
     # docs/conf.py, example/build scripts etc. are not library source -> never a task.
@@ -182,8 +180,7 @@ def funnel(
 
 
 def rank(candidates: list[Candidate], config: Config = DEFAULT) -> list[Candidate]:
-    """Survivors by score desc; round-robin over modules so one file cannot take every
-    slot. Fully deterministic (ties broken by qualname)."""
+    """Survivors by score desc, round-robin over modules; ties broken by qualname."""
     live = [c for c in candidates if c.status == "considered"]
     if not config.excision.rank_module_round_robin:
         return sorted(live, key=lambda c: (-c.score, c.qualname))
@@ -240,10 +237,9 @@ def screen(
     config: Config = DEFAULT,
     decisions: dict[str, dict] | None = None,
 ) -> list[Candidate]:
-    """SMALL-model screen, walking the ranking in batches until ``build_target``
-    survivors are found (backfills past screened-out candidates). ``decisions`` maps
-    ``screen_key`` -> prior decision; keys found there are reused without an LLM call.
-    Marks ``screened_out`` / ``selected`` / ``surplus``; returns the selected candidates."""
+    """SMALL-model screen in batches until ``build_target`` survivors (backfills past
+    screened-out). ``decisions``: ``screen_key`` -> prior decision, reused without a call.
+    Marks ``screened_out`` / ``selected`` / ``surplus``; returns the selected."""
     ex = config.excision
     if decisions is None:
         decisions = {}

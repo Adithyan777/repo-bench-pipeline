@@ -1,11 +1,9 @@
 """Right-reason classifier over a pytest-json-report (DESIGN 5.5 step 2), STRICT.
 
-Verified report shape (pytest-json-report 1.5.0): a failing ``call``/``setup`` phase
-carries ``crash{path(abs),lineno,message="Type: text"}`` and ``traceback[{path(rel),
-lineno,message}]`` (outer -> inner; only the last frame names the exception type);
+Report shape (pytest-json-report 1.5.0): failing call/setup carries ``crash{path,lineno,
+message="Type: text"}`` + ``traceback[...]`` (only the last frame names the type);
 fixture-not-found errors carry only ``longrepr``; collection failures live ONLY in
-``collectors`` (``tests`` is empty, exitcode 2); "nothing ran" is ``summary.total == 0``
-(exitcode 5).
+``collectors`` (exitcode 2); "nothing ran" is ``summary.total == 0`` (exitcode 5).
 """
 
 from __future__ import annotations
@@ -98,8 +96,8 @@ def classify_report(
     valid_reasons: tuple[str, ...] = DEFAULT.harness.valid_fail_reasons,
     invalid_reasons: tuple[str, ...] = DEFAULT.harness.invalid_fail_reasons,
 ) -> ReportVerdict:
-    """Judge a fail-before run: it must fail (>= ``min_failing`` tests), and ONLY for valid
-    reasons. Every emitted reason must be in the configured valid/invalid lists."""
+    """Judge a fail-before run: >= ``min_failing`` failing tests, ONLY for reasons in the
+    configured valid list."""
     verdict = _classify(report, exit_code, is_test_file, min_failing)
     known = {*valid_reasons, *invalid_reasons}
     for r in [*verdict.invalid, *(x["reason"] for x in verdict.reasons.values())]:

@@ -1,13 +1,11 @@
 """LLM-authored task instruction + leak gates + golden rationale (DESIGN 5.6).
 
-The author (BIG, ``p3.build.write_instruction``) sees ONLY the task's public contract as it
-is in ``input/``, the verifier tests, the behavior summary (history) or the excised
-signature + docstring (excision), files_in_scope and the verifier command -- never the
-diff or ``solution/``. Gates: (a) a pure-code leak check against the solution diff, (b) a
-BIG reviewer (``p3.build.review_instruction``). Regenerate with the issues fed back, at
-most ``instruction.max_regenerations`` times; still failing -> ``instruction_status:
-failed`` (excluded from selection). Every decision is persisted by content hash.
-The goldenSolution.md "why correct" prose (``p3.build.golden_rationale``) MAY see the diff.
+The authoring model (``p3.build.write_instruction``) sees only input/'s public contract,
+verifier tests, behavior summary / excised signature, files_in_scope and the verifier
+command -- never the diff or solution/. Gates: pure-code leak check + BIG reviewer
+(``p3.build.review_instruction``); regenerate <= ``instruction.max_regenerations`` times,
+then ``instruction_status: failed``. Decisions persisted by content hash. The golden
+rationale (``p3.build.golden_rationale``) MAY see the diff.
 """
 
 from __future__ import annotations
@@ -63,7 +61,7 @@ GOLDEN_SCHEMA = {
 }
 
 _TOKEN_RE = re.compile(r"\w+|[^\w\s]")
-_TODO_RE = re.compile(r"<!-- TODO-S5b?:[^>]*-->\n?|<!-- TODO-S5:[^>]*-->\n?")
+_TODO_RE = re.compile(r"<!-- TODO-golden:[^>]*-->\n?")
 
 
 @dataclass
@@ -77,7 +75,7 @@ class TaskFacts:
     contract: str  # signatures + docstrings AS IN input/
     tests_source: str
     summary: str  # behavior summary (history) / excised contract note (excision)
-    diff: str  # unified diff input->solution over source_files (never shown to the author)
+    diff: str  # unified diff input->solution over source_files (never shown to the authoring model)
     new_names: set[str] = field(default_factory=set)
     public_names: set[str] = field(default_factory=set)
     test_names: set[str] = field(default_factory=set)
@@ -138,9 +136,8 @@ def _tests_source(verifier: Path, nodeids: list[str], config: Config) -> str:
     blocks = []
     for rel in sorted({n.split("::", 1)[0] for n in nodeids}):
         names = sorted({n.split("::", 1)[1] for n in nodeids if n.startswith(rel + "::")})
-        blocks.append(
-            f"### {rel} (verifier tests: {', '.join(names)})\n```python\n{read_source(verifier / rel)}\n```"
-        )
+        source = read_source(verifier / rel)
+        blocks.append(f"### {rel} (verifier tests: {', '.join(names)})\n```python\n{source}\n```")
     text = "\n\n".join(blocks)
     limit = config.instruction.tests_max_chars
     return text if len(text) <= limit else text[:limit] + "\n... (truncated)"
@@ -155,8 +152,7 @@ def _diff(inp: Path, sol: Path, rel: str) -> str:
 
 
 def _public_names(inp: Path, config: Config) -> set[str]:
-    """Names a solver can already see in input/: module names, top-level bindings and
-    public function/class names of every source module."""
+    """Names visible in input/: module names, top-level bindings, public function/class names."""
     symbols = build_symbol_index(inp, config)
     names: set[str] = set()
     for m in symbols["modules"]:
@@ -179,9 +175,8 @@ def _norm(line: str) -> str:
 
 
 def diff_leaks(instruction: str, diff: str, min_tokens: int, exempt: str = "") -> list[str]:
-    """Added solution-diff lines with >= ``min_tokens`` tokens that appear verbatim
-    (whitespace-normalized) in the instruction; lines also present in ``exempt`` (the
-    verifier tests) do not count."""
+    """Added diff lines with >= ``min_tokens`` tokens found verbatim (whitespace-normalized)
+    in the instruction; lines also in ``exempt`` (verifier tests) do not count."""
     text = _norm(instruction)
     allowed = _norm(exempt)
     hits: list[str] = []
@@ -197,8 +192,8 @@ def diff_leaks(instruction: str, diff: str, min_tokens: int, exempt: str = "") -
 
 
 def identifier_leaks(instruction: str, facts: TaskFacts, config: Config = DEFAULT) -> list[str]:
-    """Identifiers the diff introduces that the instruction names although they are neither
-    in the public API of input/ nor in the verifier tests."""
+    """Diff-introduced identifiers named by the instruction that are in neither input/'s public
+    API nor the verifier tests."""
     ic = config.instruction
     forbidden = {
         n
@@ -213,8 +208,8 @@ def identifier_leaks(instruction: str, facts: TaskFacts, config: Config = DEFAUL
 def leak_issues(
     text: str, facts: TaskFacts, config: Config = DEFAULT, what: str = "instruction"
 ) -> tuple[list[str], list[str]]:
-    """(detailed issues for the record, sanitized feedback for the author). Feedback never
-    echoes the leaked line or identifier."""
+    """(detailed issues for the record, sanitized feedback for the authoring model); feedback
+    never echoes the leaked line/identifier."""
     ic = config.instruction
     exempt = facts.tests_source if ic.exempt_diff_lines_in_tests else ""
     lines = diff_leaks(text, facts.diff, ic.leak_min_tokens, exempt)
@@ -236,8 +231,7 @@ def leak_issues(
 
 
 def mask_names(text: str, facts: TaskFacts, config: Config = DEFAULT) -> str:
-    """Forbidden change-introduced names inside free text (the classifier's summary) are
-    masked before the text reaches the author/labeler."""
+    """Mask change-introduced names in free text before it reaches the authoring/labeling model."""
     ic = config.instruction
     for n in sorted(facts.new_names, key=len, reverse=True):
         if (
@@ -251,7 +245,7 @@ def mask_names(text: str, facts: TaskFacts, config: Config = DEFAULT) -> str:
 
 # --- prompts ----------------------------------------------------------------------------
 
-PROMPT_VERSION = "5b.2"  # bump when the prompts below change: keys of persisted decisions
+PROMPT_VERSION = "instruction.2"  # bump when the prompts below change: keys of persisted decisions
 
 AUTHOR_SYSTEM = (
     "You write instructions for a coding benchmark task. You see the contract of the touched "
@@ -337,9 +331,8 @@ def prompt_hash() -> str:
 
 
 def content_key(facts: TaskFacts, config: Config) -> str:
-    """Content hash of everything the author sees + the prompt constants. Not the gate
-    config: a loosened gate keeps final decisions valid; a tightened one needs
-    --force instruct."""
+    """Content hash of everything the authoring model sees + prompt constants. Excludes gate
+    config: a tightened gate needs --force instruct."""
     return _key(
         config,
         "instruction",
@@ -357,8 +350,8 @@ def content_key(facts: TaskFacts, config: Config) -> str:
 def write_instruction(
     facts: TaskFacts, llm, config: Config = DEFAULT, decisions: dict | None = None
 ) -> dict:
-    """Author -> leak gate -> reviewer, regenerating with the issues fed back. Returns the
-    persisted record ``{status, title, instruction, attempts, review, issues, key}``."""
+    """Author -> leak gate -> reviewer, regenerating with issues fed back. Returns the persisted
+    ``{status, title, instruction, attempts, review, issues, key}``."""
     ic = config.instruction
     key = content_key(facts, config)
     if decisions is not None and key in decisions:

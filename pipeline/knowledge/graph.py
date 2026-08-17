@@ -1,14 +1,9 @@
-"""repo_graph.json — the deterministic static knowledge graph (DESIGN 4.1).
+"""repo_graph.json: deterministic static knowledge graph (DESIGN 4.1).
 
-Nodes: source modules, classes, functions/methods (test files are indexed
-separately and never become source nodes). Every node carries file, line span,
-and — for functions — signature, docstring, complexity, coverage % and test refs.
-
-Edges: imports, contains, calls, inherits, tested_by. EVERY edge carries
-`evidence {file, line}` so a grader can open the source and confirm it.
-
-Output is 100% deterministic: repo-relative paths only, everything sorted, no
-timestamps — two runs produce byte-identical bytes.
+Nodes: source modules/classes/functions (tests never become nodes) with file, span and,
+for functions, signature/docstring/complexity/coverage/test refs. Edges: imports,
+contains, calls, inherits, tested_by; every edge carries ``evidence {file, line}``.
+Repo-relative paths, sorted, no timestamps: byte-identical across runs.
 """
 
 from __future__ import annotations
@@ -29,10 +24,8 @@ def build_graph(
 ) -> dict:
     test_map = test_map or {}
     coverage = coverage or {}
-    # A module is a source node only if it is importable library source: under a package
-    # root / source_root, not a test, not a packaging script, not under docs/examples/etc.
-    # (``is_source`` computed in symbols.py). Older indexes without the field fall back to
-    # the previous not-test / not-nonsource_files rule.
+    # Source node = importable library source (``is_source`` from symbols.py); older
+    # indexes without the field fall back to not-test / not-nonsource_files.
     nonsource = set(config.graph.nonsource_files)
     source_modules = {
         m["name"]
@@ -128,8 +121,7 @@ def _nodes(symbols, source_modules, coverage, tested_by) -> list[dict]:
 
 
 def _dedupe_nodes(nodes: list[dict]) -> list[dict]:
-    """One node per id. A symbol redefined in a module (e.g. an example script that
-    rebinds a name) keeps its final definition — the one live at runtime."""
+    """One node per id; a redefined symbol keeps its final (runtime-live) definition."""
     by_id: dict[str, dict] = {}
     for node in nodes:
         current = by_id.get(node["id"])
@@ -174,18 +166,14 @@ def _edges(symbols, source_modules, tested_by, test_locations) -> list[dict]:
         parent_file = fn["file"]
         edges.append(_edge("contains", fn["parent"], fn["qualname"], parent_file, fn["line"]))
         for call in fn["calls"]:
-            edges.append(
-                _edge("calls", fn["qualname"], call["target"], fn["file"], call["line"])
-            )
+            edges.append(_edge("calls", fn["qualname"], call["target"], fn["file"], call["line"]))
         for test_id in tested_by.get(fn["qualname"], []):
             loc = test_locations.get(test_id, {"file": test_id.split("::")[0], "line": 1})
             edges.append(_edge("tested_by", fn["qualname"], test_id, loc["file"], loc["line"]))
 
     # keep contains edges only when the container is itself a source node
     valid = source_modules | {c["qualname"] for c in symbols["classes"]}
-    edges = [
-        e for e in edges if e["type"] != "contains" or e["source"] in valid
-    ]
+    edges = [e for e in edges if e["type"] != "contains" or e["source"] in valid]
     return sorted(
         edges,
         key=lambda e: (e["type"], e["source"], e["target"], e["evidence"]["line"]),
@@ -210,8 +198,7 @@ def _base_nodeid(nodeid: str) -> str:
 
 
 def _invert_test_map(test_map: dict[str, list[str]]) -> dict[str, list[str]]:
-    """func qual -> distinct test functions. Parametrized cases collapse to their base
-    nodeid so a heavily-parametrized test yields one `tested_by` edge, not hundreds."""
+    """func qual -> distinct test functions; parametrized cases collapse to the base nodeid."""
     out: dict[str, set[str]] = {}
     for test_id, funcs in test_map.items():
         base = _base_nodeid(test_id)

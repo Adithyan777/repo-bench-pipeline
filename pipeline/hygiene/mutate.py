@@ -1,10 +1,6 @@
-"""Mutation driver (ecosystem-agnostic): given a function's line span and the
-adapter's AST mutators, produce whole-file mutants for the mutation gate.
-
-The driver only splices the mutated function's line range back into the file, so
-every mutant is byte-identical to the original outside that function. Operator
-selection is deterministic: mutants are interleaved across operators (for diversity)
-and the first ``count`` are taken -- no randomness, so a rerun is identical.
+"""Mutation driver (ecosystem-agnostic): whole-file mutants from a function's line span
+and the adapter's AST mutators. Only the span is spliced, so mutants are byte-identical
+elsewhere. Selection is deterministic: interleave across operators, take the first ``count``.
 """
 
 from __future__ import annotations
@@ -21,8 +17,7 @@ class Mutant:
 
 
 def _splice(lines: list[str], start: int, end: int, replacement: str) -> str:
-    """Replace 1-based line range ``[start, end]`` with ``replacement`` (which ends in
-    a newline); everything outside the range is preserved byte-for-byte."""
+    """Replace 1-based lines ``[start, end]`` with ``replacement``; rest preserved byte-for-byte."""
     newline = "\r\n" if lines and lines[0].endswith("\r\n") else "\n"
     body = replacement if replacement.endswith(("\n", "\r\n")) else replacement + newline
     if newline == "\r\n":

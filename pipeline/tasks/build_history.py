@@ -1,13 +1,10 @@
 """History task construction (DESIGN 5.2 build + 5.6 folder format).
 
-tasks/<repo>/hist-<sha7>/{task.json, input/, solution/, verifier/, goldenSolution.md, evidence/}
-- input/    = full tree at the parent (git archive, never the working tree)
-- solution/ = full tree at the commit
-- both get the hygiene overlay ADDITIVELY (Dockerfile, lock, ...): never overwrite a
-  historical file, never lint, so input<->solution == the historical change exactly.
-- verifier/ = the commit's added/changed test functions (AST diff) at repo-relative
-  paths + conftest ancestors + run.sh; or, when the commit has no tests, ONE file
-  authored by a bounded BIG agent. Every gate runs in the container at build time.
+tasks/<repo>/hist-<sha7>/{task.json, input/, solution/, verifier/, goldenSolution.md, evidence/}.
+input/ = tree at the parent, solution/ = tree at the commit (git archive); hygiene
+overlay is ADDITIVE (never overwrites, never lints) so input<->solution == the change.
+verifier/ = the commit's added/changed test functions (AST diff) + conftest ancestors +
+run.sh, or ONE agent-authored file when the commit has no tests. Gates run in-container.
 """
 
 from __future__ import annotations
@@ -119,8 +116,8 @@ def archive_tree(repo: Path, sha: str, dest: Path) -> None:
 
 
 def overlay_files(repo: Path, config: Config = DEFAULT) -> list[str]:
-    """Hygiene artifacts to overlay: the pipeline commit's files when recorded, else the
-    configured list; only those present in the current repo tree."""
+    """Hygiene files to overlay: the pipeline commit's list when recorded, else the config
+    list; only those present in the current tree."""
     names = list(config.tasks.hygiene_overlay_files)
     pb = repo.parent / "hygiene" / "pipeline_base.json"
     if pb.is_file():
@@ -153,8 +150,8 @@ def overlay(repo: Path, dest: Path, names: list[str]) -> list[str]:
 
 
 def run_tree(task_dir: Path, tree: str, cmd: str, image: str, config: Config) -> dict:
-    """One in-container run of ``cmd`` on ``<task>/<tree>`` with verifier/ overlaid;
-    returns ``{exit_code, report, outcomes, n_failing, n_passing}``."""
+    """In-container run of ``cmd`` on ``<task>/<tree>`` with verifier/ overlaid ->
+    ``{exit_code, report, outcomes, n_failing, n_passing}``."""
     adapter = PythonAdapter(config=config)
     report_rel = config.harness.report_filename
     with fresh_workdir(task_dir / tree) as work:
@@ -210,8 +207,8 @@ def _write_rel(dest_root: Path, rel: str, text: str) -> None:
 
 
 def commit_test_nodeids(c: H.HistoryCandidate, repo: Path) -> dict[str, list[str]]:
-    """test file -> nodeids of test functions added/changed by the commit (AST diff of the
-    file between input and commit state; deleted files are skipped)."""
+    """test file -> nodeids of test functions added/changed by the commit (AST diff; deleted
+    files skipped)."""
     out: dict[str, list[str]] = {}
     for rel in c.test_files:
         after = H.show(repo, c.sha, rel)
@@ -238,8 +235,8 @@ def _copy_commit_tests(c: H.HistoryCandidate, repo: Path, verifier: Path, files:
 
 
 def _test_dir_for(solution: Path, source_files: list[str], config: Config) -> Path:
-    """Directory for an agent-authored test file: the existing test directory sharing the
-    longest path prefix with the touched sources (fallback ``tests/``)."""
+    """Directory for an agent-authored test file: existing test dir sharing the longest
+    prefix with the touched sources (fallback ``tests/``)."""
     dirs: dict[str, int] = {}
     for p in solution.rglob("*.py"):
         if is_test_path(solution, p, config) and p.name.startswith("test_"):
@@ -316,8 +313,8 @@ def _run_agent(
     keep_files: list[str],
     config: Config,
 ) -> tuple[list[str], dict]:
-    """Bounded agent on a throw-away copy of ``base_tree`` (+ verifier overlay); only
-    ``keep_files`` it changed are copied back into verifier/. Returns (kept, note)."""
+    """Bounded agent on a throw-away copy of ``base_tree`` (+ verifier overlay); only changed
+    ``keep_files`` are copied back. Returns (kept, note)."""
     with tempfile.TemporaryDirectory(prefix="bench-agent-") as tmp:
         work = Path(tmp) / "repo"
         shutil.copytree(base_tree, work)
@@ -356,8 +353,8 @@ def _run_agent(
 def _verifier_from_agent(
     c: H.HistoryCandidate, inp: BuildInputs, task_dir: Path, config: Config
 ) -> tuple[list[str], dict]:
-    """Bounded BIG agent authors ONE test file for a commit without tests. Cached by
-    content hash so a rerun costs no tokens. Returns (nodeids, note)."""
+    """Bounded BIG agent authors ONE test file for a commit without tests (cached by content
+    hash). Returns (nodeids, note)."""
     hc = config.history
     test_dir = _test_dir_for(task_dir / "solution", c.source_files, config)
     rel = str(test_dir / f"{hc.agent_test_file_prefix}{c.short}.py")
@@ -490,8 +487,8 @@ def neutrality_prompt(
 def _neutrality_decision(
     c: H.HistoryCandidate, inp: BuildInputs, task_dir: Path, nodeids: list[str], config: Config
 ) -> tuple[dict | None, dict]:
-    """One BIG neutrality judgement of the current verifier tests (persisted by content
-    hash). Returns (decision or None when no LLM, note)."""
+    """One BIG neutrality judgement of the current verifier tests (persisted by content hash).
+    Returns (decision or None without LLM, note)."""
     verifier = task_dir / "verifier"
     contracts = _contracts(task_dir / "solution", c.source_files, c.touched_functions, config)
     prompt = neutrality_prompt(
@@ -517,9 +514,8 @@ def _neutrality_decision(
 def _neutrality(
     c: H.HistoryCandidate, inp: BuildInputs, task_dir: Path, nodeids: list[str], config: Config
 ) -> tuple[list[str], dict]:
-    """BIG neutrality check of the commit's own tests; when flagged, one bounded agent
-    rewrite (audited) followed by ONE re-check of the rewritten tests. Returns (nodeids,
-    note)."""
+    """BIG neutrality check; when flagged, one bounded agent rewrite (audited) + ONE re-check.
+    Returns (nodeids, note)."""
     hc = config.history
     verifier = task_dir / "verifier"
     new_names = _new_names(c, inp.repo)
@@ -558,10 +554,9 @@ def _rewrite_verifier(
     kind: str,
     config: Config,
 ) -> dict:
-    """ONE bounded agent rewrite of verifier ``files`` (audited, cached by content hash,
-    outcome persisted, per-build-step budgets ``max_neutrality_rewrites_per_repo`` and
-    ``max_agent_runs_per_repo``). Outcomes: rewritten | reused | unchanged | max-turns |
-    disabled | budget-exhausted | no_llm."""
+    """ONE bounded agent rewrite of verifier ``files`` (audited, cached, budgeted by
+    ``max_neutrality_rewrites_per_repo`` / ``max_agent_runs_per_repo``). Outcomes: rewritten |
+    reused | unchanged | max-turns | disabled | budget-exhausted | no_llm."""
     hc = config.history
     verifier = task_dir / "verifier"
     key = _cache_key(kind, c.sha, goal)
@@ -626,8 +621,8 @@ def _rewrite_verifier(
 def build_history_task(
     c: H.HistoryCandidate, inp: BuildInputs, tasks_root: Path, config: Config = DEFAULT
 ) -> HistoryBuild:
-    """Build one history task folder. Build-time gates (in-container) reject with a
-    reason instead of producing a task the harness would fail for a knowable cause."""
+    """Build one history task folder. In-container build gates reject with a reason instead
+    of producing a task the harness would fail for a knowable cause."""
     tc, hc = config.tasks, config.history
     adapter = PythonAdapter(config=config)
     task_id = task_id_for(c, config)
@@ -677,8 +672,7 @@ def build_history_task(
         ):
             return reject(f"verifier-imports-non-public-or-missing({detail})")
         files = sorted({v["file"] for v in violations})
-        # A tree that cannot collect in the current image is env-drift: check it BEFORE
-        # spending an agent on the rewrite (toolz: two 2013-era rewrites were wasted).
+        # Env-drift (tree cannot collect in the current image) is checked BEFORE the rewrite.
         probe = run_tree(
             task_dir, "solution", adapter.verifier_command(nodeids), inp.image_tag, config
         )
@@ -704,8 +698,7 @@ def build_history_task(
         nodeids = _existing_nodeids(verifier, nodeids)
 
     verifier_files = sorted(str(p.relative_to(verifier)) for p in verifier.rglob("*.py"))
-    # Solution first: a tree that cannot collect in the current image is env-drift, not a
-    # property of the change.
+    # Solution first: failure to collect in the current image is env-drift, not the change.
     on_solution = run_tree(
         task_dir, "solution", adapter.verifier_command(nodeids), inp.image_tag, config
     )
@@ -828,8 +821,8 @@ def _collateral(
     config: Config,
     notes: dict,
 ) -> dict | None:
-    """Collateral baseline = tests passing on input/ (one full-suite container run), so
-    the check compares the commit against ITS parent, not against HEAD's suite."""
+    """Collateral baseline = tests passing on input/ (one full-suite run): compares the commit
+    against ITS parent, not HEAD's suite."""
     report = config.baseline.report_filename
     quarantined = inp.baseline.get("quarantined") or []
     cmd = adapter.reporting_command(Path("."), report, quarantined)
@@ -843,8 +836,7 @@ def _collateral(
         data = json.loads(path.read_text()) if path.is_file() else None
     results = adapter.parse_test_report_data(data) if data else {}
     passing = sorted(t for t, r in results.items() if r["status"] == "pass")
-    # Tests the commit itself removed/renamed in the test files it touched cannot run on
-    # solution/; they are not collateral.
+    # Tests the commit removed/renamed cannot run on solution/; not collateral.
     removed = _tests_removed_by_commit(c, inp.repo, passing)
     passing = [t for t in passing if t not in removed]
     notes["collateral_baseline"] = {
@@ -892,7 +884,7 @@ def _golden(c: H.HistoryCandidate, repo: Path) -> str:
         "The historical change, applied to `input/` gives `solution/` exactly (hygiene "
         "overlay files aside).\n\n"
         "```diff\n" + patch + ("\n" if not patch.endswith("\n") else "") + "```\n\n"
-        "<!-- TODO-S5b: LLM-authored 'why correct' rationale -->\n"
+        "<!-- TODO-golden: LLM-authored 'why correct' rationale -->\n"
     )
 
 

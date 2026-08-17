@@ -1,7 +1,7 @@
-"""Difficulty labelling (DESIGN 5.6): code computes features from the repo graph and the
-task diff; a BIG call (``p3.build.difficulty_label``, batched) assigns easy|medium|hard
-with a rationale that must cite at least one computed feature (checked by string match;
-regenerated at most ``difficulty.max_regenerations`` times, then ``failed``).
+"""Difficulty labelling (DESIGN 5.6): code computes features from the graph + task diff; a
+batched BIG call (``p3.build.difficulty_label``) assigns easy|medium|hard with a rationale
+that must cite a computed feature (string match; <= ``difficulty.max_regenerations``
+retries, then ``failed``).
 """
 
 from __future__ import annotations
@@ -94,8 +94,8 @@ def features(facts: TaskFacts, graph: dict, config: Config = DEFAULT) -> dict:
 
 
 def cites_feature(rationale: str, feats: dict) -> bool:
-    """A feature is cited when its name (with `_` or spaces) appears together with its
-    value: ``callers_count=12``, ``callers count of 12``, ``12 callers``."""
+    """A feature is cited when its name (``_`` or spaces) appears with its value:
+    ``callers_count=12``, ``callers count of 12``, ``12 callers``."""
     text = rationale.lower()
     for name, value in feats.items():
         for form in (name, name.replace("_", " ")):
@@ -137,8 +137,8 @@ def label_tasks(
     config: Config = DEFAULT,
     decisions: dict | None = None,
 ) -> dict[str, dict]:
-    """task_id -> {difficulty, rationale, features, status, attempts}; batched BIG calls,
-    each decision persisted by content hash."""
+    """task_id -> {difficulty, rationale, features, status, attempts}; batched BIG calls
+    persisted by content hash."""
     dc = config.difficulty
     out: dict[str, dict] = {}
     pending: list[tuple[TaskFacts, dict, str]] = []

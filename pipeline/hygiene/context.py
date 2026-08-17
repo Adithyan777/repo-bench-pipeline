@@ -1,10 +1,7 @@
-"""Shared hygiene run context + repo provisioning + pipeline commit helpers.
+"""Hygiene run context, repo provisioning, pipeline commit helpers.
 
-Output layout (DESIGN 3.8):
-  output/<repo>/repo/       clean working clone (git preserved)
-  output/<repo>/hygiene/    step JSON records + emitted test command
-  output/<repo>/audit/      agent_actions.jsonl, llm_usage.json
-  output/<repo>/report_data.json
+Layout: output/<repo>/{repo/ (clean clone), hygiene/ (step JSON), audit/
+(agent_actions.jsonl, llm_usage.json), report_data.json}.
 """
 
 from __future__ import annotations
@@ -73,8 +70,7 @@ class HygieneContext:
 
 
 def append_agent_action(audit_dir: Path, record: dict) -> None:
-    """Append one agent-action record to ``audit/agent_actions.jsonl`` (shared by every
-    step that runs a bounded agent)."""
+    """Append one record to ``audit/agent_actions.jsonl``."""
     audit_dir.mkdir(parents=True, exist_ok=True)
     with (audit_dir / "agent_actions.jsonl").open("a") as fh:
         fh.write(json.dumps(record) + "\n")
@@ -145,7 +141,7 @@ def build_context(
 
 
 def _tree_hash(repo: Path) -> str:
-    """Content hash of the original tree (used as repo identity when there's no git)."""
+    """Content hash of the tree; repo identity when there is no git."""
     import hashlib
 
     h = hashlib.sha256()

@@ -69,7 +69,7 @@ def test_reasoning_translation_glm_clamps_low_to_high() -> None:
 
 def _client(tmp_path: Path, mode="live") -> LLMClient:
     return LLMClient(
-        stage="s1_test",
+        stage="unit_test",
         mode=mode,
         transcripts_dir=tmp_path / "transcripts",
         audit_dir=tmp_path / "audit",
@@ -136,7 +136,7 @@ def test_usage_accounting_records_reasoning_tokens(tmp_path: Path) -> None:
 def test_token_budget_cap(tmp_path: Path) -> None:
     cfg = Config()
     cfg.llm.max_tokens_per_repo = 5
-    c = LLMClient(config=cfg, stage="s1_test", transcripts_dir=tmp_path / "t")
+    c = LLMClient(config=cfg, stage="unit_test", transcripts_dir=tmp_path / "t")
     with pytest.raises(TokenBudgetExceeded):
         c._account(SMALL_STEP, make_completion(tokens=10))
 
@@ -149,7 +149,7 @@ def _has_cassettes(stage: str) -> bool:
     return d.is_dir() and any(d.glob("*.json"))
 
 
-@pytest.mark.skipif(not _has_cassettes("s1_smoke"), reason="s1_smoke cassettes not recorded yet")
+@pytest.mark.skipif(not _has_cassettes("llm_smoke"), reason="llm_smoke cassettes not recorded yet")
 def test_complete_json_replay(tmp_path: Path) -> None:
     from tests import _smoke
 

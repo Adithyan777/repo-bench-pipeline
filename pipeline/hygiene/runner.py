@@ -1,9 +1,7 @@
-"""Hygiene stage runner: detect -> pin -> dockerfile -> compose -> build -> baseline.
-
-Each step is resumable via state.py (skip-if-unchanged, --force, --fresh). Pipeline
-edits to the repo clone are committed as labeled commits after they are produced, and
-the original HEAD is recorded so P3 mines only original history. Per-stage timing and
-LLM usage land in output/<repo>/report_data.json.
+"""Hygiene stage runner: detect -> pin -> dockerfile -> compose -> build -> baseline
+-> testgen -> lint. Steps are resumable via state.py; pipeline edits become labeled
+commits, original HEAD is recorded so history mining sees only original commits.
+Timing + LLM usage go to output/<repo>/report_data.json.
 """
 
 from __future__ import annotations
@@ -17,10 +15,12 @@ from pipeline.hygiene.context import (
     HygieneContext,
     commit_pipeline_changes,
 )
+from pipeline.log import fmt_counts, log, step_skipped, step_start
 from pipeline.state import code_fingerprint, hash_inputs
 
-# (name, module, commit_label_after) — commit_label groups working-tree edits into
-# one labeled pipeline commit once that step (and its peers) have written their files.
+STAGE = "hygiene"
+
+# (name, module, commit_label): a label commits working-tree edits so far as one pipeline commit.
 _STEPS = [
     ("detect", detect, None),
     ("pin", pin, None),
@@ -43,6 +43,7 @@ def run_hygiene(ctx: HygieneContext) -> HygieneContext:
             sha = commit_pipeline_changes(ctx, commit_label)
             if sha:
                 pipeline_commits.append(sha)
+                log(STAGE, name, f"pipeline commit {sha[:7]}")
 
     ctx.record("pipeline_base", {"base_sha": base_sha, "pipeline_commits": pipeline_commits})
     ctx.llm.write_usage()
@@ -57,12 +58,42 @@ def _run_step(ctx: HygieneContext, name: str, module) -> None:
     stage = ctx.report["stages"].setdefault(name, {})
     if not ctx.state.should_run(name, input_hash):
         stage["skipped"] = True
+        step_skipped(STAGE, name)
         return
     start = time.monotonic()
-    module.run(ctx)
+    step = step_start(STAGE, name, ctx.llm)
+    data = module.run(ctx)
     stage["skipped"] = False
     stage["duration_s"] = round(time.monotonic() - start, 2)
     ctx.state.mark_done(name, input_hash)
+    step.done(_step_summary(name, data))
+
+
+def _step_summary(name: str, data) -> str:
+    """One-line facts from a step's result dict; '' when the shape is unexpected."""
+    if not isinstance(data, dict):
+        return ""
+    if name == "detect":
+        return fmt_counts(data, ("packaging_style", "python_version", "test_framework"))
+    if name == "pin":
+        return fmt_counts(data, ("pin_count", "python_version"))
+    if name == "dockerfile":
+        return fmt_counts(data, ("base_image",))
+    if name == "build":
+        return fmt_counts(data, ("outcome", "attempts"))
+    if name == "baseline":
+        return fmt_counts(data.get("counts"))
+    if name == "testgen":
+        if not data.get("enabled", True):
+            return "disabled"
+        return fmt_counts(data.get("counts")) or fmt_counts(data, ("skipped",))
+    if name == "lint":
+        if not data.get("enabled", True):
+            return "disabled"
+        noqa = sum(len(v) for v in (data.get("noqa") or {}).values())
+        facts = f"files_changed={len(data.get('files_changed') or [])} noqa={noqa}"
+        return f"{facts} {fmt_counts(data, ('clean', 'regressed', 'reverted'))}".rstrip()
+    return ""
 
 
 def _write_report(ctx: HygieneContext) -> None:
@@ -83,7 +114,7 @@ def verify_twice(ctx: HygieneContext) -> bool:
 
 
 def hygiene_paths(run_dir: Path) -> dict:
-    """Where S3 finds what it needs."""
+    """Paths to the hygiene artifacts the knowledge stage consumes."""
     return {
         "repo": str(run_dir / "repo"),
         "detect": str(run_dir / "hygiene" / "detect.json"),

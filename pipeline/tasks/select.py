@@ -1,16 +1,10 @@
 """Final task selection (DESIGN 5.1/5.6).
 
-From the per-repo manifest (every built task) pick exactly ``selection.total_tasks``
-that are VALID and have a final instruction, honoring the hard quotas
-(``min_history`` / ``max_excision`` / ``max_netnew`` / ``min_distinct_modules``) and,
-as a SOFT objective, the difficulty spread. The result is the repo-root ``tasks.json``
-(the deliverable's 10) plus a ``selection.json`` that records why every eligible task
-was picked or not.
-
-Determinism: tasks are ranked by a total, tie-broken key; the greedy fill and every
-swap iterate that fixed order, so the same manifest always yields the same 10. Hard
-constraints that cannot be met raise ``SelectionInfeasible`` with a specific reason —
-the pipeline never silently ships fewer than 10 or violates a quota.
+Pick exactly ``selection.total_tasks`` VALID tasks with a final instruction, honoring the
+hard quotas (``min_history`` / ``max_excision`` / ``max_netnew`` / ``min_distinct_modules``)
+and, softly, the difficulty spread. Writes the repo-root ``tasks.json`` + ``selection.json``
+(why each eligible task was or was not picked). Deterministic: ranked by a total
+tie-broken key; unmeetable constraints raise ``SelectionInfeasible``, never fewer tasks.
 """
 
 from __future__ import annotations
@@ -54,8 +48,7 @@ def _n_failing(task: dict) -> int:
 
 
 def _pref_key(task: dict) -> tuple:
-    """Preference order (best first): more failing-on-input tests discriminate more;
-    ties broken by id for a stable, reproducible ranking."""
+    """Preference (best first): more failing-on-input tests, then id."""
     return (-_n_failing(task), task["id"])
 
 
@@ -161,8 +154,8 @@ def _counts(tasks: list[dict]) -> dict[str, int]:
 
 
 def _greedy(eligible: list[dict], config: Config) -> list[dict]:
-    """Reserve the history floor first (best history tasks), then fill remaining slots
-    by preference across all types, respecting the excision/net-new caps."""
+    """Reserve the history floor first, then fill by preference across types within the
+    excision/net-new caps."""
     sel = config.selection
     ranked = sorted(eligible, key=_pref_key)
     history = [t for t in ranked if t.get("source_type") == "history"]
@@ -196,8 +189,8 @@ def _caps_ok(tasks: list[dict], config: Config) -> bool:
 def _ensure_module_diversity(
     chosen: list[dict], eligible: list[dict], config: Config
 ) -> list[dict]:
-    """Swap surplus tasks (same-module duplicates) for unselected tasks in unseen
-    modules until >= min_distinct_modules, preferring the least preference loss."""
+    """Swap same-module duplicates for unselected tasks in unseen modules until
+    >= min_distinct_modules, minimising preference loss."""
     sel = config.selection
     need = sel.min_distinct_modules
     chosen = list(chosen)
@@ -217,8 +210,7 @@ def _ensure_module_diversity(
         )
         swapped = False
         for cand in adders:
-            # drop the worst-preference chosen task whose module is duplicated, keeping
-            # caps + history floor valid after the (cand in / drop out) swap.
+            # Drop the worst-preference duplicated-module task; caps + history floor stay valid.
             for drop in sorted(chosen, key=_pref_key, reverse=True):
                 dup = [t for t in chosen if t.get("module") == drop.get("module")]
                 if len(dup) < 2:
@@ -248,8 +240,7 @@ def _spread_cost(tasks: list[dict], config: Config) -> int:
 
 def _improve_spread(chosen: list[dict], eligible: list[dict], config: Config) -> list[dict]:
     """Soft objective: swap toward the target difficulty spread while keeping every hard
-    constraint (caps, history floor, module count) satisfied. Preference is the tie-break
-    so the pass is fully deterministic; it stops when no swap lowers the spread cost."""
+    constraint; deterministic (preference tie-break), stops when no swap lowers the cost."""
     chosen = list(chosen)
     improved = True
     guard = 0
@@ -289,9 +280,8 @@ def _source_ref(task: dict) -> str:
 
 
 def root_entry(task: dict, repo: str, config: Config) -> dict:
-    """The repo-root tasks.json record: the PDF fields (id, title, source type, module,
-    difficulty, provenance, verifier command, validation status) + a validate-able path
-    and a concise source_ref (commit SHA / excision target)."""
+    """Repo-root tasks.json record: id, title, source type, module, difficulty, provenance,
+    verifier command, validation status, path, source_ref."""
     return {
         "id": task["id"],
         "title": task["title"],
@@ -313,10 +303,9 @@ def run_selection(
     root_dir: Path = Path("."),
     summary_dir: Path | None = None,
 ) -> tuple[Path, Path, SelectionResult]:
-    """Read the per-repo manifest, select the final 10, write the root tasks.json (at
-    ``root_dir``, the repo root — the deliverable) + selection.json (under ``summary_dir``,
-    the working output/<repo>/tasks/ dir, next to candidates.json — it feeds REPORT.md, not
-    the committed set). Returns (root_tasks_json, selection_json, result)."""
+    """Read the manifest, select the final set, write root tasks.json (``root_dir``) +
+    selection.json (``summary_dir``, feeds REPORT.md). Returns (root_tasks_json,
+    selection_json, result)."""
     manifest = json.loads(Path(repo_manifest).read_text())
     tasks = manifest.get("tasks", [])
     result = select(tasks, config)

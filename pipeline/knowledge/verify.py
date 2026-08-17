@@ -1,18 +1,10 @@
-"""Graph self-verification (DESIGN 4.1): sample edges, re-derive them independently,
-report precision per edge type + the mismatches REPORT cites.
+"""Graph self-verification (DESIGN 4.1): sample edges, re-derive them by an independent
+code path, report precision per edge type + mismatches.
 
-Each edge type is re-checked by a DIFFERENT code path than the builder used:
-  imports   a second parse that re-resolves the file's import statements (absolute
-            and relative), independent of how the graph was built
-  contains  a second, independent AST parse of the module
-  inherits  a second parse confirming the base class
-  calls     a second, independent resolution of the call site — the call must
-            resolve to the SAME target module, not merely a same-named function
-  tested_by re-derived from the RAW coverage contexts: the test's nodeid must have
-            covered a line inside the source function's span
-Symbol existence is confirmed by importing the module INSIDE THE CONTAINER (optional;
-skipped when no image is given). Import failures (optional/platform deps, build/doc
-scripts) are reported separately from real attribute mismatches.
+imports/contains/inherits: second AST parse; calls: independent call-site resolution
+(same target module, not just same name); tested_by: raw coverage contexts must cover
+a line in the function span. Symbol existence is optionally checked by importing inside
+the container; import failures are reported apart from attribute mismatches.
 """
 
 from __future__ import annotations
@@ -70,8 +62,12 @@ def verify_graph(
         stats[verdict] += 1
         if verdict == "mismatch":
             mismatches.append(
-                {"type": edge["type"], "source": edge["source"], "target": edge["target"],
-                 "reason": reason}
+                {
+                    "type": edge["type"],
+                    "source": edge["source"],
+                    "target": edge["target"],
+                    "reason": reason,
+                }
             )
     for stats in by_type.values():
         decided = stats["confirmed"] + stats["mismatch"]
@@ -91,8 +87,7 @@ def _edge_key(edge: dict) -> tuple:
 
 
 def _sample(edges: list[dict], budget: int) -> list[dict]:
-    """Deterministic sample: sort all edges, then take the first `per_type` of each
-    edge type (an even share of the budget). No randomness — same graph, same sample."""
+    """Deterministic sample: sorted edges, first ``per_type`` of each edge type."""
     by_type: dict[str, list[dict]] = {}
     for edge in sorted(edges, key=_edge_key):
         by_type.setdefault(edge["type"], []).append(edge)
@@ -122,9 +117,8 @@ def _recheck(edge: dict, ctx: _Ctx) -> tuple[str, str]:
 
 
 def _recheck_import(edge: dict, ctx: _Ctx) -> tuple[str, str]:
-    """Re-derive the intra-repo modules this file imports by an INDEPENDENT second
-    parse (absolute + relative), then confirm the edge target is among them. A regex
-    can't reliably read relative imports, so we resolve the statements instead."""
+    """Second parse of the file's imports (absolute + relative); edge target must be among
+    the resolved intra-repo modules."""
     _, tree = _load(ctx, edge["evidence"]["file"])
     if tree is None:
         return "unverifiable", "unparseable"
@@ -134,9 +128,7 @@ def _recheck_import(edge: dict, ctx: _Ctx) -> tuple[str, str]:
         if isinstance(node, ast.Import):
             for alias in node.names:
                 parts = alias.name.split(".")
-                targets |= {
-                    ".".join(parts[:i]) for i in range(1, len(parts) + 1)
-                } & ctx.modules
+                targets |= {".".join(parts[:i]) for i in range(1, len(parts) + 1)} & ctx.modules
         elif isinstance(node, ast.ImportFrom):
             source = _import_source(node, module, ctx)
             if not source:
@@ -217,8 +209,7 @@ def _recheck_tested_by(edge: dict, ctx: _Ctx) -> tuple[str, str]:
 
 
 def _import_tables(tree: ast.Module, module: str, ctx: _Ctx) -> dict:
-    """Independent second build of this module's name-resolution tables (absolute AND
-    relative imports), so the re-resolution matches what the indexer had available."""
+    """Independent rebuild of the module's name-resolution tables (absolute + relative)."""
     from_imports: dict[str, str] = {}
     aliases: dict[str, str] = {}
     top_defs: dict[str, str] = {}
@@ -384,9 +375,7 @@ def _defined_qualnames(ctx: _Ctx, rel: str) -> set[str]:
 
 
 def _lookup_all(tree, module: str, qualname: str) -> list:
-    """All def/class nodes matching a qualname path — a module may rebind a name more
-    than once (redefinition); every candidate is returned so a re-check can confirm
-    against any of them."""
+    """All def/class nodes matching a qualname path (a name may be redefined; return all)."""
     parts = qualname[len(module) + 1 :].split(".") if qualname.startswith(module + ".") else []
     if not parts:
         return []

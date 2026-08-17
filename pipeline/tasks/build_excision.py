@@ -1,10 +1,9 @@
 """Excision task construction (DESIGN 5.3 build + 5.6 folder format).
 
-tasks/<repo>/<task_id>/{task.json, input/, solution/, verifier/, goldenSolution.md, evidence/}
-- solution/ = the current transformed repo tree (no .git)
-- input/    = same tree with the target's body spliced to ``excision_body``
-- verifier/ = the covering test files (repo-relative paths, so the harness can copy the
-  directory over any workdir) + conftest ancestors + run.sh
+tasks/<repo>/<task_id>/{task.json, input/, solution/, verifier/, goldenSolution.md, evidence/}.
+solution/ = current repo tree (no .git); input/ = same with the target body spliced to
+``excision_body``; verifier/ = covering test files at repo-relative paths + conftest
+ancestors + run.sh.
 """
 
 from __future__ import annotations
@@ -64,8 +63,8 @@ def task_id_for(c: Candidate, config: Config = DEFAULT) -> str:
 
 
 def build_task(c: Candidate, inp: BuildInputs, tasks_root: Path, config: Config = DEFAULT) -> Path:
-    """Build one excision task folder; returns its path. Raises ExciseError when the
-    target cannot be spliced (caller records the reject reason)."""
+    """Build one excision task folder -> path. Raises ExciseError when the target cannot be
+    spliced (caller records the reject reason)."""
     tc = config.tasks
     adapter = PythonAdapter(config=config)
     original = read_source(inp.repo / c.file)
@@ -101,8 +100,7 @@ def build_task(c: Candidate, inp: BuildInputs, tasks_root: Path, config: Config 
     if assertions < config.excision.min_assertions_touching_fn and inp.llm is not None:
         added, agent_note = _top_up_tests(c, inp, task_dir, test_files[0], config)
         nodeids = sorted({*nodeids, *added})
-    # One container run of the verifier on input/ at build time: records the fail-before
-    # shape and drops top-up tests that do not fail on input (they would not discriminate).
+    # Verifier run on input/ at build time: records fail-before; drops top-up tests that pass.
     on_input = _verifier_on_input(
         task_dir, adapter.verifier_command(nodeids), adapter, inp.image_tag, config
     )
@@ -233,7 +231,7 @@ def _golden(c: Candidate, original: str, excised: str, config: Config) -> str:
         f"(lines {c.line}-{c.end_line}); the excised input raises "
         f"`{config.excision.excision_body}` in its place.\n\n"
         "```diff\n" + diff + "```\n\n"
-        "<!-- TODO-S5: LLM-authored 'why correct' rationale -->\n"
+        "<!-- TODO-golden: LLM-authored 'why correct' rationale -->\n"
     )
 
 
@@ -281,8 +279,8 @@ def _instruction(c: Candidate, verifier: Path, nodeids: list[str], cmd: str, con
 def _top_up_tests(
     c: Candidate, inp: BuildInputs, task_dir: Path, sibling_test: str, config: Config
 ) -> tuple[list[str], dict]:
-    """Bounded BIG agent adds edge-case tests for the target into ONE new verifier file.
-    Audited to agent_actions.jsonl. Returns (added nodeids, audit note)."""
+    """Bounded BIG agent adds edge-case tests into ONE new verifier file (audited).
+    Returns (added nodeids, audit note)."""
     name = c.qualname.rsplit(".", 1)[-1]
     rel = str(Path(sibling_test).parent / f"test_excision_{name}.py")
     added: list[str] = []

@@ -33,12 +33,8 @@ def hash_inputs(*parts: str | bytes | Path) -> str:
 
 
 def code_fingerprint(paths: Iterable[str]) -> str:
-    """Hash the contents of the given pipeline source files (repo-relative paths).
-
-    Mixed into a step's input hash so a change to the code that PRODUCES an artifact
-    invalidates it — otherwise a bug fix in an analyzer leaves stale outputs in place
-    because only the inputs are hashed.
-    """
+    """Hash the contents of pipeline source files; mixed into a step's input hash so a
+    change to the producing code invalidates its artifacts."""
     files = [Path(p) for p in paths]
     return hash_inputs(*[p for p in files if p.is_file()])
 

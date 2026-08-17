@@ -1,8 +1,4 @@
-"""Image build + base-image digest pinning.
-
-Base images are pinned to a sha256 digest so builds are reproducible. The built
-image's own id is returned so it can be recorded in a task's verdict.json.
-"""
+"""Image build + base-image digest pinning. Built image ids are recorded in verdict.json."""
 
 from __future__ import annotations
 
@@ -14,8 +10,7 @@ class DockerError(RuntimeError):
     pass
 
 
-# Every image this pipeline builds carries this label, so a prune can target ONLY our
-# own leftovers (never a user's other images/containers).
+# Label on every pipeline-built image; prunes are scoped to it.
 BUILD_LABEL = "bench-pipeline"
 
 
@@ -27,11 +22,7 @@ def _run(argv: list[str]) -> str:
 
 
 def resolve_base_digest(base_ref: str) -> str:
-    """Pull ``base_ref`` and return it pinned as ``repo@sha256:...``.
-
-    e.g. ``python:3.12-slim`` -> ``python@sha256:<digest>``. Deterministic builds
-    reference the digest form, not the mutable tag.
-    """
+    """Pull ``base_ref`` and return the digest form ``repo@sha256:...``."""
     _run(["docker", "pull", base_ref])
     digests = _run(["docker", "inspect", "--format", '{{join .RepoDigests "\\n"}}', base_ref])
     repo = base_ref.split(":", 1)[0]
@@ -42,10 +33,7 @@ def resolve_base_digest(base_ref: str) -> str:
 
 
 def build_image(context_dir: Path, tag: str) -> str:
-    """Build the image at ``context_dir`` (expects a Dockerfile) and return its id.
-
-    Returns the built image's ``sha256:...`` id for recording alongside tasks.
-    """
+    """Build the image at ``context_dir`` (needs a Dockerfile); return its ``sha256:...`` id."""
     context_dir = Path(context_dir)
     if not (context_dir / "Dockerfile").is_file():
         raise DockerError(f"no Dockerfile in {context_dir}")
@@ -54,18 +42,18 @@ def build_image(context_dir: Path, tag: str) -> str:
 
 
 def prune_dangling_bench_images() -> int:
-    """Remove ONLY dangling (untagged) images that carry this pipeline's build label —
-    e.g. the old layers left behind when bench-<repo> is rebuilt. Tagged bench-* images
-    and any image the pipeline did not build are never touched. Returns images removed.
-
-    (A rebuild retags bench-<repo> onto the new image, leaving the previous one
-    untagged; ``label=`` scopes the prune so nothing else on the host is affected.)
-    """
+    """Remove dangling images carrying BUILD_LABEL (layers orphaned by a bench-<repo>
+    rebuild). Tagged or foreign images are never touched. Returns the count removed."""
     out = _run(
         [
-            "docker", "image", "prune", "-f",
-            "--filter", "dangling=true",
-            "--filter", f"label={BUILD_LABEL}=1",
+            "docker",
+            "image",
+            "prune",
+            "-f",
+            "--filter",
+            "dangling=true",
+            "--filter",
+            f"label={BUILD_LABEL}=1",
         ]
     )
     return sum(1 for line in out.splitlines() if "sha256:" in line or line.startswith("deleted:"))

@@ -1,15 +1,10 @@
-"""Record LLM cassettes against the real endpoint (minimal spend).
+"""Record LLM cassettes against the real endpoint.
 
-Usage (from repo root, with .env present and Docker running):
-    LLM_MODE=record .venv/bin/python scripts/record_cassettes.py [--rerecord STAGE ...]
+    LLM_MODE=record .venv/bin/python scripts/record_cassettes.py [--rerecord STAGE|all ...]
 
-By default each stage is SKIPPED if it already has cassettes (so re-runs don't
-re-spend tokens or churn multi-turn tapes). Pass --rerecord <stage> to force one,
-or --rerecord all to force everything. Secrets are read from .env, never printed.
-
-Stages: s1_smoke, s1_agent, s2_pin, s2_baseline, s2_reask, s5_tasks (the full
-`--stage tasks` run on the mini_pkg fixture: excision screen + history classify +
-neutrality check; needs Docker).
+Stages with existing cassettes are skipped unless --rerecord. Secrets come from .env.
+Stages: llm_smoke, agent_toy, pin_alias, baseline_classify, pin_reask, tasks_fixture
+(full tasks run on mini_pkg; Docker), okf_fixture (knowledge stage with OKF; Docker).
 """
 
 from __future__ import annotations
@@ -91,8 +86,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[{_smoke.TASKS_STAGE}] skip (cassette exists; --rerecord to force)")
 
     if not (
-        _has_cassettes(_smoke.S7_OKF_STAGE)
-        and _smoke.S7_OKF_STAGE not in rerecord
+        _has_cassettes(_smoke.OKF_STAGE)
+        and _smoke.OKF_STAGE not in rerecord
         and "all" not in rerecord
     ):
         import shutil
@@ -100,11 +95,11 @@ def main(argv: list[str] | None = None) -> int:
 
         root = Path(tempfile.mkdtemp(prefix="bench-record-okf-"))
         ctx = _smoke.run_okf_stage(root, "record")
-        print(f"[{_smoke.S7_OKF_STAGE}] {ctx.report.get('okf', {})}")
+        print(f"[{_smoke.OKF_STAGE}] {ctx.report.get('okf', {})}")
         clients.append(ctx.llm)
         shutil.rmtree(root, ignore_errors=True)
     else:
-        print(f"[{_smoke.S7_OKF_STAGE}] skip (cassette exists; --rerecord to force)")
+        print(f"[{_smoke.OKF_STAGE}] skip (cassette exists; --rerecord to force)")
 
     total = 0
     for client in clients:

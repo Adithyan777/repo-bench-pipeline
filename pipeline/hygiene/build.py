@@ -1,8 +1,7 @@
-"""Step 3.4: build the repo image once; bounded LLM repair loop on failure.
+"""Step 3.4: build the repo image; bounded LLM repair loop on failure.
 
-Every repair attempt is appended to output/<repo>/audit/agent_actions.jsonl.
-The repair agent gets read_file/grep/write_file (no `run`: there is no working
-image yet) and the build log; it edits the Dockerfile / requirements and we rebuild.
+Repair agent gets read_file/grep/write_file + the build log (no `run`: no image yet).
+Every attempt is appended to output/<repo>/audit/agent_actions.jsonl.
 """
 
 from __future__ import annotations
@@ -15,6 +14,7 @@ from pipeline.agent.loop import Agent
 from pipeline.agent.tools import ToolContext, concrete_tools
 from pipeline.docker.image import DockerError, build_image
 from pipeline.hygiene.context import HygieneContext
+from pipeline.log import log as plog
 from pipeline.state import hash_inputs
 
 _REPAIR_SYSTEM = (
@@ -34,7 +34,10 @@ def run(ctx: HygieneContext) -> dict:
     try:
         digest = build_image(ctx.repo, tag)
         data = {"image_tag": tag, "image_digest": digest, "attempts": 0, "outcome": "built"}
+        plog("hygiene", "build", f"built {tag}")
     except DockerError as exc:
+        tail = (str(exc).strip().splitlines() or ["?"])[-1][:160]
+        plog("hygiene", "build", f"build failed: {tail}")
         digest, attempts, outcome = _repair_loop(ctx, tag, str(exc))
         data = {"image_tag": tag, "image_digest": digest, "attempts": attempts, "outcome": outcome}
     ctx.record("build", data)
@@ -58,14 +61,17 @@ def _repair_loop(ctx: HygieneContext, tag: str, first_error: str) -> tuple[str, 
             tool_ctx.files_changed,
         )
         goal = f"Docker build failed. Build log:\n{log[-4000:]}\nFix the build."
+        plog("hygiene", "build", f"repair attempt {attempt}/{max_attempts}")
         result = agent.run(goal)
         try:
             digest = build_image(ctx.repo, tag)
             _audit(ctx, goal, result, attempt, "built", before)
+            plog("hygiene", "build", f"repair attempt {attempt}: built")
             return digest, attempt, "built"
         except DockerError as exc:
             log = str(exc)
             _audit(ctx, goal, result, attempt, "failed", before)
+            plog("hygiene", "build", f"repair attempt {attempt}: still failing")
     return "", max_attempts, "failed"
 
 

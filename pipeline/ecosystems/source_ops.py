@@ -1,11 +1,6 @@
-"""Python source operations for P3 (ecosystem-specific, pure AST, no LLM).
-
-- ``excise_function``: replace one function body by line-span splice; everything
-  outside the body is preserved byte-for-byte (decorators, signature, docstring,
-  comments, other definitions).
-- ``module_bound_names``: names a module binds at top level (defs, classes,
-  assignments, imports, star-import expansion) -- the harness static gate.
-- ``verifier_imports`` / ``count_assertions``: facts about verifier test files.
+"""Pure-AST Python source operations for the tasks stage: ``excise_function`` (line-span
+splice, byte-identical outside the body), ``module_bound_names`` (harness static gate),
+verifier test-file facts (imports, assertions, private access).
 """
 
 from __future__ import annotations
@@ -57,9 +52,8 @@ def excise_function(
     replacement: str,
     keep_docstring: bool = True,
 ) -> Excision:
-    """Replace the body of the def at ``qualpath`` (names below the module) with
-    ``replacement`` (one statement). Raises ExciseError when the def is missing or
-    its body shares a line with the signature (one-liners cannot be spliced)."""
+    """Replace the body of the def at ``qualpath`` with ``replacement`` (one statement).
+    ExciseError if the def is missing or is a one-liner (body on the signature line)."""
     tree = ast.parse(source)
     node = _find_def(tree, qualpath)
     if not isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):

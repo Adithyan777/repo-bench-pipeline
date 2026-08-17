@@ -1,9 +1,8 @@
-"""P3 stage runner: excision funnel -> build -> history funnel -> build -> validate ->
-manifest.
+"""Tasks stage runner: excision funnel -> build -> history funnel -> build -> validate ->
+instruct -> select -> manifest.
 
-Mirrors the hygiene/knowledge runners: resumable via state.py with a pipeline-code
-fingerprint in every step's input hash; per-step timing + LLM usage into
-report_data.json. Net-new funnel, LLM instructions and selection land later.
+Resumable via state.py with a pipeline-code fingerprint in every step's input hash;
+per-step timing + LLM usage into report_data.json.
 """
 
 from __future__ import annotations
@@ -17,6 +16,7 @@ from pathlib import Path
 from pipeline.ecosystems.source_ops import ExciseError
 from pipeline.hygiene.context import HygieneContext
 from pipeline.knowledge.runner import knowledge_paths
+from pipeline.log import fmt_counts, log, step_skipped, step_start
 from pipeline.state import code_fingerprint, hash_inputs
 from pipeline.tasks import difficulty as D
 from pipeline.tasks import excision
@@ -28,6 +28,7 @@ from pipeline.tasks.harness import validate_tasks
 from pipeline.tasks.manifest import write_manifest
 from pipeline.tasks.select import SelectionInfeasible, run_selection
 
+STAGE = "tasks"
 _STEPS = (
     "excision_funnel",
     "build_excision",
@@ -39,8 +40,8 @@ _STEPS = (
     "select",
 )
 
-# task.json fields written by the instruct step; excluded from the validate/instruct input
-# hashes so those steps do not invalidate themselves.
+# Written by the instruct step; excluded from validate/instruct input hashes so those
+# steps do not invalidate themselves.
 _INSTRUCT_FIELDS = (
     "title",
     "instruction",
@@ -77,12 +78,15 @@ def _run_step(ctx: HygieneContext, name: str) -> None:
     stage = ctx.report["stages"].setdefault(name, {})
     if not ctx.state.should_run(name, input_hash):
         stage["skipped"] = True
+        step_skipped(STAGE, name)
         return
     start = time.monotonic()
+    step = step_start(STAGE, name, ctx.llm)
     _STEP_FUNCS[name](ctx)
     stage["skipped"] = False
     stage["duration_s"] = round(time.monotonic() - start, 2)
     ctx.state.mark_done(name, input_hash)
+    step.done()
 
 
 # --- steps ----------------------------------------------------------------------
@@ -131,6 +135,13 @@ def step_excision_funnel(ctx: HygieneContext) -> None:
         "selected": len(selected),
         "counts": data["counts"],
     }
+    log(
+        STAGE,
+        "excision_funnel",
+        f"considered {len(candidates)}, ranked {len(ranked)}, "
+        f"selected {len(selected)} (screen reused {data['screen_reused']})",
+    )
+    log(STAGE, "excision_funnel", fmt_counts(data["counts"]))
 
 
 def _counts(candidates: list) -> dict[str, int]:
@@ -144,8 +155,8 @@ def _counts(candidates: list) -> dict[str, int]:
 
 
 def _prior_screen_decisions(ctx: HygieneContext) -> dict[str, dict]:
-    """Screen decisions from the previous candidates.json, keyed by content hash, so a
-    rerun spends no LLM tokens on unchanged candidates. Ignored on --force / --fresh."""
+    """Screen decisions from the previous candidates.json (content-hash keyed) so reruns spend
+    no tokens on unchanged candidates. Ignored on --force / --fresh."""
     path = _candidates_path(ctx)
     if not ctx.config.excision.reuse_screen_decisions or not path.is_file():
         return {}
@@ -189,8 +200,10 @@ def step_build_excision(ctx: HygieneContext) -> None:
         try:
             path = build_task(c, inp, tasks_root(ctx), ctx.config)
             built[qual] = {"task_dir": str(path), "task_id": path.name}
+            log(STAGE, "build_excision", f"{path.name} built")
         except ExciseError as exc:
             built[qual] = {"task_dir": None, "reject_reason": f"unsplittable: {exc}"}
+            log(STAGE, "build_excision", f"{qual} rejected: unsplittable ({str(exc)[:120]})")
             by_name[qual]["status"] = "rejected"
             by_name[qual]["reject_reason"] = f"unsplittable({exc})"
     data["counts"] = _counts(data["candidates"])
@@ -206,11 +219,11 @@ def step_build_excision(ctx: HygieneContext) -> None:
         "built": sum(1 for b in built.values() if b["task_dir"]),
         "unsplittable": sum(1 for b in built.values() if not b["task_dir"]),
     }
+    log(STAGE, "build_excision", fmt_counts(ctx.report["tasks"]["build_excision"]))
 
 
 def _prune_stale(ctx: HygieneContext, prefix: str, keep: set[str]) -> None:
-    """Task folders (of one source type) from an earlier build that were not rebuilt are
-    removed, so tasks/<repo>/ and tasks.json reflect exactly this run's selection."""
+    """Remove task folders (of one source type) from an earlier build that were not rebuilt."""
     root = repo_tasks_dir(ctx)
     if not root.is_dir():
         return
@@ -252,6 +265,13 @@ def step_history_funnel(ctx: HygieneContext) -> None:
         "shortlisted": len(short),
         "counts": data["counts"],
     }
+    log(
+        STAGE,
+        "history_funnel",
+        f"considered {len(cands)}, survivors {len(order)}, "
+        f"kept {len(kept)}, shortlisted {len(short)} (classify reused {data['classify_reused']})",
+    )
+    log(STAGE, "history_funnel", fmt_counts(data["counts"]))
 
 
 def _prior_classify_decisions(ctx: HygieneContext) -> dict[str, dict]:
@@ -282,19 +302,37 @@ def step_build_history(ctx: HygieneContext) -> None:
     inp = _build_inputs(ctx, decisions)
     built: dict[str, dict] = {}
     n_built = 0
-    for sha in data["shortlist"]:
+    log(
+        STAGE,
+        "build_history",
+        f"shortlist {len(data['shortlist'])}, target {ctx.config.history.build_target}",
+    )
+    for i, sha in enumerate(data["shortlist"], 1):
         if n_built >= ctx.config.history.build_target:
             break
         c = H.HistoryCandidate(**by_sha[sha])
+        log(STAGE, "build_history", f"{i}/{len(data['shortlist'])} {sha[:7]}: building")
         result = build_history_task(c, inp, tasks_root(ctx), ctx.config)
+        source = (result.notes or {}).get("verifier_source")
         if result.task_dir:
             n_built += 1
             by_sha[sha]["status"] = "built"
             built[sha] = {"task_dir": str(result.task_dir), "task_id": result.task_id}
+            log(
+                STAGE,
+                "build_history",
+                f"{result.task_id} built (verifier {source}), "
+                f"{n_built}/{ctx.config.history.build_target}",
+            )
         else:
             by_sha[sha]["status"] = "rejected"
             by_sha[sha]["reject_reason"] = result.reject_reason
             built[sha] = {"task_dir": None, "reject_reason": result.reject_reason}
+            log(
+                STAGE,
+                "build_history",
+                f"{result.task_id} rejected (verifier {source}): {str(result.reject_reason)[:160]}",
+            )
         built[sha]["notes"] = {k: v for k, v in result.notes.items() if k != "overlay"}
     for sha in data["shortlist"]:
         if sha not in built:
@@ -314,6 +352,11 @@ def step_build_history(ctx: HygieneContext) -> None:
         if isinstance(b, dict) and b.get("task_dir") is None and b.get("reject_reason"):
             key = b["reject_reason"].split("(")[0]
             rejected[key] = rejected.get(key, 0) + 1
+    log(
+        STAGE,
+        "build_history",
+        f"attempted {len(built) - 1}, built {n_built}, rejected {fmt_counts(rejected) or 0}",
+    )
     ctx.report.setdefault("tasks", {})["build_history"] = {
         "attempted": len(built) - 1,
         "built": n_built,
@@ -328,7 +371,12 @@ def step_build_history(ctx: HygieneContext) -> None:
 
 def step_validate(ctx: HygieneContext) -> None:
     dirs = _task_dirs(ctx)
-    verdicts = validate_tasks(dirs, ctx.config)
+    log(
+        STAGE,
+        "validate",
+        f"{len(dirs)} tasks, {ctx.config.docker.harness_parallel_workers} workers",
+    )
+    verdicts = validate_tasks(dirs, ctx.config, on_verdict=_log_verdict)
     summary = {
         Path(d).name: {"valid": v["valid"], "reasons": v["reasons"]} for d, v in verdicts.items()
     }
@@ -337,6 +385,28 @@ def step_validate(ctx: HygieneContext) -> None:
         "valid": sum(1 for v in summary.values() if v["valid"]),
         "verdicts": dict(sorted(summary.items())),
     }
+    log(STAGE, "validate", f"{ctx.report['tasks']['validate']['valid']}/{len(summary)} VALID")
+
+
+def _log_verdict(task_dir: Path, verdict: dict) -> None:
+    checks = verdict.get("checks") or {}
+    fb, pa, det = (
+        checks.get("fail_before") or {},
+        checks.get("pass_after") or {},
+        checks.get("determinism") or {},
+    )
+    if verdict.get("valid"):
+        facts = (
+            f"fail-before {fb.get('n_failing', '?')}, pass-after {pa.get('n_passing', '?')}, "
+            f"det {det.get('runs', '?')}/{det.get('runs', '?')}"
+        )
+        log(STAGE, "validate", f"{Path(task_dir).name} VALID ({facts})")
+    else:
+        log(
+            STAGE,
+            "validate",
+            f"{Path(task_dir).name} INVALID ({', '.join(verdict.get('reasons') or [])})",
+        )
 
 
 def _decisions_path(ctx: HygieneContext) -> Path:
@@ -350,8 +420,8 @@ def _verdict_valid(ctx: HygieneContext, task_dir: Path) -> bool:
 
 
 def step_instruct(ctx: HygieneContext) -> None:
-    """LLM instruction + leak gates + golden rationale + difficulty for every (VALID) task;
-    each decision persisted in instructions.json by content hash."""
+    """Instruction + leak gates + golden rationale + difficulty for every VALID task; decisions
+    persisted in instructions.json by content hash."""
     cfg = ctx.config
     dpath = _decisions_path(ctx)
     forced = ctx.state.fresh or "instruct" in ctx.state.force
@@ -378,6 +448,13 @@ def step_instruct(ctx: HygieneContext) -> None:
         stats["final" if rec["status"] == cfg.instruction.status_final else "failed"] += 1
         stats["reused"] += int(bool(rec.get("reused")))
         stats["regenerations"] += max(0, len(rec.get("attempts") or []) - 1)
+        log(
+            STAGE,
+            "instruct",
+            f"{d.name}: {rec['status']} "
+            f"(attempts {len(rec.get('attempts') or [])}"
+            f"{', reused' if rec.get('reused') else ''})",
+        )
         for a in rec.get("attempts") or []:
             if any(not i.startswith("reviewer:") for i in a["issues"]):
                 stats["leak_rejections"] += 1
@@ -403,6 +480,23 @@ def step_instruct(ctx: HygieneContext) -> None:
     stats["difficulty_spread"] = dict(sorted(spread.items()))
     stats["difficulty_failed"] = spread.get("failed", 0)
     ctx.report.setdefault("tasks", {})["instruct"] = stats
+    log(
+        STAGE,
+        "instruct",
+        fmt_counts(
+            stats,
+            (
+                "tasks",
+                "final",
+                "failed",
+                "regenerations",
+                "reused",
+                "leak_rejections",
+                "reviewer_rejections",
+            ),
+        ),
+    )
+    log(STAGE, "instruct", f"difficulty {fmt_counts(stats['difficulty_spread'])}")
 
 
 def _write_task(task_dir: Path, task: dict, cfg) -> None:
@@ -427,11 +521,12 @@ def step_manifest(ctx: HygieneContext) -> None:
     out.mkdir(parents=True, exist_ok=True)
     path = write_manifest(out, ctx.config)
     ctx.report.setdefault("tasks", {})["manifest"] = str(path)
+    log(STAGE, "manifest", str(path))
 
 
 def step_select(ctx: HygieneContext) -> None:
-    """Pick the final ``selection.total_tasks`` (repo-root tasks.json + selection.json).
-    An infeasible quota is a hard error surfaced to the caller (never silently skipped)."""
+    """Pick the final ``selection.total_tasks`` (repo-root tasks.json + selection.json); an
+    infeasible quota is a hard error."""
     manifest = repo_tasks_dir(ctx) / ctx.config.tasks.manifest_filename
     root_dir = tasks_root(ctx).parent  # repo root for a real run; the tmp base under tests
     try:
@@ -440,6 +535,7 @@ def step_select(ctx: HygieneContext) -> None:
         )
     except SelectionInfeasible as exc:
         ctx.report.setdefault("tasks", {})["select"] = {"error": str(exc)}
+        log(STAGE, "select", f"infeasible: {exc}")
         raise SystemExit(f"selection infeasible: {exc}") from exc
     type_counts: dict[str, int] = {}
     for t in result.selected:
@@ -452,6 +548,17 @@ def step_select(ctx: HygieneContext) -> None:
         "difficulty_spread": result.spread,
         "distinct_modules": result.modules,
     }
+    log(
+        STAGE,
+        "select",
+        f"selected {len(result.selected)}: {', '.join(t['id'] for t in result.selected)}",
+    )
+    log(
+        STAGE,
+        "select",
+        f"types {fmt_counts(type_counts)}; difficulty {fmt_counts(result.spread)}; "
+        f"modules {len(result.modules)}; {sel_path}",
+    )
 
 
 _STEP_FUNCS = {
@@ -556,8 +663,8 @@ def _step_input_hash(ctx: HygieneContext, step: str) -> str:
 
 
 def _history_build_input(ctx: HygieneContext) -> str:
-    """The shortlist as the funnel produced it; the build step's own status updates in
-    history_candidates.json must not invalidate the step."""
+    """The shortlist as the funnel produced it (the build step's own status updates in
+    history_candidates.json must not invalidate the step)."""
     path = _history_candidates_path(ctx)
     if not path.is_file():
         return ""

@@ -83,8 +83,7 @@ class LLMConfig:
     max_tokens_per_repo: int = 5_000_000  # abort repo when exceeded
     classify_batch_size: int = 15  # commits / excision candidates per small-model call
     okf_module_chunk_tokens: int = 12_000  # chunk modules larger than this by class/function
-    # Per-tier output-token ceiling. BIG needs headroom: Kimi with thinking on can
-    # spend hundreds of completion tokens before the visible answer.
+    # Per-tier output-token ceiling; BIG needs headroom for thinking tokens.
     big_max_tokens: int = 8_192
     small_max_tokens: int = 2_048
     cassette_dir: str = "tests/cassettes"  # record/replay fixtures for tests (LLM_MODE)
@@ -168,9 +167,8 @@ class DetectConfig:
         }
     )
     service_env_signals: tuple[str, ...] = ("DATABASE_URL", "REDIS_URL")
-    # Build-system markers meaning the version is derived from git metadata; when
-    # present we keep .git in the build context and install git in the image so the
-    # version resolves (env fix, not a source edit).
+    # Git-derived-version build tools: keep .git in the build context and install git in
+    # the image so the version resolves.
     git_version_tools: tuple[str, ...] = (
         "setuptools-git-versioning",
         "setuptools_scm",
@@ -193,8 +191,7 @@ class PinConfig:
     constraints_filename: str = "constraints.txt"
     # Manifest extras to fold into the lock when present (test suites often live here)
     include_extras: tuple[str, ...] = ("test", "tests", "testing", "dev")
-    # Times to re-ask the SMALL model for a corrected PyPI name when an inferred
-    # import fails to resolve, before dropping it as unresolved.
+    # SMALL-model re-asks for a PyPI name when an inferred import fails to resolve.
     alias_reask_attempts: int = 1
 
 
@@ -203,8 +200,7 @@ class BaselineConfig:
     framework_priority: tuple[str, ...] = ("pytest", "unittest")
     quarantine_file: str = "tests/quarantine.txt"  # --deselect list
     report_filename: str = ".pytest-report.json"  # pytest-json-report output, read from workdir
-    # The agent-fix step may ONLY change these paths (tests/config/deps); any edit
-    # outside them is reverted and audited. It must never patch the code under test.
+    # Agent-fix may only edit these paths; edits outside are reverted and audited.
     agent_fix_allowed_globs: tuple[str, ...] = (
         "tests/**",
         "test/**",
@@ -260,9 +256,8 @@ class TestGenConfig:
 
 @dataclass
 class LintConfig:
-    # ruff is the only lint/format tool; the step runs it in-container on the hygiene
-    # clone only (historical task trees are never linted, by construction). Unfixable
-    # findings get a per-file noqa rather than an LLM fix.
+    # ruff in-container on the hygiene clone only (historical trees are never linted);
+    # unfixable findings get a per-file noqa, not an LLM fix.
     enabled: bool = True  # --no-lint turns the step into a no-op
     rules: tuple[str, ...] = ("E", "F", "W", "I", "B", "UP")
     autofix: bool = True
@@ -280,22 +275,23 @@ class GraphConfig:
     verification_sample_edges: int = 200  # graph self-check sample size
     diversity_unit: str = "file"  # "file" for glom-sized repos, "subpackage" for large
     large_repo_module_threshold: int = 200  # >= this many modules -> subpackage diversity unit
-    # Our own McCabe branch counter (no radon dependency): deterministic, version-stable.
-    # Counted constructs documented in HEURISTICS.md and ecosystems/symbols.py:_complexity.
+    # In-house branch counter (see ecosystems/symbols.py:_complexity), no radon dependency.
     complexity_metric: str = "branch_count"
-    # A .py file is a test (indexed separately, never a source node) if it lives under
-    # one of these dirs or its name matches one of these globs.
+    # Test files (indexed separately, never source nodes): under these dirs or matching globs.
     test_dir_names: tuple[str, ...] = ("test", "tests")
     test_file_globs: tuple[str, ...] = ("test_*.py", "*_test.py")
-    # Packaging/build scripts that are .py but not library source -> excluded from graph
-    # nodes (they run side effects on import and pollute diversity counts).
+    # Packaging scripts excluded from graph nodes.
     nonsource_files: tuple[str, ...] = ("setup.py",)
-    # Top-level directories holding .py that is NOT importable library source (docs config
-    # like docs/conf.py, example/benchmark scripts, build output). A module counts as
-    # source only when it lives under a package root (a dir with __init__.py) or a
-    # knowledge.source_roots entry, is not a test, and is not under one of these dirs.
+    # Non-library dirs. Source = under a package root or source_roots entry, not a test,
+    # not under one of these.
     nonsource_dirs: tuple[str, ...] = (
-        "docs", "doc", "examples", "example", "scripts", "build", "dist",
+        "docs",
+        "doc",
+        "examples",
+        "example",
+        "scripts",
+        "build",
+        "dist",
     )
 
 
@@ -303,9 +299,8 @@ class GraphConfig:
 class KnowledgeConfig:
     """Pipeline-owned filenames + coverage settings for the P2 static layer."""
 
-    # A tiny pytest plugin switches coverage's context to the exact pytest nodeid per
-    # test (via coverage.Coverage.current().switch_context), so parametrized/inherited
-    # cases are captured distinctly. No pytest-cov dependency needed.
+    # A small pytest plugin sets the coverage context to each test's nodeid
+    # (Coverage.current().switch_context); no pytest-cov dependency.
     coveragerc_filename: str = ".coveragerc-knowledge"  # pipeline-owned; won't clobber repo's
     coverage_json_filename: str = ".knowledge-coverage.json"  # in-container --show-contexts json
     ctx_plugin_module: str = "_kn_ctx_plugin"  # written into the build context, loaded with -p
@@ -321,12 +316,10 @@ class KnowledgeConfig:
     # history index parsing
     pr_number_regex: str = r"(?:GH-|#)(\d+)"  # first match in a commit subject
     manifest_name_prefixes: tuple[str, ...] = ("requirements",)  # + detect.manifest_markers
-    # src-layout roots stripped when deriving a historical module's dotted name so it
-    # matches the graph's package-aware naming (e.g. src/pkg/mod.py -> pkg.mod).
+    # src-layout roots stripped from historical module names (src/pkg/mod.py -> pkg.mod).
     source_roots: tuple[str, ...] = ("src",)
     show_commit_max_chars: int = 4000  # git-fallback output cap in the show_commit tool
-    # Pipeline source files whose contents fingerprint every knowledge step's input
-    # hash, so a code change to an analyzer invalidates its artifacts (not just inputs).
+    # Pipeline sources fingerprinted into every knowledge step's input hash.
     code_fingerprint_files: tuple[str, ...] = (
         "pipeline/ecosystems/symbols.py",
         "pipeline/knowledge/graph.py",
@@ -355,8 +348,20 @@ class OKFConfig:
     manifest_filename: str = "okf.json"
     # names that count as an IO/mutation side effect when a contract claims "none"
     side_effect_call_names: tuple[str, ...] = (
-        "open", "print", "write", "writelines", "remove", "unlink", "mkdir",
-        "system", "popen", "run", "request", "urlopen", "connect", "send",
+        "open",
+        "print",
+        "write",
+        "writelines",
+        "remove",
+        "unlink",
+        "mkdir",
+        "system",
+        "popen",
+        "run",
+        "request",
+        "urlopen",
+        "connect",
+        "send",
     )
 
 
@@ -391,57 +396,47 @@ class HistoryFunnelConfig:
     shortlist_size: int = 15
     build_target: int = 8  # built; expect ~5-6 to validate
     pr_merge_input_is_first_parent: bool = True
-    # Only PR merges (a pr_number in the subject) are candidates; other merges
-    # (back-merges of master into a branch) diff against an arbitrary first parent.
+    # Non-PR merges (back-merges) diff against an arbitrary first parent -> rejected.
     reject_non_pr_merges: bool = True
     reject_root_commits: bool = True  # no parent -> no input/ tree
-    # Commits that are part of a surviving PR merge's branch are superseded by the merge
-    # (the merge is the complete unit); they stand alone only when the merge is rejected.
+    # Constituent commits of a surviving PR merge are superseded by the merge.
     prefer_pr_merge_over_constituents: bool = True
-    # Reverted commits (a later "Revert ... This reverts commit <sha>" or an exact
-    # reverse patch-id) are dropped; when False they only take score_reverted_penalty.
+    # Reverted commits (revert message or reverse patch-id) are dropped; when False they
+    # only take score_reverted_penalty.
     reject_reverted: bool = True
     revert_message_regex: str = r"^Revert\b|This reverts commit ([0-9a-f]{7,40})"
-    # SMALL classifier: source diff shown per commit is capped; the classifier walks the
-    # scored survivors in classify_batch_size batches until shortlist_size are kept, never
-    # past classify_max_commits (rest: not-classified). Decisions persist by content hash.
+    # SMALL classifier walks scored survivors in classify_batch_size batches until
+    # shortlist_size are kept, at most classify_max_commits. Decisions persist by content hash.
     classify_diff_max_chars: int = 3000
     classify_max_commits: int = 60
     reuse_classify_decisions: bool = True
-    # Build-time verifier gates (all in-container): the commit's own changed test
-    # functions are the verifier when present; else a bounded BIG agent authors tests.
-    # Tests that pass on input/ are dropped; harness.min_failing_tests must remain.
+    # Verifier = the commit's own changed tests, else a bounded BIG agent authors them.
+    # Tests passing on input/ are dropped; harness.min_failing_tests must remain.
     neutrality_check: bool = True  # BIG check of the commit's tests (public interface?)
     neutrality_rewrite_max_attempts: int = 1  # bounded agent rewrite when flagged
-    # Agent budgets per build step (cached/reused runs do not count): total agent runs
-    # (verifier author + rewrites) and, within it, rewrites.
+    # Agent budgets per repo (cached/reused runs do not count).
     max_agent_runs_per_repo: int = 6
     max_neutrality_rewrites_per_repo: int = 2  # beyond -> reject on flag / missing symbol
     prompt_new_names_max: int = 20  # change-introduced identifiers listed in agent prompts
     neutrality_recheck_after_rewrite: bool = True  # one more complete_json on the rewrite
-    # New public API introduced by the change may be verified through the getattr
-    # convention (import an existing public module, `getattr(mod, name, None)`, assert
-    # presence + behavior -> AssertionError on input/ is a right reason). Commit tests that
-    # top-level import such a name are routed to the rewrite agent instead of rejected.
+    # New public API may be verified via `getattr(mod, name, None)` (AssertionError on
+    # input/ is a right reason); tests that top-level import it go to the rewrite agent.
     allow_new_symbol_features: bool = True
     verifier_agent_max_attempts: int = 1  # bounded agent when the commit has no tests
     verifier_agent_when_no_tests: bool = True
     agent_max_turns: int = 12  # P3 agents (verifier author, rewrite): BIG turns are costly
     agent_test_file_prefix: str = "test_hist_"
     agent_diff_max_chars: int = 6000  # source diff shown to the verifier agent
-    # Collateral baseline for a history task = tests that PASS on input/ (the parent
-    # tree) in one build-time run; the HEAD baseline lists tests that may not exist yet.
+    # Collateral baseline = tests passing on input/ (HEAD baseline may list tests that
+    # do not exist yet there).
     collateral_baseline_from_input: bool = True
-    # A history task is built with build_target tasks by walking the shortlist in order;
-    # build-time rejects (env-drift, tests pass on input, ...) are backfilled.
     reuse_agent_outputs: bool = True  # verifier files from agents cached by content hash
 
 
 @dataclass
 class ExcisionFunnelConfig:
     min_covering_tests: int = 2  # distinct base test nodeids that PASSED at baseline
-    # Central dispatch/registry code is hit by most of the suite; excising it fails
-    # nearly everything instead of a targeted set of tests -> not a focused task.
+    # Excising central dispatch code fails most of the suite -> not a focused task.
     max_covering_tests: int = 40
     min_lines: int = 8  # span = end_line - def line + 1 (decorators excluded)
     max_lines: int = 80
@@ -454,13 +449,10 @@ class ExcisionFunnelConfig:
     excision_body: str = 'raise NotImplementedError("excised")'
     strip_docstring: bool = False  # flag: --excision-hard
     build_target: int = 5
-    # Pre-gate: a candidate whose covering test files import private repo symbols/modules
-    # is rejected before the screen (same AST rule as the harness static gate).
+    # Pre-gate: covering tests importing private repo symbols -> rejected before the screen.
     reject_private_verifier_imports: bool = True
-    # The SMALL screen walks the ranking in classify_batch_size chunks until build_target
-    # survivors are found (backfills past screened-out candidates); rest are `surplus`.
-    # Screen decisions are persisted in candidates.json keyed by content hash and reused
-    # on rerun (unless the step is --force'd), so reruns need no LLM call.
+    # SMALL screen walks the ranking in classify_batch_size chunks until build_target
+    # survive; rest are `surplus`. Decisions persist in candidates.json by content hash.
     reuse_screen_decisions: bool = True
     # Score = covering_tests * complexity; ranked round-robin over modules for diversity.
     rank_module_round_robin: bool = True
@@ -505,14 +497,12 @@ class HarnessConfig:
     recopy_canonical_verifier: bool = True
     verifier_may_only_import_public_symbols_in_input: bool = True
     verifier_visibility: str = "visible"  # flag: --verifier-visibility visible|hidden
-    # A failing test is "valid" only if the exception passed through repo (non-test)
-    # code, or it is an assertion / pytest.raises mismatch raised in the test itself.
+    # Valid failure = exception through repo code, or assertion/pytest.raises in the test.
     report_filename: str = ".pytest-report.json"  # json-report written inside the workdir
     min_failing_tests: int = 1  # fail-before must have at least this many failing tests
-    # If the task's image tag is missing locally, build it from <task>/input/Dockerfile.
+    # Missing image tag -> build from <task>/input/Dockerfile.
     build_image_if_missing: bool = False
-    # The verdict records the live image digest; a rebuilt image gets a new Id even
-    # from the same pinned Dockerfile, so a digest mismatch is reported, not a gate.
+    # Rebuilt images get a new Id even from a pinned Dockerfile -> mismatch reported, not gated.
     gate_on_image_digest: bool = False
     evidence_dirname: str = "evidence"
     fail_before_log: str = "fail_before.log"
@@ -539,10 +529,10 @@ class TasksConfig:
     history_candidates_filename: str = "history_candidates.json"
     # Trees copied into input/ and solution/ skip these (never .git: tasks are self-contained)
     tree_ignore: tuple[str, ...] = (".git", "__pycache__", "*.egg-info", ".pytest_cache")
-    instruction_status_template: str = "template-S4"  # LLM-authored instruction lands in S5
-    history_instruction_status_template: str = "template-S5a"
-    # Hygiene artifacts overlaid (additively, never overwriting) onto historical trees so
-    # every task ships its own environment; the pipeline commit's file list wins when known.
+    # Builders' structural instruction status; LLM authoring replaces it with status_final.
+    instruction_status_template: str = "template"
+    history_instruction_status_template: str = "template"
+    # Hygiene artifacts overlaid (never overwriting) onto historical trees.
     title_max_chars: int = 100  # task title = first subject line, truncated
     instruction_tests_listed: int = 12  # nodeids listed in the structural instruction
     audit_goal_chars: int = 500  # agent goal excerpt kept in agent_actions.jsonl
@@ -585,11 +575,9 @@ class InstructionConfig:
     diff_max_chars: int = 8_000  # golden-rationale prompt (the only LLM call that sees it)
     title_max_chars: int = 80
     leak_min_identifier_chars: int = 3  # shorter new identifiers are too generic to gate
-    # Gate (b) looks at API-like names the diff introduces (defs, classes, imports, attribute
-    # stores), not local variables/parameters (English words in prose tripped it).
+    # Gate (b): API-like names the diff introduces, not locals/params (false positives).
     leak_api_names_only: bool = True
-    # Gate (a) exempts diff lines that also appear in the verifier tests: examples copied
-    # from the tests are required, and the solver sees the tests anyway.
+    # Gate (a) exempts diff lines that also appear in the verifier tests (solver sees them).
     exempt_diff_lines_in_tests: bool = True
     status_final: str = "final"
     status_failed: str = "failed"
@@ -626,14 +614,13 @@ class SelectionConfig:
     total_tasks: int = 10
     min_history: int = 4
     max_excision: int = 4
-    max_netnew: int = 2  # user decision (PDF allows 3)
+    max_netnew: int = 2  # assignment allows up to 3
     min_distinct_modules: int = 4
 
 
 @dataclass
 class ReportConfig:
-    # REPORT.md at the repo root. The runner's per-stage report_data.json is READ (never
-    # overwritten); the report's own aggregate is written to report_summary.json.
+    # report_data.json (runner, per stage) is read only; the aggregate goes to report_summary.json.
     report_md_filename: str = "REPORT.md"
     report_data_filename: str = "report_data.json"  # the runner's per-stage file (input only)
     summary_filename: str = "report_summary.json"  # the report's aggregate (output)

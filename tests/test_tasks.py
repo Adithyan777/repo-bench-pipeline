@@ -1,8 +1,7 @@
-"""S4: excision funnel + task builder + validation harness + tasks.json.
+"""Excision funnel + task builder + validation harness + tasks.json.
 
-Real fixtures (mini_pkg), real AST, real Docker for the harness; the SMALL-model
-screen is replayed from a cassette. Docker tests share one hygiene+knowledge run
-of mini_pkg (module fixture) and build task variants from it.
+Real mini_pkg/AST/Docker; the screen replays from a cassette. Docker tests share one
+hygiene+knowledge run (``mini_env``).
 """
 
 from __future__ import annotations
@@ -528,7 +527,7 @@ def test_screen_backfills_and_reuses_persisted_decisions() -> None:
     assert [c.qualname for c in again] == names and llm2.calls == 0
 
 
-@pytest.mark.skipif(not _cassettes(_smoke.SCREEN_STAGE), reason="s5_tasks cassette not recorded")
+@pytest.mark.skipif(not _cassettes(_smoke.SCREEN_STAGE), reason="tasks_fixture cassette missing")
 def test_screen_replay_records_a_decision_per_candidate(tmp_path: Path) -> None:
     client = LLMClient(stage=_smoke.SCREEN_STAGE, mode="replay", transcripts_dir=tmp_path / "t")
     selected = _smoke.run_excision_screen(client)
@@ -652,7 +651,7 @@ def test_funnel_on_real_test_map(mini_env) -> None:
 
 
 @pytest.mark.docker
-@pytest.mark.skipif(not _cassettes(_smoke.TASKS_STAGE), reason="s5_tasks cassette not recorded")
+@pytest.mark.skipif(not _cassettes(_smoke.TASKS_STAGE), reason="tasks_fixture cassette missing")
 def test_tasks_stage_e2e_valid_and_resumable(mini_env) -> None:
     from pipeline.tasks.runner import repo_tasks_dir, run_tasks
 
@@ -841,7 +840,7 @@ def _check_history_e2e(ctx, tasks_dir: Path, bugfix: str, merge: str) -> None:
         list(verdict["checks"]["right_reason"]["tests"].values())[0]["reason"] == "AssertionError"
     )
     golden = (task_dir / "goldenSolution.md").read_text()
-    assert "+    quotient, remainder = divmod(a, b)" in golden and "TODO-S5" not in golden
+    assert "+    quotient, remainder = divmod(a, b)" in golden and "TODO-golden" not in golden
     assert "## Why correct" in golden
     # every VALID task got a final instruction + difficulty; template markers are gone
     manifest = json.loads((tasks_dir / "tasks.json").read_text())

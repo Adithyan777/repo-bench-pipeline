@@ -306,15 +306,15 @@ def test_no_tests_bootstrap(tmp_path: Path) -> None:
 # --- LLM paths via cassette ---------------------------------------------------
 
 
-@pytest.mark.skipif(not _cassettes("s2_pin"), reason="s2_pin cassette not recorded")
+@pytest.mark.skipif(not _cassettes("pin_alias"), reason="pin_alias cassette not recorded")
 def test_alias_fallback_replay(tmp_path: Path) -> None:
     from tests import _smoke
 
-    client = LLMClient(stage="s2_pin", mode="replay", transcripts_dir=tmp_path / "t")
+    client = LLMClient(stage="pin_alias", mode="replay", transcripts_dir=tmp_path / "t")
     assert _smoke.run_alias_map(client) == {"serial": "pyserial"}
 
 
-@pytest.mark.skipif(not _cassettes("s2_reask"), reason="s2_reask cassette not recorded")
+@pytest.mark.skipif(not _cassettes("pin_reask"), reason="pin_reask cassette not recorded")
 def test_alias_reask_then_drop(tmp_path: Path) -> None:
     from tests import _smoke
 
@@ -333,11 +333,11 @@ def test_alias_reask_then_drop(tmp_path: Path) -> None:
     assert "wcwidth==" in text  # the resolvable dep still locked
 
 
-@pytest.mark.skipif(not _cassettes("s2_baseline"), reason="s2_baseline cassette not recorded")
+@pytest.mark.skipif(not _cassettes("baseline_classify"), reason="cassette missing")
 def test_classify_replay(tmp_path: Path) -> None:
     from tests import _smoke
 
-    client = LLMClient(stage="s2_baseline", mode="replay", transcripts_dir=tmp_path / "t")
+    client = LLMClient(stage="baseline_classify", mode="replay", transcripts_dir=tmp_path / "t")
     result = _smoke.run_classify(client)
     cats = {c["test_id"]: c["category"] for c in result["classifications"]}
     assert set(cats.values()) <= {"env", "genuine"}
@@ -493,9 +493,7 @@ def test_baseline_hash_invalidates_on_test_change(tmp_path: Path) -> None:
 
 
 def _offline_cfg() -> Config:
-    # Test-gen needs the BIG agent (no cassette); its own tests cover it (test_testgen.py).
-    # Lint has its own test (test_lint.py); keep it off here so these hygiene assertions
-    # (baseline counts, spans) run against unformatted source and skip the extra rebuild.
+    # Test-gen/lint have their own tests; off so counts/spans match unformatted source.
     cfg = Config()
     cfg.testgen.enabled = False
     cfg.lint.enabled = False
@@ -544,9 +542,7 @@ def test_build_and_baseline_mini_pkg(tmp_path: Path, docker_available: None) -> 
 
 @pytest.mark.docker
 def test_no_tests_repo_bootstraps(tmp_path: Path, monkeypatch, docker_available: None) -> None:
-    # wcwidth is an unknown import -> normally the SMALL model maps it (covered by
-    # test_alias_fallback_replay). Stub that one endpoint call so this stays offline;
-    # the identity default (wcwidth -> wcwidth) is correct here.
+    # Stub the alias LLM call (covered by test_alias_fallback_replay); identity mapping is right.
     monkeypatch.setattr(PythonAdapter, "_llm_map_imports", lambda self, imports: {})
     ctx = _hygiene_on_fixture(tmp_path, "mini_pkg_notests")
     data = ctx.load("baseline")
@@ -583,11 +579,8 @@ def test_run_twice_identical(tmp_path: Path, docker_available: None) -> None:
 @pytest.mark.slow
 @pytest.mark.docker
 def test_quarantine_failing_test(tmp_path: Path, monkeypatch, docker_available: None) -> None:
-    """A genuinely failing test is quarantined and the suite goes green.
-
-    The classify step (its own LLM call) is covered by test_classify_replay; here it
-    is stubbed so the quarantine mechanics run against a real image without network.
-    """
+    """A failing test is quarantined and the suite goes green (classify stubbed; see
+    test_classify_replay)."""
     import shutil
 
     from pipeline.hygiene.context import build_context

@@ -149,7 +149,7 @@ def test_render_has_six_sections(tmp_path):
     assert len(headers) == 6
     # tables auto-filled from data
     assert "724747" in md and "105/45" in md and "sha256:aa" in md
-    # narrative placeholders present for the author
+    # narrative placeholders present for a human to finish
     assert "AUTHOR:" in md
 
 

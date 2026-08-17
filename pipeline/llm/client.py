@@ -1,14 +1,7 @@
-"""OpenAI-compatible LLM client for Baseten-served open-source models.
-
-Responsibilities:
-  - tier + reasoning selection per step (config.STEP_MODEL / MODEL_CAPS)
-  - schema-forced JSON via a forced tool call, validated client-side, with retries
-  - exponential backoff on API errors
-  - usage accounting (incl. reasoning tokens) + per-repo token cap
-  - a transcript per call; record/replay via cassettes for tests
-
-Secrets come from ``LLM_BASE_URL`` / ``LLM_API_KEY`` (read from ``.env``) and are
-never logged or written to disk.
+"""OpenAI-compatible LLM client: per-step tier/reasoning (config.STEP_MODEL / MODEL_CAPS),
+schema-forced JSON via a forced tool call with client-side validation + retries, backoff,
+usage accounting with a per-repo token cap, one transcript per call, cassette record/replay.
+Secrets (LLM_BASE_URL / LLM_API_KEY) are never logged or written to disk.
 """
 
 from __future__ import annotations
@@ -132,11 +125,8 @@ class LLMClient:
         tool_name: str = "emit",
         max_tokens: int | None = None,
     ) -> dict:
-        """Schema-forced JSON via a forced tool call, validated client-side.
-
-        On validation failure the error is returned to the model and the call is
-        retried up to ``llm.max_schema_retries``. Falls back to fenced JSON in text.
-        """
+        """Schema-forced JSON via a forced tool call; validation errors are fed back and
+        retried up to ``llm.max_schema_retries``. Falls back to fenced JSON in text."""
         tools = [
             {
                 "type": "function",

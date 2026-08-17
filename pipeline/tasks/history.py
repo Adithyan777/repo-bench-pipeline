@@ -1,9 +1,8 @@
 """History-derived funnel (DESIGN 5.2) over ``knowledge/history_index.json``.
 
-Deterministic hard filters + signal score (code, git), then a SMALL-model classify
-(batched, decisions persisted by content hash), then a diversity-aware shortlist.
-Every commit considered lands in ``output/<repo>/tasks/history_candidates.json`` with
-a status and, when dropped, a ``reject_reason``.
+Deterministic hard filters + signal score, then a batched SMALL-model classify (decisions
+persisted by content hash), then a diversity-aware shortlist. Every commit lands in
+``output/<repo>/tasks/history_candidates.json`` with a status / ``reject_reason``.
 """
 
 from __future__ import annotations
@@ -121,8 +120,7 @@ def _patch_id(repo: Path, patch: str) -> str | None:
 
 
 def forward_patch_ids(repo: Path, base_sha: str) -> dict[str, str]:
-    """sha -> patch-id for every commit at/under base_sha in one git pass (merges are
-    diffed against their first parent)."""
+    """sha -> patch-id for every commit at/under base_sha (merges diffed against first parent)."""
     proc = subprocess.run(
         [
             "git",
@@ -227,8 +225,8 @@ def _revert_targets(message: str, regex: str) -> list[str]:
 def _mark_reverted(
     cands: list[HistoryCandidate], repo: Path, base_sha: str, config: Config
 ) -> None:
-    """A commit is reverted when a LATER commit names it in a revert message or carries
-    the exact reverse patch (patch-id of the reversed diff)."""
+    """Reverted = a LATER commit names it in a revert message or carries the exact reverse
+    patch-id."""
     hc = config.history
     forward = forward_patch_ids(repo, base_sha)
     order = {c.sha: i for i, c in enumerate(cands)}  # index 0 = newest
@@ -263,9 +261,8 @@ def _mark_reverted(
 def supersede_constituents(
     cands: list[HistoryCandidate], kept: list[HistoryCandidate], repo: Path
 ) -> list[HistoryCandidate]:
-    """Constituent commits of a KEPT PR merge are superseded by the merge (the merge is the
-    complete unit); constituents of rejected/classified-out merges stand alone. Returns the
-    kept list without the superseded ones."""
+    """Constituents of a KEPT PR merge are superseded by the merge; constituents of rejected
+    merges stand alone. Returns the kept list minus superseded."""
     by_sha = {c.sha: c for c in cands}
     superseded: set[str] = set()
     for m in kept:
@@ -300,8 +297,8 @@ def _score(c: HistoryCandidate, public: dict[str, bool], config: Config) -> None
 
 
 def _is_public(qualname: str, public: dict[str, bool]) -> bool:
-    """The symbol index's ``is_public`` when the node still exists; otherwise every
-    component below the module must be public (a method on ``_Private`` is not)."""
+    """Symbol index ``is_public`` when the node exists; else every component below the module
+    must be public."""
     if qualname in public:
         return public[qualname]
     return not any(p.startswith("_") for p in qualname.split(".")[1:])
@@ -319,9 +316,8 @@ def funnel(
     config: Config = DEFAULT,
     symbols: dict | None = None,
 ) -> list[HistoryCandidate]:
-    """Deterministic stage over the ORIGINAL history (newest first). Survivors keep
-    status ``considered`` with a score; the rest carry ``reject_reason``. PR-merge
-    constituents are superseded later, once the merge is KEPT (``supersede_constituents``)."""
+    """Deterministic stage over ORIGINAL history (newest first): survivors ``considered`` with
+    a score, the rest ``reject_reason``. PR constituents are superseded once the merge is KEPT."""
     hc = config.history
     public = {f["qualname"]: f["is_public"] for f in (symbols or {}).get("functions", [])}
     covered_all: set[str] = set()
@@ -434,9 +430,8 @@ def classify(
     config: Config = DEFAULT,
     decisions: dict[str, dict] | None = None,
 ) -> list[HistoryCandidate]:
-    """SMALL classify, walking the scored survivors in ``classify_batch_size`` batches until
-    ``shortlist_size`` are kept (never past ``classify_max_commits``). ``decisions`` maps
-    ``classify_key`` -> prior decision (reused, no LLM call). Returns the kept ones."""
+    """SMALL classify in ``classify_batch_size`` batches until ``shortlist_size`` kept (never
+    past ``classify_max_commits``); ``decisions`` reuses prior ``classify_key`` results."""
     hc = config.history
     if decisions is None:
         decisions = {}
@@ -473,8 +468,7 @@ def classify(
 
 
 def shortlist(kept: list[HistoryCandidate], config: Config = DEFAULT) -> list[HistoryCandidate]:
-    """Greedy top-``shortlist_size`` by score with a module-diversity bonus for commits
-    whose modules are not yet represented; bugfixes win ties over features."""
+    """Greedy top-``shortlist_size`` by score with a module-diversity bonus; bugfixes win ties."""
     hc = config.history
     kind_rank = {k: i for i, k in enumerate(hc.keep_kinds)}
     pool = list(kept)

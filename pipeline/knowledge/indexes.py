@@ -1,11 +1,10 @@
-"""P3 index data files (DESIGN 4.3), all deterministic, no LLM.
+"""Index data files (DESIGN 4.3); deterministic, no LLM.
 
-- history_index.json: every commit in ORIGINAL history (at/under base_sha). Touched
-  functions are resolved by parsing each file AS IT WAS at that commit (git show
-  <sha>:<path>) and intersecting diff hunks with those AST spans — never HEAD spans.
-- test_map.json / coverage.json: from ONE container run of `coverage run -m pytest`
-  with dynamic contexts (test_function), joined to source AST spans.
-- hotspots.json: change frequency per function from history_index.
+- history_index.json: commits at/under base_sha; touched functions = diff hunks
+  intersected with AST spans of the file AT that commit (never HEAD spans).
+- test_map.json / coverage.json: one container run of ``coverage run -m pytest`` with
+  per-test dynamic contexts, joined to source AST spans.
+- hotspots.json: change frequency per function.
 """
 
 from __future__ import annotations
@@ -27,10 +26,9 @@ from pipeline.ecosystems.symbols import (
 _HUNK_RE = re.compile(r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@")
 _EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"  # git's empty-tree object
 
-# A pytest plugin that tags each covered line with the exact pytest nodeid (via
-# coverage's switch_context) — so parametrized/inherited cases are distinct, without
-# a pytest-cov dependency.
-_CTX_PLUGIN = '''import coverage
+# pytest plugin: tags covered lines with the exact nodeid via coverage.switch_context
+# (parametrized/inherited cases stay distinct; no pytest-cov dependency).
+_CTX_PLUGIN = """import coverage
 import pytest
 
 
@@ -40,7 +38,7 @@ def pytest_runtest_call(item):
     if cov is not None:
         cov.switch_context(item.nodeid)
     yield
-'''
+"""
 
 
 @dataclass
@@ -62,18 +60,15 @@ def run_coverage(
     config: Config = DEFAULT,
     ignore: tuple[str, ...] = (),
 ) -> CoverageRun:
-    """Run the suite once under coverage keyed by pytest nodeid; return the parsed
-    contexts JSON plus an explicit status (never a silent empty dict). ``ignore`` paths
-    are dropped from collection (e.g. generated tests, so test-gen ranks on the original
-    coverage only)."""
+    """One coverage run keyed by pytest nodeid -> (contexts JSON, status). ``ignore``
+    paths (e.g. generated tests) are excluded from collection."""
     kc = config.knowledge
     with fresh_workdir(repo) as work:
         (work / kc.coveragerc_filename).write_text(_coveragerc())
         (work / f"{kc.ctx_plugin_module}.py").write_text(_CTX_PLUGIN)
         deselect_args = " ".join(f"--deselect {q}" for q in deselect)
         deselect_args += "".join(f" --ignore={p}" for p in ignore)
-        # `-i`: some suites doctest transient files (e.g. glom's .rst snippets in a
-        # temp dir); coverage json would otherwise abort with "No source for code".
+        # `-i`: doctests of transient files would otherwise abort with "No source for code".
         cmd = (
             f"coverage run --rcfile={kc.coveragerc_filename} -m pytest "
             f"-p no:cacheprovider -p {kc.ctx_plugin_module} -q {deselect_args} ; "
@@ -121,8 +116,7 @@ def build_coverage(symbols: dict, cov_json: dict) -> dict[str, float]:
 
 
 def build_test_map(symbols: dict, cov_json: dict) -> dict[str, list[str]]:
-    """pytest nodeid -> source functions it executed. Contexts are exact nodeids set
-    by the coverage plugin, so keys need no reconstruction."""
+    """pytest nodeid -> source functions it executed (contexts are exact nodeids)."""
     files = cov_json.get("files", {})
     # nodeid -> {file: set(lines it covered)}
     lines_by_test: dict[str, dict[str, set[int]]] = {}
@@ -169,8 +163,7 @@ def _commit_record(repo: Path, sha: str, config: Config) -> dict:
     parents = _git(repo, "show", "-s", "--format=%P", sha).split()
     subject = _git(repo, "show", "-s", "--format=%s", sha)
     base = parents[0] if parents else _EMPTY_TREE
-    # --no-renames: a rename is recorded as delete+add so both the old and new
-    # function spans are attributed (deterministic, no rename-similarity guessing).
+    # --no-renames: delete+add attributes both old and new spans, no similarity guessing.
     numstat = _git(repo, "diff", "--no-renames", "--numstat", base, sha)
     files, insertions, deletions = _parse_numstat(numstat)
     tests_touched = [f for f in files if is_test_path(Path(repo), Path(repo) / f, config)]

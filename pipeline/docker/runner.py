@@ -1,12 +1,6 @@
-"""Sandboxed command execution.
-
-Every command runs in a throwaway container:
-
-    docker run --rm --network none -v <workdir>:/repo -w /repo <image> bash -c "<cmd>"
-
-with a per-command timeout. A fresh workdir is created per unit of work; nothing
-is shared between runs. This is the single execution helper used by the ecosystem
-adapter, the agent ``run`` tool, and the validation harness.
+"""Sandboxed command execution: one throwaway container per command,
+``docker run --rm --network none -v <workdir>:/repo -w /repo <image> bash -c "<cmd>"``,
+with a per-command timeout. Shared by the adapter, the agent ``run`` tool and the harness.
 """
 
 from __future__ import annotations
@@ -50,11 +44,8 @@ def run_in_container(
     timeout: int | None = None,
     network_none: bool | None = None,
 ) -> CommandResult:
-    """Run ``cmd`` in ``image`` with ``workdir`` bind-mounted at /repo.
-
-    Returns (exit_code, stdout, stderr). On timeout the container is killed and
-    exit code ``124`` is returned. Defaults come from config.
-    """
+    """Run ``cmd`` in ``image`` with ``workdir`` at /repo. Timeout kills the container
+    and returns exit code 124."""
     timeout = DEFAULT.docker.default_cmd_timeout_s if timeout is None else timeout
     if network_none is None:
         network_none = DEFAULT.docker.network_none_for_runs

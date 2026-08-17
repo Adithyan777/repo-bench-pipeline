@@ -1,6 +1,5 @@
-"""Lint step (S9): a real hygiene run on mini_pkg with lint ENABLED — the repo ends
-ruff-clean inside the container, a labeled `pipeline: lint and format` commit exists, the
-image rebuilds and the suite stays green. Plus the image label/prune helper. Real docker.
+"""Lint step on mini_pkg (real Docker): repo ends ruff-clean, a labeled
+`pipeline: lint and format` commit exists, image rebuilds, suite green. Plus prune helper.
 """
 
 from __future__ import annotations
@@ -121,8 +120,11 @@ def test_lint_reverts_on_suite_regression(tmp_path, docker_available, monkeypatc
     monkeypatch.setattr(
         lint_mod,
         "_verify_suite",
-        lambda c: {"suite_after": {"failed": 1}, "twice_identical": True,
-                   "newly_failing": ["tests/test_calc.py::test_clamp"]},
+        lambda c: {
+            "suite_after": {"failed": 1},
+            "twice_identical": True,
+            "newly_failing": ["tests/test_calc.py::test_clamp"],
+        },
     )
     data = lint_mod.run(ctx)
     assert data["regressed"] is True and data["reverted"] == "suite-regression"
@@ -179,24 +181,43 @@ def test_build_labels_image_and_prune_targets_only_our_dangling(tmp_path, docker
     assert labels == "1"
 
     # rebuild the same tag -> the old image becomes dangling (untagged) with our label
+    old_id = _image_id(tag)
     (ctx_dir / "Dockerfile").write_text(f"FROM {base}\nRUN echo v2 > /marker\n")
     build_image(ctx_dir, tag)
 
-    before = _dangling_labeled()
-    assert before >= 1
+    assert old_id in _dangling_labeled()
     prune_dangling_bench_images()
-    assert _dangling_labeled() == 0
+    # assert on OUR image only: an unrelated dangling image may be pinned by a stale container
+    assert old_id not in _dangling_labeled()
     # the tagged image is still here (prune only touched dangling ones)
     assert subprocess.run(["docker", "image", "inspect", tag], capture_output=True).returncode == 0
 
     subprocess.run(["docker", "rmi", "-f", tag], capture_output=True, check=False)
 
 
-def _dangling_labeled() -> int:
+def _dangling_labeled() -> set[str]:
     out = subprocess.run(
-        ["docker", "images", "-f", "dangling=true", "-f", f"label={BUILD_LABEL}=1", "-q"],
+        [
+            "docker",
+            "images",
+            "-f",
+            "dangling=true",
+            "-f",
+            f"label={BUILD_LABEL}=1",
+            "-q",
+            "--no-trunc",
+        ],
         capture_output=True,
         text=True,
         check=True,
     ).stdout
-    return len([line for line in out.splitlines() if line.strip()])
+    return {line.strip() for line in out.splitlines() if line.strip()}
+
+
+def _image_id(ref: str) -> str:
+    return subprocess.run(
+        ["docker", "image", "inspect", "--format", "{{.Id}}", ref],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()

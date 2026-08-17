@@ -1,8 +1,5 @@
-"""Record/replay store for LLM calls.
-
-A cassette is a committed JSON fixture of one real request+response pair. Tests
-run in ``replay`` mode and never touch the network. Keyed by a stable hash of the
-canonical request so the same prompt maps to the same tape.
+"""Record/replay store for LLM calls: one JSON fixture per request+response pair, keyed
+by a stable hash of the canonical request. Tests replay and never touch the network.
 """
 
 from __future__ import annotations

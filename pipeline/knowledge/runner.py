@@ -1,12 +1,7 @@
 """Knowledge stage runner: symbol_index -> indexes -> graph -> verify.
 
-Ordering note: DESIGN 4.1 lists the graph before the indexes, but a graph node's
-coverage % / test refs and the `tested_by` edges are DERIVED from test_map/coverage
-(a container run). So indexes must precede graph; we run
-symbol_index -> indexes -> graph -> verify. (DESIGN Step 3 wording updated to match.)
-
-Each step is resumable via state.py (skip-if-unchanged, --force, --fresh). Per-step
-timing lands in output/<repo>/report_data.json, alongside hygiene's.
+Indexes precede graph because node coverage/test refs and ``tested_by`` derive from
+test_map/coverage. Steps are resumable via state.py; timing goes to report_data.json.
 """
 
 from __future__ import annotations
@@ -18,8 +13,10 @@ from pathlib import Path
 from pipeline.hygiene.context import HygieneContext
 from pipeline.knowledge import graph as graph_mod
 from pipeline.knowledge import indexes, okf, okf_verify, verify
+from pipeline.log import fmt_counts, log, step_skipped, step_start
 from pipeline.state import code_fingerprint, hash_inputs
 
+STAGE = "knowledge"
 _STEPS = ("symbol_index", "indexes", "graph", "verify", "okf")
 
 
@@ -58,17 +55,26 @@ def _run_step(ctx: HygieneContext, name: str) -> None:
     stage = ctx.report["stages"].setdefault(name, {})
     if not ctx.state.should_run(name, input_hash):
         stage["skipped"] = True
+        step_skipped(STAGE, name)
         return
     start = time.monotonic()
+    step = step_start(STAGE, name, ctx.llm)
     _STEP_FUNCS[name](ctx)
     stage["skipped"] = False
     stage["duration_s"] = round(time.monotonic() - start, 2)
     ctx.state.mark_done(name, input_hash)
+    step.done()
 
 
 def _step_symbol_index(ctx: HygieneContext) -> None:
     symbols = ctx.adapter.symbol_index(ctx.repo)
     _write(ctx, ctx.config.knowledge.symbols_filename, symbols)
+    log(
+        STAGE,
+        "symbol_index",
+        f"{len(symbols.get('modules') or [])} modules, "
+        f"{len(symbols.get('functions') or [])} functions",
+    )
 
 
 def _step_indexes(ctx: HygieneContext) -> None:
@@ -79,12 +85,15 @@ def _step_indexes(ctx: HygieneContext) -> None:
     history = indexes.build_history_index(ctx.repo, base_sha, ctx.config)
     _write(ctx, kc.history_filename, history)
     _write(ctx, kc.hotspots_filename, indexes.build_hotspots(history))
+    log(STAGE, "indexes", f"history index: {len(history)} commits")
 
     cov = indexes.run_coverage(ctx.repo, ctx.image_tag, _quarantined(ctx), ctx.config)
     _write(ctx, kc.coverage_contexts_filename, cov.contexts)  # raw, for verify re-derivation
-    _write(ctx, kc.test_map_filename, indexes.build_test_map(symbols, cov.contexts))
+    test_map = indexes.build_test_map(symbols, cov.contexts)
+    _write(ctx, kc.test_map_filename, test_map)
     _write(ctx, kc.coverage_filename, indexes.build_coverage(symbols, cov.contexts))
     ctx.report.setdefault("stages", {}).setdefault("indexes", {})["coverage_status"] = cov.status
+    log(STAGE, "indexes", f"coverage {cov.status}: test_map {len(test_map)} functions")
 
 
 def _step_graph(ctx: HygieneContext) -> None:
@@ -95,6 +104,13 @@ def _step_graph(ctx: HygieneContext) -> None:
     graph = graph_mod.build_graph(symbols, test_map, coverage, ctx.config)
     _write(ctx, kc.graph_filename, graph)
     ctx.report["graph"] = graph["metadata"]
+    counts = graph["metadata"].get("counts", {})
+    log(
+        STAGE,
+        "graph",
+        f"{counts.get('nodes')} nodes, {counts.get('total_edges')} edges "
+        f"({fmt_counts(counts.get('edges'))})",
+    )
 
 
 def _step_verify(ctx: HygieneContext) -> None:
@@ -116,12 +132,19 @@ def _step_verify(ctx: HygieneContext) -> None:
         "symbol_existence": report["symbol_existence"],
         "mismatch_count": len(report["mismatches"]),
     }
+    log(
+        STAGE,
+        "verify",
+        f"mismatches {len(report['mismatches'])}, "
+        f"symbols {fmt_counts(report.get('symbol_existence'), ('checked', 'present'))}",
+    )
 
 
 def _step_okf(ctx: HygieneContext) -> None:
     kc, oc = ctx.config.knowledge, ctx.config.okf
     if not oc.enabled:
         ctx.report["okf"] = {"enabled": False}
+        log(STAGE, "okf", "disabled")
         return
     graph = _read(ctx, kc.graph_filename)
     dpath = ctx.knowledge_dir / oc.decisions_filename
@@ -140,6 +163,13 @@ def _step_okf(ctx: HygieneContext) -> None:
         "precision_by_claim": report["precision_by_claim"],
         "conformant": report["conformance"]["conformant"],
     }
+    log(
+        STAGE,
+        "okf",
+        f"{fmt_counts(manifest.get('counts'), ('modules', 'pages'))} "
+        f"verified={report.get('pages_verified')} draft={report.get('pages_draft')} "
+        f"conformant={report.get('conformance', {}).get('conformant')}",
+    )
 
 
 _STEP_FUNCS = {
@@ -155,8 +185,7 @@ _STEP_FUNCS = {
 
 
 def _input_hash(ctx: HygieneContext, step: str) -> str:
-    # Fingerprint the analyzer code so a fix to symbols/graph/indexes/verify
-    # invalidates artifacts even when the repo inputs are unchanged.
+    # Analyzer-code fingerprint: a code fix invalidates artifacts even with unchanged inputs.
     fingerprint = code_fingerprint(ctx.config.knowledge.code_fingerprint_files)
     return hash_inputs("kn-code", fingerprint, _step_input_hash(ctx, step))
 
@@ -164,9 +193,7 @@ def _input_hash(ctx: HygieneContext, step: str) -> str:
 def _step_input_hash(ctx: HygieneContext, step: str) -> str:
     kc = ctx.config.knowledge
     if step == "symbol_index":
-        return hash_inputs(
-            "symbol_index", ctx.config.graph.complexity_metric, *_source_files(ctx)
-        )
+        return hash_inputs("symbol_index", ctx.config.graph.complexity_metric, *_source_files(ctx))
     if step == "indexes":
         parts = ["indexes", _base_sha(ctx), kc.ctx_plugin_module]
         parts += [ctx.hygiene_dir / "baseline.json", ctx.hygiene_dir / "build.json"]
@@ -199,9 +226,7 @@ def _step_input_hash(ctx: HygieneContext, step: str) -> str:
 
 
 def _source_files(ctx: HygieneContext) -> list[Path]:
-    return sorted(
-        p for p in ctx.repo.rglob("*.py") if ".git" not in p.parts and p.is_file()
-    )
+    return sorted(p for p in ctx.repo.rglob("*.py") if ".git" not in p.parts and p.is_file())
 
 
 def _knowledge_files(ctx: HygieneContext, *names: str) -> list[Path]:

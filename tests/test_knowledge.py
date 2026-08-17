@@ -1,8 +1,7 @@
 """P2 knowledge-layer tests: symbol index, repo_graph, indexes, verification, tools.
 
-Real AST/git/docker; no LLM at all in this layer. Structural graph facts are
-hand-written by reading the mini_pkg fixture, not copied from output. The single
-container round-trip (coverage -> test_map/coverage) is marked `docker`.
+Real AST/git/docker, no LLM. Expected graph facts are hand-derived from mini_pkg;
+the coverage container round-trip is marked `docker`.
 """
 
 from __future__ import annotations
@@ -495,7 +494,7 @@ def test_knowledge_e2e_mini_pkg(tmp_path: Path, docker_available: None) -> None:
 
     cfg = Config()
     cfg.testgen.enabled = False  # test-gen needs the BIG agent; covered by test_testgen.py
-    cfg.okf.enabled = False  # okf needs the BIG model; covered by test_okf.py (s7_okf cassette)
+    cfg.okf.enabled = False  # okf needs the BIG model; covered by test_okf.py
     cfg.lint.enabled = False  # lint has its own test (test_lint.py); keep source unformatted
     src = tmp_path / "mini_pkg"
     shutil.copytree(FIXTURES / "mini_pkg", src)

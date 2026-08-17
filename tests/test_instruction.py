@@ -1,8 +1,7 @@
-"""S5b: LLM-authored instruction, leak gates, golden rationale, difficulty.
+"""LLM-authored instruction, leak gates, golden rationale, difficulty.
 
-Pure-code gates and feature computation are tested directly; the author/reviewer/label
-loops with scripted endpoints (bounded regeneration, failure marking); the real BIG calls
-replay from the ``s5_tasks`` cassettes in the tasks-stage e2e (tests/test_tasks.py).
+Gates and features tested directly; author/reviewer/label loops via scripted endpoints;
+real BIG calls replay from ``tasks_fixture`` in tests/test_tasks.py.
 """
 
 from __future__ import annotations
@@ -75,12 +74,13 @@ def _fake_task(root: Path, kind: str = "history") -> Path:
         "verifier_cmd": "python -m pytest -q tests/test_calc.py::test_ceil_div_exact_multiple",
         "verifier_tests": ["tests/test_calc.py::test_ceil_div_exact_multiple"],
         "instruction": "template",
-        "instruction_status": "template-S5a",
+        "instruction_status": "template",
         "verifier_visibility": "visible",
     }
     (task_dir / "task.json").write_text(json.dumps(task))
     (task_dir / "goldenSolution.md").write_text(
-        "# Golden\n\n```diff\n+x\n```\n\n<!-- TODO-S5b: LLM-authored 'why correct' rationale -->\n"
+        "# Golden\n\n```diff\n+x\n```\n\n"
+        "<!-- TODO-golden: LLM-authored 'why correct' rationale -->\n"
     )
     return task_dir
 
@@ -231,7 +231,8 @@ def test_hidden_visibility_phrase_and_golden(tmp_path: Path) -> None:
     )  # golden MAY see the diff
     I.apply_golden(facts.task_dir, why)
     text = (facts.task_dir / "goldenSolution.md").read_text()
-    assert "TODO-S5" not in text and text.endswith("## Why correct\n\nIt rounds up via divmod.\n")
+    assert "TODO-golden" not in text
+    assert text.endswith("## Why correct\n\nIt rounds up via divmod.\n")
     I.apply_golden(facts.task_dir, "Second answer.")  # idempotent: one section, latest text
     text = (facts.task_dir / "goldenSolution.md").read_text()
     assert text.count("## Why correct") == 1 and text.endswith("## Why correct\n\nSecond answer.\n")

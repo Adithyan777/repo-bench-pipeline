@@ -1,8 +1,7 @@
-"""S7 OKF bundle + claim verifier + okf(path) tool.
+"""OKF bundle + claim verifier + okf(path) tool.
 
-The skeleton, verifier, tool sandbox and determinism are tested offline against a
-hand-built graph + tiny repo (no LLM, no Docker). One cassette-backed test replays the
-real module-purpose / function-contract calls through the full knowledge stage.
+Skeleton/verifier/sandbox/determinism offline on a hand-built graph; one cassette test
+replays the real purpose/contract calls through the knowledge stage.
 """
 
 from __future__ import annotations
@@ -39,23 +38,46 @@ def _helper(z):
 def _graph() -> dict:
     def fn(name, line, end, cx, pub, tested=()):
         return {
-            "id": f"pkg.mod.{name}", "type": "function", "file": "pkg/mod.py",
-            "line": line, "end_line": end, "signature": f"{name}(...)",
-            "docstring": None, "complexity": cx, "is_public": pub,
-            "decorators": [], "coverage": 100.0, "tested_by": list(tested),
+            "id": f"pkg.mod.{name}",
+            "type": "function",
+            "file": "pkg/mod.py",
+            "line": line,
+            "end_line": end,
+            "signature": f"{name}(...)",
+            "docstring": None,
+            "complexity": cx,
+            "is_public": pub,
+            "decorators": [],
+            "coverage": 100.0,
+            "tested_by": list(tested),
         }
+
     nodes = [
-        {"id": "pkg.mod", "type": "module", "file": "pkg/mod.py", "line": 1,
-         "is_public": True, "docstring": "A module."},
+        {
+            "id": "pkg.mod",
+            "type": "module",
+            "file": "pkg/mod.py",
+            "line": 1,
+            "is_public": True,
+            "docstring": "A module.",
+        },
         fn("raiser", 1, 5, 2, True, ["tests/test_mod.py::test_raiser"]),
         fn("caller", 8, 9, 1, True),
         fn("_helper", 12, 16, 2, False),
     ]
     edges = [
-        {"type": "contains", "source": "pkg.mod", "target": "pkg.mod.raiser",
-         "evidence": {"file": "pkg/mod.py", "line": 1}},
-        {"type": "calls", "source": "pkg.mod.caller", "target": "pkg.mod.raiser",
-         "evidence": {"file": "pkg/mod.py", "line": 9}},
+        {
+            "type": "contains",
+            "source": "pkg.mod",
+            "target": "pkg.mod.raiser",
+            "evidence": {"file": "pkg/mod.py", "line": 1},
+        },
+        {
+            "type": "calls",
+            "source": "pkg.mod.caller",
+            "target": "pkg.mod.raiser",
+            "evidence": {"file": "pkg/mod.py", "line": 9},
+        },
     ]
     return {"metadata": {}, "nodes": nodes, "edges": edges}
 
@@ -68,8 +90,11 @@ def _ctx(tmp_path: Path, config: Config):
     (run_dir / "knowledge").mkdir(parents=True)
     (run_dir / "hygiene").mkdir(parents=True)
     return types.SimpleNamespace(
-        run_dir=run_dir, repo=repo, knowledge_dir=run_dir / "knowledge",
-        hygiene_dir=run_dir / "hygiene", config=config,
+        run_dir=run_dir,
+        repo=repo,
+        knowledge_dir=run_dir / "knowledge",
+        hygiene_dir=run_dir / "hygiene",
+        config=config,
         adapter=PythonAdapter(config, repo, None),
     )
 
@@ -78,10 +103,13 @@ def _ctx(tmp_path: Path, config: Config):
 
 
 _FM = {
-    "type": "python-function", "title": "f", "tags": ["a", "b"],
+    "type": "python-function",
+    "title": "f",
+    "tags": ["a", "b"],
     "sources": [{"resource": "/x.py#L1-L2"}],
     "generated": {"by": "pipeline/m", "at": "2026-01-01T00:00:00Z"},
-    "verified": [], "status": "draft",
+    "verified": [],
+    "status": "draft",
 }
 
 
@@ -322,7 +350,7 @@ def _cassettes(stage: str) -> bool:
 
 
 @pytest.mark.docker
-@pytest.mark.skipif(not _cassettes("s7_okf"), reason="s7_okf cassettes not recorded")
+@pytest.mark.skipif(not _cassettes("okf_fixture"), reason="okf_fixture cassettes not recorded")
 def test_okf_llm_contract_replay(tmp_path):
     from tests import _smoke
 

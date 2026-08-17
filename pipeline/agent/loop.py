@@ -1,10 +1,7 @@
-"""Modular agent loop behind the AgentRunner interface.
+"""Agent loop (OpenAI-compatible function calling) behind the AgentRunner interface.
 
-OpenAI-compatible function calling. The goal is the user message. The loop ends
-when the model replies with no tool calls; that final text is the summary (no
-`done` tool). Tool errors are returned to the model as text. Hard stop on the
-turn cap. Every turn is written to a trajectory file. pi (`pi --rpc`) could be
-swapped in behind the same interface.
+Ends when the model replies without tool calls (that text is the summary) or at the
+turn cap. Tool errors go back to the model as text. Every run writes a trajectory file.
 """
 
 from __future__ import annotations

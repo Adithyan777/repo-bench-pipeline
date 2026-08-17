@@ -1,7 +1,5 @@
-"""Standalone report generation: ``python -m pipeline.report <repo> [--no-draft]``.
-
-Reads output/<repo>/ artifacts, writes output/<repo>/report_data.json + REPORT.md.
-``<repo>`` is a repo URL/path (resolved to its run-dir name) or the run-dir name itself.
+"""``python -m pipeline.report <repo> [--no-draft]``: writes output/<repo>/report_summary.json
++ REPORT.md. ``<repo>`` is a repo URL/path or the run-dir name.
 """
 
 from __future__ import annotations

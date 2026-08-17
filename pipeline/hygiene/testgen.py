@@ -1,18 +1,9 @@
-"""Step 3.6: generate tests, gated by mutation kill (DESIGN 3.6).
+"""Step 3.6: generate tests, gated by mutation kill.
 
-Self-contained (runs inside P1, before the knowledge layer exists):
-  1. Rank functions deterministically from an in-container coverage run + the AST
-     symbol index -- no knowledge artifacts read.
-  2. For the top modules, a BIG agent writes ONLY the generated test file (never
-     source), given each target's source, the module imports and a couple of
-     existing tests for style.
-  3. Mutation gate per target function: the generated tests must pass on the real
-     code AND kill >= testgen.min_mutants_killed of its injected mutants (run in a
-     fresh container copy). Surviving mutants drive a bounded retry; tests that
-     prove nothing are dropped (no coverage theater).
-
-Generated tests are committed as their own labeled pipeline commit; every agent
-outcome is audited and reused by content hash so a rerun spends no tokens.
+Rank functions from an in-container coverage run + AST index (no knowledge artifacts);
+a BIG agent writes only the generated test file per module; each target must pass on
+real code AND kill >= testgen.min_mutants_killed mutants, else bounded retry / drop.
+Agent outcomes are cached by content hash; generated tests get their own pipeline commit.
 """
 
 from __future__ import annotations
@@ -36,11 +27,12 @@ from pipeline.ecosystems.source_ops import read_source, write_source
 from pipeline.hygiene.context import HygieneContext, append_agent_action
 from pipeline.hygiene.mutate import function_mutants
 from pipeline.knowledge.indexes import run_coverage
+from pipeline.log import log
 from pipeline.state import hash_inputs
 
 WRITE_STEP = "p1.testgen.write_tests_agent"
 RETRY_STEP = "p1.testgen.mutation_retry_agent"
-PROMPT_VERSION = "s6.2"  # bumped: gate now records mutants_valid/invalid (json-report kills)
+PROMPT_VERSION = "testgen.2"  # bump when the prompts/gate change: keys of persisted decisions
 
 _SYSTEM = (
     "You write pytest tests for a Python library. You may create or edit ONLY the single "
@@ -102,10 +94,8 @@ def _score(fn: dict, ratio: float, config) -> float:
 
 
 def rank_targets(functions: list[dict], cov_files: dict, config) -> dict:
-    """Score every source function and pick top_k_modules x top_n_functions targets.
-
-    Returns the full ranking with per-function scores and skip reasons -- nothing is
-    hidden, so the selection is auditable."""
+    """Score every function; pick top_k_modules x top_n_functions. Returns the full ranking
+    with scores and skip reasons."""
     tg = config.testgen
     rows: list[dict] = []
     for fn in functions:
@@ -128,8 +118,7 @@ def rank_targets(functions: list[dict], cov_files: dict, config) -> dict:
                 "selected": False,
             }
         )
-    # score > 0 means some lines are uncovered; fully-covered functions are not worth
-    # generating tests for (that would be coverage theater).
+    # score > 0 <=> some lines uncovered; fully-covered functions are skipped.
     candidates = [r for r in rows if r["skip_reason"] is None and r["score"] > 0]
     by_module: dict[str, list[dict]] = {}
     for r in candidates:
@@ -165,8 +154,7 @@ def rank_targets(functions: list[dict], cov_files: dict, config) -> dict:
 
 
 def _primary_test_dir(repo: Path, config) -> Path | None:
-    # Exclude already-generated tests so the location stays stable across reruns
-    # (else the generated dir would become "primary" and gen_dir would nest under it).
+    # Exclude generated tests so the location is stable across reruns.
     marker = config.testgen.generated_subdir
     dirs: Counter[Path] = Counter()
     for pattern in ("test_*.py", "*_test.py"):
@@ -262,18 +250,16 @@ def _run_file(ctx: HygieneContext, rel: str) -> tuple[bool, str]:
 
 
 def _mutant_outcome(ctx: HygieneContext, file_rel: str, mutant_source: str, test_rel: str) -> str:
-    """One of ``killed`` / ``survived`` / ``invalid``.
-
-    Kill = at least one generated test FAILED with collection intact (from the
-    pytest-json-report), not merely a non-zero exit. Timeouts and broken collection are
-    ``invalid`` (a property of the mutant/env, not evidence the tests discriminate), so
-    they neither count as kills nor inflate the denominator."""
+    """``killed`` (a generated test failed, collection intact) / ``survived`` / ``invalid``
+    (timeout or broken collection; counts neither as kill nor in the denominator)."""
     report_rel = ctx.config.baseline.report_filename
     cmd = f"python -m pytest -p no:cacheprovider -q {test_rel}"
     with fresh_workdir(ctx.repo) as work:
         write_source(work / file_rel, mutant_source)
         result = run_in_container(
-            work, ctx.adapter.with_report(cmd, report_rel), ctx.image_tag,
+            work,
+            ctx.adapter.with_report(cmd, report_rel),
+            ctx.image_tag,
             timeout=ctx.config.testgen.mutant_timeout_s,
         )
         report = work / report_rel
@@ -307,7 +293,10 @@ class Gate:
 def _gate_function(ctx: HygieneContext, fn: dict, test_rel: str) -> Gate:
     source = read_source(ctx.repo / fn["file"])
     mutants = function_mutants(
-        source, fn["line"], fn["end_line"], ctx.adapter.mutators(),
+        source,
+        fn["line"],
+        fn["end_line"],
+        ctx.adapter.mutators(),
         ctx.config.testgen.mutants_per_function,
     )
     killed = valid = invalid = 0
@@ -348,7 +337,11 @@ def _module_key(ctx: HygieneContext, module: str, source: str, targets: list[dic
 def _run_agent(ctx: HygieneContext, step: str, goal: str, gen_dir: Path, allowed: set[str]) -> str:
     tool_ctx = ToolContext(workdir=ctx.repo, image=ctx.image_tag)
     agent = Agent(
-        ctx.llm, step, _SYSTEM, concrete_tools(tool_ctx), tool_ctx.files_changed,
+        ctx.llm,
+        step,
+        _SYSTEM,
+        concrete_tools(tool_ctx),
+        tool_ctx.files_changed,
         max_turns=ctx.config.testgen.agent_max_turns,
     )
     result = agent.run(goal)
@@ -368,15 +361,14 @@ def _prune_empty_parents(start: Path, stop: Path) -> None:
 
 
 def _revert_disallowed(repo: Path, gen_dir: Path, allowed: set[str]) -> list[str]:
-    """Undo every working-tree change the agent made except the generated files in
-    ``allowed`` (the current module file + those kept so far). Tracked files are checked
-    out; untracked files (incl. stray files inside gen_dir and files in new dirs) are
-    removed and their emptied parent dirs pruned. ``-uall`` lists untracked files
-    individually so a freshly-created gen_dir is not collapsed and rmtree'd wholesale."""
+    """Undo agent edits outside ``allowed``: checkout tracked, delete untracked (``-uall``
+    so a fresh gen_dir is not rmtree'd wholesale), prune emptied dirs."""
     reverted: list[str] = []
     proc = subprocess.run(
         ["git", "-C", str(repo), "status", "--porcelain", "-uall"],
-        capture_output=True, text=True, check=False,
+        capture_output=True,
+        text=True,
+        check=False,
     )
     for line in proc.stdout.splitlines():
         if not line:
@@ -405,8 +397,7 @@ def _generate_module(
     runs_left: list[int],
     kept_files: set[str],
 ) -> dict:
-    """Write + gate one module's tests. ``kept_files`` are prior modules' generated files
-    that the agent's revert step must preserve."""
+    """Write + gate one module's tests; ``kept_files`` = prior generated files to preserve."""
     file_rel = str((gen_dir / _module_test_file(module)).relative_to(ctx.repo))
     source = read_source(ctx.repo / targets[0]["file"])
     tg = ctx.config.testgen
@@ -424,25 +415,42 @@ def _generate_module(
             break
         runs_left[0] -= 1
         step = WRITE_STEP if attempt == 0 else RETRY_STEP
+        log(
+            "hygiene",
+            "testgen",
+            f"module {module}: agent run {attempt + 1}/{1 + ctx.config.agent.testgen_max_retries}"
+            f" ({runs_left[0]} runs left in repo budget)",
+        )
         summary = _run_agent(ctx, step, goal, gen_dir, allowed)
         if not (ctx.repo / file_rel).is_file():
+            log("hygiene", "testgen", f"module {module}: agent wrote no file")
             break
         passed_real, output = _run_file(ctx, file_rel)
         if not passed_real:
+            log("hygiene", "testgen", f"module {module}: tests fail on real code, retrying")
             goal = _retry_goal(file_rel, module, f"the file fails on the real code:\n{output}")
             continue
         gates = gate_all()
         weak = {q for q, g in gates.items() if g.status(tg.min_mutants_killed) == "weak"}
+        log("hygiene", "testgen", f"module {module}: mutation gate {_gate_line(gates)}")
         if not weak:
             break
+        log("hygiene", "testgen", f"module {module}: weak {len(weak)}/{len(gates)}, retrying")
         survived = ", ".join(sorted(weak))
         goal = _retry_goal(
-            file_rel, module,
+            file_rel,
+            module,
             f"tests do not catch bugs in: {survived}. Add assertions that would fail if these "
             f"functions were subtly wrong (flipped comparisons, off-by-one, wrong constant).",
         )
 
     return _finalize_module(ctx, module, file_rel, gates, passed_real, summary)
+
+
+def _gate_line(gates: dict[str, Gate]) -> str:
+    killed = sum(g.killed for g in gates.values())
+    valid = sum(g.valid for g in gates.values())
+    return f"mutants {killed}/{valid} killed"
 
 
 def _retry_goal(file_rel: str, module: str, problem: str) -> str:
@@ -484,8 +492,12 @@ def _finalize_module(ctx, module, file_rel, gates, passed_real, summary) -> dict
     append_agent_action(
         ctx.audit_dir,
         {
-            "stage": WRITE_STEP, "module": module, "file": file_rel, "outcome": "kept",
-            "functions": {q: f["status"] for q, f in functions.items()}, "summary": summary,
+            "stage": WRITE_STEP,
+            "module": module,
+            "file": file_rel,
+            "outcome": "kept",
+            "functions": {q: f["status"] for q, f in functions.items()},
+            "summary": summary,
         },
     )
     return {"status": "kept", "file": file_rel, "functions": functions, "summary": summary}
@@ -495,10 +507,8 @@ def _finalize_module(ctx, module, file_rel, gates, passed_real, summary) -> dict
 
 
 def input_hash(ctx: HygieneContext) -> str:
-    # baseline.json is deliberately excluded: test-gen re-records it (with the generated
-    # tests), so hashing it would make the step re-run on a clean resume. The quarantine
-    # file is the stable-test-set input we do depend on. Generated tests are excluded so
-    # the step is idempotent once it has run.
+    # baseline.json is excluded (this step rewrites it) and so are generated tests, so the
+    # step does not invalidate itself; the quarantine file is the stable-test-set input.
     marker = ctx.config.testgen.generated_subdir
     parts = [ctx.hygiene_dir / "build.json", ctx.repo / ctx.config.baseline.quarantine_file]
     src_files = [
@@ -514,9 +524,7 @@ def _source_functions(ctx: HygieneContext) -> list[dict]:
     symbols = ctx.adapter.symbol_index(ctx.repo)
     # Only functions in importable library source (excludes tests, docs/conf.py, scripts).
     source_modules = {
-        m["name"]
-        for m in symbols.get("modules", [])
-        if m.get("is_source", not m.get("is_test"))
+        m["name"] for m in symbols.get("modules", []) if m.get("is_source", not m.get("is_test"))
     }
     return [f for f in symbols.get("functions", []) if f["module"] in source_modules]
 
@@ -556,17 +564,23 @@ def _run(ctx: HygieneContext) -> dict:
     tg = ctx.config.testgen
     functions = _source_functions(ctx)
     gen_dir = generated_dir(ctx.repo, ctx.config)
-    # Rank on the ORIGINAL coverage: ignore any already-generated tests so a resume ranks
-    # identically (else generated coverage would shift the targets).
+    # Rank on original coverage (ignore generated tests) so a resume ranks identically.
     ignore = (str(gen_dir.relative_to(ctx.repo)),) if gen_dir.exists() else ()
     cov = run_coverage(ctx.repo, ctx.image_tag, _quarantined(ctx), ctx.config, ignore=ignore)
     if cov.status not in ("ok", "no_tests"):  # no_tests = bootstrap; anything else is garbage
+        log("hygiene", "testgen", f"coverage {cov.status}: skipped")
         data = {"coverage_status": cov.status, "skipped": "coverage_unavailable"}
         ctx.record(tg.results_filename.removesuffix(".json"), data)
         return data
 
     targets = rank_targets(functions, cov.contexts.get("files", {}), ctx.config)
     ctx.record(tg.targets_filename.removesuffix(".json"), targets)
+    log(
+        "hygiene",
+        "testgen",
+        f"coverage {cov.status}: {len(targets['modules'])} modules, "
+        f"{len(targets['selected'])} target functions",
+    )
 
     fn_by_id = {f["qualname"]: f for f in functions}
     _ensure_dir(ctx.repo, gen_dir)
@@ -588,9 +602,12 @@ def _run(ctx: HygieneContext) -> dict:
                 write_source(gen_dir / _module_test_file(module), cached["test_source"])
                 kept_files.add(cached["file"])
             modules_out[module] = {k: v for k, v in cached.items() if k != "test_source"}
+            log("hygiene", "testgen", f"module {module}: reused decision ({cached.get('status')})")
             continue
+        log("hygiene", "testgen", f"module {module}: {len(target_fns)} targets")
         result = _generate_module(ctx, module, target_fns, gen_dir, runs_left, kept_files)
         modules_out[module] = result
+        log("hygiene", "testgen", f"module {module}: {_module_line(result)}")
         entry = dict(result)
         if result.get("status") == "kept":
             entry["test_source"] = read_source(gen_dir / _module_test_file(module))
@@ -604,9 +621,19 @@ def _run(ctx: HygieneContext) -> dict:
     return data
 
 
+def _module_line(result: dict) -> str:
+    status = result.get("status")
+    if status != "kept":
+        return str(status)
+    fns = result.get("functions") or {}
+    kept = sum(1 for f in fns.values() if f.get("status") == "kept")
+    killed = sum(f.get("mutants_killed", 0) for f in fns.values())
+    valid = sum(f.get("mutants_valid", 0) for f in fns.values())
+    return f"kept {kept}/{len(fns)} functions, mutants {killed}/{valid} killed"
+
+
 def _record_suite_after(ctx: HygieneContext) -> dict:
-    """Run the documented suite once with the generated tests present, refresh
-    baseline.json (the stable test set grew), and report twice-identical."""
+    """Suite with generated tests present: refresh baseline.json, report twice-identical."""
     from pipeline.hygiene import baseline as baseline_step
 
     quarantined = ctx.load("baseline").get("quarantined") if _has_baseline(ctx) else None

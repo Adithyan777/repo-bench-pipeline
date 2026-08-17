@@ -38,7 +38,7 @@ class _ScriptedLLM:
 
 
 def _agent(tmp_path: Path, tools, llm=None, **kw) -> Agent:
-    llm = llm or LLMClient(stage="s1_test", mode="live", transcripts_dir=tmp_path / "t")
+    llm = llm or LLMClient(stage="unit_test", mode="live", transcripts_dir=tmp_path / "t")
     return Agent(llm, STEP, "sys", tools, set(), transcripts_dir=tmp_path / "t", **kw)
 
 
@@ -101,7 +101,7 @@ def test_grep_does_not_follow_symlink_outside_workdir(tmp_path: Path) -> None:
 
 
 @pytest.mark.docker
-@pytest.mark.skipif(not _has_cassettes(), reason="s1_agent cassettes not recorded yet")
+@pytest.mark.skipif(not _has_cassettes(), reason="agent_toy cassettes not recorded yet")
 def test_agent_solves_toy_task(tmp_path: Path, docker_available: None) -> None:
     workdir = tmp_path / "repo"
     workdir.mkdir()

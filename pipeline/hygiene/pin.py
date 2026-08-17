@@ -1,8 +1,5 @@
-"""Step 3.2: synthesize a canonical requirements.in, then a fully pinned lock.
-
-The adapter writes requirements.in, requirements.lock.txt and constraints.txt into
-the repo clone (build context). No-manifest repos get deps from an AST import scan
-(+ alias table + SMALL-model fallback); poetry manifests are translated.
+"""Step 3.2: canonical requirements.in, then a fully pinned lock (written into the clone).
+No-manifest repos: AST import scan + alias table + SMALL-model fallback; poetry is translated.
 """
 
 from __future__ import annotations
