@@ -460,8 +460,78 @@ class PythonAdapter(EcosystemAdapter):
 
     # --- deferred to later sessions -------------------------------------------
 
-    def lint_and_format(self, repo: Path) -> dict[str, Any]:
-        raise NotImplementedError("lint_and_format lands in S9")
+    def lint_and_format(self, repo: Path, run) -> dict[str, Any]:
+        """ruff check --fix + ruff format, driven by a ``[tool.ruff]`` config we write
+        into the tree. Unfixable findings get a per-file ``# noqa`` (when configured);
+        the exact ruff comes from the pinned image via ``run``. Historical task trees
+        live outside this tree and are never touched here."""
+        repo = Path(repo)
+        lint = self.config.lint
+        created = self._ensure_ruff_config(repo)
+        report: dict[str, Any] = {
+            "config_created": created,
+            "select": list(lint.rules),
+            "commands": [],
+            "noqa": {},
+            "unfixable": [],
+            "remaining": [],
+        }
+        if lint.autofix:
+            fix = f"ruff check --fix {_shq(lint.rules)} ."
+            report["commands"].append(fix)
+            run(fix)
+        if lint.format:
+            report["commands"].append("ruff format .")
+            run("ruff format .")
+        findings = self._ruff_findings(run)
+        report["unfixable"] = _finding_summary(findings)
+        if findings and lint.allow_noqa_for_unfixable:
+            # Apply the noqa edits IN-CONTAINER: a host write to the bind-mounted tree can
+            # be read mid-flush by the next container as a truncated file (spurious
+            # F841/W292). Container-write → container-read is coherent.
+            report["noqa"] = _apply_noqa_in_container(run, findings)
+            findings = self._ruff_findings(run)
+        report["remaining"] = _finding_summary(findings)
+        report["clean"] = not findings
+        report["codes"] = _code_counts(report["unfixable"])
+        return report
+
+    def _ruff_config_present(self, repo: Path) -> bool:
+        if (repo / "ruff.toml").is_file() or (repo / ".ruff.toml").is_file():
+            return True
+        py = repo / "pyproject.toml"
+        return py.is_file() and "[tool.ruff" in py.read_text(errors="replace")
+
+    def _ensure_ruff_config(self, repo: Path) -> bool:
+        """Write a ``[tool.ruff.lint]`` config into pyproject.toml (creating a minimal
+        pyproject with NO ``[build-system]`` if absent, so a legacy setup.py install is
+        unaffected). Returns True iff a pyproject.toml was created. An existing ruff
+        config is respected (never clobbered)."""
+        if self._ruff_config_present(repo):
+            return False
+        select = ", ".join(f'"{r}"' for r in self.config.lint.rules)
+        block = (
+            "# Added by the benchmark pipeline (P1 lint/format).\n"
+            "[tool.ruff.lint]\n"
+            f"select = [{select}]\n"
+        )
+        py = repo / "pyproject.toml"
+        if py.is_file():
+            py.write_text(py.read_text().rstrip() + "\n\n" + block)
+            return False
+        py.write_text(block)
+        return True
+
+    def _ruff_findings(self, run) -> list[dict]:
+        """Current ruff findings as JSON (empty when clean). Uses the pinned image."""
+        result = run(f"ruff check --output-format json {_shq(self.config.lint.rules)} .")
+        text = (result.stdout or "").strip()
+        if not text:
+            return []
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            return []
 
     def symbol_index(self, repo: Path) -> dict[str, Any]:
         from pipeline.ecosystems.symbols import build_symbol_index
@@ -498,6 +568,132 @@ def valid_requirement(spec: str) -> bool:
     except InvalidRequirement:
         return False
     return bool(_PKG_NAME_RE.match(req.name))
+
+
+# --- lint helpers -------------------------------------------------------------
+
+
+def _shq(rules: tuple[str, ...]) -> str:
+    """`--select E,F,W,...` so the CLI enforces our rule set regardless of any
+    stray repo config, matching the ``[tool.ruff.lint] select`` we write."""
+    return "--select " + shlex.quote(",".join(rules)) if rules else ""
+
+
+# The synced tree is bind-mounted at this path inside the container (see docker/runner),
+# so ruff's absolute `filename` (e.g. /repo/pkg/mod.py) maps back by stripping this prefix.
+CONTAINER_MOUNT = "/repo"
+
+
+def _container_rel(filename: str) -> str:
+    """Map a ruff-reported path (absolute `/repo/...` or relative `./...`) to a
+    tree-relative path, so a host-side edit lands on the right file."""
+    name = filename.removeprefix(CONTAINER_MOUNT).lstrip("/")
+    return name[2:] if name.startswith("./") else name
+
+
+def _finding_summary(findings: list[dict]) -> list[dict]:
+    """Compact, deterministic {file, code, line} list from ruff's JSON output."""
+    out = [
+        {
+            "file": _container_rel(f.get("filename", "")),
+            "code": f.get("code") or "",
+            "line": (f.get("location") or {}).get("row", 0),
+        }
+        for f in findings
+    ]
+    return sorted(out, key=lambda x: (x["file"], x["line"], x["code"]))
+
+
+def _code_counts(summary: list[dict]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for item in summary:
+        counts[item["code"]] = counts.get(item["code"], 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _noqa_plan(findings: list[dict]) -> dict[str, dict[int, list[str]]]:
+    """{repo-relative file -> {row -> sorted codes}} from ruff's JSON. ruff reports paths
+    inside the container mount (``/repo/...``); ``_container_rel`` maps them back."""
+    by_line: dict[str, dict[int, set[str]]] = {}
+    for f in findings:
+        name = _container_rel(f.get("filename", ""))
+        row = (f.get("location") or {}).get("row", 0)
+        code = f.get("code") or ""
+        if name and row and code:
+            by_line.setdefault(name, {}).setdefault(row, set()).add(code)
+    return {
+        name: {row: sorted(codes) for row, codes in sorted(rows.items())}
+        for name, rows in sorted(by_line.items())
+    }
+
+
+def _apply_plan_to_text(text: str, rows: dict[int, list[str]]) -> str:
+    """Append ``# noqa: <codes>`` to the given 1-indexed rows of ``text``."""
+    lines = text.splitlines(keepends=True)
+    for row, codes in rows.items():
+        if row < 1 or row > len(lines):
+            continue
+        raw = lines[row - 1]
+        body, nl = (raw[:-1], raw[-1]) if raw.endswith("\n") else (raw, "")
+        if "# noqa" in body:
+            continue
+        lines[row - 1] = f"{body}  # noqa: {', '.join(codes)}{nl}"
+    return "".join(lines)
+
+
+def _apply_noqa(repo: Path, findings: list[dict]) -> dict[str, list[str]]:
+    """Host-side ``# noqa`` application (used off-container and unit-tested). Returns
+    {repo-relative file: sorted codes applied}."""
+    plan = _noqa_plan(findings)
+    applied: dict[str, list[str]] = {}
+    for name, rows in plan.items():
+        path = repo / name
+        if not path.is_file():
+            continue
+        path.write_text(_apply_plan_to_text(path.read_text(), rows))
+        applied[name] = sorted({c for codes in rows.values() for c in codes})
+    return applied
+
+
+# In-container noqa applier: the same edit, but performed by the container so it never
+# races a host write against the next container's read. The plan is embedded as base64
+# (no shell-quoting hazards) and applied by a small python program run via ``run``.
+_NOQA_APPLIER = r"""
+import base64, json, sys
+plan = json.loads(base64.b64decode(sys.argv[1]).decode())
+for name, rows in plan.items():
+    try:
+        with open(name, encoding="utf-8") as fh:
+            lines = fh.readlines()
+    except OSError:
+        continue
+    for row, codes in rows.items():
+        i = int(row) - 1
+        if i < 0 or i >= len(lines):
+            continue
+        raw = lines[i]
+        body, nl = (raw[:-1], raw[-1]) if raw.endswith("\n") else (raw, "")
+        if "# noqa" in body:
+            continue
+        lines[i] = body + "  # noqa: " + ", ".join(codes) + nl
+    with open(name, "w", encoding="utf-8") as fh:
+        fh.writelines(lines)
+"""
+
+
+def _apply_noqa_in_container(run, findings: list[dict]) -> dict[str, list[str]]:
+    import base64
+
+    plan = _noqa_plan(findings)
+    if not plan:
+        return {}
+    data = base64.b64encode(json.dumps(plan).encode()).decode()
+    prog = base64.b64encode(_NOQA_APPLIER.encode()).decode()
+    run(f"python3 -c \"import base64;exec(base64.b64decode('{prog}').decode())\" {data}")
+    return {
+        name: sorted({c for codes in rows.values() for c in codes})
+        for name, rows in plan.items()
+    }
 
 
 def _norm_req(spec: str) -> str:

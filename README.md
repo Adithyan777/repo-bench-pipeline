@@ -5,13 +5,13 @@ Repo-agnostic pipeline that takes a Python repository, makes it reproducible
 layer (`repo_graph.json` + `.okf/`), and mines 10 validated benchmark tasks
 for AI coding agents.
 
-Status: **P1 hygiene working end-to-end** (detect → pin/lock → Dockerfile → build →
-baseline → test-gen, resumable). Verified green on glom, toolz, minidump, and the
-fixtures. Test generation writes mutation-gated tests into the repo's own test dir
-(a `pipeline: generated tests` commit); skip it with `--no-testgen`. The knowledge
-stage also emits an OKF v0.2 knowledge bundle at `output/<repo>/knowledge/.okf/`
-(model-authored purpose + contracts, statically claim-verified).
-Knowledge (P2) and tasks (P3) land from S3 on. See [`docs/PROGRESS.md`](docs/PROGRESS.md).
+Status: **all three pipelines working end-to-end.** P1 hygiene (detect → pin/lock →
+Dockerfile → build → baseline → test-gen → lint, resumable), P2 knowledge
+(`symbol_index → indexes → repo_graph → verify → okf`), and P3 tasks (excision +
+history funnels → build → validate → instruct → manifest → **select** → report). A full
+`./run.sh <repo> --fresh` produces the repo-root **`tasks.json`** (the final 10),
+**`REPORT.md`**, the transformed clone, and the knowledge bundle. Skip flags:
+`--no-testgen`, `--no-lint`, `--no-report-draft`. See [`docs/PROGRESS.md`](docs/PROGRESS.md).
 
 ## Documents
 
@@ -19,36 +19,79 @@ Knowledge (P2) and tasks (P3) land from S3 on. See [`docs/PROGRESS.md`](docs/PRO
 |---|---|
 | [`docs/DESIGN.md`](docs/DESIGN.md) | Full system design: architecture, all three pipelines, harness, LLM usage, build order |
 | [`docs/PROGRESS.md`](docs/PROGRESS.md) | Per-session handoff: step status and notes |
-| [`HEURISTICS.md`](HEURISTICS.md) | **Every** heuristic, threshold, filter, flag and default in the pipeline. All values live in [`pipeline/config.py`](pipeline/config.py). Reviewed with the author before submission. |
-| `REPORT.md` | (to be written) required assignment report |
-| `transcripts/` | (to be curated) pipeline LLM transcripts + dev session prompts |
+| [`HEURISTICS.md`](HEURISTICS.md) | **Every** heuristic, threshold, filter, flag and default in the pipeline. All values live in [`pipeline/config.py`](pipeline/config.py). |
+| [`docs/HEURISTICS_REVIEW.md`](docs/HEURISTICS_REVIEW.md) | Compact review sheet: which config keys fired on glom, which never fired, which changed from the proposal |
+| `REPORT.md` | Required assignment report (six sections; tables auto-filled, narrative drafted for the author to edit) |
+| [`transcripts/dev/`](transcripts/dev/) | Curated dev session log, prompts, and review-round summaries |
 
-## Entry point (planned)
+## Run everything (fresh clone)
+
+```bash
+# 0. setup
+uv venv --python 3.12 .venv
+uv pip install --python .venv/bin/python -r requirements-dev.txt
+cp .env.example .env          # fill in LLM_BASE_URL + LLM_API_KEY
+
+# 1. full pipeline: hygiene -> knowledge -> tasks -> select -> REPORT.md
+./run.sh https://github.com/mahmoud/glom --fresh
+
+# or per stage (resumable; --force <step> / --fresh override the cache)
+./run.sh <repo_url_or_path> --stage hygiene [--verify-twice]
+./run.sh <repo_url_or_path> --stage knowledge
+./run.sh <repo_url_or_path> --stage tasks
+```
+
+Requires: Docker, Python 3.12, `uv`, and an OpenAI-compatible endpoint via
+`LLM_BASE_URL` + `LLM_API_KEY` (see [`.env.example`](.env.example)). Models default to
+open-source Kimi-K2.6 (BIG) / DeepSeek-V4-Flash (SMALL); override with
+`LLM_MODEL_BIG` / `LLM_MODEL_SMALL`. All target-code execution happens inside the
+pinned `bench-<repo>` container; LLM calls run from the host only.
+
+Useful flags: `--no-testgen`, `--no-lint`, `--no-report-draft`, `--verify-twice`,
+`--excision-hard`, `--verifier-visibility visible|hidden`, `--min-failing-tests N`,
+`--set section.key=value`, and `--prune-images` (removes ONLY dangling images carrying
+this pipeline's own build label — never your other images/containers).
+
+## Deliverables (what a full run produces / what is committed)
+
+| Path | Committed? |
+|---|---|
+| `tasks.json` (root) — the final 10 | yes |
+| `tasks/<repo>/<id>/` — the 10 selected task folders (see `output/<repo>/tasks/selection.json`) | yes (the selected ones) |
+| `REPORT.md`, `HEURISTICS.md`, `docs/`, `transcripts/dev/` | yes |
+| `output/<repo>/knowledge/repo_graph.json` + `.okf/` | yes |
+| `output/<repo>/repo/` (transformed clone), `report_data.json`, raw `transcripts/pipeline/` | no (regenerable; ignored) |
+
+## Hygiene stage detail
+
+Produces `output/<repo>/`: a pinned + containerized clone under `repo/` with labeled
+pipeline commits (pin/containerize → baseline → generated tests → lint/format), step
+records under `hygiene/`, and `report_data.json`. The container test command is
+`python -m pytest -q` inside the built `bench-<repo>` image. The **lint** step writes a
+`[tool.ruff]` config into pyproject.toml (creating a minimal one, without breaking a
+setup.py install), runs `ruff check --fix` + `ruff format` inside that image, adds
+`# noqa` for anything unfixable, then rebuilds the image and re-runs the suite twice —
+if a formatting change regressed a baseline-passing test the tree is reverted (recorded
+in `hygiene/lint.json`), so acceptance is never traded for cosmetics. Historical task
+trees (built later from `git archive`) are never linted, so a history task's
+`input/`→`solution/` diff stays the real historical change.
+
+## Generate, validate, and select tasks
 
 ```
-./run.sh <repo_url_or_path> [--stage hygiene|knowledge|tasks|all] [--force <step>] [--fresh]
+./run.sh <repo_url_or_path> --stage tasks
+# funnels -> build -> validate -> instruct -> manifest -> select -> REPORT.md
 ```
 
-Requires: Docker, Python 3.12, `uv`, and env vars `LLM_BASE_URL`, `LLM_API_KEY`,
-`LLM_MODEL_BIG`, `LLM_MODEL_SMALL` (OpenAI-compatible endpoint, open-source models).
-
-## Run the hygiene stage
-
-```
-./run.sh <repo_url_or_path> --stage hygiene [--verify-twice] [--fresh] [--force <step>]
-# e.g. ./run.sh https://github.com/mahmoud/glom --stage hygiene --verify-twice
-```
-
-Produces `output/<repo>/`: a pinned + containerized clone under `repo/`, step records
-under `hygiene/` (incl. the documented test command in `hygiene/test_command.txt`), and
-`report_data.json`. The container test command is `python -m pytest -q` inside the built
-`bench-<repo>` image.
-
-## Generate and validate tasks
-
-```
-./run.sh <repo_url_or_path> --stage tasks   # funnels -> build -> validate -> instruct -> tasks.json
-```
+The **select** step reads `tasks/<repo>/tasks.json` (every built task) and picks exactly
+`selection.total_tasks` VALID + final tasks honoring the quotas (`min_history`,
+`max_excision`, `max_netnew`, `min_distinct_modules`) with the difficulty spread as a
+soft objective, then writes the repo-root **`tasks.json`** (the 10) and
+`output/<repo>/tasks/selection.json` (why each eligible task was picked or not). An
+infeasible quota is a hard error, never a silent short-fall. The **report** builder then
+aggregates every stage's artifacts into `output/<repo>/report_summary.json` (leaving the
+runner's per-stage `report_data.json` untouched) and renders `REPORT.md`; regenerate it
+standalone with `python -m pipeline.report <repo> [--no-draft]`.
 
 Writes `tasks/<repo>/<task_id>/{task.json,input/,solution/,verifier/,goldenSolution.md,evidence/}`
 (`exc-<module>-<name>` excision tasks, `hist-<sha7>` history tasks whose `input/`/`solution/`

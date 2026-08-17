@@ -18,14 +18,15 @@ from pipeline.ecosystems.source_ops import ExciseError
 from pipeline.hygiene.context import HygieneContext
 from pipeline.knowledge.runner import knowledge_paths
 from pipeline.state import code_fingerprint, hash_inputs
+from pipeline.tasks import difficulty as D
 from pipeline.tasks import excision
 from pipeline.tasks import history as H
-from pipeline.tasks.build_excision import BuildInputs, build_task
-from pipeline.tasks import difficulty as D
 from pipeline.tasks import instruction as I
+from pipeline.tasks.build_excision import BuildInputs, build_task
 from pipeline.tasks.build_history import build_history_task
 from pipeline.tasks.harness import validate_tasks
 from pipeline.tasks.manifest import write_manifest
+from pipeline.tasks.select import SelectionInfeasible, run_selection
 
 _STEPS = (
     "excision_funnel",
@@ -35,6 +36,7 @@ _STEPS = (
     "validate",
     "instruct",
     "manifest",
+    "select",
 )
 
 # task.json fields written by the instruct step; excluded from the validate/instruct input
@@ -427,6 +429,31 @@ def step_manifest(ctx: HygieneContext) -> None:
     ctx.report.setdefault("tasks", {})["manifest"] = str(path)
 
 
+def step_select(ctx: HygieneContext) -> None:
+    """Pick the final ``selection.total_tasks`` (repo-root tasks.json + selection.json).
+    An infeasible quota is a hard error surfaced to the caller (never silently skipped)."""
+    manifest = repo_tasks_dir(ctx) / ctx.config.tasks.manifest_filename
+    root_dir = tasks_root(ctx).parent  # repo root for a real run; the tmp base under tests
+    try:
+        root, sel_path, result = run_selection(
+            ctx.run_dir.name, manifest, ctx.config, root_dir, summary_dir=ctx.tasks_dir
+        )
+    except SelectionInfeasible as exc:
+        ctx.report.setdefault("tasks", {})["select"] = {"error": str(exc)}
+        raise SystemExit(f"selection infeasible: {exc}") from exc
+    type_counts: dict[str, int] = {}
+    for t in result.selected:
+        type_counts[t["source_type"]] = type_counts.get(t["source_type"], 0) + 1
+    ctx.report.setdefault("tasks", {})["select"] = {
+        "root_manifest": str(root),
+        "selection": str(sel_path),
+        "selected": [t["id"] for t in result.selected],
+        "counts": dict(sorted(type_counts.items())),
+        "difficulty_spread": result.spread,
+        "distinct_modules": result.modules,
+    }
+
+
 _STEP_FUNCS = {
     "excision_funnel": step_excision_funnel,
     "build_excision": step_build_excision,
@@ -435,6 +462,7 @@ _STEP_FUNCS = {
     "validate": step_validate,
     "instruct": step_instruct,
     "manifest": step_manifest,
+    "select": step_select,
 }
 
 
@@ -518,6 +546,12 @@ def _step_input_hash(ctx: HygieneContext, step: str) -> str:
                 d / ctx.config.harness.evidence_dirname / ctx.config.harness.verdict_filename
             )
         return hash_inputs(*parts, repr(ctx.config.tasks))
+    if step == "select":
+        return hash_inputs(
+            repo_tasks_dir(ctx) / ctx.config.tasks.manifest_filename,
+            repr(ctx.config.selection),
+            repr(ctx.config.difficulty.target_spread),
+        )
     raise KeyError(step)
 
 

@@ -357,6 +357,8 @@ Rejected: black+isort+flake8 (three tools); mypy (untyped repos produce hundreds
 
 Historical trees used by P3 tasks are never lint/formatted (would pollute the real diff).
 
+Implementation notes (S9): `lint` is a resumable hygiene step after `testgen` (own commit `pipeline: lint and format`; `--no-lint` / `lint.enabled=False` skips it). `PythonAdapter.lint_and_format(tree, run)` writes a `[tool.ruff.lint]` config into pyproject.toml (a minimal pyproject with **no** `[build-system]` is created only when absent, so a legacy setup.py install is unaffected; an existing ruff config is respected), then runs `ruff check --fix` + `ruff format` and adds `# noqa` for unfixable findings — all via `run`, which executes INSIDE the pinned image, so the exact pinned ruff is used and no target code runs on the host. ruff operates on a throwaway copy; changed `.py` + the config are synced back to `output/<repo>/repo`; the image is then rebuilt (proving a fresh `docker build` still works, updating `build.json`'s digest) and the suite run twice. If a formatting change regresses a baseline-passing test, the tree is reverted and `hygiene/lint.json` records `regressed` — acceptance (green twice-identical) is never traded for cosmetics. **Decision:** generated tests ARE linted (pipeline-authored, committed after `base_sha`, so P3 history mining is unaffected and the repo ends ruff-clean as a whole); historical task trees are built later from `git archive` with an additive overlay and no lint, so a history task's `input/`→`solution/` diff stays the real historical change (tasks are self-contained — a lint change to the hygiene clone does not touch already-built task folders).
+
 
 ### Output layout for the transformed repo (step 3.8)
 
@@ -629,6 +631,11 @@ Pipeline generates `output/<repo>/report_data.json` containing: what was detecte
 A REPORT.md skeleton is generated with tables filled from `report_data.json`. Narrative sections (design/trade-offs, scale, gaps) are hand-written by the author + Claude at the end.
 
 Rejected: fully LLM-generated report.
+
+Implementation notes (S9):
+
+- **Final selection** (`pipeline/tasks/select.py`, wired as the last tasks step `select`). From the per-repo manifest it takes the tasks that are VALID and `instruction_status==final`, ranks them by preference (failing-on-input verifier count desc, id asc — deterministic), reserves the `min_history` floor with the best history tasks, fills the rest by preference under the excision/net-new caps, then swaps to reach `min_distinct_modules` and toward the difficulty `target_spread` (a SOFT objective). It writes the repo-root **`tasks.json`** (id, title, source type, module, difficulty, provenance/source_ref, verifier command, validation status read from `verdict.json`, and a `path` that `python -m pipeline.validate` accepts — but NOT a redundant `modules` list) and `output/<repo>/tasks/selection.json` (the working dir, next to `candidates.json`; why each eligible task was picked or not — it feeds REPORT, it is not part of the committed set). A quota that cannot be met raises `SelectionInfeasible` — the pipeline never silently ships fewer than 10 or violates a quota. Unselected tasks remain under `tasks/<repo>/` but are excluded from the root manifest.
+- **Report** (`pipeline/report/build.py`, run at the end of a CLI tasks run and standalone via `python -m pipeline.report <repo>`). `collect()` READS the runner's per-stage `report_data.json` (for stages/timings/base_sha) and aggregates every stage's artifacts into a separate `output/<repo>/report_summary.json` (it never overwrites `report_data.json`), recording a `missing_artifacts` list so absent inputs read `-` in the tables rather than a bare `None`; `render()` produces the six required sections with tables auto-filled; `draft_narrative()` is one BIG `report.draft_sections` call (cached by content hash → 0-token reruns) whose short, grounded paragraphs are written into REPORT.md marked with `AUTHOR` comments for the author to finish. A drafting failure never breaks the run. `--no-report-draft` skips the LLM entirely.
 
 
 ---

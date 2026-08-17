@@ -747,8 +747,14 @@ def test_tasks_stage_e2e_valid_and_resumable(mini_env) -> None:
             "validate",
             "instruct",
             "manifest",
+            "select",
         )
     )
+    # the final `select` step wrote a root tasks.json (the deliverable's 10) + selection.json
+    root_tasks = json.loads((tasks_dir.parent.parent / "tasks.json").read_text())
+    assert len(root_tasks["tasks"]) == ctx.config.selection.total_tasks
+    assert "modules" not in root_tasks["tasks"][0] and root_tasks["tasks"][0]["source_ref"]
+    assert (ctx.tasks_dir / "selection.json").is_file()  # under output/<repo>/tasks/
     # harness idempotent: same folder, identical verdict (timestamps aside)
     again = validate_task(task_dir, ctx.config)
     assert _strip_ts(again) == _strip_ts(verdict)

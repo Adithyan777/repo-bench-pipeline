@@ -88,6 +88,21 @@ def build_parser() -> argparse.ArgumentParser:
         "--verify-twice", action="store_true", help="after hygiene, run the test command twice"
     )
     p.add_argument("--no-testgen", action="store_true", help="skip P1 test generation")
+    p.add_argument("--no-lint", action="store_true", help="skip P1 lint/format")
+    p.add_argument(
+        "--no-report-draft", action="store_true", help="skip the BIG REPORT narrative draft"
+    )
+    p.add_argument(
+        "--min-failing-tests",
+        type=int,
+        default=None,
+        help="fail-before must have at least this many failing tests (harness.min_failing_tests)",
+    )
+    p.add_argument(
+        "--prune-images",
+        action="store_true",
+        help="after the run, prune ONLY dangling images carrying this pipeline's build label",
+    )
     return p
 
 
@@ -101,6 +116,12 @@ def main(argv: list[str] | None = None) -> int:
     config.harness.verifier_visibility = args.verifier_visibility
     if args.no_testgen:
         config.testgen.enabled = False
+    if args.no_lint:
+        config.lint.enabled = False
+    if args.no_report_draft:
+        config.report.draft_narrative = False
+    if args.min_failing_tests is not None:
+        config.harness.min_failing_tests = args.min_failing_tests
 
     stages = STAGES if args.stage == "all" else (args.stage,)
     for stage in stages:
@@ -110,6 +131,11 @@ def main(argv: list[str] | None = None) -> int:
             _run_knowledge(args, config)
         else:
             _run_tasks(args, config)
+    if args.prune_images:
+        from pipeline.docker.image import prune_dangling_bench_images
+
+        removed = prune_dangling_bench_images()
+        print(f"pruned {removed} dangling bench-pipeline image(s)")
     return 0
 
 
@@ -156,6 +182,22 @@ def _run_tasks(args: argparse.Namespace, config: Config) -> None:
     summary = ctx.report.get("tasks", {}).get("validate", {})
     valid, total = summary.get("valid", 0), summary.get("tasks", 0)
     print(f"tasks done: {repo_tasks_dir(ctx)} ({valid}/{total} VALID)")
+    _build_report(ctx)
+
+
+def _build_report(ctx) -> None:
+    """Enrich report_data.json + render REPORT.md at the repo root. A drafting failure
+    never breaks the run — the report is still written from the tables alone."""
+    from pipeline.report import build as report_build
+
+    llm = ctx.llm if ctx.config.report.draft_narrative else None
+    try:
+        _, md = report_build.build(ctx.run_dir, ctx.config, llm=llm)
+    except Exception as exc:  # noqa: BLE001 - report must never fail the pipeline
+        _, md = report_build.build(ctx.run_dir, ctx.config, llm=None)
+        print(f"report narrative draft skipped: {str(exc)[:200]}")
+    ctx.llm.write_usage()
+    print(f"report: {md}")
 
 
 if __name__ == "__main__":

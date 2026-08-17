@@ -173,10 +173,20 @@ def mini_pkg_excision_config():
     # the fixture run records their absence (`budget-exhausted`) and the scripted-endpoint
     # tests exercise them.
     cfg.history.max_neutrality_rewrites_per_repo = 0
-    # Test-gen (S6) and the OKF bundle (S7) are exercised by their own stages; the shared
-    # task-fixture run keeps them off so this cassette stage carries only the S4/S5 calls.
+    # Test-gen (S6), OKF (S7) and lint (S9) are exercised by their own tests; the shared
+    # task-fixture run keeps them off so this cassette stage carries only the S4/S5 calls
+    # and the source (hence spans/nodeids the cassettes were recorded against) is untouched.
     cfg.testgen.enabled = False
     cfg.okf.enabled = False
+    cfg.lint.enabled = False
+    # The fixture yields ~7 tasks across 3 modules; relax the selection quotas so the
+    # final `select` step is feasible on it (the real defaults 10/4/4/4 stay for glom).
+    cfg.selection.total_tasks = 5
+    cfg.selection.min_history = 2
+    cfg.selection.max_excision = 4
+    cfg.selection.max_netnew = 0
+    cfg.selection.min_distinct_modules = 2
+    cfg.report.draft_narrative = False  # no report cassette for the tasks fixture stage
     return cfg
 
 

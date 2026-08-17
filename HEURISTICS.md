@@ -59,9 +59,7 @@ All values are **PROPOSED** and require user confirmation before finalization.
 | Config key | Default | What it does | Why | Status |
 |---|---|---|---|---|
 | `baseline.framework_priority` | `("pytest", "unittest")` | Detection order for test frameworks | pytest is most common; unittest as fallback | PROPOSED -- needs user confirmation |
-| `baseline.env_fix_attempts` | `1` | Automatic env-fix attempts (e.g. add missing extra) before quarantine | One quick try; more would be speculative | PROPOSED -- needs user confirmation |
 | `baseline.quarantine_file` | `"tests/quarantine.txt"` | Path for generated `--deselect` list | Quarantined tests reported in REPORT.md; never deleted | PROPOSED -- needs user confirmation |
-| `baseline.treat_collection_broken_as_no_tests_after_repair` | `True` | If collection still broken after one repair attempt, treat as "no tests" | Triggers test-gen bootstrap instead of stalling | PROPOSED -- needs user confirmation |
 | `baseline.report_filename` | `".pytest-report.json"` | pytest-json-report output path (read from the container workdir) | structured pass/fail + failure reason for classification (S2) | PROPOSED -- needs user confirmation |
 | `baseline.agent_fix_allowed_globs` | `("tests/**", "test/**", "conftest.py", "Dockerfile", ".dockerignore", "requirements.in", "requirements.lock.txt", "constraints.txt", "pipeline-requirements.in")` | Paths the agent-fix step may change; edits outside are reverted + audited | the agent must never patch the code under test (S2) | PROPOSED -- needs user confirmation |
 | `agent.baseline_fix_max_attempts` | `1` | Bounded agent-fix attempts for pre-existing broken tests | Audited repair; capped to avoid rabbit holes | PROPOSED -- needs user confirmation |
@@ -98,13 +96,12 @@ All values are **PROPOSED** and require user confirmation before finalization.
 
 | Config key | Default | What it does | Why | Status |
 |---|---|---|---|---|
-| `lint.tool` | `"ruff"` | Lint/format tool | Single tool for both lint and format | PROPOSED -- needs user confirmation |
-| `lint.rules` | `("E", "F", "W", "I", "B", "UP")` | Ruff lint rules enabled | Conservative set: catches real issues without style noise | PROPOSED -- needs user confirmation |
+| `lint.enabled` | `True` | Master switch for the step (`--no-lint` sets False) | Fast reruns can skip lint (S9) | PROPOSED -- needs user confirmation |
+| `lint.rules` | `("E", "F", "W", "I", "B", "UP")` | Ruff lint rules enabled (also written to `[tool.ruff.lint] select`) | Conservative set: catches real issues without style noise | PROPOSED -- needs user confirmation |
 | `lint.autofix` | `True` | Run `ruff check --fix` | Auto-fix what ruff can | PROPOSED -- needs user confirmation |
 | `lint.format` | `True` | Run `ruff format` | Consistent formatting | PROPOSED -- needs user confirmation |
 | `lint.allow_noqa_for_unfixable` | `True` | Add per-file `# noqa` for unfixable errors | Leaves repo lint-clean without manual work | PROPOSED -- needs user confirmation |
-| `lint.llm_fix_unfixable` | `False` | Use LLM (BIG) to fix lint errors ruff can't auto-fix | Optional; default off since noqa + report is safer | PROPOSED -- needs user confirmation |
-| `lint.never_lint_historical_trees` | `True` | Skip lint/format on trees used by P3 history tasks | Would pollute the real diff between input/ and solution/ | PROPOSED -- needs user confirmation |
+| (lint step behavior, no knob) | -- | ruff runs on a throwaway copy INSIDE the pinned image (exact pinned ruff, no host execution); changed `.py` + a `[tool.ruff.lint]` pyproject (minimal, no `[build-system]`, created only if absent) are synced back; the image is rebuilt and the suite re-run twice — a formatting change that regresses a baseline-passing test reverts the tree and records `regressed` in `hygiene/lint.json`. **Decision:** generated tests ARE linted (pipeline-authored, committed after `base_sha`, so P3 mining is unaffected and the repo ends ruff-clean as a whole); historical task trees are never linted (S9) | PROPOSED -- needs user confirmation |
 
 ### P2: Graph
 
@@ -324,6 +321,18 @@ All values are **PROPOSED** and require user confirmation before finalization.
 | `selection.max_excision` | `4` | Max excision tasks in the final 10 | Assignment requirement | PROPOSED -- needs user confirmation |
 | `selection.max_netnew` | `2` | Max net-new tasks in the final 10 | User decision (PDF allows 3) | PROPOSED -- needs user confirmation |
 | `selection.min_distinct_modules` | `4` | Min distinct modules across the 10 selected tasks | Assignment requirement: tasks span >= 4 distinct modules | PROPOSED -- needs user confirmation |
+| (selection algorithm, no knob) | -- | Eligible = VALID + `instruction_status==final`. Rank by preference = failing-on-input verifier count desc, id asc (deterministic tie-break). Greedy: reserve the history floor first, fill the rest by preference under the excision/net-new caps; then swap to reach `min_distinct_modules` and toward the difficulty spread (SOFT). An unmet hard quota raises `SelectionInfeasible` (never a silent short-fall) (S9) | PROPOSED -- needs user confirmation |
+
+### P3: Report
+
+| Config key | Default | What it does | Why | Status |
+|---|---|---|---|---|
+| `report.report_md_filename` | `"REPORT.md"` | Repo-root report file | Assignment deliverable (S9) | PROPOSED -- needs user confirmation |
+| `report.report_data_filename` | `"report_data.json"` | The runner's per-stage file — READ by the report, never overwritten | Keeps the runner's schema intact (S9) | PROPOSED -- needs user confirmation |
+| `report.summary_filename` | `"report_summary.json"` | The report's aggregate (metrics REPORT.md tables are built from) | Separate from report_data.json to avoid a schema clash (S9) | PROPOSED -- needs user confirmation |
+| `report.draft_narrative` | `True` | One BIG `report.draft_sections` call drafts the six narrative paragraphs (cached by hash → 0-token reruns); `--no-report-draft` skips it | Grounded first draft for the author to edit; never fabricates numbers (S9) | PROPOSED -- needs user confirmation |
+| `report.decisions_filename` / `report.draft_max_chars` | `"report_decisions.json"` / `6000` | Draft cache filename; size cap of the metrics summary shown to the drafter | Bounded prompt; deterministic reuse (S9) | PROPOSED -- needs user confirmation |
+| (image label/prune, no knob) | -- | Every image the pipeline builds carries the label `bench-pipeline=1`; `--prune-images` runs `docker image prune -f --filter dangling=true --filter label=bench-pipeline=1` — removes ONLY dangling images this pipeline built (e.g. old layers after a rebuild), never tagged `bench-*` images or anything else on the host (S9) | PROPOSED -- needs user confirmation |
 
 
 ## Flags and defaults
@@ -339,6 +348,12 @@ All values are **PROPOSED** and require user confirmation before finalization.
 | `--excision-hard` | `excision.strip_docstring` | `False` | Strip docstring from excised functions (not just body) | Harder tasks; contract lives only in tests + instruction | PROPOSED -- needs user confirmation |
 | `--verifier-visibility` | `harness.verifier_visibility` | `"visible"` | `visible` or `hidden`: whether verifier tests appear in the task workspace | `visible` matches PDF layout; hack-proof via harness re-copy | PROPOSED -- needs user confirmation |
 | `--set section.key=value` | (any Config path) | -- | Override any config value from the CLI | Avoid touching code for threshold experiments | PROPOSED -- needs user confirmation |
+| `--verify-twice` | `(CLI flag)` | `false` | After hygiene, run the documented test command twice; fail if verdicts differ | Acceptance: identical results twice in a row (S2) | PROPOSED -- needs user confirmation |
+| `--no-testgen` | `testgen.enabled=False` | (on) | Skip P1 test generation | Fast reruns (S6) | PROPOSED -- needs user confirmation |
+| `--no-lint` | `lint.enabled=False` | (on) | Skip P1 lint/format | Fast reruns (S9) | PROPOSED -- needs user confirmation |
+| `--no-report-draft` | `report.draft_narrative=False` | (on) | Skip the BIG REPORT narrative draft (tables still written) | No LLM spend on the report (S9) | PROPOSED -- needs user confirmation |
+| `--min-failing-tests <N>` | `harness.min_failing_tests` | `1` | Fail-before must have >= N failing tests | Surfaces the threshold without `--set` (S9) | PROPOSED -- needs user confirmation |
+| `--prune-images` | `(CLI flag)` | `false` | After the run, prune ONLY dangling images carrying this pipeline's build label | Cleans our own rebuild leftovers; never touches other images (S9) | PROPOSED -- needs user confirmation |
 
 ### LLM configuration
 

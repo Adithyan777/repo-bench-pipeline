@@ -15,7 +15,7 @@ Legend: `todo` · `in-progress` · `review` (awaiting author review) · `done`
 | S6 | Step 6: P1 test-gen + AST mutators + mutation gate | review | See `### S6` (+ review-round fixes). `testgen` step wired after baseline (own commit, `--no-testgen`). Real runs (testgen-step tokens): mini_pkg_notests 0→34 (15/15 mutants, 46k), glom `top_k=3` 202→248 (4 kept, `glom.core` dropped, 14/16 valid, 238k), minidump 0→120 (24 kept, 92/93, 1.018M). Kill = ≥1 test failed w/ collection OK (json-report); resume proven 0-token + `testgen.json` byte-identical. Honest drops (no theater). Full `pytest` → 165 passed / 3 deselected (4:21); `-m slow` → 3 passed / 165 deselected; `ruff check .` clean. Scripted-endpoint tests (no cassettes, per verifier-agent precedent). |
 | S7 | Step 7: P2 .okf/ writer + claim verifier | review | See `### S7` (+ review-round fixes). `okf` knowledge step after `verify` (`okf.enabled`); OKF v0.2 bundle at `knowledge/.okf/`, static skeleton from the graph + BIG-authored purpose/contracts (cached by hash → 0-token, byte-identical reruns), claim verifier stamps `verified`(with `checks`)/`draft` + `okf_verification.json` (semantic precision + by_construction + unchecked kinds + conformance), `okf(path)` tool sandboxed. Runs (verified/draft): glom 105/45, toolz 111/27, minidump 97/53, mini_pkg 10/2; callees/callers/link 1.0, raises honest-low (implicit/under-claimed exceptions stay draft). `test_okf.py` 11 tests (offline + s7_okf cassette). Full `pytest` → 177 passed / 1 skipped / 3 deselected (3:13); `-m slow` → 3 passed; `ruff check .` clean (incl. the `docs/conf.py` source-module fix). |
 | S8 | Step 8: net-new funnel + builder | todo | |
-| S9 | Step 9: lint/format, selection & quotas, tasks.json, report_data → REPORT skeleton, transcripts curation, HEURISTICS review with author | todo | |
+| S9 | Step 9 (Session B): lint/format, final selection & quotas, root tasks.json, report_data → REPORT.md, transcripts curation, housekeeping, HEURISTICS review sheet | review | See `### S9`. New: hygiene `lint` step (ruff in-container, pyproject, rebuild+suite verify, `--no-lint`); `tasks/select.py` (deterministic 10 under quotas + soft spread, root `tasks.json` + `selection.json`, `--select` final tasks step, infeasible→error); `report/build.py` (report_data.json → six-section REPORT.md, drafted narrative marked for author, `python -m pipeline.report`); image label + prune-by-label (`--prune-images`); deleted 2 inert baseline flags; added `--min-failing-tests`; `transcripts/dev/` + `docs/HEURISTICS_REVIEW.md`; `.gitignore` flip for the deliverable set. Full `pytest` → **195 passed / 1 skipped / 3 deselected (3:50)**; `-m slow` → **3 passed**; `ruff check .` clean. **The final live glom `--fresh` run is executed by the author.** |
 | S10 | Step 10: held-out dry-run on toolz + minidump, fresh clone, twice, diff; fix generality bugs | todo | |
 
 ## Notes per session
@@ -1398,3 +1398,87 @@ exposes `okf` + `okf_manifest`. Per the S5 hand-off, `.okf` pages can be added t
 author's contract block via `instruction.task_facts` — that integration is NOT yet wired
 (deferred). The `okf` step is resumable and its LLM decisions are cached, so re-running
 `--stage knowledge` costs no tokens unless the graph or prompt version changes.
+
+### S9 (Session B — finalization)
+
+Turns the pipeline's outputs into the submission. **Net-new (S8) is CUT by decision** —
+not built; history + excision fill the 10. The final live glom `--fresh` run is executed
+by the author, so all committed run artifacts come from that single pass.
+
+**What exists (new this session):**
+
+- **Lint (P1, DESIGN 3.7).** `pipeline/hygiene/lint.py` + `PythonAdapter.lint_and_format(tree, run)`.
+  ruff runs INSIDE the pinned image (exact pinned ruff, no host execution) on a throwaway
+  copy; a `[tool.ruff.lint]` config is written into pyproject.toml (minimal, no
+  `[build-system]`, only when absent; existing ruff config respected); `ruff check --fix` +
+  `ruff format`; `# noqa` for unfixable (`lint.allow_noqa_for_unfixable`). Changed `.py` +
+  config synced back host-side; the image is REBUILT (proving a fresh `docker build` still
+  works, updating `build.json`'s digest) and the suite run twice — a regression reverts the
+  tree and records `regressed` in `hygiene/lint.json` (files/codes/counts/noqa). Wired as a
+  resumable hygiene step after `testgen` (own commit `pipeline: lint and format`, code
+  fingerprint, `--no-lint`). Input hash is keyed on the PRE-lint state (Dockerfile/lock +
+  baseline/testgen artifacts + `repr(lint)`) so an already-linted tree is not re-linted on
+  resume. **Decision (documented):** generated tests ARE linted (committed after `base_sha`,
+  so P3 mining is unaffected); historical task trees are never linted. Smoke-verified on
+  mini_pkg (ruff-clean in-container, pyproject created, image rebuilt, suite green, commit
+  present; resume skips).
+- **Selection (P3, DESIGN 5.1/5.6).** `pipeline/tasks/select.py`, wired as the final tasks
+  step `select`. Deterministic: rank by failing-on-input desc / id; reserve the
+  `min_history` floor, fill by preference under `max_excision`/`max_netnew`, swap to reach
+  `min_distinct_modules` and toward `difficulty.target_spread` (SOFT). Writes the repo-root
+  **`tasks.json`** (PDF fields + a `python -m pipeline.validate`-able `path`) and
+  `tasks/<repo>/selection.json` (every eligible task, picked/not + why). Infeasible quota →
+  `SelectionInfeasible` (hard error, never a silent short-fall). Root `tasks.json` is written
+  at `tasks_root.parent` (repo root for a real run; the tmp base under tests → no pollution).
+- **Report (DESIGN "REPORT.md production").** `pipeline/report/build.py`: `collect()`
+  aggregates every stage's artifacts (detected/changed, quarantines, dropped extras,
+  image digest, test-gen mutation score, lint counts, graph/okf precision + by_construction,
+  funnel counts + reject reasons, instruct/difficulty stats, per-stage timings, LLM tokens by
+  step, agent-run audit) into an enriched `report_data.json`; `render()` produces the six
+  required sections with tables auto-filled; `draft_narrative()` is ONE BIG
+  `report.draft_sections` call (cached by hash) whose short grounded paragraphs are marked
+  with `AUTHOR` comments to finish. Runs at the end of a CLI tasks run (not inside
+  `run_tasks`, so tests calling `run_tasks` directly don't draft/pollute) and standalone via
+  `python -m pipeline.report <repo> [--no-draft]`. A drafting failure never breaks the run.
+- **Transcripts.** `transcripts/dev/`: `design-session-log.md` (copy of
+  `docs/decisions-raw.md`), `prompts.md` (S1–S7 scopes + Session B verbatim), `review-rounds.md`.
+  The bulky per-call `transcripts/pipeline/` + `transcripts/agent/` (2101 files, mixed-repo)
+  stay gitignored as regenerable audit — the curated dev log is the committed transcript.
+- **Housekeeping.** Image build carries the label `bench-pipeline=1`; `prune_dangling_bench_images()`
+  + `--prune-images` remove ONLY dangling images with that label (never tagged `bench-*` or
+  other images — the user's earlier concern). Deleted the two inert baseline flags
+  (`env_fix_attempts`, `treat_collection_broken_as_no_tests_after_repair`) + their HEURISTICS
+  rows (the collection-broken path is a documented gap, not a live flag). Added the
+  `--min-failing-tests` CLI flag. `.gitignore` flipped so the deliverable set is committable
+  (root `tasks.json`, `tasks/glom/`, `transcripts/dev/`, `output/glom/knowledge/repo_graph.json`
+  + `.okf/`) while `output/<repo>/repo` trees, other repos' outputs, `report_data.json`, and
+  raw transcripts stay ignored. `.env.example` added; README "How to run" fully updated.
+- **HEURISTICS review sheet.** `docs/HEURISTICS_REVIEW.md` groups config keys as (a) fired on
+  glom / (b) never fired / (c) changed from the proposal, one line each.
+
+**Tests added:** `tests/test_select.py` (10: quotas, diversity, spread-hits-target,
+determinism, three infeasible cases, root_entry PDF fields, run_selection writer),
+`tests/test_report.py` (6: report_data completeness/all sections, six-section render, robust
+to missing artifacts, cached-draft zero-second-call, build writes REPORT.md), `tests/test_lint.py`
+(4: real hygiene run with lint → ruff-clean in-container + commit + rebuild + suite green,
+resume skips, disabled no-op, image label + prune-only-our-dangling). The shared fixtures
+(`mini_env`, `_offline_cfg`, `mini_pkg_excision_config`, knowledge e2e) now also set
+`lint.enabled=False` (like testgen/okf) so cassette stages + span/nodeid assertions run on
+unformatted source; the tasks-fixture config sets feasible selection quotas + `draft=False`.
+
+**Config added:** `lint.enabled`; `ReportConfig` (report md/data/decisions filenames,
+`draft_narrative`, `draft_max_chars`); `docker.image.BUILD_LABEL` + `prune_dangling_bench_images`;
+CLI flags `--no-lint`/`--no-report-draft`/`--min-failing-tests`/`--prune-images`. Removed:
+`baseline.env_fix_attempts`, `baseline.treat_collection_broken_as_no_tests_after_repair`.
+`lint.py` in `hygiene_code_files`; `select.py` in `tasks.code_fingerprint_files`. HEURISTICS
+rows added/removed to match; DESIGN 3.7 + "REPORT.md production" updated.
+
+**Suite (verbatim):** `.venv/bin/python -m pytest` → **195 passed, 1 skipped, 3 deselected in
+230.97s (0:03:50)** (skip = pyyaml round-trip, runs in-container); `-m slow` → **3 passed, 196
+deselected in 43.28s**; `.venv/bin/ruff check .` → **All checks passed!**
+
+**For the author's final glom run:** `./run.sh https://github.com/mahmoud/glom --fresh`
+produces the committed artifacts in one pass (hygiene→knowledge→tasks→select, then REPORT.md
+via the CLI). Then the documented container test twice + `python -m pipeline.validate` on the
+10 selected (paths in root `tasks.json`). Everything else this session is left **staged, not
+committed**, for author review.

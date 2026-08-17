@@ -14,6 +14,11 @@ class DockerError(RuntimeError):
     pass
 
 
+# Every image this pipeline builds carries this label, so a prune can target ONLY our
+# own leftovers (never a user's other images/containers).
+BUILD_LABEL = "bench-pipeline"
+
+
 def _run(argv: list[str]) -> str:
     proc = subprocess.run(argv, capture_output=True, text=True, check=False)
     if proc.returncode != 0:
@@ -44,8 +49,26 @@ def build_image(context_dir: Path, tag: str) -> str:
     context_dir = Path(context_dir)
     if not (context_dir / "Dockerfile").is_file():
         raise DockerError(f"no Dockerfile in {context_dir}")
-    _run(["docker", "build", "-t", tag, str(context_dir)])
+    _run(["docker", "build", "--label", f"{BUILD_LABEL}=1", "-t", tag, str(context_dir)])
     return _run(["docker", "inspect", "--format", "{{.Id}}", tag])
+
+
+def prune_dangling_bench_images() -> int:
+    """Remove ONLY dangling (untagged) images that carry this pipeline's build label —
+    e.g. the old layers left behind when bench-<repo> is rebuilt. Tagged bench-* images
+    and any image the pipeline did not build are never touched. Returns images removed.
+
+    (A rebuild retags bench-<repo> onto the new image, leaving the previous one
+    untagged; ``label=`` scopes the prune so nothing else on the host is affected.)
+    """
+    out = _run(
+        [
+            "docker", "image", "prune", "-f",
+            "--filter", "dangling=true",
+            "--filter", f"label={BUILD_LABEL}=1",
+        ]
+    )
+    return sum(1 for line in out.splitlines() if "sha256:" in line or line.startswith("deleted:"))
 
 
 def image_id(ref: str) -> str | None:

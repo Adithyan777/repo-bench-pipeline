@@ -496,6 +496,7 @@ def test_knowledge_e2e_mini_pkg(tmp_path: Path, docker_available: None) -> None:
     cfg = Config()
     cfg.testgen.enabled = False  # test-gen needs the BIG agent; covered by test_testgen.py
     cfg.okf.enabled = False  # okf needs the BIG model; covered by test_okf.py (s7_okf cassette)
+    cfg.lint.enabled = False  # lint has its own test (test_lint.py); keep source unformatted
     src = tmp_path / "mini_pkg"
     shutil.copytree(FIXTURES / "mini_pkg", src)
     ctx = build_context(str(src), config=cfg, output_root=tmp_path / "out", llm_mode="replay")

@@ -494,8 +494,11 @@ def test_baseline_hash_invalidates_on_test_change(tmp_path: Path) -> None:
 
 def _offline_cfg() -> Config:
     # Test-gen needs the BIG agent (no cassette); its own tests cover it (test_testgen.py).
+    # Lint has its own test (test_lint.py); keep it off here so these hygiene assertions
+    # (baseline counts, spans) run against unformatted source and skip the extra rebuild.
     cfg = Config()
     cfg.testgen.enabled = False
+    cfg.lint.enabled = False
     return cfg
 
 

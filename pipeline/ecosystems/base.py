@@ -54,8 +54,15 @@ class EcosystemAdapter(ABC):
         """Create a minimal test layout (tests/, conftest) when the repo has none."""
 
     @abstractmethod
-    def lint_and_format(self, repo: Path) -> dict[str, Any]:
-        """Run lint+format; return a structured report of what changed / remains."""
+    def lint_and_format(self, repo: Path, run: Any) -> dict[str, Any]:
+        """Lint + format ``repo`` in place; return a structured report.
+
+        ``run(cmd) -> CommandResult`` executes a shell command inside the pinned
+        container (so the exact, pinned linter version is used and no target code
+        runs on the host). The adapter writes its lint config into the tree, runs
+        the fix/format commands via ``run``, and adds suppressions for unfixable
+        findings; the caller syncs the mutated tree back and verifies the build.
+        """
 
     @abstractmethod
     def parse_test_report(self, path: Path) -> dict[str, dict[str, str]]:

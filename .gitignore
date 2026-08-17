@@ -1,6 +1,7 @@
 # secrets
 .env
 .env.*
+!.env.example
 
 # assignment inputs (not part of the deliverable)
 *.pdf
@@ -26,11 +27,28 @@ htmlcov/
 
 # pipeline runtime artifacts
 .llm_cache/
-output/
-transcripts/
-# generated task folders: dry-run output for now; final tasks/glom + tasks.json are committed in S9
-/tasks/
 scripts/_record_workdir/
+
+# output/: ignore everything (repo trees, other repos' runs) EXCEPT glom's knowledge
+# deliverables (repo_graph.json + the OKF bundle), per DESIGN "output/".
+output/*
+!output/glom/
+output/glom/*
+!output/glom/knowledge/
+output/glom/knowledge/*
+!output/glom/knowledge/repo_graph.json
+!output/glom/knowledge/.okf/
+
+# transcripts/: the bulky per-call pipeline/agent transcripts are regenerable audit and
+# stay ignored; only the curated dev session log is committed.
+transcripts/*
+!transcripts/dev/
+
+# generated task folders: the committed deliverable is the repo-root tasks.json plus the
+# SELECTED task folders under tasks/glom/ (the 10 listed in output/glom/tasks/selection.json).
+# Surplus glom folders and other repos' task trees are NOT part of the committed set.
+/tasks/*
+!/tasks/glom/
 
 # fixture repos are rebuilt by tests/fixtures/build_mini_pkg.py; don't commit .git
 tests/fixtures/mini_pkg/

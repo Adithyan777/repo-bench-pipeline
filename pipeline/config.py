@@ -201,9 +201,7 @@ class PinConfig:
 @dataclass
 class BaselineConfig:
     framework_priority: tuple[str, ...] = ("pytest", "unittest")
-    env_fix_attempts: int = 1  # automatic: add missing extra, rerun
     quarantine_file: str = "tests/quarantine.txt"  # --deselect list
-    treat_collection_broken_as_no_tests_after_repair: bool = True
     report_filename: str = ".pytest-report.json"  # pytest-json-report output, read from workdir
     # The agent-fix step may ONLY change these paths (tests/config/deps); any edit
     # outside them is reverted and audited. It must never patch the code under test.
@@ -262,13 +260,14 @@ class TestGenConfig:
 
 @dataclass
 class LintConfig:
-    tool: str = "ruff"
+    # ruff is the only lint/format tool; the step runs it in-container on the hygiene
+    # clone only (historical task trees are never linted, by construction). Unfixable
+    # findings get a per-file noqa rather than an LLM fix.
+    enabled: bool = True  # --no-lint turns the step into a no-op
     rules: tuple[str, ...] = ("E", "F", "W", "I", "B", "UP")
     autofix: bool = True
     format: bool = True
     allow_noqa_for_unfixable: bool = True
-    llm_fix_unfixable: bool = False  # else noqa + report
-    never_lint_historical_trees: bool = True
 
 
 # --- Pipeline 2: knowledge layer ---
@@ -568,6 +567,7 @@ class TasksConfig:
         "pipeline/tasks/manifest.py",
         "pipeline/tasks/runner.py",
         "pipeline/tasks/classify.py",
+        "pipeline/tasks/select.py",
         "pipeline/ecosystems/source_ops.py",
     )
 
@@ -630,6 +630,18 @@ class SelectionConfig:
     min_distinct_modules: int = 4
 
 
+@dataclass
+class ReportConfig:
+    # REPORT.md at the repo root. The runner's per-stage report_data.json is READ (never
+    # overwritten); the report's own aggregate is written to report_summary.json.
+    report_md_filename: str = "REPORT.md"
+    report_data_filename: str = "report_data.json"  # the runner's per-stage file (input only)
+    summary_filename: str = "report_summary.json"  # the report's aggregate (output)
+    decisions_filename: str = "report_decisions.json"  # output/<repo>/, drafts cached by hash
+    draft_narrative: bool = True  # one BIG report.draft_sections call; --no-report-draft skips
+    draft_max_chars: int = 6000  # compact data summary shown to the drafter
+
+
 # --- Aggregate ---
 
 
@@ -654,6 +666,7 @@ class Config:
     instruction: InstructionConfig = field(default_factory=InstructionConfig)
     difficulty: DifficultyConfig = field(default_factory=DifficultyConfig)
     selection: SelectionConfig = field(default_factory=SelectionConfig)
+    report: ReportConfig = field(default_factory=ReportConfig)
     step_model: dict[str, Tier] = field(default_factory=lambda: dict(STEP_MODEL))
     # Pipeline source files whose contents fingerprint every hygiene step's input hash.
     hygiene_code_files: tuple[str, ...] = (
@@ -666,6 +679,7 @@ class Config:
         "pipeline/hygiene/baseline.py",
         "pipeline/hygiene/testgen.py",
         "pipeline/hygiene/mutate.py",
+        "pipeline/hygiene/lint.py",
     )
 
     def model_for(self, step: str) -> str:
