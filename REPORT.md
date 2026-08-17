@@ -232,7 +232,8 @@ Exact commands (fresh clone). See README for full detail.
 
 ```bash
 # 0. setup
-git clone https://github.com/Adithyan777/repo-bench-pipeline.git && cd repo-bench-pipeline
+git clone https://github.com/Adithyan777/repo-bench-pipeline.git
+cd repo-bench-pipeline
 uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -r requirements-dev.txt
 cp .env.example .env    # add LLM_BASE_URL + LLM_API_KEY
