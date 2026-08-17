@@ -18,6 +18,7 @@ All values are **PROPOSED** and require user confirmation before finalization.
 | `detect.import_alias_table` | `{"yaml": "PyYAML", "cv2": "opencv-python", "PIL": "Pillow", "sklearn": "scikit-learn", "bs4": "beautifulsoup4", "dateutil": "python-dateutil", "attr": "attrs", "dotenv": "python-dotenv", "jwt": "PyJWT", "Crypto": "pycryptodome"}` | Maps import names to PyPI package names for repos with no manifest | Deterministic resolution before LLM fallback | PROPOSED -- needs user confirmation |
 | `detect.test_tools` | `("pytest", "coverage", "pytest-json-report")` | Test tools always added to the lock | Needed for baseline runs and structured reports | PROPOSED -- needs user confirmation |
 | `detect.dev_tools` | `("ruff",)` | Dev tools always added to the lock | Lint/format stage needs ruff | PROPOSED -- needs user confirmation |
+| `detect.git_version_tools` | `("setuptools-git-versioning", "setuptools_scm", "setuptools-scm", "hatch-vcs", "versioneer", "dunamai", "pdm-backend")` | Build-system markers meaning the version is derived from git metadata | such repos keep .git in the build context + install git so the version resolves (env fix, not a source edit) (S2) | PROPOSED -- needs user confirmation |
 
 ### P1: Compose detection signals
 
@@ -34,6 +35,10 @@ All values are **PROPOSED** and require user confirmation before finalization.
 | `pin.generate_hashes` | `True` | Pass `--generate-hashes` to the resolver | Integrity verification on install | PROPOSED -- needs user confirmation |
 | `pin.emit_constraints_txt` | `True` | Also emit `constraints.txt` alongside the lock | So setup.py installs resolve identically | PROPOSED -- needs user confirmation |
 | `pin.lock_filename` | `"requirements.lock.txt"` | Name of the generated lockfile | pip-installable, distinct from repo's own requirements.txt | PROPOSED -- needs user confirmation |
+| `pin.requirements_in_filename` | `"pipeline-requirements.in"` | Name of the synthesized canonical requirements input | pipeline-owned; must NOT overwrite a repo's own requirements.in (S2) | PROPOSED -- needs user confirmation |
+| `pin.constraints_filename` | `"constraints.txt"` | Name of the emitted constraints file | so setup.py installs resolve identically (S2) | PROPOSED -- needs user confirmation |
+| `pin.include_extras` | `("test", "tests", "testing", "dev")` | Manifest extras folded into the lock when present | test suites' deps often live in a `test` extra (e.g. glom) (S2) | PROPOSED -- needs user confirmation |
+| `pin.alias_reask_attempts` | `1` | Re-asks for a corrected PyPI name when an inferred import fails to resolve, before dropping it | LLM proposes, uv disposes: verify mappings against real PyPI, bounded re-ask (S2) | PROPOSED -- needs user confirmation |
 
 ### P1: Docker
 
@@ -57,6 +62,8 @@ All values are **PROPOSED** and require user confirmation before finalization.
 | `baseline.env_fix_attempts` | `1` | Automatic env-fix attempts (e.g. add missing extra) before quarantine | One quick try; more would be speculative | PROPOSED -- needs user confirmation |
 | `baseline.quarantine_file` | `"tests/quarantine.txt"` | Path for generated `--deselect` list | Quarantined tests reported in REPORT.md; never deleted | PROPOSED -- needs user confirmation |
 | `baseline.treat_collection_broken_as_no_tests_after_repair` | `True` | If collection still broken after one repair attempt, treat as "no tests" | Triggers test-gen bootstrap instead of stalling | PROPOSED -- needs user confirmation |
+| `baseline.report_filename` | `".pytest-report.json"` | pytest-json-report output path (read from the container workdir) | structured pass/fail + failure reason for classification (S2) | PROPOSED -- needs user confirmation |
+| `baseline.agent_fix_allowed_globs` | `("tests/**", "test/**", "conftest.py", "Dockerfile", ".dockerignore", "requirements.in", "requirements.lock.txt", "constraints.txt", "pipeline-requirements.in")` | Paths the agent-fix step may change; edits outside are reverted + audited | the agent must never patch the code under test (S2) | PROPOSED -- needs user confirmation |
 | `agent.baseline_fix_max_attempts` | `1` | Bounded agent-fix attempts for pre-existing broken tests | Audited repair; capped to avoid rabbit holes | PROPOSED -- needs user confirmation |
 
 ### P1: Test generation

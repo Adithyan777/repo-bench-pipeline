@@ -167,6 +167,18 @@ class DetectConfig:
         }
     )
     service_env_signals: tuple[str, ...] = ("DATABASE_URL", "REDIS_URL")
+    # Build-system markers meaning the version is derived from git metadata; when
+    # present we keep .git in the build context and install git in the image so the
+    # version resolves (env fix, not a source edit).
+    git_version_tools: tuple[str, ...] = (
+        "setuptools-git-versioning",
+        "setuptools_scm",
+        "setuptools-scm",
+        "hatch-vcs",
+        "versioneer",
+        "dunamai",
+        "pdm-backend",
+    )
 
 
 @dataclass
@@ -175,6 +187,14 @@ class PinConfig:
     generate_hashes: bool = True
     emit_constraints_txt: bool = True
     lock_filename: str = "requirements.lock.txt"
+    # Pipeline-owned name: must NOT collide with a repo's own requirements.in
+    requirements_in_filename: str = "pipeline-requirements.in"
+    constraints_filename: str = "constraints.txt"
+    # Manifest extras to fold into the lock when present (test suites often live here)
+    include_extras: tuple[str, ...] = ("test", "tests", "testing", "dev")
+    # Times to re-ask the SMALL model for a corrected PyPI name when an inferred
+    # import fails to resolve, before dropping it as unresolved.
+    alias_reask_attempts: int = 1
 
 
 @dataclass
@@ -183,6 +203,20 @@ class BaselineConfig:
     env_fix_attempts: int = 1  # automatic: add missing extra, rerun
     quarantine_file: str = "tests/quarantine.txt"  # --deselect list
     treat_collection_broken_as_no_tests_after_repair: bool = True
+    report_filename: str = ".pytest-report.json"  # pytest-json-report output, read from workdir
+    # The agent-fix step may ONLY change these paths (tests/config/deps); any edit
+    # outside them is reverted and audited. It must never patch the code under test.
+    agent_fix_allowed_globs: tuple[str, ...] = (
+        "tests/**",
+        "test/**",
+        "conftest.py",
+        "Dockerfile",
+        ".dockerignore",
+        "requirements.in",
+        "requirements.lock.txt",
+        "constraints.txt",
+        "pipeline-requirements.in",
+    )
 
 
 @dataclass

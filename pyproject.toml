@@ -6,8 +6,11 @@ pythonpath = ["."]
 testpaths = ["tests"]
 # fixtures/ holds standalone repos with their own test files; never collect them
 norecursedirs = ["fixtures"]
+# Default run skips `slow` (multi-build container tests). Run them with `pytest -m slow`.
+addopts = "-m 'not slow'"
 markers = [
     "docker: test requires a running Docker daemon",
+    "slow: heavy test that builds container images multiple times",
 ]
 
 [tool.ruff]

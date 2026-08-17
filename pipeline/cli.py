@@ -12,14 +12,38 @@ from dataclasses import fields, is_dataclass
 from pathlib import Path
 
 from pipeline.config import DEFAULT, Config
-from pipeline.state import State
 
 STAGES = ("hygiene", "knowledge", "tasks")
 OUTPUT_ROOT = Path("output")
 
 
 def repo_name(repo: str) -> str:
-    return Path(repo.rstrip("/")).name.removesuffix(".git")
+    return sanitize_name(Path(repo.rstrip("/")).name.removesuffix(".git"))
+
+
+def sanitize_name(name: str) -> str:
+    """Safe run-dir + docker-tag component: lowercase, [a-z0-9._-], non-empty."""
+    import re
+
+    slug = re.sub(r"[^a-z0-9._-]+", "-", name.lower()).strip("-.")
+    slug = re.sub(r"-{2,}", "-", slug)
+    if slug in ("", ".", ".."):
+        raise SystemExit(f"cannot derive a safe repo name from {name!r}")
+    return slug
+
+
+def load_dotenv(path: Path = Path(".env")) -> None:
+    """Load KEY=VALUE lines from .env into the environment (does not override)."""
+    import os
+
+    if not path.is_file():
+        return
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 
 def apply_overrides(config: Config, assignments: list[str]) -> None:
@@ -60,24 +84,44 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT.harness.verifier_visibility,
     )
     p.add_argument("--set", action="append", default=[], metavar="section.key=value")
+    p.add_argument(
+        "--verify-twice", action="store_true", help="after hygiene, run the test command twice"
+    )
     return p
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    load_dotenv()
     config = DEFAULT
     apply_overrides(config, args.set)
     config.llm.disk_cache = config.llm.disk_cache or args.llm_cache
     config.excision.strip_docstring = config.excision.strip_docstring or args.excision_hard
     config.harness.verifier_visibility = args.verifier_visibility
 
-    run_dir = OUTPUT_ROOT / repo_name(args.repo)
-    State.load(run_dir, force=args.force, fresh=args.fresh)
-
     stages = STAGES if args.stage == "all" else (args.stage,)
     for stage in stages:
-        raise SystemExit(f"stage '{stage}' is not implemented yet (lands in S2+)")
+        if stage == "hygiene":
+            _run_hygiene(args, config)
+        else:
+            raise SystemExit(f"stage '{stage}' is not implemented yet (lands in S3+)")
     return 0
+
+
+def _run_hygiene(args: argparse.Namespace, config: Config) -> None:
+    from pipeline.hygiene.context import build_context
+    from pipeline.hygiene.runner import run_hygiene, verify_twice
+
+    ctx = build_context(
+        args.repo, config=config, force=tuple(args.force), fresh=args.fresh, output_root=OUTPUT_ROOT
+    )
+    run_hygiene(ctx)
+    print(f"hygiene done: {ctx.run_dir}")
+    if args.verify_twice:
+        ok = verify_twice(ctx)
+        print(f"verify-twice identical: {ok}")
+        if not ok:
+            raise SystemExit("twice-run verdicts differ")
 
 
 if __name__ == "__main__":

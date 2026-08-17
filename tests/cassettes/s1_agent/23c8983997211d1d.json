@@ -21,31 +21,18 @@
         "tool_calls": [
           {
             "function": {
-              "arguments": "{\"path\": \"hello.py\", \"content\": \"print(42)\"}",
+              "arguments": "{\"path\": \"hello.py\", \"content\": \"print(42)\\n\"}",
               "name": "write_file"
             },
             "id": "functions.write_file:0",
-            "type": "function"
-          },
-          {
-            "function": {
-              "arguments": "{\"cmd\": \"python hello.py\"}",
-              "name": "run"
-            },
-            "id": "functions.run:1",
             "type": "function"
           }
         ]
       },
       {
-        "content": "wrote 9 bytes to hello.py",
+        "content": "wrote 10 bytes to hello.py",
         "role": "tool",
         "tool_call_id": "functions.write_file:0"
-      },
-      {
-        "content": "exit_code=0\n--- stdout ---\n42\n\n--- stderr ---\n",
-        "role": "tool",
-        "tool_call_id": "functions.run:1"
       }
     ],
     "model": "moonshotai/Kimi-K2.6",
@@ -136,46 +123,55 @@
   "response": {
     "choices": [
       {
-        "finish_reason": "stop",
+        "finish_reason": "tool_calls",
         "index": 0,
         "logprobs": null,
         "message": {
           "annotations": null,
           "audio": null,
-          "content": "Created `hello.py` containing `print(42)` and ran it with `python hello.py`.\n\nOutput produced:\n```\n42\n```",
+          "content": null,
           "function_call": null,
-          "reasoning_content": "The user asked me to create a file hello.py that prints 42, run it with `python hello.py`, and report the output it produced.\n\nI have:\n1. Created hello.py with content `print(42)`\n2. Run it with `python hello.py`\n3. The output was `42` (with exit code 0, no stderr)\n\nI should report this clearly.",
+          "reasoning_content": "The file has been created. Now I need to run it with `python hello.py` and report the output.",
           "refusal": null,
           "role": "assistant",
-          "tool_calls": null
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"cmd\": \"python hello.py\"}",
+                "name": "run"
+              },
+              "id": "functions.run:0",
+              "type": "function"
+            }
+          ]
         }
       }
     ],
-    "created": 1786948697,
-    "id": "chatcmpl-8a7f92180a264bf48373b0a00af8f58b",
+    "created": 1786952609,
+    "id": "chatcmpl-e1e91109c6494cc08c4f60253d248817",
     "model": "moonshotai/Kimi-K2.6",
     "moderation": null,
     "object": "chat.completion",
     "service_tier": null,
     "system_fingerprint": null,
     "usage": {
-      "completion_tokens": 107,
+      "completion_tokens": 41,
       "completion_tokens_details": {
-        "accepted_prediction_tokens": 78,
+        "accepted_prediction_tokens": 30,
         "audio_tokens": 0,
-        "reasoning_tokens": 79,
-        "rejected_prediction_tokens": 42,
+        "reasoning_tokens": 23,
+        "rejected_prediction_tokens": 18,
         "text_tokens": null
       },
-      "prompt_tokens": 312,
+      "prompt_tokens": 273,
       "prompt_tokens_details": {
         "audio_tokens": 0,
         "cache_write_tokens": null,
-        "cached_tokens": 0,
+        "cached_tokens": 256,
         "image_tokens": null,
         "text_tokens": null
       },
-      "total_tokens": 419
+      "total_tokens": 314
     }
   }
 }

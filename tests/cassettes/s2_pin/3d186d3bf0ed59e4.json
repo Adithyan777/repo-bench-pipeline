@@ -6,7 +6,7 @@
     "max_tokens": 2048,
     "messages": [
       {
-        "content": "Return the integer 42 as `answer`.",
+        "content": "Map each Python import name to its PyPI distribution name. If the import name is already the PyPI name, repeat it.\nImports: serial",
         "role": "user"
       }
     ],
@@ -24,14 +24,28 @@
           "description": "Emit the result.",
           "name": "emit",
           "parameters": {
-            "additionalProperties": false,
             "properties": {
-              "answer": {
-                "type": "integer"
+              "mappings": {
+                "items": {
+                  "properties": {
+                    "import_name": {
+                      "type": "string"
+                    },
+                    "pypi_name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "import_name",
+                    "pypi_name"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
               }
             },
             "required": [
-              "answer"
+              "mappings"
             ],
             "type": "object"
           }
@@ -57,33 +71,33 @@
           "tool_calls": [
             {
               "function": {
-                "arguments": "{\"answer\": 42}",
+                "arguments": "{\"mappings\": [{\"import_name\": \"serial\", \"pypi_name\": \"pyserial\"}]}",
                 "name": "emit"
               },
-              "id": "chatcmpl-tool-7eea13658e6d46bdb52fe756937e5290",
+              "id": "chatcmpl-tool-dcad4cc7fe3d44e6a06c7254fde8f568",
               "type": "function"
             }
           ]
         }
       }
     ],
-    "created": 1786952607,
-    "id": "chatcmpl-130893969ec241a587b1db1c8a8f920a",
+    "created": 1786952612,
+    "id": "chatcmpl-67fc30320fee4e81bde8c2a270f9791e",
     "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
     "moderation": null,
     "object": "chat.completion",
     "service_tier": null,
     "system_fingerprint": null,
     "usage": {
-      "completion_tokens": 26,
+      "completion_tokens": 44,
       "completion_tokens_details": {
-        "accepted_prediction_tokens": 20,
+        "accepted_prediction_tokens": 35,
         "audio_tokens": 0,
         "reasoning_tokens": 0,
         "rejected_prediction_tokens": 15,
         "text_tokens": null
       },
-      "prompt_tokens": 301,
+      "prompt_tokens": 368,
       "prompt_tokens_details": {
         "audio_tokens": 0,
         "cache_write_tokens": null,
@@ -91,7 +105,7 @@
         "image_tokens": null,
         "text_tokens": null
       },
-      "total_tokens": 327
+      "total_tokens": 412
     }
   }
 }

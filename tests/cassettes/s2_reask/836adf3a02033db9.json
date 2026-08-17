@@ -6,7 +6,7 @@
     "max_tokens": 2048,
     "messages": [
       {
-        "content": "Return the integer 42 as `answer`.",
+        "content": "Map each Python import name to its PyPI distribution name. If the import name is already the PyPI name, repeat it.\nImports: zzznonexistent9876\n\nPackage 'zzznonexistent9876' was not found in the package registry (mapped from import 'zzznonexistent9876'). Provide the correct PyPI name.",
         "role": "user"
       }
     ],
@@ -24,14 +24,28 @@
           "description": "Emit the result.",
           "name": "emit",
           "parameters": {
-            "additionalProperties": false,
             "properties": {
-              "answer": {
-                "type": "integer"
+              "mappings": {
+                "items": {
+                  "properties": {
+                    "import_name": {
+                      "type": "string"
+                    },
+                    "pypi_name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "import_name",
+                    "pypi_name"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
               }
             },
             "required": [
-              "answer"
+              "mappings"
             ],
             "type": "object"
           }
@@ -57,33 +71,33 @@
           "tool_calls": [
             {
               "function": {
-                "arguments": "{\"answer\": 42}",
+                "arguments": "{\"mappings\": [{\"import_name\": \"zzznonexistent9876\", \"pypi_name\": \"zzznonexistent9876\"}]}",
                 "name": "emit"
               },
-              "id": "chatcmpl-tool-7eea13658e6d46bdb52fe756937e5290",
+              "id": "chatcmpl-tool-ffdbb580dcf946dfb0e9a5ab1e56308c",
               "type": "function"
             }
           ]
         }
       }
     ],
-    "created": 1786952607,
-    "id": "chatcmpl-130893969ec241a587b1db1c8a8f920a",
+    "created": 1786953545,
+    "id": "chatcmpl-ed45adef387f42e285f098a159686a4c",
     "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
     "moderation": null,
     "object": "chat.completion",
     "service_tier": null,
     "system_fingerprint": null,
     "usage": {
-      "completion_tokens": 26,
+      "completion_tokens": 56,
       "completion_tokens_details": {
-        "accepted_prediction_tokens": 20,
+        "accepted_prediction_tokens": 45,
         "audio_tokens": 0,
         "reasoning_tokens": 0,
         "rejected_prediction_tokens": 15,
         "text_tokens": null
       },
-      "prompt_tokens": 301,
+      "prompt_tokens": 414,
       "prompt_tokens_details": {
         "audio_tokens": 0,
         "cache_write_tokens": null,
@@ -91,7 +105,7 @@
         "image_tokens": null,
         "text_tokens": null
       },
-      "total_tokens": 327
+      "total_tokens": 470
     }
   }
 }

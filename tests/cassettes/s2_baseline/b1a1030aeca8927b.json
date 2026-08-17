@@ -6,7 +6,7 @@
     "max_tokens": 2048,
     "messages": [
       {
-        "content": "Return the integer 42 as `answer`.",
+        "content": "Classify each failing test as 'env' (missing optional dependency, network, python-version) or 'genuine' (real behavioral failure). If env and a package is missing, give its PyPI name in missing_dep.\n\ntests/test_x.py::test_reads_yaml: ModuleNotFoundError: No module named 'yaml'\ntests/test_x.py::test_math: assert add(1, 1) == 3",
         "role": "user"
       }
     ],
@@ -24,14 +24,34 @@
           "description": "Emit the result.",
           "name": "emit",
           "parameters": {
-            "additionalProperties": false,
             "properties": {
-              "answer": {
-                "type": "integer"
+              "classifications": {
+                "items": {
+                  "properties": {
+                    "category": {
+                      "enum": [
+                        "env",
+                        "genuine"
+                      ]
+                    },
+                    "missing_dep": {
+                      "type": "string"
+                    },
+                    "test_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "category"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
               }
             },
             "required": [
-              "answer"
+              "classifications"
             ],
             "type": "object"
           }
@@ -57,33 +77,33 @@
           "tool_calls": [
             {
               "function": {
-                "arguments": "{\"answer\": 42}",
+                "arguments": "{\"classifications\": [{\"test_id\": \"tests/test_x.py::test_reads_yaml\", \"category\": \"env\", \"missing_dep\": \"PyYAML\"}, {\"test_id\": \"tests/test_x.py::test_math\", \"category\": \"genuine\"}]}",
                 "name": "emit"
               },
-              "id": "chatcmpl-tool-7eea13658e6d46bdb52fe756937e5290",
+              "id": "chatcmpl-tool-3c5ecd5afba14c88ab4e4b105a641c1d",
               "type": "function"
             }
           ]
         }
       }
     ],
-    "created": 1786952607,
-    "id": "chatcmpl-130893969ec241a587b1db1c8a8f920a",
+    "created": 1786952612,
+    "id": "chatcmpl-7608798dcb2a4c829cb501d63d731f53",
     "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
     "moderation": null,
     "object": "chat.completion",
     "service_tier": null,
     "system_fingerprint": null,
     "usage": {
-      "completion_tokens": 26,
+      "completion_tokens": 78,
       "completion_tokens_details": {
-        "accepted_prediction_tokens": 20,
+        "accepted_prediction_tokens": 63,
         "audio_tokens": 0,
         "reasoning_tokens": 0,
-        "rejected_prediction_tokens": 15,
+        "rejected_prediction_tokens": 17,
         "text_tokens": null
       },
-      "prompt_tokens": 301,
+      "prompt_tokens": 440,
       "prompt_tokens_details": {
         "audio_tokens": 0,
         "cache_write_tokens": null,
@@ -91,7 +111,7 @@
         "image_tokens": null,
         "text_tokens": null
       },
-      "total_tokens": 327
+      "total_tokens": 518
     }
   }
 }

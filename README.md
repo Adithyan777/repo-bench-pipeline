@@ -5,9 +5,9 @@ Repo-agnostic pipeline that takes a Python repository, makes it reproducible
 layer (`repo_graph.json` + `.okf/`), and mines 10 validated benchmark tasks
 for AI coding agents.
 
-Status: **S1 foundation in place** (fixtures, package skeleton, resumable state,
-Docker runner + image build, LLM client with record/replay, agent loop). Pipeline
-stages (P1–P3) land from S2 on. See [`docs/PROGRESS.md`](docs/PROGRESS.md).
+Status: **P1 hygiene working end-to-end** (detect → pin/lock → Dockerfile → build →
+baseline, resumable). Verified green on glom, toolz, minidump, and the fixtures.
+Knowledge (P2) and tasks (P3) land from S3 on. See [`docs/PROGRESS.md`](docs/PROGRESS.md).
 
 ## Documents
 
@@ -28,12 +28,25 @@ stages (P1–P3) land from S2 on. See [`docs/PROGRESS.md`](docs/PROGRESS.md).
 Requires: Docker, Python 3.12, `uv`, and env vars `LLM_BASE_URL`, `LLM_API_KEY`,
 `LLM_MODEL_BIG`, `LLM_MODEL_SMALL` (OpenAI-compatible endpoint, open-source models).
 
+## Run the hygiene stage
+
+```
+./run.sh <repo_url_or_path> --stage hygiene [--verify-twice] [--fresh] [--force <step>]
+# e.g. ./run.sh https://github.com/mahmoud/glom --stage hygiene --verify-twice
+```
+
+Produces `output/<repo>/`: a pinned + containerized clone under `repo/`, step records
+under `hygiene/` (incl. the documented test command in `hygiene/test_command.txt`), and
+`report_data.json`. The container test command is `python -m pytest -q` inside the built
+`bench-<repo>` image.
+
 ## Development
 
 ```
 uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -r requirements-dev.txt
-.venv/bin/python -m pytest          # single test command; needs Docker running
+.venv/bin/python -m pytest          # fast: unit + real uv/docker/git (needs Docker)
+.venv/bin/python -m pytest -m slow  # multi-build container tests
 ```
 
 Tests run against real fixture repos, real Docker, and real git. LLM calls are

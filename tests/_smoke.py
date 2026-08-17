@@ -43,6 +43,47 @@ AGENT_GOAL = (
 )
 
 
+# --- S2 hygiene LLM smokes (SMALL tier) ---
+
+PIN_STAGE = "s2_pin"
+BASELINE_STAGE = "s2_baseline"
+
+# An import whose PyPI name differs and is NOT in the alias table -> needs the model.
+ALIAS_UNKNOWN = ["serial"]  # -> pyserial
+
+CLASSIFY_SAMPLE = [
+    "tests/test_x.py::test_reads_yaml: ModuleNotFoundError: No module named 'yaml'",
+    "tests/test_x.py::test_math: assert add(1, 1) == 3",
+]
+
+
+def run_alias_map(client: LLMClient) -> dict:
+    from pipeline.ecosystems.python import PythonAdapter
+
+    return PythonAdapter(llm=client)._llm_map_imports(ALIAS_UNKNOWN)
+
+
+REASK_STAGE = "s2_reask"
+REASK_IMPORT = "zzznonexistent9876"  # an invented import that cannot resolve on PyPI
+
+
+def run_reask(client: LLMClient) -> dict:
+    from pipeline.ecosystems.python import PythonAdapter, reask_note
+
+    adapter = PythonAdapter(llm=client)
+    return adapter._llm_map_imports([REASK_IMPORT], error=reask_note(REASK_IMPORT, REASK_IMPORT))
+
+
+def run_classify(client: LLMClient) -> dict:
+    from pipeline.hygiene.baseline import _CLASSIFY_SCHEMA, classify_prompt
+
+    return client.complete_json(
+        "p1.baseline.classify_failure",
+        [{"role": "user", "content": classify_prompt(CLASSIFY_SAMPLE)}],
+        _CLASSIFY_SCHEMA,
+    )
+
+
 def build_agent(client: LLMClient, workdir: Path, image: str, transcripts_dir: Path) -> Agent:
     ctx = ToolContext(workdir=workdir, image=image)
     return Agent(

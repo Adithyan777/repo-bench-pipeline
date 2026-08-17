@@ -14,6 +14,44 @@
       {
         "content": "Create a file hello.py that prints 42, run it with `python hello.py`, and report the output it produced.",
         "role": "user"
+      },
+      {
+        "content": "",
+        "role": "assistant",
+        "tool_calls": [
+          {
+            "function": {
+              "arguments": "{\"path\": \"hello.py\", \"content\": \"print(42)\\n\"}",
+              "name": "write_file"
+            },
+            "id": "functions.write_file:0",
+            "type": "function"
+          }
+        ]
+      },
+      {
+        "content": "wrote 10 bytes to hello.py",
+        "role": "tool",
+        "tool_call_id": "functions.write_file:0"
+      },
+      {
+        "content": "",
+        "role": "assistant",
+        "tool_calls": [
+          {
+            "function": {
+              "arguments": "{\"cmd\": \"python hello.py\"}",
+              "name": "run"
+            },
+            "id": "functions.run:0",
+            "type": "function"
+          }
+        ]
+      },
+      {
+        "content": "exit_code=0\n--- stdout ---\n42\n\n--- stderr ---\n",
+        "role": "tool",
+        "tool_call_id": "functions.run:0"
       }
     ],
     "model": "moonshotai/Kimi-K2.6",
@@ -104,55 +142,46 @@
   "response": {
     "choices": [
       {
-        "finish_reason": "tool_calls",
+        "finish_reason": "stop",
         "index": 0,
         "logprobs": null,
         "message": {
           "annotations": null,
           "audio": null,
-          "content": null,
+          "content": "I created `hello.py` containing `print(42)` and ran it with `python hello.py`. The output produced was:\n\n```\n42\n```",
           "function_call": null,
-          "reasoning_content": "The user wants me to:\n1. Create a file `hello.py` that prints 42\n2. Run it with `python hello.py`\n3. Report the output\n\nI'll use write_file to create the file, then run to execute it.",
+          "reasoning_content": "The user asked me to create a file hello.py that prints 42, run it with `python hello.py`, and report the output it produced.\n\nI have:\n1. Created hello.py with `print(42)`\n2. Run `python hello.py`\n3. The output was `42` (with exit code 0)\n\nI should report this clearly.",
           "refusal": null,
           "role": "assistant",
-          "tool_calls": [
-            {
-              "function": {
-                "arguments": "{\"path\": \"hello.py\", \"content\": \"print(42)\\n\"}",
-                "name": "write_file"
-              },
-              "id": "functions.write_file:0",
-              "type": "function"
-            }
-          ]
+          "tool_calls": null
         }
       }
     ],
-    "created": 1786952608,
-    "id": "chatcmpl-0fc15bc4884747a58abdca6fe4d4b968",
+    "created": 1786952611,
+    "id": "chatcmpl-282a59e7edff4224ace5b8e046873248",
     "model": "moonshotai/Kimi-K2.6",
     "moderation": null,
     "object": "chat.completion",
     "service_tier": null,
     "system_fingerprint": null,
     "usage": {
-      "completion_tokens": 79,
+      "completion_tokens": 104,
       "completion_tokens_details": {
-        "accepted_prediction_tokens": 57,
+        "accepted_prediction_tokens": 77,
         "audio_tokens": 0,
-        "reasoning_tokens": 51,
+        "reasoning_tokens": 73,
         "rejected_prediction_tokens": 35,
         "text_tokens": null
       },
-      "prompt_tokens": 219,
+      "prompt_tokens": 321,
       "prompt_tokens_details": {
         "audio_tokens": 0,
         "cache_write_tokens": null,
-        "cached_tokens": 192,
+        "cached_tokens": 256,
         "image_tokens": null,
         "text_tokens": null
       },
-      "total_tokens": 298
+      "total_tokens": 425
     }
   }
 }

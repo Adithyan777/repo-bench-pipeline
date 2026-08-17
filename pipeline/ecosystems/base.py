@@ -2,7 +2,14 @@
 
 Everything else (agent loop, harness, funnels, okf writer, docker runner) is
 ecosystem-agnostic. Adding a JS adapter means implementing these methods.
-Interface only; the Python implementation lands in S2 (ecosystems/python.py).
+
+Construction contract: adapters are constructed per-repo with run context —
+``Adapter(config, work_dir, llm)`` — where ``work_dir`` is the clean repo clone the
+adapter writes ecosystem files into (requirements.in, lock, Dockerfile, …) and
+``llm`` is an optional ``LLMClient`` for ecosystem-specific model calls (e.g. the
+import→PyPI fallback). The abstract methods below therefore keep a ``(repo)``
+signature and read their run context from the instance, not from arguments.
+See ``ecosystems/python.py`` for the reference implementation.
 """
 
 from __future__ import annotations
