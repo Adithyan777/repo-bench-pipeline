@@ -1,0 +1,98 @@
+{
+  "request": {
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "max_tokens": 8192,
+    "messages": [
+      {
+        "content": "Summarize the PURPOSE of the Python module `mini_pkg.shapes` in 1-3 sentences for an engineer navigating the codebase. Module docstring: Standalone geometry helper (renamed across a commit).\nPublic API:\n- area: area(width, height) Return the area of a rectangle.\nDescribe what the module is for, not each function. No code. Ground every statement in the docstring and the listed API ONLY; do NOT infer the purpose from the module name. If the module exposes no meaningful public API or the source does not support a specific claim, say so briefly (e.g. 'internal helpers with no public API').",
+        "role": "user"
+      }
+    ],
+    "model": "moonshotai/Kimi-K2.6",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "properties": {
+              "purpose": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "purpose"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"purpose\":\"Standalone geometry helper (renamed across a commit). It provides a public helper to compute the area of a rectangle.\"}",
+                "name": "emit"
+              },
+              "id": "functions.emit:0",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786991833,
+    "id": "chatcmpl-d4a824c1b159468d9ea1ec2d8d3e5e02",
+    "model": "moonshotai/Kimi-K2.6",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 35,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 23,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 25,
+        "text_tokens": null
+      },
+      "prompt_tokens": 175,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 160,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 210
+    }
+  }
+}

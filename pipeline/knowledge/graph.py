@@ -29,9 +29,15 @@ def build_graph(
 ) -> dict:
     test_map = test_map or {}
     coverage = coverage or {}
+    # A module is a source node only if it is importable library source: under a package
+    # root / source_root, not a test, not a packaging script, not under docs/examples/etc.
+    # (``is_source`` computed in symbols.py). Older indexes without the field fall back to
+    # the previous not-test / not-nonsource_files rule.
     nonsource = set(config.graph.nonsource_files)
     source_modules = {
-        m["name"] for m in symbols["modules"] if not m["is_test"] and m["file"] not in nonsource
+        m["name"]
+        for m in symbols["modules"]
+        if m.get("is_source", not m["is_test"] and m["file"] not in nonsource)
     }
 
     tested_by = _invert_test_map(test_map)  # func qual -> [test_id]

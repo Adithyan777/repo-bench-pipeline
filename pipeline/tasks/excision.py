@@ -139,6 +139,10 @@ def funnel(
     candidate (``verifier-imports-private``) before any LLM is spent."""
     tests_for = covering_tests(test_map, baseline_passing)
     test_modules = {m["name"] for m in symbols["modules"] if m["is_test"]}
+    # docs/conf.py, example/build scripts etc. are not library source -> never a task.
+    nonsource_modules = {
+        m["name"] for m in symbols["modules"] if not m.get("is_source", not m["is_test"])
+    }
     gate = (
         _PrivateImportGate(repo, symbols)
         if repo and config.excision.reject_private_verifier_imports
@@ -161,6 +165,8 @@ def funnel(
             covering_tests=sorted(tests_for.get(fn["qualname"], ())),
         )
         reason = _reject_reason(c, symbols, fn["module"] in test_modules, config)
+        if reason is None and fn["module"] in nonsource_modules:
+            reason = "non-source-module"
         if reason is None and gate is not None:
             for test_file in sorted({n.split("::", 1)[0] for n in c.covering_tests}):
                 bad = gate.offenders(test_file)

@@ -17,16 +17,17 @@ from pathlib import Path
 
 from pipeline.hygiene.context import HygieneContext
 from pipeline.knowledge import graph as graph_mod
-from pipeline.knowledge import indexes, verify
+from pipeline.knowledge import indexes, okf, okf_verify, verify
 from pipeline.state import code_fingerprint, hash_inputs
 
-_STEPS = ("symbol_index", "indexes", "graph", "verify")
+_STEPS = ("symbol_index", "indexes", "graph", "verify", "okf")
 
 
 def run_knowledge(ctx: HygieneContext) -> HygieneContext:
     _load_existing_report(ctx)
     for name in _STEPS:
         _run_step(ctx, name)
+    ctx.llm.write_usage()
     _write_report(ctx)
     return ctx
 
@@ -44,6 +45,8 @@ def knowledge_paths(run_dir: Path, config=None) -> dict:
         "coverage": str(kdir / kc.coverage_filename),
         "hotspots": str(kdir / kc.hotspots_filename),
         "verification": str(kdir / kc.verification_filename),
+        "okf": str(kdir / (config or DEFAULT).okf.bundle_dirname),
+        "okf_manifest": str(kdir / (config or DEFAULT).okf.manifest_filename),
     }
 
 
@@ -115,11 +118,36 @@ def _step_verify(ctx: HygieneContext) -> None:
     }
 
 
+def _step_okf(ctx: HygieneContext) -> None:
+    kc, oc = ctx.config.knowledge, ctx.config.okf
+    if not oc.enabled:
+        ctx.report["okf"] = {"enabled": False}
+        return
+    graph = _read(ctx, kc.graph_filename)
+    dpath = ctx.knowledge_dir / oc.decisions_filename
+    decisions = json.loads(dpath.read_text()) if dpath.is_file() else {}
+    try:
+        manifest = okf.build_okf(ctx, graph, llm=ctx.llm, decisions=decisions)
+    finally:  # keep any decisions authored before an error so a rerun reuses them
+        dpath.write_text(json.dumps(decisions, indent=2, sort_keys=True))
+    report = okf_verify.verify_okf(ctx, graph)
+    _write(ctx, oc.manifest_filename, manifest)
+    _write(ctx, oc.verification_filename, report)
+    ctx.report["okf"] = {
+        **manifest["counts"],
+        "pages_verified": report["pages_verified"],
+        "pages_draft": report["pages_draft"],
+        "precision_by_claim": report["precision_by_claim"],
+        "conformant": report["conformance"]["conformant"],
+    }
+
+
 _STEP_FUNCS = {
     "symbol_index": _step_symbol_index,
     "indexes": _step_indexes,
     "graph": _step_graph,
     "verify": _step_verify,
+    "okf": _step_okf,
 }
 
 
@@ -156,6 +184,16 @@ def _step_input_hash(ctx: HygieneContext, step: str) -> str:
             *_knowledge_files(
                 ctx, kc.graph_filename, kc.symbols_filename, kc.coverage_contexts_filename
             ),
+        )
+    if step == "okf":
+        return hash_inputs(
+            "okf",
+            okf.PROMPT_VERSION,
+            ctx.config.model_for(okf.MODULE_PURPOSE_STEP),
+            str(ctx.config.okf.max_function_pages),
+            str(ctx.config.okf.min_private_page_complexity),
+            *_knowledge_files(ctx, kc.graph_filename),
+            *_source_files(ctx),
         )
     return hash_inputs(step)
 

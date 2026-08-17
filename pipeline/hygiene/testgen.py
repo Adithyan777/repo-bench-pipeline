@@ -512,13 +512,13 @@ def input_hash(ctx: HygieneContext) -> str:
 
 def _source_functions(ctx: HygieneContext) -> list[dict]:
     symbols = ctx.adapter.symbol_index(ctx.repo)
-    test_files = {m["file"] for m in symbols.get("modules", []) if m.get("is_test")}
-    nonsource = set(ctx.config.graph.nonsource_files)
-    return [
-        f
-        for f in symbols.get("functions", [])
-        if f["file"] not in test_files and Path(f["file"]).name not in nonsource
-    ]
+    # Only functions in importable library source (excludes tests, docs/conf.py, scripts).
+    source_modules = {
+        m["name"]
+        for m in symbols.get("modules", [])
+        if m.get("is_source", not m.get("is_test"))
+    }
+    return [f for f in symbols.get("functions", []) if f["module"] in source_modules]
 
 
 def _quarantined(ctx: HygieneContext) -> list[str]:

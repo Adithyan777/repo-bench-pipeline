@@ -8,7 +8,9 @@ for AI coding agents.
 Status: **P1 hygiene working end-to-end** (detect → pin/lock → Dockerfile → build →
 baseline → test-gen, resumable). Verified green on glom, toolz, minidump, and the
 fixtures. Test generation writes mutation-gated tests into the repo's own test dir
-(a `pipeline: generated tests` commit); skip it with `--no-testgen`.
+(a `pipeline: generated tests` commit); skip it with `--no-testgen`. The knowledge
+stage also emits an OKF v0.2 knowledge bundle at `output/<repo>/knowledge/.okf/`
+(model-authored purpose + contracts, statically claim-verified).
 Knowledge (P2) and tasks (P3) land from S3 on. See [`docs/PROGRESS.md`](docs/PROGRESS.md).
 
 ## Documents

@@ -1,0 +1,98 @@
+{
+  "request": {
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "max_tokens": 8192,
+    "messages": [
+      {
+        "content": "Summarize the PURPOSE of the Python module `mini_pkg.calc` in 1-3 sentences for an engineer navigating the codebase. Module docstring: Small numeric helpers.\nPublic API:\n- RunningStats:  Accumulate numbers and report their mean.\n- add: add(self, x) \n- count: count(self) \n- mean: mean(self) \n- ceil_div: ceil_div(a, b) Return ceil(a / b) for positive integers.\n- clamp: clamp(value, low, high) Clamp value into the inclusive range [low, high].\n\nBounds given in either order are accepted.\nDescribe what the module is for, not each function. No code. Ground every statement in the docstring and the listed API ONLY; do NOT infer the purpose from the module name. If the module exposes no meaningful public API or the source does not support a specific claim, say so briefly (e.g. 'internal helpers with no public API').",
+        "role": "user"
+      }
+    ],
+    "model": "moonshotai/Kimi-K2.6",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "properties": {
+              "purpose": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "purpose"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"purpose\":\"The module provides small numeric helpers for accumulating statistics and performing common numeric operations. It exposes RunningStats to accumulate numbers and report their mean, along with utility functions for ceiling division and clamping values within bounds.\"}",
+                "name": "emit"
+              },
+              "id": "functions.emit:0",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786991825,
+    "id": "chatcmpl-1de4995390784b8ab106299e1d768c33",
+    "model": "moonshotai/Kimi-K2.6",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 53,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 31,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 57,
+        "text_tokens": null
+      },
+      "prompt_tokens": 237,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 224,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 290
+    }
+  }
+}

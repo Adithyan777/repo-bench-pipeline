@@ -90,6 +90,22 @@ def main(argv: list[str] | None = None) -> int:
     else:
         print(f"[{_smoke.TASKS_STAGE}] skip (cassette exists; --rerecord to force)")
 
+    if not (
+        _has_cassettes(_smoke.S7_OKF_STAGE)
+        and _smoke.S7_OKF_STAGE not in rerecord
+        and "all" not in rerecord
+    ):
+        import shutil
+        import tempfile
+
+        root = Path(tempfile.mkdtemp(prefix="bench-record-okf-"))
+        ctx = _smoke.run_okf_stage(root, "record")
+        print(f"[{_smoke.S7_OKF_STAGE}] {ctx.report.get('okf', {})}")
+        clients.append(ctx.llm)
+        shutil.rmtree(root, ignore_errors=True)
+    else:
+        print(f"[{_smoke.S7_OKF_STAGE}] skip (cassette exists; --rerecord to force)")
+
     total = 0
     for client in clients:
         for step, usage in client.usage_by_stage.items():

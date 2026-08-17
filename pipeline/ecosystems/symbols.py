@@ -51,6 +51,28 @@ def is_test_path(repo: Path, path: Path, config: Config = DEFAULT) -> bool:
     return any(rel.match(glob) for glob in config.graph.test_file_globs)
 
 
+def is_source_path(repo: Path, path: Path, config: Config = DEFAULT) -> bool:
+    """True if ``path`` is importable library source: under a package root (a dir with
+    ``__init__.py``) or a ``knowledge.source_roots`` entry, not a test, not a packaging
+    script (``graph.nonsource_files``), and not under a non-source dir (``docs/``,
+    ``examples/``, ...). Top-level scripts like ``docs/conf.py`` or a root ``setup.py``
+    are NOT source, so they never become graph module nodes or OKF pages."""
+    repo = repo.resolve()
+    rel = path.resolve().relative_to(repo)
+    parts = rel.parts
+    if is_test_path(repo, path, config):
+        return False
+    if rel.name in config.graph.nonsource_files:
+        return False
+    if any(p in config.graph.nonsource_dirs for p in parts[:-1]):
+        return False
+    if parts and parts[0] in config.knowledge.source_roots:
+        return True
+    if len(parts) == 1:  # a file at the repo root is source only if the root is a package
+        return (repo / "__init__.py").exists()
+    return (repo / parts[0] / "__init__.py").exists()  # under a top-level package dir
+
+
 # --- records ------------------------------------------------------------------
 
 
@@ -70,6 +92,7 @@ class ModuleRec:
     file: str
     is_package: bool
     is_test: bool
+    is_source: bool
     docstring: str | None
     imports: list[ImportRef] = field(default_factory=list)
 
@@ -225,6 +248,7 @@ class _Indexer:
             file=str(path.resolve().relative_to(self.repo)),
             is_package=path.name == "__init__.py",
             is_test=is_test_path(self.repo, path, self.config),
+            is_source=is_source_path(self.repo, path, self.config),
             docstring=ast.get_docstring(tree),
         )
         self._from_imports.setdefault(mod, {})
@@ -435,6 +459,7 @@ class _Indexer:
                 "file": m.file,
                 "is_package": m.is_package,
                 "is_test": m.is_test,
+                "is_source": m.is_source,
                 "docstring": m.docstring,
                 "imports": [vars(i) for i in m.imports],
             }

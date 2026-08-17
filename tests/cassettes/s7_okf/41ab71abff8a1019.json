@@ -1,0 +1,131 @@
+{
+  "request": {
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "max_tokens": 8192,
+    "messages": [
+      {
+        "content": "For each function of module `mini_pkg.core` below, write a behavioral contract: inputs (what each parameter means), outputs (what is returned), raises (list of exception TYPE NAMES it can raise, [] if none), side_effects (\"none\" or a short phrase), invariants (a property that always holds, or \"\"). Base every field ONLY on the code shown. Return one entry per qualname.\n\n### mini_pkg.core.Registry.get\nsignature: get(self, name)\n    def get(self, name):\n        return self._items[name]\n\n### mini_pkg.core.Registry.names\nsignature: names(self)\n    def names(self):\n        return sorted(self._items)\n\n### mini_pkg.core.Registry.register\nsignature: register(self, name, value)\n    def register(self, name, value):\n        if name in self._items:\n            raise KeyError(f\"already registered: {name}\")\n        self._items[name] = value\n\n### mini_pkg.core.dedupe\nsignature: dedupe(items)\ndef dedupe(items):\n    \"\"\"Return items with duplicates removed, preserving first-seen order.\"\"\"\n    seen = set()\n    out = []\n    for item in items:\n        if item not in seen:\n            seen.add(item)\n            out.append(item)\n    return out\n\n### mini_pkg.core.first\nsignature: first(items, pred, default=None)\ndef first(items, pred, default=None):\n    \"\"\"Return the first item for which pred(item) is true, else default.\"\"\"\n    for item in items:\n        if pred(item):\n            return item\n    return default",
+        "role": "user"
+      }
+    ],
+    "model": "moonshotai/Kimi-K2.6",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "properties": {
+              "contracts": {
+                "items": {
+                  "properties": {
+                    "inputs": {
+                      "type": "string"
+                    },
+                    "invariants": {
+                      "type": "string"
+                    },
+                    "outputs": {
+                      "type": "string"
+                    },
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "raises": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "side_effects": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "inputs",
+                    "outputs",
+                    "raises",
+                    "side_effects"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "contracts"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"contracts\": [{\"qualname\":\"mini_pkg.core.Registry.get\",\"inputs\":\"self: an instance of Registry; name: a key expected to be present in self._items\",\"outputs\":\"the value associated with name in self._items\",\"raises\":[\"KeyError\"],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"mini_pkg.core.Registry.names\",\"inputs\":\"self: an instance of Registry\",\"outputs\":\"a sorted list of the keys currently in self._items\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"mini_pkg.core.Registry.register\",\"inputs\":\"self: an instance of Registry; name: a key to register; value: the value to associate with name\",\"outputs\":\"none (implicitly returns None)\",\"raises\":[\"KeyError\"],\"side_effects\":\"mutates self._items by adding the mapping name -> value if name was not already present\",\"invariants\":\"\"},{\"qualname\":\"mini_pkg.core.dedupe\",\"inputs\":\"items: an iterable of hashable elements\",\"outputs\":\"a list of items with duplicates removed, preserving the first-seen order\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"},{\"qualname\":\"mini_pkg.core.first\",\"inputs\":\"items: an iterable; pred: a callable that takes one argument and returns a boolean; default: value to return if no item satisfies pred (defaults to None)\",\"outputs\":\"the first item in items for which pred(item) is true, or default if no such item exists\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"\"}]}",
+                "name": "emit"
+              },
+              "id": "functions.emit:0",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786991831,
+    "id": "chatcmpl-9c9c94cf5f4a4986895d25c33cbdbb49",
+    "model": "moonshotai/Kimi-K2.6",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 325,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 226,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 170,
+        "text_tokens": null
+      },
+      "prompt_tokens": 405,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 64,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 730
+    }
+  }
+}

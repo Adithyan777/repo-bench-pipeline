@@ -2,8 +2,8 @@
 
 ``concrete_tools`` operate on a copied repo workdir; ``run`` executes ONLY inside the
 Docker container. ``graph_tools`` are backed by the repo graph / history index / git
-(show_symbol, callers, callees, tests_for, show_commit); ``okf`` remains a stub that
-raises ``NotImplementedError`` until the .okf layer (S7). A tool that needs a
+(show_symbol, callers, callees, tests_for, show_commit); ``okf`` reads a page from the
+.okf knowledge bundle (S7), sandboxed to the bundle dir. A tool that needs a
 not-yet-built artifact raises a clear error, which the loop turns into a text
 observation for the model -- never faked.
 """
@@ -181,6 +181,19 @@ def _graph_path(ctx: ToolContext) -> Path:
     return ctx.knowledge_dir / ctx.config.knowledge.graph_filename
 
 
+def _okf(ctx: ToolContext, path: str) -> str:
+    """Read one OKF page by bundle-relative path, sandboxed to the .okf bundle."""
+    if ctx.knowledge_dir is None:
+        raise RuntimeError("okf requires the .okf bundle (S7); knowledge_dir not set")
+    bundle = (ctx.knowledge_dir / ctx.config.okf.bundle_dirname).resolve()
+    target = (bundle / path.lstrip("/")).resolve()
+    if not target.is_relative_to(bundle):
+        raise ValueError(f"path escapes the okf bundle: {path}")
+    if not target.is_file():
+        raise FileNotFoundError(f"no such okf page: {path}")
+    return target.read_text(errors="replace")
+
+
 def _load_graph(ctx: ToolContext) -> dict:
     path = _graph_path(ctx)
     if not path.is_file():
@@ -309,6 +322,10 @@ def graph_tools(ctx: ToolContext) -> list[Tool]:
             {"type": "object", "properties": {"sha": {"type": "string"}}, "required": ["sha"]},
             lambda sha: _show_commit(ctx, sha),
         ),
-        Tool("okf", "Read an OKF knowledge page.", {"type": "object", "properties": {}},
-             _stub("okf", "the .okf knowledge layer (S7)")),
+        Tool(
+            "okf",
+            "Read an OKF knowledge page by bundle-relative path (e.g. 'modules/pkg.mod.md').",
+            {"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"]},
+            lambda path: _okf(ctx, path),
+        ),
     ]

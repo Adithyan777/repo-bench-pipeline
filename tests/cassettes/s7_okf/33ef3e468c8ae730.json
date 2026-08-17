@@ -1,0 +1,131 @@
+{
+  "request": {
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "max_tokens": 8192,
+    "messages": [
+      {
+        "content": "For each function of module `mini_pkg.calc` below, write a behavioral contract: inputs (what each parameter means), outputs (what is returned), raises (list of exception TYPE NAMES it can raise, [] if none), side_effects (\"none\" or a short phrase), invariants (a property that always holds, or \"\"). Base every field ONLY on the code shown. Return one entry per qualname.\n\n### mini_pkg.calc.RunningStats.add\nsignature: add(self, x)\n    def add(self, x):\n        self._values.append(x)\n        return self\n\n### mini_pkg.calc.RunningStats.count\nsignature: count(self)\n    def count(self):\n        return len(self._values)\n\n### mini_pkg.calc.RunningStats.mean\nsignature: mean(self)\n    def mean(self):\n        if not self._values:\n            raise ValueError(\"no values\")\n        return sum(self._values) / len(self._values)\n\n### mini_pkg.calc.ceil_div\nsignature: ceil_div(a, b)\ndef ceil_div(a, b):\n    \"\"\"Return ceil(a / b) for positive integers.\"\"\"\n    quotient, remainder = divmod(a, b)\n    return quotient + bool(remainder)\n\n### mini_pkg.calc.clamp\nsignature: clamp(value, low, high)\ndef clamp(value, low, high):\n    \"\"\"Clamp value into the inclusive range [low, high].\n\n    Bounds given in either order are accepted.\"\"\"\n    if low > high:\n        low, high = high, low\n    if value < low:\n        return low\n    if value > high:\n        return high\n    return value",
+        "role": "user"
+      }
+    ],
+    "model": "moonshotai/Kimi-K2.6",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "properties": {
+              "contracts": {
+                "items": {
+                  "properties": {
+                    "inputs": {
+                      "type": "string"
+                    },
+                    "invariants": {
+                      "type": "string"
+                    },
+                    "outputs": {
+                      "type": "string"
+                    },
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "raises": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "side_effects": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "inputs",
+                    "outputs",
+                    "raises",
+                    "side_effects"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "contracts"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"contracts\": [{\"qualname\":\"mini_pkg.calc.RunningStats.add\",\"inputs\":\"self: instance of RunningStats; x: a value to append to the internal list\",\"outputs\":\"self (the same RunningStats instance, for chaining)\",\"raises\":[],\"side_effects\":\"appends x to self._values\",\"invariants\":\"len(self._values) increases by 1 if the append succeeds\"},{\"qualname\":\"mini_pkg.calc.RunningStats.count\",\"inputs\":\"self: instance of RunningStats\",\"outputs\":\"the number of values currently stored in self._values\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"return value equals len(self._values)\"},{\"qualname\":\"mini_pkg.calc.RunningStats.mean\",\"inputs\":\"self: instance of RunningStats\",\"outputs\":\"the arithmetic mean of the values stored in self._values\",\"raises\":[\"ValueError\"],\"side_effects\":\"none\",\"invariants\":\"if self._values is non-empty, return value equals sum(self._values) / len(self._values)\"},{\"qualname\":\"mini_pkg.calc.ceil_div\",\"inputs\":\"a: dividend (intended for positive integers); b: divisor (intended for positive integers)\",\"outputs\":\"the ceiling of a divided by b (i.e., quotient plus 1 if there is a remainder, else quotient)\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"return value >= quotient and return value <= quotient + 1\"},{\"qualname\":\"mini_pkg.calc.clamp\",\"inputs\":\"value: the number to clamp; low: one bound of the range; high: the other bound of the range\",\"outputs\":\"the value constrained to the inclusive range between low and high (bounds are reordered if necessary so the smaller is the lower bound and the larger is the upper bound)\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"return value is between the min(low,high) and max(low,high) inclusive\"}]}",
+                "name": "emit"
+              },
+              "id": "functions.emit:0",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786991828,
+    "id": "chatcmpl-b2131c70e0264a02a930de835e785807",
+    "model": "moonshotai/Kimi-K2.6",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 392,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 262,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 258,
+        "text_tokens": null
+      },
+      "prompt_tokens": 411,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 64,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 803
+    }
+  }
+}

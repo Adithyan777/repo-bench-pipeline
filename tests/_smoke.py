@@ -173,9 +173,10 @@ def mini_pkg_excision_config():
     # the fixture run records their absence (`budget-exhausted`) and the scripted-endpoint
     # tests exercise them.
     cfg.history.max_neutrality_rewrites_per_repo = 0
-    # Test-gen is exercised by its own stage (s6_testgen); the shared task-fixture run
-    # keeps it off so this cassette stage carries only the S4/S5 calls.
+    # Test-gen (S6) and the OKF bundle (S7) are exercised by their own stages; the shared
+    # task-fixture run keeps them off so this cassette stage carries only the S4/S5 calls.
     cfg.testgen.enabled = False
+    cfg.okf.enabled = False
     return cfg
 
 
@@ -212,6 +213,31 @@ def run_tasks_stage(root: Path, mode: str, stage: str = TASKS_STAGE):
     run_hygiene(ctx)
     run_knowledge(ctx)
     run_tasks(ctx)
+    return ctx
+
+
+S7_OKF_STAGE = "s7_okf"
+
+
+def run_okf_stage(root: Path, mode: str, stage: str = S7_OKF_STAGE):
+    """hygiene -> knowledge (with the OKF bundle enabled) on a throwaway mini_pkg copy.
+    Same graph every time, so the okf LLM prompts are byte-identical for record/replay."""
+    import shutil
+
+    from pipeline.hygiene.context import build_context
+    from pipeline.hygiene.runner import run_hygiene
+    from pipeline.knowledge.runner import run_knowledge
+
+    src = root / "mini_pkg"
+    if not src.exists():
+        shutil.copytree(FIXTURE_MINI_PKG, src)
+    cfg = mini_pkg_excision_config()
+    cfg.okf.enabled = True  # this stage exists to exercise okf
+    ctx = build_context(
+        str(src), config=cfg, output_root=root / "out", llm_mode=mode, llm_stage=stage
+    )
+    run_hygiene(ctx)
+    run_knowledge(ctx)
     return ctx
 
 

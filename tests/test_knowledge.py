@@ -470,10 +470,17 @@ def test_agent_show_commit_validates_sha(tmp_path: Path) -> None:
             tools["show_commit"].func(sha=bad)
 
 
-def test_agent_okf_still_stubbed(tmp_path: Path) -> None:
-    tools = {t.name: t for t in graph_tools(_tool_ctx(tmp_path))}
-    with pytest.raises(NotImplementedError):
-        tools["okf"].func(path="x")
+def test_agent_okf_reads_and_sandboxes(tmp_path: Path) -> None:
+    ctx = _tool_ctx(tmp_path)
+    bundle = ctx.knowledge_dir / ctx.config.okf.bundle_dirname
+    bundle.mkdir()
+    (bundle / "index.md").write_text('---\nokf_version: "0.2"\n---\n# bundle\n')
+    tools = {t.name: t for t in graph_tools(ctx)}
+    assert "okf_version" in tools["okf"].func(path="index.md")
+    with pytest.raises(ValueError):
+        tools["okf"].func(path="../../repo_graph.json")
+    with pytest.raises(FileNotFoundError):
+        tools["okf"].func(path="missing.md")
 
 
 # --- container round-trip (real coverage run) ---------------------------------
@@ -488,6 +495,7 @@ def test_knowledge_e2e_mini_pkg(tmp_path: Path, docker_available: None) -> None:
 
     cfg = Config()
     cfg.testgen.enabled = False  # test-gen needs the BIG agent; covered by test_testgen.py
+    cfg.okf.enabled = False  # okf needs the BIG model; covered by test_okf.py (s7_okf cassette)
     src = tmp_path / "mini_pkg"
     shutil.copytree(FIXTURES / "mini_pkg", src)
     ctx = build_context(str(src), config=cfg, output_root=tmp_path / "out", llm_mode="replay")

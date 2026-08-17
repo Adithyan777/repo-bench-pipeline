@@ -119,6 +119,7 @@ All values are **PROPOSED** and require user confirmation before finalization.
 | `graph.test_dir_names` | `("test", "tests")` | Dirs whose `.py` files are indexed as tests, not source | test files feed `tested_by` but are never source nodes (S3) | PROPOSED -- needs user confirmation |
 | `graph.test_file_globs` | `("test_*.py", "*_test.py")` | Filename globs also treated as tests | catches test files outside a tests dir (S3) | PROPOSED -- needs user confirmation |
 | `graph.nonsource_files` | `("setup.py",)` | `.py` files excluded from graph nodes | packaging/build scripts run side effects on import and pollute diversity counts (S3) | PROPOSED -- needs user confirmation |
+| `graph.nonsource_dirs` | `("docs", "doc", "examples", "example", "scripts", "build", "dist")` | Top-level dirs whose `.py` is not importable library source | `docs/conf.py`, example/benchmark scripts and build output are not modules; a source module must live under a package root or `knowledge.source_roots`, else it is excluded from graph nodes / OKF pages / test-gen / excision (S7 fix) | PROPOSED -- needs user confirmation |
 
 **McCabe branch counter** (`graph.complexity_metric = "branch_count"`, implemented in `ecosystems/symbols.py:_complexity`): complexity = `1 + decision points`. Counted, per function body (nested defs excluded — they own their own count): each `if`/`elif`, `for`/`async for`, `while`, `except` handler, ternary (`IfExp`), each comprehension clause and each `if` within a comprehension, each `match` case, and each boolean operator beyond the first in a `and`/`or` chain. Chosen over radon so the number is dependency-free and identical across environments (determinism requirement).
 
@@ -154,7 +155,12 @@ All values are **PROPOSED** and require user confirmation before finalization.
 | `okf.generated_by_actor` | `"pipeline/{model}"` | Actor string in `generated.by` frontmatter | OKF convention for tool-produced content | PROPOSED -- needs user confirmation |
 | `okf.verifier_actor` | `"process:okf-verifier"` | Actor string when static verifier stamps a claim | OKF convention for process-verified claims | PROPOSED -- needs user confirmation |
 | `okf.unverified_status` | `"draft"` | Status for claims the verifier could not confirm | Unsupported claims stay draft until human review | PROPOSED -- needs user confirmation |
-| `llm.okf_module_chunk_tokens` | `12000` | Max tokens per module before chunking by class/function | Fits within model context window for per-module calls | PROPOSED -- needs user confirmation |
+| `okf.verified_status` | `"stable"` | Status once every claim on a page passes verification | OKF lifecycle: machine-confirmed page | PROPOSED -- needs user confirmation |
+| `okf.enabled` | `True` | Master switch for the okf step | Shared task-fixture run turns it off (its own s7_okf cassette) | PROPOSED -- needs user confirmation |
+| `okf.min_private_page_complexity` | `2` | Private/dunder functions below this are summarized, not paged | Keeps trivial helpers out of `functions/`; they live in the module page | PROPOSED -- needs user confirmation |
+| `okf.side_effect_call_names` | `(open, print, write, ... , send)` | Call names that count as a side effect when a contract claims `none` | Documented heuristic for the `side_effects: none` check | PROPOSED -- needs user confirmation |
+| `okf.bundle_dirname` | `".okf"` | Bundle directory under `knowledge/` | OKF convention | PROPOSED -- needs user confirmation |
+| `llm.okf_module_chunk_tokens` | `12000` | Max tokens per module before chunking the function-contract batch by class/function | Never whole-repo-in-one-prompt; bounded context | PROPOSED -- needs user confirmation |
 
 ### P3: History funnel
 

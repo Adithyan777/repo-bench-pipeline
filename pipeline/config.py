@@ -291,6 +291,13 @@ class GraphConfig:
     # Packaging/build scripts that are .py but not library source -> excluded from graph
     # nodes (they run side effects on import and pollute diversity counts).
     nonsource_files: tuple[str, ...] = ("setup.py",)
+    # Top-level directories holding .py that is NOT importable library source (docs config
+    # like docs/conf.py, example/benchmark scripts, build output). A module counts as
+    # source only when it lives under a package root (a dir with __init__.py) or a
+    # knowledge.source_roots entry, is not a test, and is not under one of these dirs.
+    nonsource_dirs: tuple[str, ...] = (
+        "docs", "doc", "examples", "example", "scripts", "build", "dist",
+    )
 
 
 @dataclass
@@ -327,17 +334,31 @@ class KnowledgeConfig:
         "pipeline/knowledge/indexes.py",
         "pipeline/knowledge/verify.py",
         "pipeline/knowledge/runner.py",
+        "pipeline/knowledge/okf.py",
+        "pipeline/knowledge/okf_verify.py",
     )
 
 
 @dataclass
 class OKFConfig:
+    enabled: bool = True  # the shared task-fixture run turns this off (its own cassette stage)
     okf_version: str = "0.2"
     max_function_pages: int = 150
     function_page_selector: str = "public_or_top_complexity"
+    min_private_page_complexity: int = 2  # private/dunder fns below this are summarized only
     generated_by_actor: str = "pipeline/{model}"
     verifier_actor: str = "process:okf-verifier"
     unverified_status: str = "draft"
+    verified_status: str = "stable"  # a page whose claims all pass verification
+    bundle_dirname: str = ".okf"
+    verification_filename: str = "okf_verification.json"
+    decisions_filename: str = "okf_decisions.json"
+    manifest_filename: str = "okf.json"
+    # names that count as an IO/mutation side effect when a contract claims "none"
+    side_effect_call_names: tuple[str, ...] = (
+        "open", "print", "write", "writelines", "remove", "unlink", "mkdir",
+        "system", "popen", "run", "request", "urlopen", "connect", "send",
+    )
 
 
 # --- Pipeline 3: tasks ---

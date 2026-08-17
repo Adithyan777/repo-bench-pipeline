@@ -1,0 +1,131 @@
+{
+  "request": {
+    "extra_body": {
+      "chat_template_args": {
+        "enable_thinking": true
+      }
+    },
+    "max_tokens": 8192,
+    "messages": [
+      {
+        "content": "For each function of module `mini_pkg.text` below, write a behavioral contract: inputs (what each parameter means), outputs (what is returned), raises (list of exception TYPE NAMES it can raise, [] if none), side_effects (\"none\" or a short phrase), invariants (a property that always holds, or \"\"). Base every field ONLY on the code shown. Return one entry per qualname.\n\n### mini_pkg.text.display_width\nsignature: display_width(s)\ndef display_width(s):\n    \"\"\"Return the display width of a string in terminal columns.\"\"\"\n    width = wcswidth(s)\n    return len(s) if width < 0 else width\n\n### mini_pkg.text.truncate\nsignature: truncate(s, width)\ndef truncate(s, width):\n    \"\"\"Truncate s to at most `width` display columns, adding an ellipsis.\"\"\"\n    if not _needs_truncation(s, width):\n        return s\n    if width <= 1:\n        return \".\"[:width]\n    return s[: width - 1] + \"\\u2026\"",
+        "role": "user"
+      }
+    ],
+    "model": "moonshotai/Kimi-K2.6",
+    "temperature": 0.0,
+    "tool_choice": {
+      "function": {
+        "name": "emit"
+      },
+      "type": "function"
+    },
+    "tools": [
+      {
+        "function": {
+          "description": "Emit the result.",
+          "name": "emit",
+          "parameters": {
+            "properties": {
+              "contracts": {
+                "items": {
+                  "properties": {
+                    "inputs": {
+                      "type": "string"
+                    },
+                    "invariants": {
+                      "type": "string"
+                    },
+                    "outputs": {
+                      "type": "string"
+                    },
+                    "qualname": {
+                      "type": "string"
+                    },
+                    "raises": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "side_effects": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "qualname",
+                    "inputs",
+                    "outputs",
+                    "raises",
+                    "side_effects"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "contracts"
+            ],
+            "type": "object"
+          }
+        },
+        "type": "function"
+      }
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": null,
+          "function_call": null,
+          "reasoning_content": null,
+          "refusal": null,
+          "role": "assistant",
+          "tool_calls": [
+            {
+              "function": {
+                "arguments": "{\"contracts\": [{\"qualname\":\"mini_pkg.text.display_width\",\"inputs\":\"s: the string whose display width is to be calculated\",\"outputs\":\"The display width of `s` in terminal columns, falling back to `len(s)` if `wcswidth(s)` returns a negative value\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"Return value is non-negative\"},{\"qualname\":\"mini_pkg.text.truncate\",\"inputs\":\"s: the string to truncate; width: the maximum number of display columns allowed\",\"outputs\":\"A string truncated to at most `width` display columns with an ellipsis added if truncation was needed; if width <= 1, returns '.' sliced to `width`\",\"raises\":[],\"side_effects\":\"none\",\"invariants\":\"If width <= 1, the returned string has length equal to max(width, 0)\"}]}",
+                "name": "emit"
+              },
+              "id": "functions.emit:0",
+              "type": "function"
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1786991836,
+    "id": "chatcmpl-f35f6aa17c48416d9134ebaddf9806fa",
+    "model": "moonshotai/Kimi-K2.6",
+    "moderation": null,
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 179,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 120,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 116,
+        "text_tokens": null
+      },
+      "prompt_tokens": 299,
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": null,
+        "cached_tokens": 288,
+        "image_tokens": null,
+        "text_tokens": null
+      },
+      "total_tokens": 478
+    }
+  }
+}

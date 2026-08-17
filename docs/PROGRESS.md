@@ -13,7 +13,7 @@ Legend: `todo` · `in-progress` · `review` (awaiting author review) · `done`
 | S4 | Step 4: excision funnel + validation harness end-to-end → first VALID task; task folder format, evidence, verdict, tasks.json writer | review | See `### S4`. `--stage tasks` wired (funnel → build → validate → manifest). glom **4/5 VALID**, toolz **5/5** (after review fixes), mini_pkg 3/3 in tests (relaxed thresholds). Harness idempotent. `pytest` → 124 passed / 3 slow, `ruff check .` clean. LLM: SMALL screen (decisions persisted + reused) + one bounded top-up agent. |
 | S5 | Step 5: history funnel + task-builder agent (verifier authoring/neutrality, instruction + leak gates, difficulty) | review | See `### S5`. 5a done: history funnel + builder wired into `--stage tasks` (excision AND history). glom **8/8 history VALID** (15 shortlisted, 8 built; 12/13 overall), toolz 5/5 (2 via the new-symbol getattr convention), mini_pkg 2/2 (bugfix + PR merge). Full `pytest` → 141 passed / 3 deselected; `-m slow` → 3 passed; `ruff check .` clean. 5b (instruction/leak gates/difficulty) pending review. |
 | S6 | Step 6: P1 test-gen + AST mutators + mutation gate | review | See `### S6` (+ review-round fixes). `testgen` step wired after baseline (own commit, `--no-testgen`). Real runs (testgen-step tokens): mini_pkg_notests 0→34 (15/15 mutants, 46k), glom `top_k=3` 202→248 (4 kept, `glom.core` dropped, 14/16 valid, 238k), minidump 0→120 (24 kept, 92/93, 1.018M). Kill = ≥1 test failed w/ collection OK (json-report); resume proven 0-token + `testgen.json` byte-identical. Honest drops (no theater). Full `pytest` → 165 passed / 3 deselected (4:21); `-m slow` → 3 passed / 165 deselected; `ruff check .` clean. Scripted-endpoint tests (no cassettes, per verifier-agent precedent). |
-| S7 | Step 7: P2 .okf/ writer + claim verifier | todo | |
+| S7 | Step 7: P2 .okf/ writer + claim verifier | review | See `### S7` (+ review-round fixes). `okf` knowledge step after `verify` (`okf.enabled`); OKF v0.2 bundle at `knowledge/.okf/`, static skeleton from the graph + BIG-authored purpose/contracts (cached by hash → 0-token, byte-identical reruns), claim verifier stamps `verified`(with `checks`)/`draft` + `okf_verification.json` (semantic precision + by_construction + unchecked kinds + conformance), `okf(path)` tool sandboxed. Runs (verified/draft): glom 105/45, toolz 111/27, minidump 97/53, mini_pkg 10/2; callees/callers/link 1.0, raises honest-low (implicit/under-claimed exceptions stay draft). `test_okf.py` 11 tests (offline + s7_okf cassette). Full `pytest` → 177 passed / 1 skipped / 3 deselected (3:13); `-m slow` → 3 passed; `ruff check .` clean (incl. the `docs/conf.py` source-module fix). |
 | S8 | Step 8: net-new funnel + builder | todo | |
 | S9 | Step 9: lint/format, selection & quotas, tasks.json, report_data → REPORT skeleton, transcripts curation, HEURISTICS review with author | todo | |
 | S10 | Step 10: held-out dry-run on toolz + minidump, fresh clone, twice, diff; fix generality bugs | todo | |
@@ -1282,3 +1282,119 @@ scores REPORT should cite. The collateral baseline for FUTURE tasks now includes
 tests (recorded in the commit); existing built tasks are self-contained (own trees) and
 were NOT re-validated. Not done: generated tests are not fed back into P2 coverage/test_map
 unless the knowledge stage is re-run (go through the runner, don't hand-edit).
+
+### S7
+
+Step 7: P2 `.okf/` Open Knowledge Format bundle + static claim verifier + `okf(path)`
+agent tool. Wired as a resumable knowledge step `okf` after `verify`; `okf.enabled=False`
+skips it.
+
+What exists:
+- `pipeline/knowledge/okf.py` — writes `knowledge/.okf/` (OKF v0.2): reserved `index.md`
+  (okf_version + progressive-disclosure listing) and `log.md`; `repo.md` (test command +
+  layout); `modules/<mod>.md` (purpose + API + internal helpers + calls + tests);
+  `functions/<mod>/<qualname>.md` (contract + callers/callees/tests links). The STATIC
+  skeleton (structure, signatures, resources `/(path)#Lx-Ly`, callers/callees/tests) is
+  100% graph/symbol-derived; the BIG model authors ONLY `purpose` (per module) and the
+  per-function contract `{inputs, outputs, raises, side_effects, invariants}`
+  (`p2.okf.module_purpose` / `p2.okf.function_contracts`, batched per module, chunked by
+  `llm.okf_module_chunk_tokens`). Every claim persisted by content hash
+  (`okf_decisions.json`) → 0-token, byte-identical reruns. Frontmatter = inline JSON
+  (valid YAML, no pyyaml dep). Function pages: public OR complexity >=
+  `okf.min_private_page_complexity`, capped at `max_function_pages`; trivial helpers
+  summarized in the module page. Links emitted only to pages that exist (no dangling
+  links). `generated.at` pinned to the base commit date (stable → byte-identical).
+- `pipeline/knowledge/okf_verify.py` — re-derives claims from AST/graph and stamps each
+  page: all claims supported → `verified: [{by: process:okf-verifier, at}]` + `status:
+  stable`; else stays `draft` with the unsupported claims recorded. Checks: `raises` ∩
+  explicit AST `raise` (function + one-hop intra-repo callee); `side_effects: none` vs
+  global/nonlocal writes, attribute stores, IO-like calls; callers/callees links ∩ graph
+  edges; `.md` links resolve. Plus an OKF conformance check (every non-reserved page has
+  parseable frontmatter with non-empty `type`; `index.md` has `okf_version`).
+  `okf_verification.json` = per-claim-type precision + unsupported list + conformance.
+- `okf(path)` agent tool (`pipeline/agent/tools.py`) reads one bundle page, sandboxed to
+  the `.okf` dir (path escape → error).
+
+Real runs (BIG model live). Numbers below are post-review-round (stricter verifier).
+Semantic precision = independently re-derived from source; by-construction (callers, `.md`
+links) is graph-derived and reported separately.
+
+| repo | pages (mod / fn) | verified / draft | semantic: callees / raises / side_effects | by_construction |
+|---|---|---|---|---|
+| mini_pkg | 20 (5 / 12) | 10 / 2 | 1.0 / 0.67 / 1.0 | callers 1.0 |
+| glom | 165 (12 / 150) | 105 / 45 | 1.0 / 0.79 / 0.86 | callers 1.0, link 1.0 |
+| toolz | 161 (20 / 138) | 111 / 27 | 1.0 / 0.31 / 0.99 | callers 1.0, link 1.0 |
+| minidump | 203 (50 / 150) | 97 / 53 | 1.0 / 0.35 / 0.83 | callers 1.0, link 1.0 |
+
+All conformant. Bundle byte-identical across two runs (decisions cache → 0-token rerun,
+verified on mini_pkg + glom). `pages` counts every `.md` (module + function + the 3
+reserved repo/index/log pages); `counts.modules`/`function_pages` break it down.
+
+`callees` is a real check (each linked callee must appear as an `ast.Call` in the function
+— an independent re-parse, not the graph edge) and lands at 1.0. Low `raises` precision on
+toolz/minidump is EXPECTED and honest: the model claims implicit exceptions (a dict `[]` →
+KeyError, an operator → TypeError) with no explicit `raise`, and now also gets flagged for
+claiming `none` when the body DOES raise; the static verifier conservatively leaves those
+pages `draft` (OKF trust tier "unverified", not "wrong"). Drafts rose vs the first cut
+(glom 25→45 etc.) because a page is now stamped only when >= 1 claim was actually checked
+(pages of pure `inputs`/`outputs`/`invariants` prose are no longer auto-verified). REPORT
+should cite the semantic precisions.
+
+Review-round fixes (all applied; glom rebuild spent 0 tokens on contracts — reused — and a
+one-time re-author of the 12 module purposes after the purpose-key change; a further
+rebuild is 0-token + byte-identical):
+1. Stamp `verified` only when >= 1 claim was actually checked; the entry carries
+   `checks: [...]`; `okf_verification.json` lists `unchecked_claim_kinds`
+   (inputs/outputs/invariants); negative-raises check (claims `none` but own body raises →
+   unsupported). DESIGN drops "signature correctness verified".
+2. callers/`.md` links reported under `by_construction` (graph-derived, not independent);
+   `callees` upgraded to a real `ast.Call` re-parse check (semantic).
+3. `index.md`: no `generated` frontmatter (only okf_version); body is
+   `* [title](./path) - description`. `log.md` date-grouped. Module-page count fixed
+   (uses the actual module pages written).
+4. Lows: purpose decision key = hash of the RENDERED prompt (contract key kept content-
+   stable so contracts reuse 0-token); chunk-level contract cache documented; LLM output
+   scoped to the chunk's qualnames; per-function span context (DESIGN 4.2); `_find_def`
+   imported from `source_ops`; unused params / inline imports removed; description =
+   docstring first line else contract outputs; missing `base_sha` → `generated.at: ""`;
+   deduped HEURISTICS row; decisions persisted in `try/finally`.
+
+Determinism decision: `generated.at`/`verified.at` are pinned to the base commit's ISO
+date (stable for a repo state) rather than wall-clock, so two runs are byte-identical
+(documented in DESIGN 4.2).
+
+Tests (`tests/test_okf.py`, 11): frontmatter round-trip + real-YAML round-trip (pyyaml
+via importorskip, runs in-container); skeleton matches graph; private-low-complexity
+summarized not paged; determinism byte-identical + second-run-makes-zero-LLM-calls (stub
+counter); verifier stamps checked claims + records `checks`/`unchecked_claim_kinds`;
+page-with-only-unverifiable-fields not stamped; verifier catches planted false `raises` +
+false caller; `okf(path)` reads + sandboxes path/symlink escapes; and one cassette-replay
+of the real module-purpose/function-contract calls (stage `s7_okf`). Shared `mini_env` +
+`test_knowledge_e2e` set `okf.enabled=False` (BIG model, no cassette).
+
+Suite (whole repo, after the conf.py fix): `pytest` → 177 passed / 1 skipped (pyyaml)
+/ 3 deselected (3:13); `-m slow` → 3 passed / 178 deselected; `ruff check .` clean.
+
+Post-review follow-up (source-module classification): `docs/conf.py` (and example/build
+scripts) were being indexed as source modules and getting hallucinated OKF pages. Fixed at
+the root: `symbols.is_source_path` — a module is source only if it lives under a package
+root (a dir with `__init__.py`) or a `knowledge.source_roots` entry, is not a test, not a
+packaging script (`graph.nonsource_files`), and not under `graph.nonsource_dirs`
+(`docs/`, `examples/`, `scripts/`, `build/`, ...). `symbol_index` now emits `is_source`;
+the graph's source-node set, test-gen's `_source_functions`, and the excision funnel all
+gate on it. Module counts before → after: mini_pkg 5→5, glom 12→**11** (`conf` gone), toolz
+20→**16** (`conf`/`fib`/`graph`/`wordcount` gone; real `toolz`/`tlz` kept), minidump 50→50.
+Confirmed no effect on deliverables: no test-gen target was ever a docs/script function;
+the only excision candidates from these modules (toolz `examples/fib.py`,
+`examples/wordcount.py`) were already `rejected: uncovered` and never became tasks.
+Also hardened the OKF purpose prompt (ground claims in docstring+API, do not infer from the
+module name, say so when there's no meaningful API) with a hallucination guard: a purpose
+naming a backticked identifier absent from the module is regenerated once, then dropped.
+Test `test_docs_conf_is_not_a_source_module` + `test_purpose_hallucination_guard` cover it.
+
+Things S8+ must know: the bundle lives at `output/<repo>/knowledge/.okf/`, manifest
+`knowledge/okf.json`, verification `knowledge/okf_verification.json`; `knowledge_paths()`
+exposes `okf` + `okf_manifest`. Per the S5 hand-off, `.okf` pages can be added to an
+author's contract block via `instruction.task_facts` — that integration is NOT yet wired
+(deferred). The `okf` step is resumable and its LLM decisions are cached, so re-running
+`--stage knowledge` costs no tokens unless the graph or prompt version changes.
