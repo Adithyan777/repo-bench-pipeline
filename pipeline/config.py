@@ -266,6 +266,53 @@ class GraphConfig:
     verification_sample_edges: int = 200  # graph self-check sample size
     diversity_unit: str = "file"  # "file" for glom-sized repos, "subpackage" for large
     large_repo_module_threshold: int = 200  # >= this many modules -> subpackage diversity unit
+    # Our own McCabe branch counter (no radon dependency): deterministic, version-stable.
+    # Counted constructs documented in HEURISTICS.md and ecosystems/symbols.py:_complexity.
+    complexity_metric: str = "branch_count"
+    # A .py file is a test (indexed separately, never a source node) if it lives under
+    # one of these dirs or its name matches one of these globs.
+    test_dir_names: tuple[str, ...] = ("test", "tests")
+    test_file_globs: tuple[str, ...] = ("test_*.py", "*_test.py")
+    # Packaging/build scripts that are .py but not library source -> excluded from graph
+    # nodes (they run side effects on import and pollute diversity counts).
+    nonsource_files: tuple[str, ...] = ("setup.py",)
+
+
+@dataclass
+class KnowledgeConfig:
+    """Pipeline-owned filenames + coverage settings for the P2 static layer."""
+
+    # A tiny pytest plugin switches coverage's context to the exact pytest nodeid per
+    # test (via coverage.Coverage.current().switch_context), so parametrized/inherited
+    # cases are captured distinctly. No pytest-cov dependency needed.
+    coveragerc_filename: str = ".coveragerc-knowledge"  # pipeline-owned; won't clobber repo's
+    coverage_json_filename: str = ".knowledge-coverage.json"  # in-container --show-contexts json
+    ctx_plugin_module: str = "_kn_ctx_plugin"  # written into the build context, loaded with -p
+    # output/<repo>/knowledge/ artifact names
+    graph_filename: str = "repo_graph.json"
+    symbols_filename: str = "symbol_index.json"
+    history_filename: str = "history_index.json"
+    test_map_filename: str = "test_map.json"
+    coverage_filename: str = "coverage.json"
+    coverage_contexts_filename: str = "coverage_contexts.json"  # raw per-line test contexts
+    hotspots_filename: str = "hotspots.json"
+    verification_filename: str = "graph_verification.json"
+    # history index parsing
+    pr_number_regex: str = r"(?:GH-|#)(\d+)"  # first match in a commit subject
+    manifest_name_prefixes: tuple[str, ...] = ("requirements",)  # + detect.manifest_markers
+    # src-layout roots stripped when deriving a historical module's dotted name so it
+    # matches the graph's package-aware naming (e.g. src/pkg/mod.py -> pkg.mod).
+    source_roots: tuple[str, ...] = ("src",)
+    show_commit_max_chars: int = 4000  # git-fallback output cap in the show_commit tool
+    # Pipeline source files whose contents fingerprint every knowledge step's input
+    # hash, so a code change to an analyzer invalidates its artifacts (not just inputs).
+    code_fingerprint_files: tuple[str, ...] = (
+        "pipeline/ecosystems/symbols.py",
+        "pipeline/knowledge/graph.py",
+        "pipeline/knowledge/indexes.py",
+        "pipeline/knowledge/verify.py",
+        "pipeline/knowledge/runner.py",
+    )
 
 
 @dataclass
@@ -410,6 +457,7 @@ class Config:
     testgen: TestGenConfig = field(default_factory=TestGenConfig)
     lint: LintConfig = field(default_factory=LintConfig)
     graph: GraphConfig = field(default_factory=GraphConfig)
+    knowledge: KnowledgeConfig = field(default_factory=KnowledgeConfig)
     okf: OKFConfig = field(default_factory=OKFConfig)
     history: HistoryFunnelConfig = field(default_factory=HistoryFunnelConfig)
     excision: ExcisionFunnelConfig = field(default_factory=ExcisionFunnelConfig)
@@ -419,6 +467,16 @@ class Config:
     difficulty: DifficultyConfig = field(default_factory=DifficultyConfig)
     selection: SelectionConfig = field(default_factory=SelectionConfig)
     step_model: dict[str, Tier] = field(default_factory=lambda: dict(STEP_MODEL))
+    # Pipeline source files whose contents fingerprint every hygiene step's input hash.
+    hygiene_code_files: tuple[str, ...] = (
+        "pipeline/ecosystems/python.py",
+        "pipeline/hygiene/detect.py",
+        "pipeline/hygiene/pin.py",
+        "pipeline/hygiene/dockerfile.py",
+        "pipeline/hygiene/compose.py",
+        "pipeline/hygiene/build.py",
+        "pipeline/hygiene/baseline.py",
+    )
 
     def model_for(self, step: str) -> str:
         tier = self.step_model[step]

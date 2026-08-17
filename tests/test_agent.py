@@ -55,11 +55,12 @@ def _call(name: str, arguments: str = "{}"):
 
 
 def test_agent_loop_stub_tool_errors_are_observations(tmp_path: Path) -> None:
-    """A stub tool raises; the loop must surface it as text, not crash."""
-    from pipeline.agent.tools import stub_tools
+    """A graph tool with no knowledge_dir raises; the loop must surface it as text."""
+    from pipeline.agent.tools import ToolContext, graph_tools
 
-    show_symbol = {t.name: t for t in stub_tools()}["show_symbol"]
-    observation = _agent(tmp_path, [show_symbol])._invoke(_call("show_symbol"))
+    ctx = ToolContext(workdir=tmp_path)  # no knowledge_dir bound
+    show_symbol = {t.name: t for t in graph_tools(ctx)}["show_symbol"]
+    observation = _agent(tmp_path, [show_symbol])._invoke(_call("show_symbol", '{"qualname":"x"}'))
     assert observation.startswith("ERROR:")
     assert "repo graph" in observation
 

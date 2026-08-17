@@ -108,6 +108,34 @@ All values are **PROPOSED** and require user confirmation before finalization.
 | `graph.verification_sample_edges` | `200` | Number of edges sampled for self-verification | Enough for statistical confidence without excessive runtime | PROPOSED -- needs user confirmation |
 | `graph.diversity_unit` | `"file"` | Default diversity unit: `"file"` or `"subpackage"` | Source file for glom-sized repos; subpackage for big repos | PROPOSED -- needs user confirmation |
 | `graph.large_repo_module_threshold` | `200` | Module count at which diversity unit switches to subpackage | Below 200 modules, per-file diversity is meaningful | PROPOSED -- needs user confirmation |
+| `graph.complexity_metric` | `"branch_count"` | Cyclomatic-complexity method | Our own McCabe branch counter (no radon dependency): deterministic, version-stable (S3) | PROPOSED -- needs user confirmation |
+| `graph.test_dir_names` | `("test", "tests")` | Dirs whose `.py` files are indexed as tests, not source | test files feed `tested_by` but are never source nodes (S3) | PROPOSED -- needs user confirmation |
+| `graph.test_file_globs` | `("test_*.py", "*_test.py")` | Filename globs also treated as tests | catches test files outside a tests dir (S3) | PROPOSED -- needs user confirmation |
+| `graph.nonsource_files` | `("setup.py",)` | `.py` files excluded from graph nodes | packaging/build scripts run side effects on import and pollute diversity counts (S3) | PROPOSED -- needs user confirmation |
+
+**McCabe branch counter** (`graph.complexity_metric = "branch_count"`, implemented in `ecosystems/symbols.py:_complexity`): complexity = `1 + decision points`. Counted, per function body (nested defs excluded — they own their own count): each `if`/`elif`, `for`/`async for`, `while`, `except` handler, ternary (`IfExp`), each comprehension clause and each `if` within a comprehension, each `match` case, and each boolean operator beyond the first in a `and`/`or` chain. Chosen over radon so the number is dependency-free and identical across environments (determinism requirement).
+
+### P2: Knowledge indexes (P3 data files)
+
+| Config key | Default | What it does | Why | Status |
+|---|---|---|---|---|
+| `knowledge.ctx_plugin_module` | `"_kn_ctx_plugin"` | pytest plugin (written into the build context, loaded with `-p`) that sets coverage's context to each test's exact pytest nodeid via `coverage.Coverage.current().switch_context` | captures parametrized/inherited cases distinctly; no pytest-cov dependency (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.coveragerc_filename` | `".coveragerc-knowledge"` | pipeline-owned coverage config written into the build context | must not clobber a repo's own `.coveragerc`; passed via `--rcfile` (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.coverage_json_filename` | `".knowledge-coverage.json"` | in-container `coverage json --show-contexts -i` output | `-i` skips transient doctest sources (e.g. glom `.rst` snippets) that would abort the report (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.coverage_contexts_filename` | `"coverage_contexts.json"` | persisted raw per-line test contexts | verify re-derives `tested_by` from these (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.pr_number_regex` | `r"(?:GH-\|#)(\d+)"` | extracts a PR/issue number from a commit subject | history index provenance (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.manifest_name_prefixes` | `("requirements",)` | filename prefixes (plus `detect.manifest_markers`) that count as a manifest touch | history `touches_manifest` flag (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.source_roots` | `("src",)` | src-layout roots stripped when naming a historical module | keeps history qualnames consistent with the graph's package-aware naming (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.show_commit_max_chars` | `4000` | output cap for the `show_commit` tool's git fallback | bounds tool-result size (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.graph_filename` | `"repo_graph.json"` | graph artifact name in `output/<repo>/knowledge/` | -- | PROPOSED -- needs user confirmation |
+| `knowledge.symbols_filename` | `"symbol_index.json"` | raw AST facts artifact name | consumed by graph/indexes/verify (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.history_filename` | `"history_index.json"` | per-commit index artifact name | P3 history funnel input (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.test_map_filename` | `"test_map.json"` | test_id → functions artifact name | P3 coverage-of-touched-functions filter (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.coverage_filename` | `"coverage.json"` | per-function coverage % artifact name | test-gen ranking + excision eligibility (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.hotspots_filename` | `"hotspots.json"` | per-function change frequency artifact name | P3 signal scoring (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.verification_filename` | `"graph_verification.json"` | self-verification report artifact name | precision stats REPORT cites (S3) | PROPOSED -- needs user confirmation |
+| `knowledge.code_fingerprint_files` | symbols.py + knowledge/{graph,indexes,verify,runner}.py | analyzer sources hashed into every knowledge step's input hash | a code fix must invalidate its artifacts, not just input changes (S3) | PROPOSED -- needs user confirmation |
+| `hygiene_code_files` | ecosystems/python.py + hygiene/{detect,pin,dockerfile,compose,build,baseline}.py | analyzer sources hashed into every hygiene step's input hash | same resumability guard for P1 (S3) | PROPOSED -- needs user confirmation |
 
 ### P2: OKF
 

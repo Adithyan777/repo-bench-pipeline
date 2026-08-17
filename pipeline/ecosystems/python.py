@@ -453,7 +453,9 @@ class PythonAdapter(EcosystemAdapter):
         raise NotImplementedError("lint_and_format lands in S9")
 
     def symbol_index(self, repo: Path) -> dict[str, Any]:
-        raise NotImplementedError("symbol_index lands in S3")
+        from pipeline.ecosystems.symbols import build_symbol_index
+
+        return build_symbol_index(Path(repo), self.config)
 
     def mutators(self) -> list:
         raise NotImplementedError("mutators land in S6")

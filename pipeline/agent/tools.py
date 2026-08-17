@@ -1,21 +1,26 @@
 """Progressive-disclosure agent toolset.
 
-Concrete tools operate on a copied repo workdir; ``run`` executes ONLY inside the
-Docker container. Graph/okf-backed tools (show_symbol, callers, callees,
-tests_for, show_commit, okf) are registered as stubs that raise
-``NotImplementedError`` until the graph (S3) and .okf (S7) exist -- never faked.
-The loop turns a raised tool error into a text observation for the model.
+``concrete_tools`` operate on a copied repo workdir; ``run`` executes ONLY inside the
+Docker container. ``graph_tools`` are backed by the repo graph / history index / git
+(show_symbol, callers, callees, tests_for, show_commit); ``okf`` remains a stub that
+raises ``NotImplementedError`` until the .okf layer (S7). A tool that needs a
+not-yet-built artifact raises a clear error, which the loop turns into a text
+observation for the model -- never faked.
 """
 
 from __future__ import annotations
 
+import json
 import re
+import subprocess
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from pipeline.config import DEFAULT
+from pipeline.config import DEFAULT, Config
 from pipeline.docker.runner import run_in_container
+
+_SHA_RE = re.compile(r"[0-9a-fA-F]{4,40}")
 
 
 @dataclass
@@ -25,6 +30,9 @@ class ToolContext:
     workdir: Path
     image: str | None = None
     files_changed: set[str] = field(default_factory=set)
+    knowledge_dir: Path | None = None  # output/<repo>/knowledge (graph, test_map)
+    repo_root: Path | None = None  # for show_commit / git; defaults to workdir
+    config: Config = field(default_factory=lambda: DEFAULT)
 
 
 @dataclass
@@ -167,38 +175,140 @@ def concrete_tools(ctx: ToolContext) -> list[Tool]:
     ]
 
 
-def stub_tools() -> list[Tool]:
-    """Graph/okf-backed tools, registered but not yet implemented (S3/S7)."""
-    empty = {"type": "object", "properties": {}}
+def _graph_path(ctx: ToolContext) -> Path:
+    if ctx.knowledge_dir is None:
+        raise RuntimeError("show_symbol requires the repo graph (S3); knowledge_dir not set")
+    return ctx.knowledge_dir / ctx.config.knowledge.graph_filename
+
+
+def _load_graph(ctx: ToolContext) -> dict:
+    path = _graph_path(ctx)
+    if not path.is_file():
+        raise FileNotFoundError(f"repo graph not built yet: {path}")
+    return json.loads(path.read_text())
+
+
+def _node(graph: dict, qualname: str) -> dict | None:
+    for node in graph["nodes"]:
+        if node["id"] == qualname:
+            return node
+    return None
+
+
+def _show_symbol(ctx: ToolContext, qualname: str) -> str:
+    graph = _load_graph(ctx)
+    node = _node(graph, qualname)
+    if node is None:
+        raise ValueError(f"no symbol '{qualname}' in the graph")
+    lines = [
+        f"{node['type']} {node['id']}",
+        f"  file: {node['file']}:{node.get('line')}-{node.get('end_line', node.get('line'))}",
+    ]
+    if node.get("signature"):
+        lines.append(f"  signature: {node['signature']}")
+    if node.get("complexity") is not None:
+        lines.append(f"  complexity: {node['complexity']}")
+    if node.get("coverage") is not None:
+        lines.append(f"  coverage: {node['coverage']}%")
+    if node.get("tested_by"):
+        lines.append(f"  tested_by: {', '.join(node['tested_by'])}")
+    if node.get("docstring"):
+        lines.append(f"  docstring: {node['docstring'].strip().splitlines()[0]}")
+    return "\n".join(lines)
+
+
+def _calls_edges(ctx: ToolContext, *, source: str | None = None, target: str | None = None) -> str:
+    graph = _load_graph(ctx)
+    hits = [
+        e
+        for e in graph["edges"]
+        if e["type"] == "calls"
+        and (source is None or e["source"] == source)
+        and (target is None or e["target"] == target)
+    ]
+    if not hits:
+        return "none"
+    key = "source" if target else "target"
+    return "\n".join(
+        f"{e[key]}  ({e['evidence']['file']}:{e['evidence']['line']})" for e in hits
+    )
+
+
+def _tests_for(ctx: ToolContext, qualname: str) -> str:
+    graph = _load_graph(ctx)
+    node = _node(graph, qualname)
+    tested = node.get("tested_by") if node else None
+    if not tested:
+        tested = sorted(
+            e["target"]
+            for e in graph["edges"]
+            if e["type"] == "tested_by" and e["source"] == qualname
+        )
+    return "\n".join(tested) if tested else "no tests found"
+
+
+def _show_commit(ctx: ToolContext, sha: str) -> str:
+    if not _SHA_RE.fullmatch(sha or ""):
+        raise ValueError(f"not a valid commit sha: {sha!r}")
+    root = ctx.repo_root or ctx.workdir
+    history = (
+        ctx.knowledge_dir / ctx.config.knowledge.history_filename if ctx.knowledge_dir else None
+    )
+    if history and history.is_file():
+        for commit in json.loads(history.read_text()):
+            if commit["sha"].startswith(sha):  # sha is a validated non-empty prefix
+                return _format_commit(commit)
+    # --end-of-options guarantees the sha is parsed as a revision, never an option
+    # (`git show -- <sha>` would instead treat it as a pathspec and show nothing).
+    result = subprocess.run(
+        ["git", "-C", str(root), "show", "--stat", "--format=%H%n%s%n%an",
+         "--end-of-options", sha],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise ValueError(f"no such commit: {sha}")
+    return result.stdout[: ctx.config.knowledge.show_commit_max_chars]
+
+
+def _format_commit(commit: dict) -> str:
+    lines = [
+        f"commit {commit['sha']}",
+        f"  message: {commit['message']}",
+        f"  merge: {commit['is_merge']}  pr: {commit.get('pr_number')}",
+        f"  +{commit['insertions']} -{commit['deletions']}  manifest: {commit['touches_manifest']}",
+        f"  files: {', '.join(commit['files_changed'])}",
+    ]
+    if commit["touched_functions"]:
+        lines.append(f"  functions: {', '.join(commit['touched_functions'])}")
+    if commit["test_files_touched"]:
+        lines.append(f"  tests: {', '.join(commit['test_files_touched'])}")
+    return "\n".join(lines)
+
+
+def graph_tools(ctx: ToolContext) -> list[Tool]:
+    """Graph/history-backed navigation tools (S3). okf stays stubbed until S7."""
+    one = {
+        "type": "object",
+        "properties": {"qualname": {"type": "string"}},
+        "required": ["qualname"],
+    }
     return [
-        Tool(
-            "show_symbol",
-            "Look up a function/class from the repo graph.",
-            empty,
-            _stub("show_symbol", "the repo graph (S3)"),
-        ),
-        Tool(
-            "callers", "List callers of a symbol.", empty, _stub("callers", "the repo graph (S3)")
-        ),
-        Tool(
-            "callees", "List callees of a symbol.", empty, _stub("callees", "the repo graph (S3)")
-        ),
-        Tool(
-            "tests_for",
-            "Find tests covering a symbol.",
-            empty,
-            _stub("tests_for", "the test map (S3)"),
-        ),
+        Tool("show_symbol", "Look up a function/class from the repo graph by qualname.", one,
+             lambda qualname: _show_symbol(ctx, qualname)),
+        Tool("callers", "List call sites that call the given qualname.", one,
+             lambda qualname: _calls_edges(ctx, target=qualname)),
+        Tool("callees", "List intra-repo symbols the given qualname calls.", one,
+             lambda qualname: _calls_edges(ctx, source=qualname)),
+        Tool("tests_for", "List tests that execute the given qualname.", one,
+             lambda qualname: _tests_for(ctx, qualname)),
         Tool(
             "show_commit",
-            "Inspect a commit.",
-            empty,
-            _stub("show_commit", "the history index (S3)"),
+            "Inspect a commit from the history index (or git).",
+            {"type": "object", "properties": {"sha": {"type": "string"}}, "required": ["sha"]},
+            lambda sha: _show_commit(ctx, sha),
         ),
-        Tool(
-            "okf",
-            "Read an OKF knowledge page.",
-            empty,
-            _stub("okf", "the .okf knowledge layer (S7)"),
-        ),
+        Tool("okf", "Read an OKF knowledge page.", {"type": "object", "properties": {}},
+             _stub("okf", "the .okf knowledge layer (S7)")),
     ]

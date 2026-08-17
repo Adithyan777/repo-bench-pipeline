@@ -43,11 +43,12 @@ def test_rebuild_is_deterministic(tmp_path: Path) -> None:
 
 def test_history_shape() -> None:
     messages = _log(FIXTURES / "mini_pkg")
-    assert len(messages) == 6
+    assert len(messages) == 8
     assert any("docs:" in m for m in messages)
     assert any("Fix" in m for m in messages)
     assert any("wcwidth" in m for m in messages)
     assert any("Refactor" in m for m in messages)
+    assert any("Rename" in m for m in messages)
 
 
 def test_bugfix_commit_adds_test_and_fixes_behavior() -> None:

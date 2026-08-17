@@ -1,7 +1,7 @@
 """Modular agent loop + progressive-disclosure toolset."""
 
 from pipeline.agent.loop import Agent, AgentResult, AgentRunner
-from pipeline.agent.tools import Tool, ToolContext, concrete_tools, stub_tools
+from pipeline.agent.tools import Tool, ToolContext, concrete_tools, graph_tools
 
 __all__ = [
     "Agent",
@@ -10,5 +10,5 @@ __all__ = [
     "Tool",
     "ToolContext",
     "concrete_tools",
-    "stub_tools",
+    "graph_tools",
 ]

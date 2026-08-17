@@ -357,7 +357,9 @@ Historical trees used by P3 tasks are never lint/formatted (would pollute the re
 
 ### repo_graph.json (step 4.1)
 
-100% deterministic, static analysis. No LLM.
+100% deterministic, static analysis. No LLM. Built AFTER the index data files (4.3):
+the coverage %, test refs and `tested_by` edges below are joined in from
+test_map/coverage, so the run order is symbol_index → indexes → graph → verify.
 
 Nodes: module, class, function/method. Each carries: file, line span, signature, docstring, complexity, coverage %, test refs.
 
@@ -627,7 +629,12 @@ Started here and rerun continuously.
 
 ### Step 3: P2 static
 
-repo_graph, history_index, test_map, coverage, hotspots, graph self-verification.
+symbol_index, then the index data files (history_index, test_map, coverage, hotspots),
+then repo_graph, then graph self-verification. Order note: repo_graph nodes carry
+coverage % / test refs and there is a `tested_by` edge, all derived from
+test_map/coverage — so the indexes are built BEFORE the graph
+(`symbol_index → indexes → graph → verify`), not after it as an earlier draft of
+section 4.1 implied.
 
 Test: mini_pkg graph == expected edges; test_map matches known coverage.
 

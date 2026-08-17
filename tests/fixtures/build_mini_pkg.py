@@ -4,10 +4,10 @@ Run: ``python tests/fixtures/build_mini_pkg.py``. Rebuilds
 ``tests/fixtures/mini_pkg`` and ``tests/fixtures/mini_pkg_notests`` from scratch
 each time. .git dirs are created here, never committed to the outer repo.
 
-mini_pkg: 3 modules, a setup.py manifest with one small third-party dep, real
-pytest tests covering some (not all) functions, and 6 commits including a genuine
+mini_pkg: 3 core modules, a setup.py manifest with one small third-party dep, real
+pytest tests covering some (not all) functions, and 8 commits including a genuine
 bugfix (test added in the same commit), a dependency change, a docs-only commit,
-and a refactor.
+a refactor, and a file rename (exercises history's --no-renames handling).
 
 mini_pkg_notests: same shape, no tests and no manifest, and it imports
 third-party modules (one alias-mapped) so the AST-inferred-deps path has work.
@@ -258,6 +258,14 @@ def test_truncate_adds_ellipsis():
     assert truncate("hello world", 5) == "hell\\u2026"
 """
 
+GEOMETRY = '''"""Standalone geometry helper (renamed across a commit)."""
+
+
+def area(width, height):
+    """Return the area of a rectangle."""
+    return width * height
+'''
+
 README = """# mini_pkg
 
 A tiny library used as a pipeline test fixture.
@@ -424,6 +432,17 @@ def build_mini_pkg(root: Path) -> Path:
         {
             "msg": "Refactor: extract _needs_truncation helper in text",
             "files": {"mini_pkg/text.py": TEXT_REFACTORED},
+        },
+        {
+            "msg": "Add standalone geometry module",
+            "files": {"mini_pkg/geometry.py": GEOMETRY},
+        },
+        {
+            # Pure rename: identical content, old path removed. With --no-renames the
+            # history index sees both mini_pkg.geometry.area (removed) and
+            # mini_pkg.shapes.area (added).
+            "msg": "Rename geometry module to shapes",
+            "files": {"mini_pkg/geometry.py": None, "mini_pkg/shapes.py": GEOMETRY},
         },
     ]
     _build(repo, commits)

@@ -103,8 +103,10 @@ def main(argv: list[str] | None = None) -> int:
     for stage in stages:
         if stage == "hygiene":
             _run_hygiene(args, config)
+        elif stage == "knowledge":
+            _run_knowledge(args, config)
         else:
-            raise SystemExit(f"stage '{stage}' is not implemented yet (lands in S3+)")
+            raise SystemExit(f"stage '{stage}' is not implemented yet (lands in S4+)")
     return 0
 
 
@@ -122,6 +124,17 @@ def _run_hygiene(args: argparse.Namespace, config: Config) -> None:
         print(f"verify-twice identical: {ok}")
         if not ok:
             raise SystemExit("twice-run verdicts differ")
+
+
+def _run_knowledge(args: argparse.Namespace, config: Config) -> None:
+    from pipeline.hygiene.context import build_context
+    from pipeline.knowledge.runner import run_knowledge
+
+    ctx = build_context(
+        args.repo, config=config, force=tuple(args.force), fresh=args.fresh, output_root=OUTPUT_ROOT
+    )
+    run_knowledge(ctx)
+    print(f"knowledge done: {ctx.run_dir}")
 
 
 if __name__ == "__main__":

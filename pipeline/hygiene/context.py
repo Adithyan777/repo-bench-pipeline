@@ -47,6 +47,10 @@ class HygieneContext:
         return self.run_dir / "hygiene"
 
     @property
+    def knowledge_dir(self) -> Path:
+        return self.run_dir / "knowledge"
+
+    @property
     def audit_dir(self) -> Path:
         return self.run_dir / "audit"
 

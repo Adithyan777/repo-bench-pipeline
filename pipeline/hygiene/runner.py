@@ -17,6 +17,7 @@ from pipeline.hygiene.context import (
     HygieneContext,
     commit_pipeline_changes,
 )
+from pipeline.state import code_fingerprint, hash_inputs
 
 # (name, module, commit_label_after) — commit_label groups working-tree edits into
 # one labeled pipeline commit once that step (and its peers) have written their files.
@@ -48,7 +49,9 @@ def run_hygiene(ctx: HygieneContext) -> HygieneContext:
 
 
 def _run_step(ctx: HygieneContext, name: str, module) -> None:
-    input_hash = module.input_hash(ctx)
+    # Fingerprint the hygiene code so a fix invalidates its artifacts, not just inputs.
+    fingerprint = code_fingerprint(ctx.config.hygiene_code_files)
+    input_hash = hash_inputs("hy-code", fingerprint, module.input_hash(ctx))
     stage = ctx.report["stages"].setdefault(name, {})
     if not ctx.state.should_run(name, input_hash):
         stage["skipped"] = True

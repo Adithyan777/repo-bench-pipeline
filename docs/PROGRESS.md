@@ -9,7 +9,7 @@ Legend: `todo` · `in-progress` · `review` (awaiting author review) · `done`
 |---|---|---|---|
 | S1 | Steps 0+1: fixture repos (`tests/fixtures/mini_pkg`, `mini_pkg_notests`), package skeleton, `state` (resumability), `docker.run_in_container` + image build, LLM client (big/small, reasoning per tier, schema-forced JSON, retries, usage log, record/replay), agent loop + tools, foundation tests | review | See `### S1`. `pytest` → 32 passed (Docker live). Cassettes recorded (1049 tokens). Kimi-K2.6 tool-calling-with-thinking day-1 check PASSED. |
 | S2 | Step 2+2b: P1 core — detect → synthesize requirements → uv lock → Dockerfile/compose → build → baseline + quarantine; `ecosystems/python.py`; run on glom, then toolz + minidump | review | See `### S2` (+ round-2 fixes). glom/toolz/minidump/fixtures green; glom & toolz twice-identical ✓; toolz 0-LLM/no-agent after F1. `pytest` → 72 passed / 3 slow. |
-| S3 | Step 3: P2 static — repo_graph.json, history_index, test_map, coverage, hotspots, graph self-verification | todo | |
+| S3 | Step 3: P2 static — repo_graph.json, history_index, test_map, coverage, hotspots, graph self-verification | review | See `### S3` (+ review-round fixes). mini_pkg/glom/toolz/minidump all built; graph byte-identical twice; verification precision 1.0 on every edge type, 0 mismatches. `pytest` → 96 passed / 3 slow. NO LLM. |
 | S4 | Step 4: excision funnel + validation harness end-to-end → first VALID task; task folder format, evidence, verdict, tasks.json writer | todo | |
 | S5 | Step 5: history funnel + task-builder agent (verifier authoring/neutrality, instruction + leak gates, difficulty) | todo | |
 | S6 | Step 6: P1 test-gen + AST mutators + mutation gate | todo | |
@@ -268,3 +268,184 @@ knowledge/tasks stages. compose emits templates for postgres/redis only (else "u
 - **F11** remaining test gaps: no real requirements-only or poetry-only END-TO-END build test
   (unit-level detect/pin/translate covered); compose emission only unit-tested; the git-versioning
   build is validated by the real toolz run, not a fixture. Add fixtures in S3+ as needed.
+
+### S3
+
+**Ordering deviation (approved by author).** The prompt/DESIGN 4.1 listed the graph before the
+index files, but graph nodes carry coverage % / test refs and the `tested_by` edges — all derived
+from test_map/coverage (a container run). So the knowledge runner runs
+**`symbol_index → indexes → graph → verify`** (indexes before graph). DESIGN Step 3 + 4.1 wording
+updated to match. **NO LLM anywhere in this layer.**
+
+**Complexity metric (approved).** Own McCabe branch counter (`graph.complexity_metric =
+"branch_count"`, `ecosystems/symbols.py:_complexity`), not radon — dependency-free, version-stable,
+deterministic. Counted constructs documented in HEURISTICS.md.
+
+**What exists (real, tested)**
+- `ecosystems/symbols.py` — the ONLY ecosystem-specific S3 code (`PythonAdapter.symbol_index` calls
+  it). Pure AST: per module → classes/functions/methods (file, qualname, span, signature via
+  `ast.unparse`, docstring, complexity, is_public, decorators), module/local imports, inheritance,
+  and intra-repo call sites **resolved by name only** (Name → top-level def / from-import; `self.m`
+  → enclosing class method; `alias.f` → imported module symbol). Calls not resolvable to a repo
+  symbol go in `unresolved_calls`, **never guessed**. Test files indexed but flagged `is_test`
+  (kept out of the source node set). Also `functions_in_source`/`path_to_module` for historical
+  blobs. Import target resolution is deferred to a finalize pass so it is independent of file order.
+- `knowledge/graph.py` → `repo_graph.json` (DESIGN 4.1). Nodes = source modules/classes/functions;
+  edges = imports/contains/calls/inherits/tested_by, **every edge carries `evidence{file,line}`**.
+  Coverage % + `tested_by` joined from indexes. `setup.py` (and any `graph.nonsource_files`) excluded
+  from nodes. Nodes deduped by id (a module that rebinds a name keeps the final definition — e.g.
+  toolz `examples/fib.py` defines `fib` 3×). Fully sorted + repo-relative paths + no timestamps →
+  **byte-identical across runs** (verified on mini_pkg and glom).
+- `knowledge/indexes.py` → `history_index.json` (ORIGINAL commits at/under `base_sha` via
+  `git rev-list`; touched functions resolved by parsing the file **as it was at that commit**
+  (`git show sha:path`) and intersecting `--unified=0` diff hunks with those AST spans — never HEAD
+  spans (with `--no-renames`); manifest-touch flag; PR number; merge flag), `test_map.json` +
+  `coverage.json` (ONE container run: `coverage run -m pytest` with an in-container pytest plugin
+  that sets each test's coverage context to its exact pytest nodeid, then
+  `coverage json --show-contexts -i`, joined to source spans), `hotspots.json` (change frequency
+  from history).
+- `knowledge/verify.py` → `graph_verification.json`. Samples edges (even share per type,
+  deterministic), re-derives each by a DIFFERENT path (imports=regex, contains=second parse,
+  inherits=second parse, calls=second parse of the exact caller — qualname-aware, handles
+  same-named methods across classes and redefinitions), tested_by=test_map membership; **symbol
+  existence by importing each module IN THE CONTAINER**. Import failures (optional/platform deps,
+  doc/build scripts) are reported as `unimportable_modules`, separate from real `missing_attr`
+  mismatches, so cross-platform code (minidump's Windows modules) never dings precision.
+- `knowledge/runner.py` + `--stage knowledge` in `cli.py` (`--stage all` = hygiene → knowledge).
+  Resumable via `state.py` (input hashes over source tree / baseline+build / knowledge artifacts),
+  per-step timing into `report_data.json`.
+- Agent tools implemented (were stubbed in S1): `show_symbol`, `callers`, `callees`, `tests_for`
+  (graph-backed), `show_commit` (history_index, git fallback). `okf` **stays stubbed** (S7).
+  `graph_tools(ctx)` in `agent/tools.py`; `ToolContext` gained `knowledge_dir` + `repo_root`.
+
+**Per-repo results (real runs)**
+
+| Repo | src mods | nodes | contains | calls | imports | inherits | tested_by | unresolved calls | test_map (tests) | verify precision | symbol-existence |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| mini_pkg | 5 | 22 | 17 | 2 | 3 | 0 | 20 | 20 | 11 | 1.0 all | 14/14 (1.0) |
+| glom | 12 | 379 | 367 | 235 | 16 | 17 | 3710 | 2502 | 194 | 1.0 all | 129/129 (1.0), 1 unimportable (docs `conf.py`) |
+| toolz | 20 | 183 | 165 | 81 | 27 | 0 | 853 | 1425 | 182 | 1.0 all | 124/124 (1.0), 4 unimportable (docs conf + example scripts) |
+| minidump | 50 | 726 | 676 | 227 | 80 | 19 | 0 | 1959 | 0 (no tests) | 1.0 all | 194/194 (1.0), 7 unimportable (Windows-only) |
+
+(Counts above are from FRESH outputs after the round-2 fixes: relative-import resolution raised
+glom imports 9→16 / inherits 13→17 / calls 198→235, toolz imports 12→27, minidump imports 54→80.)
+
+- 0 mismatches on every repo; 0 duplicate node ids; graph byte-identical across two runs.
+- test_map is now keyed by the **exact pytest nodeid** (a tiny in-container pytest plugin switches
+  coverage's context per test), so **parametrized/inherited cases are captured distinctly** — all
+  202 glom test contexts are seen. glom's test_map is 194 of 202 because the other 8 tests execute
+  no indexed source function (e.g. CLI/error-message tests), not because of a context collapse.
+  (The earlier "doctests" note was wrong — the gap was the dynamic-context collapse of parametrized
+  tests, now fixed.) `tested_by` edges collapse a test's parametrizations to one base nodeid.
+- minidump has no tests → test_map/coverage empty by design (`coverage_status: no_tests`); graph
+  still complete.
+- "unresolved calls" are high because they include every builtin/stdlib/external/method-on-local
+  call (e.g. `len`, `self.x.append`, `pytest.raises`) — by design these are listed, never invented
+  as edges.
+
+**Exact test command**
+```
+.venv/bin/python -m pytest            # fast: AST + real git + one docker coverage round-trip
+.venv/bin/python -m pytest -m slow    # hygiene multi-build resumability/quarantine
+```
+Result: **98 passed, 3 deselected** (fast) + **3 passed** (slow). ruff clean. `tests/test_knowledge.py`
+holds the S3 tests: expected mini_pkg nodes/edges (hand-written), unresolved-not-guessed, relative +
+aliased + dotted imports, `import pkg.sub` top-package binding, comprehension complexity, inheritance
+edge, deterministic bytes, test_map/coverage join, parametrized-collapse of `tested_by`, history
+(bugfix+manifest, at-that-commit spans, rename both-sides, deleted-file + merge, src-layout naming),
+hotspots, verify confirms clean + catches wrong-module-same-leaf + tested_by-from-contexts, the agent
+tools incl. sha validation, and a docker e2e that runs real container coverage and asserts
+test_map/coverage/tested_by/verification + byte-identical graph.
+
+**Config/heuristics added** (config.py + PROPOSED HEURISTICS rows): `graph.complexity_metric`,
+`graph.test_dir_names`, `graph.test_file_globs`, `graph.nonsource_files`, and the whole
+`KnowledgeConfig` (coverage context + artifact filenames). McCabe counted constructs documented.
+
+**Things S4 must know**
+- Everything lives in `output/<repo>/knowledge/`: `repo_graph.json`, `symbol_index.json`,
+  `history_index.json`, `test_map.json`, `coverage.json`, `hotspots.json`, `graph_verification.json`.
+  `knowledge.runner.knowledge_paths(run_dir)` returns these paths.
+- **repo_graph.json**: `{metadata, nodes[], edges[]}`. Node = `{id (qualname), type
+  (module|class|function|method), file, line, end_line, signature, docstring, complexity, is_public,
+  decorators, coverage, tested_by[]}`. Edge = `{type, source, target, evidence{file,line}}`. IDs are
+  dotted qualnames (`glom.core.Path.__init__`); source file paths are repo-relative.
+- **test_map.json**: `{pytest_nodeid: [source function qualname, ...]}` — join the harness's stable
+  test set (`hygiene/baseline.json`) with these to know which tests exercise a touched function
+  (the P3 history "coverage or added tests" filter). **excision** picks functions covered by
+  `>= min_covering_tests` — invert test_map (or read a function node's `tested_by`).
+- **coverage.json**: `{qualname: percent}` over the function's measurable body lines (includes the
+  `def` line, so a never-called function reads ~50%, not 0 — a low-vs-high signal, not absolute).
+- **history_index.json** (P3 mining source): per original commit `{sha, parents[], message,
+  is_merge, pr_number, files_changed[], insertions, deletions, test_files_touched[],
+  touches_manifest, touched_functions[]}`. Use `touches_manifest` for the dependency-changing drop
+  and `touched_functions` ∩ `test_map` for the coverage filter. History is at/under `base_sha` only.
+- **hotspots.json**: `{qualname: change_count}` for signal scoring.
+- Run everything against `bench-<repo>` via `run_in_container`; NO host execution of target code.
+
+**Stubbed / deferred**
+- `okf` agent tool + `.okf/` writer → S7. mutators/lint/testgen unchanged (S6/S9).
+- **F6** (collection-broken branch, inert baseline flags) — not in S3's way; still flagged for S6.
+- Graph-tool wiring into a live agent run is deferred to the first stage that needs it (S5 builders);
+  S3 implements + unit-tests the tools but no agent runs this session.
+
+#### S3 review round — GO-with-fixes applied
+
+1. **history_index rename handling**: both `git diff` calls pass `--no-renames`, so a rename is
+   attributed on both sides (removed + added function spans). Added a rename commit to
+   `build_mini_pkg.py` (geometry→shapes) + a test. Re-checked glom `fc58761` (stream→streaming): now
+   lists both `glom.stream.*` and `glom.streaming.*` (33 functions).
+2. **Relative imports**: `symbol_index` resolves `from . import x` / `from ..pkg import y` against the
+   module's package (level>0). Test: relative + aliased imports resolve.
+3. **`import pkg.sub` binds only the top package**; dotted call chains (`pkg.sub.func()`) resolve by
+   walking Attribute nodes, else unresolved. Test included.
+4. **verify — calls** now independently RE-RESOLVES the target module (not leaf-name only), including
+   `self.method` and relative imports, so a wrong-module/same-leaf edge is caught (test). **tested_by**
+   is re-derived from the persisted raw coverage contexts (`coverage_contexts.json`). Removed the
+   unimplemented "dynamic support" claim.
+5. **test_map keyed by exact pytest nodeids** via an in-container pytest plugin
+   (`coverage.Coverage.current().switch_context(item.nodeid)`) — no pytest-cov dependency (verified
+   absent; `coverage` present). Parametrized/inherited cases captured distinctly (all 202 glom
+   contexts). Corrected the PROGRESS "doctests" mis-statement.
+6. **Complexity**: fixed the unreachable comprehension branch — `if`s inside comprehensions now count
+   (`+1` for the `for` clause, `+1` per `if`), matching HEURISTICS. Test added.
+7. **show_commit**: validates the sha with `re.fullmatch(r"[0-9a-fA-F]{4,40}")`, passes `--`, rejects
+   empty/prefix-injection; output cap moved to `knowledge.show_commit_max_chars`. Test added.
+8. **src/ layout**: `path_to_module` strips `knowledge.source_roots` so history/hotspots qualnames
+   match the graph's package-aware naming (`src/pkg/mod.py → pkg.mod`). Test with a src-layout fixture.
+9. **Nits**: tool filenames come from `config.knowledge.*`; PR/manifest regex + prefixes in config +
+   HEURISTICS; probe file renamed `_kn_probe.py`; tools docstring refreshed; single tool registration
+   (`stub_tools` removed — graph tools with no `knowledge_dir` raise the clear error); `_sample`
+   documented as first-N-after-sort per edge type; `run_coverage` returns an explicit
+   `coverage_status` (ok/no_output/no_tests) instead of a silent `{}`.
+10. **Tests**: at-that-commit spans, rename/merge/deleted-file history, relative+aliased imports,
+    `import pkg.sub`, comprehension complexity, src-layout, unresolved-calls-in-artifact.
+
+Note: the stricter independent call re-resolution briefly surfaced apparent mismatches on
+toolz/minidump — all were `self.method` calls the verifier's resolver didn't yet handle (indexer was
+correct). After adding self + relative-import handling to the verifier, all four repos are back to
+**precision 1.0, 0 mismatches**. The mini_pkg fixture is now 8 commits (added standalone
+geometry→shapes rename); source module count 4→5 (adds `mini_pkg.shapes`).
+
+#### S3 review round 2 — GO-with-fixes applied
+
+- **A. Relative imports made order-independent.** `symbol_index` now runs a true first pass that
+  registers every module (name + `is_package` from the path) BEFORE any import is parsed, so
+  `_relative_base` can never read an unregistered record. (The live code already resolved glom's
+  `from .core import`; the None the reviewer saw came from the stale artifact — see B.) New test:
+  a module that sorts BEFORE its package sibling and uses `from .zzz import` still resolves the
+  import edge + the call. Fresh glom now has **16** imports / **17** inherits / **235** calls.
+- **B. Pipeline-code fingerprint in every step's input hash (the real bug).** The old
+  `symbol_index` hash covered only source files, so the round-1 relative-import fix never
+  invalidated glom's `output` artifact — I'd forced only `indexes/graph/verify`, so the graph was
+  built on pre-fix symbols. Now `state.code_fingerprint()` hashes the analyzer sources
+  (`knowledge.code_fingerprint_files` for knowledge, `hygiene_code_files` for hygiene) into every
+  step's input hash, so a code change invalidates its artifacts. Re-ran all four repos from fresh
+  (table above). Test: `code_fingerprint` changes when a file's content changes.
+- **verify imports re-check** rewritten from regex to an INDEPENDENT second parse that re-resolves
+  each import statement (absolute + relative) — a regex could not read `from .core import` and was
+  falsely flagging the new relative-import edges. Back to precision 1.0 on all four.
+- **show_commit**: uses `git show … --end-of-options <sha>`. The reviewer's literal `--` BEFORE the
+  sha would make git treat the sha as a pathspec (`git show -- <sha>` prints nothing — verified);
+  `--end-of-options` achieves the intent (sha can never be parsed as an option) and is git-correct.
+- Full suite **98 passed / 3 slow**, ruff clean. All knowledge artifacts regenerated from fresh
+  outputs; glom graph byte-identical across recompute.
