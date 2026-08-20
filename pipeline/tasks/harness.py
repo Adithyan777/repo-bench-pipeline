@@ -1,4 +1,4 @@
-"""Validation harness (DESIGN 5.5): ``validate_task(task_dir) -> verdict``.
+"""Validation harness (docs/pipeline-3-tasks.md): ``validate_task(task_dir) -> verdict``.
 
 Pure code; every command runs via ``run_in_container`` against the image in task.json on
 a fresh workdir, with the canonical ``verifier/`` re-copied before judging. Evidence goes

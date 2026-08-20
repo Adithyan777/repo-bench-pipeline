@@ -9,7 +9,7 @@ Entry point: `./run.sh <repo> [--stage hygiene|knowledge|tasks|all]`, which call
 | File | What it does |
 |---|---|
 | `cli.py` | Argument parsing, stage dispatch, config overrides (`--set section.key=value`), `--force`/`--fresh` flags |
-| `config.py` | All thresholds, flags, model tiers, and defaults. Documented in `HEURISTICS.md` at the repo root |
+| `config.py` | All thresholds, flags, model tiers, and defaults. Documented in `docs/configuration.md` |
 | `state.py` | Resumability: per-step status + input hashing in `output/<repo>/state.json`. Steps skip when inputs and code fingerprint are unchanged |
 | `log.py` | Console progress lines (`HH:MM:SS [stage/step] msg`); `--quiet` keeps stage-level lines only |
 | `validate.py` | Standalone harness runner: `python -m pipeline.validate <task_dir> [...]`. Exits 0 only if every task is VALID |
@@ -33,7 +33,7 @@ Entry point: `./run.sh <repo> [--stage hygiene|knowledge|tasks|all]`, which call
 ```
 ./run.sh https://github.com/mahmoud/glom          # all stages
 ./run.sh ./local-repo --stage hygiene --fresh      # one stage, ignore cache
-python -m pipeline.validate tasks/glom/hist-abc1234
+python -m pipeline.validate tasks/glom/hist-94b6375
 ```
 
 ## Console output
@@ -47,11 +47,11 @@ selected task ids. `--quiet` keeps only stage boundaries and the summary.
 
 ```
 12:01:15 [hygiene/build] done in 12.2s (0 LLM tokens) outcome=built attempts=0
-12:41:30 [tasks/validate] hist-4a8f5e0 VALID (fail-before 1, pass-after 1, det 3/3)
+12:41:30 [tasks/validate] hist-94b6375 VALID (fail-before 1, pass-after 1, det 3/3)
 ```
 
 ## Not here
 
-- Thresholds and knob docs: `HEURISTICS.md` (repo root)
-- Design contract: `docs/DESIGN.md`
+- Thresholds and knob docs: `docs/configuration.md`
+- Architecture and design rationale: `docs/architecture.md`, `docs/decisions.md`
 - Test suite: `tests/`

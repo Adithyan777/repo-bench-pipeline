@@ -1,4 +1,4 @@
-"""All heuristics, thresholds, flags and defaults. Documented in HEURISTICS.md.
+"""All heuristics, thresholds, flags and defaults. Documented in docs/configuration.md.
 
 Overridable via ``--set section.key=value``. Env vars: secrets and model IDs only.
 """
@@ -257,7 +257,8 @@ class TestGenConfig:
 @dataclass
 class LintConfig:
     # ruff in-container on the hygiene clone only (historical trees are never linted);
-    # unfixable findings get a per-file noqa, not an LLM fix.
+    # unfixable findings get a per-line noqa, not an LLM fix. lint.json records them as
+    # a per-file map of codes.
     enabled: bool = True  # --no-lint turns the step into a no-op
     rules: tuple[str, ...] = ("E", "F", "W", "I", "B", "UP")
     autofix: bool = True

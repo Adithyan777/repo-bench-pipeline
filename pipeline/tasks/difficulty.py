@@ -1,5 +1,5 @@
-"""Difficulty labelling (DESIGN 5.6): code computes features from the graph + task diff; a
-batched BIG call (``p3.build.difficulty_label``) assigns easy|medium|hard with a rationale
+"""Difficulty labelling (docs/pipeline-3-tasks.md): code computes features from the graph + task
+diff; a batched BIG call (``p3.build.difficulty_label``) assigns easy|medium|hard with a rationale
 that must cite a computed feature (string match; <= ``difficulty.max_regenerations``
 retries, then ``failed``).
 """

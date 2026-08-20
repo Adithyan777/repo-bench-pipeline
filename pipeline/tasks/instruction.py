@@ -1,4 +1,4 @@
-"""LLM-authored task instruction + leak gates + golden rationale (DESIGN 5.6).
+"""LLM-authored task instruction + leak gates + golden rationale (docs/pipeline-3-tasks.md).
 
 The authoring model (``p3.build.write_instruction``) sees only input/'s public contract,
 verifier tests, behavior summary / excised signature, files_in_scope and the verifier

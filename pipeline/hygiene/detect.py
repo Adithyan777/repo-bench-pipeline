@@ -1,4 +1,4 @@
-"""Step 3.1: ecosystem + packaging-style + Python-version detection."""
+"""Hygiene step 1 (detect): ecosystem + packaging-style + Python-version detection."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""repo_graph.json: deterministic static knowledge graph (DESIGN 4.1).
+"""repo_graph.json: deterministic static knowledge graph (docs/pipeline-2-knowledge.md).
 
 Nodes: source modules/classes/functions (tests never become nodes) with file, span and,
 for functions, signature/docstring/complexity/coverage/test refs. Edges: imports,

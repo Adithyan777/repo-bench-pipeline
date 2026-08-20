@@ -1,4 +1,4 @@
-"""Right-reason classifier over a pytest-json-report (DESIGN 5.5 step 2), STRICT.
+"""Right-reason classifier over a pytest-json-report (docs/pipeline-3-tasks.md), STRICT.
 
 Report shape (pytest-json-report 1.5.0): failing call/setup carries ``crash{path,lineno,
 message="Type: text"}`` + ``traceback[...]`` (only the last frame names the type);

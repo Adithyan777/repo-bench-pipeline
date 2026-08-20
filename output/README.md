@@ -34,8 +34,14 @@ output/
     report_data.json        # per-stage timing + LLM usage written by the runners
     report_summary.json     # aggregated data from all stages, used to render REPORT.md
     state.json              # resumability ledger (step status + input hashes)
+    REPORT.md               # the generated report (tables auto-filled, AUTHOR markers)
 ```
 
 ## What is committed
 
-See `.gitignore` for the definitive policy. Most of `output/` is regenerated and gitignored. The committed exception is the knowledge deliverables for the target repo (`repo_graph.json` and the `.okf/` bundle).
+See `.gitignore` for the definitive policy. Most of `output/` is regenerated and gitignored. The committed exceptions for the target repo are:
+
+- `repo/` -- the transformed working clone, 79 files, with the nested `.git` excluded
+- `knowledge/repo_graph.json` and the `knowledge/.okf/` bundle
+- `report_summary.json` -- the aggregated run data the report tables come from
+- `REPORT.md` -- the raw generated report; the finished report is `REPORT.md` at the repo root

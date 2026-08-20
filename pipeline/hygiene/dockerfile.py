@@ -1,4 +1,5 @@
-"""Step 3.3: render the digest-pinned Dockerfile + .dockerignore into the repo."""
+"""Hygiene step 3 (dockerfile): render the digest-pinned Dockerfile + .dockerignore
+into the repo."""
 
 from __future__ import annotations
 

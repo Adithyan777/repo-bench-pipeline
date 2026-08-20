@@ -14,6 +14,7 @@ from pipeline.hygiene import baseline, build, compose, detect, dockerfile, lint,
 from pipeline.hygiene.context import (
     HygieneContext,
     commit_pipeline_changes,
+    write_report_data,
 )
 from pipeline.log import fmt_counts, log, step_skipped, step_start
 from pipeline.state import code_fingerprint, hash_inputs
@@ -98,8 +99,9 @@ def _step_summary(name: str, data) -> str:
 
 def _write_report(ctx: HygieneContext) -> None:
     usage_path = ctx.audit_dir / "llm_usage.json"
-    ctx.report["llm_usage"] = json.loads(usage_path.read_text()) if usage_path.is_file() else {}
-    (ctx.run_dir / "report_data.json").write_text(json.dumps(ctx.report, indent=2, sort_keys=True))
+    if usage_path.is_file():
+        ctx.report["llm_usage"] = json.loads(usage_path.read_text())
+    write_report_data(ctx)
 
 
 def verify_twice(ctx: HygieneContext) -> bool:

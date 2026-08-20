@@ -1,4 +1,4 @@
-"""History-derived funnel (DESIGN 5.2) over ``knowledge/history_index.json``.
+"""History-derived funnel (docs/pipeline-3-tasks.md) over ``knowledge/history_index.json``.
 
 Deterministic hard filters + signal score, then a batched SMALL-model classify (decisions
 persisted by content hash), then a diversity-aware shortlist. Every commit lands in

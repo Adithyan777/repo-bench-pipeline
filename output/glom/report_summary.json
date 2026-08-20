@@ -26,7 +26,9 @@
       "testgen_refreshed": true
     },
     "dropped_extras": [],
-    "extras_used": null,
+    "extras_used": [
+      "test"
+    ],
     "image_digest": "sha256:dca64ba3b7231cf251c64edacf424e4859c1e7c526e29755074fe6623c21d998",
     "image_tag": "bench-glom",
     "lint": {
@@ -229,6 +231,17 @@
       "rejected:verifier-on-input:error_before_repo_call": 1,
       "surplus": 367
     },
+    "instruct": {
+      "difficulty_spread": {
+        "easy": 8,
+        "hard": 1,
+        "medium": 4
+      },
+      "failed": 0,
+      "final": 13,
+      "regenerations": 0,
+      "tasks": 13
+    },
     "selection": {
       "achieved_spread": {
         "easy": 5,
@@ -263,6 +276,10 @@
         "hard": 3,
         "medium": 5
       }
+    },
+    "validate": {
+      "tasks": 14,
+      "valid": 13
     }
   }
 }

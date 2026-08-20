@@ -35,7 +35,11 @@ red-to-green task.
 **How it works**: every function in the symbol index is evaluated against hard
 filters, then a SMALL-model screen.
 
-Hard filters (reject reasons):
+Hard filters (reject reasons). The reason recorded per candidate in
+`candidates.json` carries the numbers that tripped it -- `too-central(112>40)`,
+`too-short(4<8)`, `too-long(93>80)` -- so grepping for the bare name finds
+nothing; the aggregate `counts` block uses the bare names.
+
 - `uncovered`: no covering tests at baseline.
 - `few-covering-tests`: fewer than `min_covering_tests` (2) passing baseline tests.
 - `too-central`: more than `max_covering_tests` (40) covering tests. Excising
@@ -65,7 +69,7 @@ status and reject reason).
 `excision.public_only`, `excision.require_public_parent`,
 `excision.build_target`, `excision.reject_private_verifier_imports`.
 
-**On glom**: 536 functions considered. 497 rejected by hard filters (234 test-code,
+**On glom**: 536 functions considered. 511 rejected by hard filters (234 test-code,
 196 private, 27 few-covering-tests, 21 too-short, 15 low-complexity, 8
 private-parent, 7 too-central, 3 uncovered). 1 screened out by SMALL model.
 5 selected for building, 19 surplus.
@@ -131,7 +135,10 @@ most `classify_max_commits` (60).
 
 **On glom**: 1,050 commits considered. Major reject categories: docs-or-ci-only
 (136), uncovered-and-no-tests (135), no-source-change (128), dependency-changing
-(97). 441 scored survivors, 20 shortlisted, 9 built.
+(97). Hard filters removed 646 commits, leaving 404 survivors; of those, 45
+were classified before the shortlist filled (the walk stops once
+`shortlist_size` is reached, and `classify_max_commits` caps it at 60). 20
+shortlisted, 9 built.
 
 
 ## build_history
@@ -171,10 +178,11 @@ of an `ImportError` (invalid).
 `history.max_agent_runs_per_repo`, `history.agent_max_turns`,
 `history.verifier_agent_when_no_tests`, `history.allow_new_symbol_features`.
 
-**On glom**: 9 built. Rejects during build: 5 verifier-fails-on-solution
-(env drift on old commits), 3 verifier-not-implementation-neutral
-(rewrite unchanged), 1 verifier-on-input:error_before_repo_call.
-9 VALID.
+**On glom**: 9 built. Rejects during build: 5 verifier-fails-on-solution --
+the commit's own tests do not pass on its solution tree in today's image,
+typically dependency or environment drift for old commits; no candidate hit
+the explicit `env-drift` import check. 3 verifier-not-implementation-neutral
+(rewrite unchanged), 1 verifier-on-input:error_before_repo_call. 9 VALID.
 
 
 ## validate (harness)
@@ -246,11 +254,12 @@ A task folder is self-contained. To re-validate:
 ```bash
 docker build -t <image_tag> tasks/<repo>/<task_id>/input
 python -m pipeline.validate tasks/<repo>/<task_id>
+python -m pipeline.validate tasks/<repo>/<task_id> --json   # full verdicts to stdout
 ```
 
-The harness builds the image from `input/Dockerfile` if missing (when
-`harness.build_image_if_missing` is set). Exits 0 only if every task passed
-is VALID.
+`--set section.key=value` overrides config for the run. The harness builds the
+image from `input/Dockerfile` if missing (when `harness.build_image_if_missing`
+is set). Exits 0 only if every task passed is VALID.
 
 
 ## instruct

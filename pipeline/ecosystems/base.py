@@ -14,7 +14,7 @@ from typing import Any
 
 
 class EcosystemAdapter(ABC):
-    """~11 methods isolating one language ecosystem. See DESIGN.md 'EcosystemAdapter'."""
+    """~11 methods isolating one language ecosystem. See docs/architecture.md."""
 
     name: str
 

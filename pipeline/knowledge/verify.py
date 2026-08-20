@@ -1,5 +1,5 @@
-"""Graph self-verification (DESIGN 4.1): sample edges, re-derive them by an independent
-code path, report precision per edge type + mismatches.
+"""Graph self-verification (docs/pipeline-2-knowledge.md): sample edges, re-derive them by an
+independent code path, report precision per edge type + mismatches.
 
 imports/contains/inherits: second AST parse; calls: independent call-site resolution
 (same target module, not just same name); tested_by: raw coverage contexts must cover

@@ -1,4 +1,4 @@
-"""Final task selection (DESIGN 5.1/5.6).
+"""Final task selection (docs/pipeline-3-tasks.md).
 
 Pick exactly ``selection.total_tasks`` VALID tasks with a final instruction, honoring the
 hard quotas (``min_history`` / ``max_excision`` / ``max_netnew`` / ``min_distinct_modules``)

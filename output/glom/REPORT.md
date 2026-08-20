@@ -13,7 +13,7 @@ Base commit (original HEAD, P3 mines at/under this): `50e06d16bae9bd921e694be87c
 | Packaging style | setup.py |
 | Python version | 3.12 |
 | Test framework | pytest |
-| Extras folded into lock | - |
+| Extras folded into lock | ['test'] |
 | Dropped (unresolvable) extras | [] |
 | Unresolved inferred imports | [] |
 | Image tag | bench-glom |
@@ -111,18 +111,18 @@ _by-construction (callers / internal links) are graph-derived and reported separ
 
 | Metric | Value |
 | --- | --- |
-| Tasks validated | - |
-| VALID | - |
+| Tasks validated | 14 |
+| VALID | 13 |
 
 **Instruction authoring**
 
 | Metric | Value |
 | --- | --- |
-| Tasks | - |
-| Final | - |
-| Failed | - |
-| Regenerations | - |
-| Difficulty spread | - |
+| Tasks | 13 |
+| Final | 13 |
+| Failed | 0 |
+| Regenerations | 0 |
+| Difficulty spread | easy=8, hard=1, medium=4 |
 
 **Final selection (the 10)**
 
@@ -140,6 +140,8 @@ Exact commands (fresh clone). See README for full detail.
 
 ```bash
 # 0. setup
+git clone https://github.com/Adithyan777/repo-bench-pipeline.git
+cd repo-bench-pipeline
 uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -r requirements-dev.txt
 cp .env.example .env    # add LLM_BASE_URL + LLM_API_KEY
@@ -203,6 +205,8 @@ python -m pipeline.validate tasks/glom/<task_id>
 | pin | - | True |
 | testgen | 23.61 | False |
 
+_Timings and token counts come from the runner's `report_data.json`; steps that were skipped as up-to-date record no duration. The console log of the full run is the authoritative wall-clock record._
+
 <!-- AUTHOR: WRITE: Given the timings/tokens above, describe what breaks at 100 repos and what you would build differently (job queue, image registry, triage, human-review sampling). -->
 
 ## 6. Honest gaps
@@ -214,11 +218,10 @@ python -m pipeline.validate tasks/glom/<task_id>
 - OKF `raises`/`side_effects` precision is conservative (implicit/under-claimed exceptions stay `draft`); `callers`/internal links are true-by-construction, not independent evidence.
 - `test_map` excludes doctests.
 - Test-gen coverage-theater guard: whole-file zero-kill drop (no per-test trimming).
-- The test-gen run on minidump was launched twice; only the real run's tokens count.
 - Verifier visibility defaults to `visible` (hack-proof via harness re-copy).
 - History new-symbol features rely on the getattr convention; pure new-symbol imports on `input/` remain INVALID by the strict classifier's design.
-- Old-commit dependency drift is recorded as `env-drift`, never re-locked.
+- Old-commit dependency drift is rejected, never re-locked: `env-drift` when the tree cannot collect in the pinned image, `verifier-fails-on-solution` when the commit's own tests do not pass on its own solution tree.
 - The collection-broken baseline path (one repair → treat as no tests) is not implemented — no in-scope repo hit it; the inert flags for it were removed.
-- The lint step rebuilds the image and runs the suite twice to prove the linted tree still builds green; a change that regresses a test reverts the whole step. On glom this fires: its `test_error.py::*_stack` tests assert exact rendered source lines, so any edit to `core.py` (fixes or formatting) breaks 7 tests; the repo therefore ships un-linted with all findings recorded in `lint.json`.
-- Test-gen drops a module when the agent spends its turn budget reading a large module without writing tests (glom.core, glom.grouping); no retry with a larger budget is attempted automatically.
+- The lint step rebuilds the image and runs the suite twice to prove the linted tree still builds green; a change that regresses a test reverts the whole step. Some repos assert on exact rendered source lines in their tests (on the sample repo, `test_error.py::*_stack`), so any edit to the asserted file breaks them and the repo ships un-linted with every finding recorded in `lint.json`.
+- Test-gen drops a module when the agent spends its turn budget reading a large module without writing a test file; no retry with a larger budget is attempted automatically (see the `dropped_no_file` modules in `testgen.json`).
 <!-- AUTHOR: expand each gap with a concrete next step. -->

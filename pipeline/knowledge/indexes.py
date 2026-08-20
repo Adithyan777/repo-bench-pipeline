@@ -1,4 +1,4 @@
-"""Index data files (DESIGN 4.3); deterministic, no LLM.
+"""Index data files (docs/pipeline-2-knowledge.md); deterministic, no LLM.
 
 - history_index.json: commits at/under base_sha; touched functions = diff hunks
   intersected with AST spans of the file AT that commit (never HEAD spans).

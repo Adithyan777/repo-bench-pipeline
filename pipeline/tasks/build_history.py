@@ -1,4 +1,4 @@
-"""History task construction (DESIGN 5.2 build + 5.6 folder format).
+"""History task construction (docs/pipeline-3-tasks.md).
 
 tasks/<repo>/hist-<sha7>/{task.json, input/, solution/, verifier/, goldenSolution.md, evidence/}.
 input/ = tree at the parent, solution/ = tree at the commit (git archive); hygiene

@@ -2,7 +2,7 @@
 
 Per module: classes/functions/methods (span, signature, docstring, complexity, is_public,
 decorators), imports, inheritance, intra-repo calls resolved by name only (unresolved
-calls listed, never guessed). Complexity = in-house McCabe counter (see HEURISTICS.md).
+calls listed, never guessed). Complexity = in-house McCabe counter (see docs/configuration.md).
 Test files are indexed separately for the `tested_by` join, never as source nodes.
 """
 

@@ -1,4 +1,4 @@
-"""Docker execution: sandboxed command runner + image build. See DESIGN.md."""
+"""Docker execution: sandboxed command runner + image build. See docs/architecture.md."""
 
 from pipeline.docker.image import build_image, resolve_base_digest
 from pipeline.docker.runner import CommandResult, fresh_workdir, run_in_container

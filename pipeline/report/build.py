@@ -4,6 +4,11 @@
 into ``report_summary.json``; ``render()`` writes the six-section REPORT.md with tables
 auto-filled and narrative drafted by one cached BIG call, marked ``AUTHOR`` for a human.
 Missing artifacts omit their rows; nothing is invented.
+
+Facts come from the artifacts first: validation, instruction and selection rows are
+re-derived from tasks/<repo>/tasks.json and output/<repo>/tasks/*.json, so a report
+built after a single-stage rerun still carries them. Timings and token counts only
+exist in report_data.json; when it is absent those rows read ``-``.
 """
 
 from __future__ import annotations
@@ -78,6 +83,8 @@ def collect(run_dir: Path, config: Config = DEFAULT) -> dict:
     candidates = _load(tk / config.tasks.candidates_filename)
     hcandidates = _load(tk / config.tasks.history_candidates_filename)
     selection = _load(tk / "selection.json")
+    manifest = _load(Path(config.tasks.tasks_root) / run_dir.name / config.tasks.manifest_filename)
+    instructions = _load(tk / config.instruction.decisions_filename)
 
     expected = {
         "detect": hy / "detect.json",
@@ -103,7 +110,7 @@ def collect(run_dir: Path, config: Config = DEFAULT) -> dict:
             "packaging_style": detect.get("packaging_style"),
             "python_version": detect.get("python_version"),
             "test_framework": detect.get("test_framework"),
-            "extras_used": detect.get("extras") or detect.get("extras_used"),
+            "extras_used": _extras_folded(detect, config),
             "dropped_extras": pin.get("dropped_extras") or detect.get("dropped_extras") or [],
             "unresolved_imports": pin.get("unresolved_imports") or [],
             "image_tag": build.get("image_tag"),
@@ -131,12 +138,20 @@ def collect(run_dir: Path, config: Config = DEFAULT) -> dict:
                 "conformance": okfv.get("conformance"),
             },
         },
-        "tasks": _tasks_summary(existing, candidates, hcandidates, selection),
+        "tasks": _tasks_summary(
+            existing, candidates, hcandidates, selection, manifest, instructions, config
+        ),
         "stages": existing.get("stages", {}),
         "llm": _llm_summary(_load(audit / "llm_usage.json")),
         "agents": _agents_summary(_jsonl(audit / "agent_actions.jsonl")),
     }
     return data
+
+
+def _extras_folded(detect: dict, config: Config) -> list[str]:
+    """Extras that actually went into the lock: available extras ∩ pin.include_extras."""
+    available = detect.get("available_extras") or []
+    return [e for e in available if e in config.pin.include_extras]
 
 
 def _testgen_summary(testgen: dict) -> dict:
@@ -186,7 +201,15 @@ def _graph_verify_summary(gv: dict) -> dict:
     }
 
 
-def _tasks_summary(existing: dict, candidates: dict, hcandidates: dict, selection: dict) -> dict:
+def _tasks_summary(
+    existing: dict,
+    candidates: dict,
+    hcandidates: dict,
+    selection: dict,
+    manifest: dict,
+    instructions: dict,
+    config: Config,
+) -> dict:
     t = dict(existing.get("tasks") or {})
     t["excision_funnel_counts"] = candidates.get("counts")
     t["history_funnel_counts"] = hcandidates.get("counts")
@@ -201,7 +224,53 @@ def _tasks_summary(existing: dict, candidates: dict, hcandidates: dict, selectio
         if selection
         else t.get("select")
     )
+    tasks = manifest.get("tasks") or []
+    if tasks:
+        t["validate"] = _validate_summary(tasks, t.get("validate"))
+        t["instruct"] = _instruct_summary(tasks, instructions, config, t.get("instruct"))
     return t
+
+
+def _validate_summary(tasks: list[dict], existing: dict | None) -> dict:
+    """Validation counts re-derived from the task manifest."""
+    out = dict(existing or {})
+    out["tasks"] = len(tasks)
+    out["valid"] = sum(1 for x in tasks if x.get("validation_status") == "VALID")
+    return out
+
+
+def _instruct_summary(
+    tasks: list[dict], instructions: dict, config: Config, existing: dict | None
+) -> dict:
+    """Instruction-authoring counts re-derived from the manifest + instructions.json.
+
+    Authoring runs on VALID tasks only when ``instruction.only_valid_tasks``; the
+    remaining tasks keep their builder template and are not counted as failures.
+    """
+    cfg = config.instruction
+    authored = [
+        x for x in tasks if not cfg.only_valid_tasks or x.get("validation_status") == "VALID"
+    ]
+    final = sum(1 for x in authored if x.get("instruction_status") == cfg.status_final)
+    spread: dict[str, int] = {}
+    for x in authored:
+        label = x.get("difficulty") or "unlabelled"
+        spread[label] = spread.get(label, 0) + 1
+    regenerations = 0
+    for rec in instructions.values():
+        if isinstance(rec, dict) and "instruction" in rec:
+            regenerations += max(0, len(rec.get("attempts") or []) - 1)
+    out = dict(existing or {})
+    out.update(
+        {
+            "tasks": len(authored),
+            "final": final,
+            "failed": len(authored) - final,
+            "regenerations": regenerations,
+            "difficulty_spread": dict(sorted(spread.items())),
+        }
+    )
+    return out
 
 
 def _llm_summary(usage: dict) -> dict:
@@ -464,6 +533,12 @@ def render(data: dict, config: Config = DEFAULT, narrative: dict | None = None) 
     ]
     a(_table(["Stage", "Duration", "Skipped"], timing))
     a(
+        "\n_Timings and token counts come from the runner's "
+        f"`{config.report.report_data_filename}`; steps that were skipped as up-to-date "
+        "record no duration. The console log of the full run is the authoritative "
+        "wall-clock record._\n"
+    )
+    a(
         _para(
             narrative,
             "scale",
@@ -539,21 +614,22 @@ def _gaps_checklist() -> str:
         "independent evidence.",
         "`test_map` excludes doctests.",
         "Test-gen coverage-theater guard: whole-file zero-kill drop (no per-test trimming).",
-        "The test-gen run on minidump was launched twice; only the real run's tokens count.",
         "Verifier visibility defaults to `visible` (hack-proof via harness re-copy).",
         "History new-symbol features rely on the getattr convention; pure new-symbol "
         "imports on `input/` remain INVALID by the strict classifier's design.",
-        "Old-commit dependency drift is recorded as `env-drift`, never re-locked.",
+        "Old-commit dependency drift is rejected, never re-locked: `env-drift` when the "
+        "tree cannot collect in the pinned image, `verifier-fails-on-solution` when the "
+        "commit's own tests do not pass on its own solution tree.",
         "The collection-broken baseline path (one repair → treat as no tests) is not "
         "implemented — no in-scope repo hit it; the inert flags for it were removed.",
         "The lint step rebuilds the image and runs the suite twice to prove the linted "
         "tree still builds green; a change that regresses a test reverts the whole step. "
-        "On glom this fires: its `test_error.py::*_stack` tests assert exact rendered "
-        "source lines, so any edit to `core.py` (fixes or formatting) breaks 7 tests; the "
-        "repo therefore ships un-linted with all findings recorded in `lint.json`.",
+        "Some repos assert on exact rendered source lines in their tests (on the sample "
+        "repo, `test_error.py::*_stack`), so any edit to the asserted file breaks them and "
+        "the repo ships un-linted with every finding recorded in `lint.json`.",
         "Test-gen drops a module when the agent spends its turn budget reading a large "
-        "module without writing tests (glom.core, glom.grouping); no retry with a larger "
-        "budget is attempted automatically.",
+        "module without writing a test file; no retry with a larger budget is attempted "
+        "automatically (see the `dropped_no_file` modules in `testgen.json`).",
     ]
     return (
         "\n"

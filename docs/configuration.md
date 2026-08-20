@@ -4,8 +4,8 @@ All thresholds, flags, and defaults live in `pipeline/config.py`. Override any
 value at runtime with `--set section.key=value`. Environment variables control
 secrets and model IDs only.
 
-This document replaces the former `HEURISTICS.md`. The source of truth is
-always `config.py`; this doc adds rationale and glom observations.
+The source of truth is always `config.py`; this document adds rationale and
+glom observations.
 
 Notation: **policy** = a design decision unlikely to change per repo;
 **tuning** = a knob you might adjust for different repos or cost targets.
@@ -30,7 +30,7 @@ The most commonly tuned values, accessible via `--set` or dedicated CLI flags.
 | `selection.total_tasks`           | 10        | `--set`               | Total tasks to select                                                      |
 | `llm.max_tokens_per_repo`         | 5,000,000 | `--set`               | Per-repo token budget; run aborts on exceed                                |
 | `okf.max_function_pages`          | 150       | `--set`               | Cap on individual function pages in the OKF bundle                         |
-| `lint.format`                     | true      | `--set` / `--no-lint` | Whether ruff format runs alongside ruff check                              |
+| `lint.format`                     | true      | `--set`               | Whether ruff format runs alongside ruff check (`--no-lint` sets `lint.enabled=false`, it is not a shortcut for this key) |
 | `testgen.enabled`                 | true      | `--no-testgen`        | Enable/disable test generation                                             |
 | `lint.enabled`                    | true      | `--no-lint`           | Enable/disable lint step                                                   |
 
@@ -65,28 +65,28 @@ Reasoning parameters are translated per model via `MODEL_CAPS`:
 `STEP_MODEL` assigns each pipeline step to a tier:
 
 
-| Step                                | Tier  |
-| ----------------------------------- | ----- |
-| `p1.pin.import_to_pypi`             | small |
-| `p1.docker.repair_agent`            | big   |
-| `p1.baseline.classify_failure`      | small |
-| `p1.baseline.fix_agent`             | big   |
-| `p1.testgen.write_tests_agent`      | big   |
-| `p1.testgen.mutation_retry_agent`   | big   |
-| `p1.lint.fix_unfixable`             | big   |
-| `p2.okf.module_purpose`             | big   |
-| `p2.okf.function_contracts`         | big   |
-| `p3.history.classify_commit`        | small |
-| `p3.excision.screen_candidate`      | small |
-| `p3.netnew.propose_features`        | big   |
-| `p3.build.verifier_agent`           | big   |
-| `p3.build.neutrality_check_rewrite` | big   |
-| `p3.build.netnew_impl_agent`        | big   |
-| `p3.build.write_instruction`        | big   |
-| `p3.build.review_instruction`       | big   |
-| `p3.build.golden_rationale`         | big   |
-| `p3.build.difficulty_label`         | big   |
-| `report.draft_sections`             | big   |
+| Step                                | Tier  | Note |
+| ----------------------------------- | ----- | ---- |
+| `p1.pin.import_to_pypi`             | small | |
+| `p1.docker.repair_agent`            | big   | |
+| `p1.baseline.classify_failure`      | small | |
+| `p1.baseline.fix_agent`             | big   | |
+| `p1.testgen.write_tests_agent`      | big   | |
+| `p1.testgen.mutation_retry_agent`   | big   | |
+| `p1.lint.fix_unfixable`             | big   | defined, never invoked -- lint records per-line `noqa` instead of calling an LLM |
+| `p2.okf.module_purpose`             | big   | |
+| `p2.okf.function_contracts`         | big   | |
+| `p3.history.classify_commit`        | small | |
+| `p3.excision.screen_candidate`      | small | |
+| `p3.netnew.propose_features`        | big   | defined, never invoked -- net-new tasks were not built |
+| `p3.build.verifier_agent`           | big   | |
+| `p3.build.neutrality_check_rewrite` | big   | |
+| `p3.build.netnew_impl_agent`        | big   | defined, never invoked -- net-new tasks were not built |
+| `p3.build.write_instruction`        | big   | |
+| `p3.build.review_instruction`       | big   | |
+| `p3.build.golden_rationale`         | big   | |
+| `p3.build.difficulty_label`         | big   | |
+| `report.draft_sections`             | big   | |
 
 
 ## LLM (`llm.`*)
@@ -206,7 +206,7 @@ Reasoning parameters are translated per model via `MODEL_CAPS`:
 | `place_beside_existing_tests` | true                                                                                                              | tuning | Place generated tests next to existing ones                                                     |                                            |
 | `generated_subdir`            | `generated`                                                                                                       | policy | Subdir name for generated tests                                                                 |                                            |
 | `max_agent_runs_per_repo`     | 10                                                                                                                | tuning | Total agent runs across all modules. Caps the token cost of exploring large modules             | fired                                      |
-| `agent_max_turns`             | 12                                                                                                                | tuning | Per-agent turn cap. A 30-turn attempt on glom.core still produced nothing, so 12 stays | fired: agent hit cap on glom.core/grouping |
+| `agent_max_turns`             | 12                                                                                                                | tuning | Per-agent turn cap. A 30-turn attempt on glom.core still produced nothing, so 12 stays | fired on glom.core (`testgen.json` records `stopped: reached max turns`); glom.grouping is also `dropped_no_file` but with an empty summary |
 | `mutant_timeout_s`            | 120                                                                                                               | tuning | A mutant run past this is treated as not-a-kill                                                 |                                            |
 | `run_output_chars`            | 2,000                                                                                                             | tuning | Agent-visible tail of a failed test run                                                         |                                            |
 | `example_test_chars`          | 1,500                                                                                                             | tuning | Per existing test shown for style                                                               |                                            |
@@ -257,7 +257,7 @@ Reasoning parameters are translated per model via `MODEL_CAPS`:
 | `coverage_filename`      | `coverage.json`            | policy |                                                  |
 | `hotspots_filename`      | `hotspots.json`            | policy |                                                  |
 | `verification_filename`  | `graph_verification.json`  | policy |                                                  |
-| `pr_number_regex`        | `(?:GH-|#)(\d+)`           | policy | PR number extraction from commit subjects        |
+| `pr_number_regex`        | `(?:GH-\|#)(\d+)`          | policy | PR number extraction from commit subjects        |
 | `source_roots`           | `(src,)`                   | policy | src-layout roots stripped from module names      |
 | `show_commit_max_chars`  | 4,000                      | tuning | Output cap for the `show_commit` tool            |
 | `code_fingerprint_files` | (see config.py)            | policy | Pipeline files hashed into knowledge step inputs |
@@ -291,7 +291,7 @@ Reasoning parameters are translated per model via `MODEL_CAPS`:
 | `require_coverage_or_added_tests`   | true                                               | policy |                                                                   | fired: 135 uncovered-and-no-tests  |
 | `reject_manifest_changes`           | true                                               | policy |                                                                   | fired: 97 dependency-changing      |
 | `ignore_paths`                      | docs/, .md, .rst, .github/, CHANGELOG, _version.py | policy |                                                                   | fired: 136 docs-or-ci-only         |
-| `fix_keyword_regex`                 | `fix|bug|GH-\d+|...`                               | tuning | Keywords that boost a commit's score                              |                                    |
+| `fix_keyword_regex`                 | `fix\|bug\|GH-\d+\|...`                            | tuning | Keywords that boost a commit's score                              |                                    |
 | `score_fix_keyword`                 | 1.0                                                | tuning |                                                                   |                                    |
 | `score_adds_tests`                  | 2.0                                                | tuning |                                                                   |                                    |
 | `score_public_fn`                   | 1.0                                                | tuning |                                                                   |                                    |
@@ -314,7 +314,7 @@ Reasoning parameters are translated per model via `MODEL_CAPS`:
 | `max_agent_runs_per_repo`           | 6                                                  | tuning | BIG agent budget. Added after a 25-turn rewrite cost ~150k tokens | fired                              |
 | `max_neutrality_rewrites_per_repo`  | 2                                                  | tuning | Beyond this, reject on flag. Added with agent budgets             |                                    |
 | `agent_max_turns`                   | 12                                                 | tuning | BIG turns are expensive; 12 bounds a single verifier/rewrite agent                          | fired                              |
-| `allow_new_symbol_features`         | true                                               | policy | New-API features verified via getattr convention                  | fired on toolz, applicable on glom |
+| `allow_new_symbol_features`         | true                                               | policy | New-API features verified via getattr convention                  | observed during development on toolz (no artifacts committed); applicable on glom |
 | `verifier_agent_when_no_tests`      | true                                               | policy | BIG writes verifier when commit adds no tests                     |                                    |
 | `verifier_agent_max_attempts`       | 1                                                  | tuning |                                                                   |                                    |
 | `collateral_baseline_from_input`    | true                                               | policy | Collateral baseline = tests passing on input/                     |                                    |
@@ -371,7 +371,7 @@ These defaults are present but never fired.
 | `run_collateral_for_excision`                      | true                                                                                                                                                                             | policy | Run broader suite on solution/                                                     |                                    |
 | `recopy_canonical_verifier`                        | true                                                                                                                                                                             | policy | Re-copy verifier/ before each run (hack-proof)                                     | fired                              |
 | `verifier_may_only_import_public_symbols_in_input` | true                                                                                                                                                                             | policy | Static gate on verifier imports                                                    |                                    |
-| `verifier_visibility`                              | `visible`                                                                                                                                                                        | policy | `--verifier-visibility visible|hidden`. Never changed from default                 |                                    |
+| `verifier_visibility`                              | `visible`                                                                                                                                                                        | policy | `--verifier-visibility visible\|hidden`. Never changed from default                 |                                    |
 | `min_failing_tests`                                | 1                                                                                                                                                                                | tuning | `--min-failing-tests`. At least this many tests must fail on input/                | fired                              |
 | `build_image_if_missing`                           | false                                                                                                                                                                            | policy | Build from task's own Dockerfile if image tag not found. Never fired (default off) |                                    |
 | `gate_on_image_digest`                             | false                                                                                                                                                                            | policy | Reject on image digest mismatch. Never fired (default off)                         |                                    |
@@ -449,3 +449,60 @@ These defaults are present but never fired.
 | `draft_max_chars`      | 6,000                 | tuning | Compact data summary shown to the drafter                           |
 
 
+
+
+## Appendix: filenames and bookkeeping keys
+
+The keys below are artifact names, status strings, prompt-size caps and
+bookkeeping flags. They are rarely worth changing, but they are keys, so they
+are listed here to keep "every key" true. Defaults are as in `config.py`.
+
+
+| Key                                                | Default                             | Meaning                                                                   |
+| -------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------- |
+| `testgen.targets_filename`                         | `testgen_targets.json`              | Ranked target functions, under `output/<repo>/hygiene/`                   |
+| `testgen.results_filename`                          | `testgen.json`                      | Per-module outcome and mutation counts                                    |
+| `testgen.decisions_filename`                        | `testgen_decisions.json`            | Agent decisions cached by content hash                                    |
+| `testgen.lock_filename`                             | `.testgen.lock`                     | Marker that keeps a single test-gen run per tree                          |
+| `testgen.commit_label`                              | `pipeline: generated tests`         | Message of the pipeline commit that lands generated tests                 |
+| `knowledge.coverage_contexts_filename`              | `coverage_contexts.json`            | Per-test coverage contexts feeding `test_map.json`                        |
+| `knowledge.manifest_name_prefixes`                  | `(requirements,)`                   | Filename prefixes treated as dependency manifests when reading history    |
+| `okf.bundle_dirname`                                | `.okf`                              | Bundle directory under `output/<repo>/knowledge/`                         |
+| `okf.manifest_filename`                             | `okf.json`                          | Page manifest and counts                                                  |
+| `okf.verification_filename`                         | `okf_verification.json`             | Re-derived claim checks and per-claim precision                           |
+| `okf.decisions_filename`                            | `okf_decisions.json`                | Contract-authoring decisions cached by content hash                       |
+| `history.revert_message_regex`                      | `^Revert\b\|This reverts commit ...`| Detects reverted commits so they are rejected                             |
+| `history.prompt_new_names_max`                      | 20                                  | New identifiers listed to the neutrality-rewrite agent                    |
+| `history.neutrality_recheck_after_rewrite`          | true                                | Re-run the neutrality check on a rewritten verifier                       |
+| `history.agent_test_file_prefix`                    | `test_hist_`                        | Prefix for verifier files an agent writes for a history task              |
+| `history.agent_diff_max_chars`                      | 6,000                               | Diff budget in a history agent prompt                                     |
+| `excision.verifier_agent_max_attempts`              | 1                                   | Verifier-agent attempts per excision candidate                            |
+| `excision.reuse_screen_decisions`                   | true                                | Reuse cached SMALL screening verdicts across runs                         |
+| `harness.evidence_dirname`                          | `evidence`                          | Evidence directory inside a task folder                                   |
+| `harness.fail_before_log`                           | `fail_before.log`                   | Console log of the fail-before run                                        |
+| `harness.pass_after_log`                            | `pass_after.log`                    | Console log of the pass-after run                                         |
+| `harness.collateral_log`                            | `collateral.log`                    | Console log of the collateral run                                         |
+| `harness.raw_report_suffix`                         | `.report.json`                      | Suffix pairing each log with its pytest JSON report                       |
+| `harness.report_filename`                           | `.pytest-report.json`               | In-container pytest JSON report name                                      |
+| `harness.determinism_filename`                      | `determinism.json`                  | Repeat-run comparison                                                     |
+| `harness.collateral_filename`                       | `collateral.json`                   | Collateral-damage comparison                                              |
+| `harness.verdict_filename`                          | `verdict.json`                      | Final per-task verdict                                                    |
+| `tasks.candidates_filename`                         | `candidates.json`                   | Excision funnel record                                                    |
+| `tasks.history_candidates_filename`                 | `history_candidates.json`           | History funnel record                                                     |
+| `tasks.instruction_status_template`                 | `template`                          | Builder's placeholder instruction status (excision)                       |
+| `tasks.history_instruction_status_template`         | `template`                          | Builder's placeholder instruction status (history)                        |
+| `tasks.title_max_chars`                             | 100                                 | Cap on a builder-written task title                                       |
+| `tasks.instruction_tests_listed`                    | 12                                  | Verifier node ids listed inside an instruction                            |
+| `tasks.audit_goal_chars`                            | 500                                 | Agent goal text kept in the audit record                                  |
+| `tasks.audit_summary_chars`                         | 300                                 | Agent summary kept in the audit record                                    |
+| `tasks.content_key_chars`                           | 16                                  | Hash prefix length for content-keyed decision caches                      |
+| `instruction.only_valid_tasks`                      | true                                | Author instructions for VALID tasks only; INVALID keep their template     |
+| `instruction.files_in_scope_include_importers_and_tests` | true                          | "Files in scope" lists importers and tests, not just the changed file     |
+| `instruction.status_final`                          | `final`                             | Status written when an instruction passes leak + reviewer gates           |
+| `instruction.status_failed`                         | `failed`                            | Status written when it does not                                           |
+| `instruction.decisions_filename`                    | `instructions.json`                 | Instruction, difficulty and rationale records, keyed by content hash      |
+| `instruction.hidden_phrase`                         | (sentence)                          | Sentence appended when verifier visibility is `hidden`                    |
+| `instruction.visible_phrase`                        | (sentence)                          | Sentence appended when verifier visibility is `visible`                   |
+| `report.decisions_filename`                         | `report_decisions.json`             | Narrative drafts cached by data-summary hash                              |
+| `step_model`                                        | (see STEP_MODEL above)              | Top-level map of pipeline step to model tier                              |
+| `hygiene_code_files`                                | (hygiene sources)                   | Top-level list fingerprinted so a hygiene code change invalidates its artifacts |

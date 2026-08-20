@@ -1,0 +1,448 @@
+03:15:11 [run] repo https://github.com/mahmoud/glom run_dir output/glom stages hygiene,knowledge,tasks
+03:15:11 [hygiene] start
+03:15:12 [hygiene] run_dir output/glom image bench-glom base 30b477a
+03:15:12 [hygiene/detect] start
+03:15:12 [hygiene/detect] done in 0.0s (0 LLM tokens) packaging_style=setup.py python_version=3.12 test_framework=pytest
+03:15:12 [hygiene/pin] start
+03:15:13 [hygiene/pin] done in 1.1s (0 LLM tokens) pin_count=13 python_version=3.12
+03:15:13 [hygiene/dockerfile] start
+03:15:17 [hygiene/dockerfile] done in 3.3s (0 LLM tokens) base_image=python@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
+03:15:17 [hygiene/compose] start
+03:15:17 [hygiene/compose] done in 0.0s (0 LLM tokens)
+03:15:17 [hygiene/compose] pipeline commit 50e06d1
+03:15:17 [hygiene/build] start
+03:15:30 [hygiene/build] built bench-glom
+03:15:30 [hygiene/build] done in 13.3s (0 LLM tokens) outcome=built attempts=0
+03:15:30 [hygiene/baseline] start
+03:15:32 [hygiene/baseline] suite: 202 tests, 0 failing
+03:15:32 [hygiene/baseline] done in 1.9s (0 LLM tokens) tests=202 passed=202 skipped=0 quarantined=0
+03:15:32 [hygiene/testgen] start
+03:15:48 [hygiene/testgen] coverage ok: 4 modules, 9 target functions
+03:15:48 [hygiene/testgen] module glom.cli: 3 targets
+03:15:48 [hygiene/testgen] module glom.cli: agent run 1/3 (9 runs left in repo budget)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/cli.py", line 283, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/cli.py", line 141, in main
+    _run_hygiene(args, config)
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/cli.py", line 165, in _run_hygiene
+    run_hygiene(ctx)
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/hygiene/runner.py", line 41, in run_hygiene
+    _run_step(ctx, name, module)
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/hygiene/runner.py", line 65, in _run_step
+    data = module.run(ctx)
+           ^^^^^^^^^^^^^^^
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/hygiene/testgen.py", line 560, in run
+    return _run(ctx)
+           ^^^^^^^^^
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/hygiene/testgen.py", line 608, in _run
+    result = _generate_module(ctx, module, target_fns, gen_dir, runs_left, kept_files)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/hygiene/testgen.py", line 424, in _generate_module
+    summary = _run_agent(ctx, step, goal, gen_dir, allowed)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/hygiene/testgen.py", line 347, in _run_agent
+    result = agent.run(goal)
+             ^^^^^^^^^^^^^^^
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/agent/loop.py", line 63, in run
+    completion = self.llm.chat(
+                 ^^^^^^^^^^^^^^
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/llm/client.py", line 115, in chat
+    completion = self._dispatch(step, request)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/llm/client.py", line 198, in _dispatch
+    completion = self._call_api(request)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adithyankrishnan/Desktop/lh2ai-assignment/pipeline/llm/client.py", line 218, in _call_api
+    raise LLMError(f"API call failed after retries: {last_exc}")
+pipeline.llm.client.LLMError: API call failed after retries: Error code: 402 - {'error': 'please check your current payment status.'}
+03:18:53 [run] repo https://github.com/mahmoud/glom run_dir output/glom stages hygiene,knowledge,tasks
+03:18:53 [hygiene] start
+03:18:53 [hygiene] run_dir output/glom image bench-glom base 50e06d1
+03:18:53 [hygiene/detect] start
+03:18:53 [hygiene/detect] done in 0.0s (0 LLM tokens) packaging_style=setup.py python_version=3.12 test_framework=pytest
+03:18:53 [hygiene/pin] skipped (unchanged)
+03:18:53 [hygiene/dockerfile] skipped (unchanged)
+03:18:53 [hygiene/compose] skipped (unchanged)
+03:18:53 [hygiene/compose] pipeline commit 576f168
+03:18:53 [hygiene/build] skipped (unchanged)
+03:18:53 [hygiene/baseline] skipped (unchanged)
+03:18:53 [hygiene/testgen] start
+03:19:11 [hygiene/testgen] coverage ok: 4 modules, 10 target functions
+03:19:11 [hygiene/testgen] module glom.cli: 3 targets
+03:19:11 [hygiene/testgen] module glom.cli: agent run 1/3 (9 runs left in repo budget)
+03:20:20 [hygiene/testgen] module glom.cli: mutation gate mutants 10/12 killed
+03:20:20 [hygiene/testgen] module glom.cli: kept 3/3 functions, mutants 10/12 killed
+03:20:20 [hygiene/testgen] module glom.core: 4 targets
+03:20:20 [hygiene/testgen] module glom.core: agent run 1/3 (8 runs left in repo budget)
+03:20:37 [hygiene/testgen] module glom.core: agent wrote no file
+03:20:37 [hygiene/testgen] module glom.core: dropped_no_file
+03:20:37 [hygiene/testgen] module glom.streaming: 1 targets
+03:20:37 [hygiene/testgen] module glom.streaming: agent run 1/3 (7 runs left in repo budget)
+03:21:06 [hygiene/testgen] module glom.streaming: mutation gate mutants 4/4 killed
+03:21:06 [hygiene/testgen] module glom.streaming: kept 1/1 functions, mutants 4/4 killed
+03:21:06 [hygiene/testgen] module glom.grouping: 2 targets
+03:21:06 [hygiene/testgen] module glom.grouping: agent run 1/3 (6 runs left in repo budget)
+03:21:23 [hygiene/testgen] module glom.grouping: agent wrote no file
+03:21:23 [hygiene/testgen] module glom.grouping: dropped_no_file
+03:21:29 [hygiene/testgen] done in 155.4s (338374 LLM tokens) modules_kept=2 functions_kept=4 functions_weak=0 functions_no_mutants=0 mutants_killed=14 mutants_valid=16
+03:21:29 [hygiene/testgen] pipeline commit c77a54f
+03:21:29 [hygiene/lint] start
+03:21:46 [hygiene/lint] done in 17.3s (0 LLM tokens) files_changed=34 noqa=73 clean=False regressed=True reverted=suite-regression
+hygiene done: output/glom
+03:21:46 [hygiene] done in 173.1s
+03:21:46 [knowledge] start
+03:21:46 [knowledge/symbol_index] start
+03:21:47 [knowledge/symbol_index] 35 modules, 537 functions
+03:21:47 [knowledge/symbol_index] done in 0.2s (0 LLM tokens)
+03:21:47 [knowledge/indexes] start
+<unknown>:765: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:765: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:767: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:767: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:767: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+03:23:32 [knowledge/indexes] history index: 1050 commits
+03:23:56 [knowledge/indexes] coverage ok: test_map 232 functions
+03:23:56 [knowledge/indexes] done in 129.8s (0 LLM tokens)
+03:23:56 [knowledge/graph] start
+03:23:56 [knowledge/graph] 378 nodes, 4632 edges (calls=235 contains=367 imports=16 inherits=17 tested_by=3997)
+03:23:56 [knowledge/graph] done in 0.1s (0 LLM tokens)
+03:23:57 [knowledge/verify] start
+03:23:59 [knowledge/verify] mismatches 0, symbols checked=129 present=129
+03:23:59 [knowledge/verify] done in 2.1s (0 LLM tokens)
+03:23:59 [knowledge/okf] start
+03:25:16 [knowledge/okf] modules=11 pages=164 verified=106 draft=44 conformant=True
+03:25:16 [knowledge/okf] done in 77.6s (55705 LLM tokens)
+knowledge done: output/glom
+03:25:16 [knowledge] done in 210.2s
+03:25:16 [tasks] start
+03:25:17 [tasks/excision_funnel] start
+03:25:23 [tasks/excision_funnel] considered 537, ranked 25, selected 5 (screen reused 0)
+03:25:23 [tasks/excision_funnel] rejected:few-covering-tests=27 rejected:low-complexity=15 rejected:private=196 rejected:private-parent=8 rejected:test-code=235 rejected:too-central=7 rejected:too-short=21 rejected:uncovered=3 screened_out=1 selected=5 surplus=19
+03:25:23 [tasks/excision_funnel] done in 6.1s (5923 LLM tokens)
+03:25:23 [tasks/build_excision] start
+03:25:25 [tasks/build_excision] exc-glom.core-format_target_spec_trace built
+03:25:27 [tasks/build_excision] exc-glom.cli-mw_handle_target built
+03:25:28 [tasks/build_excision] exc-glom.matching-Check.glomit built
+03:25:29 [tasks/build_excision] exc-glom.grouping-GROUP built
+03:25:30 [tasks/build_excision] exc-glom.reduction-Fold.glomit built
+03:25:30 [tasks/build_excision] built=5 unsplittable=0
+03:25:30 [tasks/build_excision] done in 7.8s (0 LLM tokens)
+03:25:30 [tasks/history_funnel] start
+03:26:36 [tasks/history_funnel] considered 1050, survivors 441, kept 16, shortlisted 15 (classify reused 0)
+03:26:36 [tasks/history_funnel] classified_out=11 rejected:dependency-changing=97 rejected:docs-or-ci-only=136 rejected:no-source-change=128 rejected:non-pr-merge=39 rejected:root-commit=1 rejected:superseded-by-merge=33 rejected:too-large=8 rejected:too-small=64 rejected:uncovered-and-no-tests=135 rejected:unparseable=1 shortlisted=15 surplus=382
+03:26:36 [tasks/history_funnel] done in 65.3s (22213 LLM tokens)
+03:26:36 [tasks/build_history] start
+03:26:36 [tasks/build_history] shortlist 15, target 8
+03:26:36 [tasks/build_history] 1/15 e515fb3: building
+03:26:42 [tasks/build_history] hist-e515fb3 built (verifier commit-tests), 1/8
+03:26:42 [tasks/build_history] 2/15 e70637c: building
+03:26:43 [tasks/build_history] hist-e70637c rejected (verifier commit-tests): verifier-fails-on-solution
+03:26:43 [tasks/build_history] 3/15 99e2ece: building
+03:26:48 [tasks/build_history] hist-99e2ece built (verifier commit-tests), 2/8
+03:26:48 [tasks/build_history] 4/15 4a48227: building
+03:26:52 [tasks/build_history] hist-4a48227 built (verifier commit-tests), 3/8
+03:26:52 [tasks/build_history] 5/15 24c21dc: building
+03:26:54 [tasks/build_history] hist-24c21dc rejected (verifier commit-tests): verifier-on-input:error_before_repo_call
+03:26:54 [tasks/build_history] 6/15 85a7a3a: building
+<unknown>:767: SyntaxWarning: invalid escape sequence '\ '
+03:28:07 [tasks/build_history] hist-85a7a3a rejected (verifier commit-tests): verifier-not-implementation-neutral(rewrite:unchanged)
+03:28:07 [tasks/build_history] 7/15 dd28dc4: building
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+03:28:09 [tasks/build_history] hist-dd28dc4 rejected (verifier commit-tests): commit-tests-pass-on-input
+03:28:09 [tasks/build_history] 8/15 fabde1f: building
+03:28:11 [tasks/build_history] hist-fabde1f rejected (verifier commit-tests): verifier-fails-on-solution
+03:28:11 [tasks/build_history] 9/15 0d75aab: building
+03:28:16 [tasks/build_history] hist-0d75aab built (verifier commit-tests), 4/8
+03:28:16 [tasks/build_history] 10/15 062b089: building
+03:28:18 [tasks/build_history] hist-062b089 rejected (verifier commit-tests): verifier-fails-on-solution
+03:28:18 [tasks/build_history] 11/15 c2acc2b: building
+03:28:23 [tasks/build_history] hist-c2acc2b built (verifier commit-tests), 5/8
+03:28:23 [tasks/build_history] 12/15 de604f5: building
+<unknown>:767: SyntaxWarning: invalid escape sequence '\ '
+03:30:03 [tasks/build_history] hist-de604f5 rejected (verifier commit-tests): verifier-not-implementation-neutral(rewrite:unchanged)
+03:30:03 [tasks/build_history] 13/15 94b6375: building
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:767: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:767: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:767: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+03:30:11 [tasks/build_history] hist-94b6375 built (verifier commit-tests), 6/8
+03:30:11 [tasks/build_history] 14/15 032f252: building
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+03:30:14 [tasks/build_history] hist-032f252 rejected (verifier commit-tests): verifier-on-input:error_before_repo_call
+03:30:14 [tasks/build_history] 15/15 3cdf4e7: building
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+03:30:15 [tasks/build_history] hist-3cdf4e7 rejected (verifier commit-tests): verifier-imports-symbol-missing-in-input(glom.Pipe; rewrite:budget-exhausted)
+03:30:15 [tasks/build_history] attempted 15, built 6, rejected verifier-fails-on-solution=3 verifier-on-input:error_before_repo_call=2 verifier-not-implementation-neutral=2 commit-tests-pass-on-input=1 verifier-imports-symbol-missing-in-input=1
+03:30:15 [tasks/build_history] done in 219.7s (231453 LLM tokens)
+03:30:16 [tasks/validate] start
+03:30:16 [tasks/validate] 11 tasks, 4 workers
+03:30:27 [tasks/validate] exc-glom.grouping-GROUP VALID (fail-before 6, pass-after 6, det 3/3)
+03:30:28 [tasks/validate] exc-glom.cli-mw_handle_target INVALID (fail-reason:error_before_repo_call)
+03:30:28 [tasks/validate] exc-glom.matching-Check.glomit VALID (fail-before 6, pass-after 27, det 3/3)
+03:30:35 [tasks/validate] exc-glom.core-format_target_spec_trace VALID (fail-before 29, pass-after 29, det 3/3)
+03:30:37 [tasks/validate] hist-4a48227 VALID (fail-before 1, pass-after 1, det 3/3)
+03:30:42 [tasks/validate] hist-0d75aab VALID (fail-before 1, pass-after 1, det 3/3)
+03:30:43 [tasks/validate] exc-glom.reduction-Fold.glomit VALID (fail-before 12, pass-after 12, det 3/3)
+03:30:49 [tasks/validate] hist-99e2ece VALID (fail-before 1, pass-after 1, det 3/3)
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+03:30:51 [tasks/validate] hist-94b6375 VALID (fail-before 6, pass-after 6, det 3/3)
+03:30:53 [tasks/validate] hist-c2acc2b VALID (fail-before 1, pass-after 1, det 3/3)
+03:30:54 [tasks/validate] hist-e515fb3 VALID (fail-before 2, pass-after 2, det 3/3)
+03:30:54 [tasks/validate] 10/11 VALID
+03:30:54 [tasks/validate] done in 38.4s (0 LLM tokens)
+03:30:54 [tasks/instruct] start
+03:31:01 [tasks/instruct] exc-glom.core-format_target_spec_trace: final (attempts 1)
+03:31:08 [tasks/instruct] exc-glom.grouping-GROUP: final (attempts 1)
+03:31:13 [tasks/instruct] exc-glom.matching-Check.glomit: final (attempts 1)
+03:31:19 [tasks/instruct] exc-glom.reduction-Fold.glomit: final (attempts 1)
+03:31:25 [tasks/instruct] hist-0d75aab: final (attempts 1)
+03:31:29 [tasks/instruct] hist-4a48227: final (attempts 1)
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:767: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+<unknown>:764: SyntaxWarning: invalid escape sequence '\ '
+03:31:36 [tasks/instruct] hist-94b6375: final (attempts 1)
+03:31:41 [tasks/instruct] hist-99e2ece: final (attempts 1)
+03:31:46 [tasks/instruct] hist-c2acc2b: final (attempts 1)
+03:31:51 [tasks/instruct] hist-e515fb3: final (attempts 1)
+03:31:56 [tasks/instruct] tasks=10 final=10 failed=0 regenerations=0 reused=0 leak_rejections=0 reviewer_rejections=0
+03:31:56 [tasks/instruct] difficulty easy=6 hard=1 medium=3
+03:31:56 [tasks/instruct] done in 62.1s (115731 LLM tokens)
+03:31:56 [tasks/manifest] start
+03:31:56 [tasks/manifest] tasks/glom/tasks.json
+03:31:56 [tasks/manifest] done in 0.0s (0 LLM tokens)
+03:31:56 [tasks/select] start
+03:31:56 [tasks/select] selected 10: exc-glom.core-format_target_spec_trace, exc-glom.reduction-Fold.glomit, exc-glom.grouping-GROUP, exc-glom.matching-Check.glomit, hist-94b6375, hist-e515fb3, hist-0d75aab, hist-4a48227, hist-99e2ece, hist-c2acc2b
+03:31:56 [tasks/select] types excision=4 history=6; difficulty easy=6 hard=1 medium=3; modules 4; output/glom/tasks/selection.json
+03:31:56 [tasks/select] done in 0.0s (0 LLM tokens)
+tasks done: tasks/glom (10/11 VALID)
+report: REPORT.md
+03:32:01 [tasks] done in 404.8s
+03:32:01 [summary] total 788s
+03:32:01 [summary/hygiene] detect=0s pin=skipped dockerfile=skipped compose=skipped build=skipped baseline=skipped testgen=155s lint=17s
+03:32:01 [summary/knowledge] symbol_index=0s indexes=130s graph=0s verify=2s okf=78s
+03:32:01 [summary/tasks] excision_funnel=6s build_excision=8s history_funnel=65s build_history=220s validate=38s instruct=62s manifest=0s select=0s
+03:32:01 [summary/llm] tokens total=772196 big=744060 small=28136
+03:32:01 [summary/tasks] VALID 10/11
+03:32:01 [summary/select] 10 selected: exc-glom.core-format_target_spec_trace, exc-glom.reduction-Fold.glomit, exc-glom.grouping-GROUP, exc-glom.matching-Check.glomit, hist-94b6375, hist-e515fb3, hist-0d75aab, hist-4a48227, hist-99e2ece, hist-c2acc2b
+03:45:48 [run] repo https://github.com/mahmoud/glom run_dir output/glom stages hygiene,knowledge,tasks
+03:45:48 [hygiene] start
+03:45:48 [hygiene] run_dir output/glom image bench-glom base 50e06d1
+03:45:48 [hygiene/detect] skipped (unchanged)
+03:45:48 [hygiene/pin] skipped (unchanged)
+03:45:48 [hygiene/dockerfile] skipped (unchanged)
+03:45:48 [hygiene/compose] skipped (unchanged)
+03:45:48 [hygiene/build] skipped (unchanged)
+03:45:48 [hygiene/baseline] skipped (unchanged)
+03:45:48 [hygiene/testgen] skipped (unchanged)
+03:45:48 [hygiene/lint] start
+03:45:55 [hygiene/lint] done in 7.7s (0 LLM tokens) files_changed=34 noqa=73 clean=False regressed=True reverted=suite-regression
+hygiene done: output/glom
+03:45:55 [hygiene] done in 7.9s
+03:45:55 [knowledge] start
+03:45:56 [knowledge/symbol_index] skipped (unchanged)
+03:45:56 [knowledge/indexes] skipped (unchanged)
+03:45:56 [knowledge/graph] skipped (unchanged)
+03:45:56 [knowledge/verify] skipped (unchanged)
+03:45:56 [knowledge/okf] skipped (unchanged)
+knowledge done: output/glom
+03:45:56 [knowledge] done in 0.6s
+03:45:56 [tasks] start
+03:45:56 [tasks/excision_funnel] skipped (unchanged)
+03:45:56 [tasks/build_excision] skipped (unchanged)
+03:45:56 [tasks/history_funnel] start
+03:48:30 [run] repo https://github.com/mahmoud/glom run_dir output/glom stages hygiene,knowledge,tasks
+03:48:30 [hygiene] start
+03:48:30 [hygiene] run_dir output/glom image bench-glom base 50e06d1
+03:48:30 [hygiene/detect] start
+03:48:30 [hygiene/detect] done in 0.0s (0 LLM tokens) packaging_style=setup.py python_version=3.12 test_framework=pytest
+03:48:30 [hygiene/pin] start
+03:48:31 [hygiene/pin] done in 1.0s (0 LLM tokens) pin_count=13 python_version=3.12
+03:48:31 [hygiene/dockerfile] start
+03:48:33 [hygiene/dockerfile] done in 2.2s (0 LLM tokens) base_image=python@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
+03:48:33 [hygiene/compose] start
+03:48:33 [hygiene/compose] done in 0.0s (0 LLM tokens)
+03:48:33 [hygiene/build] start
+03:48:40 [hygiene/build] built bench-glom
+03:48:40 [hygiene/build] done in 6.7s (0 LLM tokens) outcome=built attempts=0
+03:48:40 [hygiene/baseline] start
+03:48:42 [hygiene/baseline] suite: 240 tests, 0 failing
+03:48:42 [hygiene/baseline] done in 2.0s (0 LLM tokens) tests=240 passed=240 skipped=0 quarantined=0
+03:48:42 [hygiene/testgen] start
+03:49:00 [hygiene/testgen] coverage ok: 4 modules, 9 target functions
+03:49:00 [hygiene/testgen] module glom.cli: 3 targets
+03:49:00 [hygiene/testgen] module glom.cli: agent run 1/3 (9 runs left in repo budget)
+03:49:31 [hygiene/testgen] module glom.cli: mutation gate mutants 10/12 killed
+03:49:31 [hygiene/testgen] module glom.cli: kept 3/3 functions, mutants 10/12 killed
+03:49:31 [hygiene/testgen] module glom.core: 4 targets
+03:49:31 [hygiene/testgen] module glom.core: agent run 1/3 (8 runs left in repo budget)
+03:50:08 [hygiene/testgen] module glom.core: agent wrote no file
+03:50:08 [hygiene/testgen] module glom.core: dropped_no_file
+03:50:08 [hygiene/testgen] module glom.streaming: 1 targets
+03:50:08 [hygiene/testgen] module glom.streaming: agent run 1/3 (7 runs left in repo budget)
+03:50:41 [hygiene/testgen] module glom.streaming: mutation gate mutants 4/4 killed
+03:50:41 [hygiene/testgen] module glom.streaming: kept 1/1 functions, mutants 4/4 killed
+03:50:41 [hygiene/testgen] module glom.grouping: 1 targets
+03:50:41 [hygiene/testgen] module glom.grouping: agent run 1/3 (6 runs left in repo budget)
+03:52:24 [hygiene/testgen] module glom.grouping: agent wrote no file
+03:52:24 [hygiene/testgen] module glom.grouping: dropped_no_file
+03:52:31 [hygiene/testgen] done in 229.5s (550696 LLM tokens) modules_kept=2 functions_kept=4 functions_weak=0 functions_no_mutants=0 mutants_killed=14 mutants_valid=16
+03:52:32 [hygiene/testgen] pipeline commit 6cc08b4
+03:52:32 [hygiene/lint] start
+03:52:53 [hygiene/lint] done in 21.1s (0 LLM tokens) files_changed=34 noqa=72 clean=False regressed=True reverted=suite-regression
+hygiene done: output/glom
+03:52:53 [hygiene] done in 262.9s
+03:52:53 [knowledge] start
+03:52:53 [knowledge/symbol_index] start
+03:52:53 [knowledge/symbol_index] 35 modules, 536 functions
+03:52:53 [knowledge/symbol_index] done in 0.2s (0 LLM tokens)
+03:52:53 [knowledge/indexes] start
+03:54:44 [knowledge/indexes] history index: 1050 commits
+03:55:08 [knowledge/indexes] coverage ok: test_map 231 functions
+03:55:08 [knowledge/indexes] done in 135.1s (0 LLM tokens)
+03:55:08 [knowledge/graph] start
+03:55:08 [knowledge/graph] 378 nodes, 4612 edges (calls=235 contains=367 imports=16 inherits=17 tested_by=3977)
+03:55:08 [knowledge/graph] done in 0.1s (0 LLM tokens)
+03:55:09 [knowledge/verify] start
+03:55:11 [knowledge/verify] mismatches 0, symbols checked=129 present=129
+03:55:11 [knowledge/verify] done in 2.1s (0 LLM tokens)
+03:55:11 [knowledge/okf] start
+03:55:16 [knowledge/okf] modules=11 pages=164 verified=106 draft=44 conformant=True
+03:55:16 [knowledge/okf] done in 4.9s (0 LLM tokens)
+knowledge done: output/glom
+03:55:16 [knowledge] done in 143.1s
+03:55:16 [tasks] start
+03:55:16 [tasks/excision_funnel] start
+03:55:16 [tasks/excision_funnel] considered 536, ranked 25, selected 5 (screen reused 15)
+03:55:16 [tasks/excision_funnel] rejected:few-covering-tests=27 rejected:low-complexity=15 rejected:private=196 rejected:private-parent=8 rejected:test-code=234 rejected:too-central=7 rejected:too-short=21 rejected:uncovered=3 screened_out=1 selected=5 surplus=19
+03:55:16 [tasks/excision_funnel] done in 0.1s (0 LLM tokens)
+03:55:16 [tasks/build_excision] start
+03:55:18 [tasks/build_excision] exc-glom.core-format_target_spec_trace built
+03:55:20 [tasks/build_excision] exc-glom.cli-mw_handle_target built
+03:55:21 [tasks/build_excision] exc-glom.matching-Check.glomit built
+03:55:22 [tasks/build_excision] exc-glom.grouping-GROUP built
+03:55:23 [tasks/build_excision] exc-glom.reduction-Fold.glomit built
+03:55:23 [tasks/build_excision] built=5 unsplittable=0
+03:55:23 [tasks/build_excision] done in 7.3s (0 LLM tokens)
+03:55:23 [tasks/history_funnel] start
+03:56:17 [tasks/history_funnel] considered 1050, survivors 441, kept 24, shortlisted 20 (classify reused 30)
+03:56:17 [tasks/history_funnel] classified_out=17 rejected:dependency-changing=97 rejected:docs-or-ci-only=136 rejected:no-source-change=128 rejected:non-pr-merge=39 rejected:root-commit=1 rejected:superseded-by-merge=37 rejected:too-large=8 rejected:too-small=64 rejected:uncovered-and-no-tests=135 rejected:unparseable=1 shortlisted=20 surplus=367
+03:56:17 [tasks/history_funnel] done in 53.5s (11034 LLM tokens)
+03:56:17 [tasks/build_history] start
+03:56:17 [tasks/build_history] shortlist 20, target 10
+03:56:17 [tasks/build_history] 1/20 e515fb3: building
+03:56:22 [tasks/build_history] hist-e515fb3 built (verifier commit-tests), 1/10
+03:56:22 [tasks/build_history] 2/20 e70637c: building
+03:56:23 [tasks/build_history] hist-e70637c rejected (verifier commit-tests): verifier-fails-on-solution
+03:56:23 [tasks/build_history] 3/20 99e2ece: building
+03:56:27 [tasks/build_history] hist-99e2ece built (verifier commit-tests), 2/10
+03:56:27 [tasks/build_history] 4/20 4a48227: building
+03:56:30 [tasks/build_history] hist-4a48227 built (verifier commit-tests), 3/10
+03:56:30 [tasks/build_history] 5/20 dd0f629: building
+03:56:32 [tasks/build_history] hist-dd0f629 rejected (verifier commit-tests): verifier-fails-on-solution
+03:56:32 [tasks/build_history] 6/20 24c21dc: building
+03:56:34 [tasks/build_history] hist-24c21dc rejected (verifier commit-tests): verifier-on-input:error_before_repo_call
+03:56:34 [tasks/build_history] 7/20 85a7a3a: building
+03:56:36 [tasks/build_history] hist-85a7a3a rejected (verifier commit-tests): verifier-not-implementation-neutral(rewrite:unchanged)
+03:56:36 [tasks/build_history] 8/20 dd28dc4: building
+03:56:39 [tasks/build_history] hist-dd28dc4 rejected (verifier commit-tests): commit-tests-pass-on-input
+03:56:39 [tasks/build_history] 9/20 fabde1f: building
+03:56:40 [tasks/build_history] hist-fabde1f rejected (verifier commit-tests): verifier-fails-on-solution
+03:56:40 [tasks/build_history] 10/20 0d75aab: building
+03:56:44 [tasks/build_history] hist-0d75aab built (verifier commit-tests), 4/10
+03:56:44 [tasks/build_history] 11/20 062b089: building
+03:56:46 [tasks/build_history] hist-062b089 rejected (verifier commit-tests): verifier-fails-on-solution
+03:56:46 [tasks/build_history] 12/20 c2acc2b: building
+03:56:50 [tasks/build_history] hist-c2acc2b built (verifier commit-tests), 5/10
+03:56:50 [tasks/build_history] 13/20 a32abdd: building
+03:56:56 [tasks/build_history] hist-a32abdd built (verifier commit-tests), 6/10
+03:56:56 [tasks/build_history] 14/20 e355bce: building
+03:57:02 [tasks/build_history] hist-e355bce built (verifier commit-tests), 7/10
+03:57:02 [tasks/build_history] 15/20 981b090: building
+03:57:08 [tasks/build_history] hist-981b090 built (verifier commit-tests), 8/10
+03:57:08 [tasks/build_history] 16/20 e6a06a5: building
+03:59:32 [tasks/build_history] hist-e6a06a5 rejected (verifier commit-tests): verifier-not-implementation-neutral(rewrite:unchanged)
+03:59:32 [tasks/build_history] 17/20 0879279: building
+03:59:33 [tasks/build_history] hist-0879279 rejected (verifier commit-tests): verifier-fails-on-solution
+03:59:33 [tasks/build_history] 18/20 ab27bab: building
+03:59:36 [tasks/build_history] hist-ab27bab rejected (verifier commit-tests): commit-tests-pass-on-input
+03:59:36 [tasks/build_history] 19/20 de604f5: building
+03:59:39 [tasks/build_history] hist-de604f5 rejected (verifier commit-tests): verifier-not-implementation-neutral(rewrite:unchanged)
+03:59:39 [tasks/build_history] 20/20 94b6375: building
+03:59:45 [tasks/build_history] hist-94b6375 built (verifier commit-tests), 9/10
+03:59:45 [tasks/build_history] attempted 20, built 9, rejected verifier-fails-on-solution=5 verifier-on-input:error_before_repo_call=1 verifier-not-implementation-neutral=3 commit-tests-pass-on-input=2
+03:59:45 [tasks/build_history] done in 208.0s (117768 LLM tokens)
+03:59:45 [tasks/validate] start
+03:59:45 [tasks/validate] 14 tasks, 4 workers
+03:59:59 [tasks/validate] exc-glom.grouping-GROUP VALID (fail-before 6, pass-after 6, det 3/3)
+04:00:00 [tasks/validate] exc-glom.matching-Check.glomit VALID (fail-before 6, pass-after 27, det 3/3)
+04:00:00 [tasks/validate] exc-glom.cli-mw_handle_target INVALID (fail-reason:error_before_repo_call)
+04:00:08 [tasks/validate] exc-glom.core-format_target_spec_trace VALID (fail-before 29, pass-after 29, det 3/3)
+04:00:10 [tasks/validate] hist-4a48227 VALID (fail-before 1, pass-after 1, det 3/3)
+04:00:15 [tasks/validate] hist-0d75aab VALID (fail-before 1, pass-after 1, det 3/3)
+04:00:17 [tasks/validate] exc-glom.reduction-Fold.glomit VALID (fail-before 12, pass-after 12, det 3/3)
+04:00:25 [tasks/validate] hist-981b090 VALID (fail-before 1, pass-after 1, det 3/3)
+04:00:27 [tasks/validate] hist-94b6375 VALID (fail-before 6, pass-after 6, det 3/3)
+04:00:28 [tasks/validate] hist-99e2ece VALID (fail-before 1, pass-after 1, det 3/3)
+04:00:33 [tasks/validate] hist-a32abdd VALID (fail-before 1, pass-after 1, det 3/3)
+04:00:40 [tasks/validate] hist-c2acc2b VALID (fail-before 1, pass-after 1, det 3/3)
+04:00:41 [tasks/validate] hist-e355bce VALID (fail-before 1, pass-after 1, det 3/3)
+04:00:42 [tasks/validate] hist-e515fb3 VALID (fail-before 2, pass-after 2, det 3/3)
+04:00:42 [tasks/validate] 13/14 VALID
+04:00:42 [tasks/validate] done in 57.2s (0 LLM tokens)
+04:00:42 [tasks/instruct] start
+04:00:42 [tasks/instruct] exc-glom.core-format_target_spec_trace: final (attempts 1, reused)
+04:00:43 [tasks/instruct] exc-glom.grouping-GROUP: final (attempts 1, reused)
+04:00:43 [tasks/instruct] exc-glom.matching-Check.glomit: final (attempts 1, reused)
+04:00:43 [tasks/instruct] exc-glom.reduction-Fold.glomit: final (attempts 1, reused)
+04:00:43 [tasks/instruct] hist-0d75aab: final (attempts 1, reused)
+04:00:44 [tasks/instruct] hist-4a48227: final (attempts 1, reused)
+04:00:44 [tasks/instruct] hist-94b6375: final (attempts 1, reused)
+04:00:52 [tasks/instruct] hist-981b090: final (attempts 1)
+04:00:55 [tasks/instruct] hist-99e2ece: final (attempts 1, reused)
+04:00:59 [tasks/instruct] hist-a32abdd: final (attempts 1)
+04:01:02 [tasks/instruct] hist-c2acc2b: final (attempts 1, reused)
+04:01:06 [tasks/instruct] hist-e355bce: final (attempts 1)
+04:01:09 [tasks/instruct] hist-e515fb3: final (attempts 1, reused)
+04:01:11 [tasks/instruct] tasks=13 final=13 failed=0 regenerations=0 reused=10 leak_rejections=0 reviewer_rejections=0
+04:01:11 [tasks/instruct] difficulty easy=8 hard=1 medium=4
+04:01:11 [tasks/instruct] done in 29.0s (35765 LLM tokens)
+04:01:11 [tasks/manifest] start
+04:01:11 [tasks/manifest] tasks/glom/tasks.json
+04:01:11 [tasks/manifest] done in 0.0s (0 LLM tokens)
+04:01:11 [tasks/select] start
+04:01:11 [tasks/select] selected 10: exc-glom.core-format_target_spec_trace, exc-glom.reduction-Fold.glomit, exc-glom.grouping-GROUP, exc-glom.matching-Check.glomit, hist-94b6375, hist-e515fb3, hist-0d75aab, hist-4a48227, hist-a32abdd, hist-c2acc2b
+04:01:11 [tasks/select] types excision=4 history=6; difficulty easy=5 hard=1 medium=4; modules 4; output/glom/tasks/selection.json
+04:01:11 [tasks/select] done in 0.0s (0 LLM tokens)
+tasks done: tasks/glom (13/14 VALID)
+report: REPORT.md
+04:01:18 [tasks] done in 362.4s
+04:01:18 [summary] total 768s
+04:01:18 [summary/hygiene] detect=0s pin=1s dockerfile=2s compose=0s build=7s baseline=2s testgen=230s lint=21s
+04:01:18 [summary/knowledge] symbol_index=0s indexes=135s graph=0s verify=2s okf=5s
+04:01:18 [summary/tasks] excision_funnel=0s build_excision=7s history_funnel=53s build_history=208s validate=57s instruct=29s manifest=0s select=0s
+04:01:18 [summary/llm] tokens total=779614 big=762657 small=16957
+04:01:18 [summary/tasks] VALID 13/14
+04:01:18 [summary/select] 10 selected: exc-glom.core-format_target_spec_trace, exc-glom.reduction-Fold.glomit, exc-glom.grouping-GROUP, exc-glom.matching-Check.glomit, hist-94b6375, hist-e515fb3, hist-0d75aab, hist-4a48227, hist-a32abdd, hist-c2acc2b
+EXIT=0

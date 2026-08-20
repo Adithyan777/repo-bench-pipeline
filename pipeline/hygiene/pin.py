@@ -1,4 +1,5 @@
-"""Step 3.2: canonical requirements.in, then a fully pinned lock (written into the clone).
+"""Hygiene step 2 (pin): canonical requirements.in, then a fully pinned lock (written
+into the clone).
 No-manifest repos: AST import scan + alias table + SMALL-model fallback; poetry is translated.
 """
 

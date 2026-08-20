@@ -1,5 +1,5 @@
-"""Excision funnel (DESIGN 5.3): deterministic candidate selection from knowledge artifacts,
-then a SMALL-model screen. Every function gets a status and, when dropped, a
+"""Excision funnel (docs/pipeline-3-tasks.md): deterministic candidate selection from knowledge
+artifacts, then a SMALL-model screen. Every function gets a status and, when dropped, a
 ``reject_reason``.
 """
 

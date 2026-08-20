@@ -1,4 +1,4 @@
-"""Step 3.3 (compose): deterministic service detection from imports/deps, .env.example
+"""Hygiene step 4 (compose): deterministic service detection from imports/deps, .env.example
 URLs and existing compose files. Writes docker-compose.yml only for supported services
 (postgres/redis); others are reported as unsupported in compose.json.
 """

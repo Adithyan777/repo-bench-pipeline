@@ -6,7 +6,7 @@ Stage 2 (P2): build the static knowledge layer from the hygiene-clean repo. All 
 
 | File | What it does |
 |---|---|
-| `runner.py` | Chains: symbol_index, indexes, graph, verify, okf, okf_verify. Each step is resumable. Ordering note: indexes (coverage, test_map) must precede the graph because graph nodes carry coverage % and test refs derived from them |
+| `runner.py` | Chains: symbol_index, indexes, graph, verify, okf (okf_verify runs inside the okf step). Each step is resumable. Ordering note: indexes (coverage, test_map) must precede the graph because graph nodes carry coverage % and test refs derived from them |
 | `graph.py` | Builds `repo_graph.json`. Nodes: source modules, classes, functions (with file, line span, signature, docstring, complexity, coverage, test refs). Edges: imports, contains, calls, inherits, tested_by. Every edge carries `evidence {file, line}`. Sorted, no timestamps |
 | `indexes.py` | `history_index.json`: every commit in original history with touched functions resolved by diffing AST spans at each commit. `test_map.json` / `coverage.json`: from one `coverage run -m pytest` container run with dynamic contexts. `hotspots.json`: change frequency per function |
 | `verify.py` | Graph self-verification: samples edges, re-derives them by an independent code path, and reports precision per edge type. Writes `graph_verification.json` |

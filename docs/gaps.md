@@ -45,7 +45,10 @@ The agent spent its turn budget reading the module and never wrote a test file.
 writing, and 12 turns are not enough for modules of this size. A 30-turn
 budget was tried during development with the same result.
 
-**Evidence**: `glom-run.log` shows `agent wrote no file` for both modules.
+**Evidence**: `output/glom/hygiene/testgen.json` records both modules as
+`dropped_no_file`, glom.core with the summary `stopped: reached max turns` and
+glom.grouping with an empty one; `transcripts/glom-console.log` shows
+`agent wrote no file` for both.
 Testgen tokens (~550k) are ~70% of the run's total; one unproductive module
 can burn >100k tokens exploring.
 
@@ -91,16 +94,20 @@ attributes doctest coverage by file.
 ## 6. Old-commit dependency drift
 
 **What**: history tasks at old commits may fail to build because their
-dependencies no longer resolve in the pinned image. These are recorded as
-`env-drift` and rejected, never re-locked.
+dependencies no longer resolve in the pinned image. A tree that cannot even
+collect is recorded as `env-drift`; a tree that collects but whose own tests do
+not pass on its solution is recorded as `verifier-fails-on-solution`. Either
+way the candidate is rejected, never re-locked.
 
 **Why**: re-locking at an old commit would require running `uv pip compile`
 against that commit's manifest, which may reference yanked or removed packages.
-The cost and complexity were not justified for the 2 glom candidates lost
+The cost and complexity were not justified for the 5 glom candidates lost
 this way.
 
-**Evidence**: `history_candidates.json` shows 5 `verifier-fails-on-solution`
-rejects, some caused by env drift.
+**Evidence**: `output/glom/tasks/history_candidates.json` shows 5
+`verifier-fails-on-solution` rejects and no `env-drift(...)` reason: on glom
+the drift showed up as the commit's own tests failing on its solution tree in
+today's image, not as a collection failure.
 
 **Next step**: attempt re-lock at the old commit with a fallback to the
 current lock, and record whether the re-lock succeeded.
@@ -119,8 +126,9 @@ were removed during finalization.
 **Evidence**: no test covers this path. The bootstrapping path (no tests at
 all) is covered.
 
-**Next step**: implement the path when a repo triggers it. The design is
-documented in DESIGN.md section 3.5.
+**Next step**: implement the path when a repo triggers it. The baseline
+section of [pipeline-1-hygiene.md](pipeline-1-hygiene.md) describes the
+intended behavior.
 
 
 ## 8. Git in images is not byte-reproducible
@@ -133,8 +141,8 @@ version, so the image is not byte-reproducible across builds.
 `build.json` and `verdict.json`. Pinning the `git` package version would
 require maintaining a separate apt pin, adding complexity for marginal benefit.
 
-**Evidence**: `hygiene/build.json` records the image digest. Fired on toolz
-(git-versioned), not on glom.
+**Evidence**: `hygiene/build.json` records the image digest. Observed during
+development on toolz (git-versioned; no artifacts committed), not on glom.
 
 **Next step**: pin the git package version in the Dockerfile, or accept the
 gap and document it.
@@ -214,7 +222,8 @@ Silencing them keeps the console output clean.
 
 ## 14. Held-out fresh-clone results
 
-[To be filled after held-out runs.]
+Pending at time of writing. Results will be appended to this section when the
+held-out runs are done.
 
 
 ## 15. Testgen tokens dominate cost

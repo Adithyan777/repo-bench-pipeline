@@ -73,7 +73,8 @@ digest).
 **Config**: `docker.base_image`, `docker.pin_base_image_digest`,
 `detect.git_version_tools`.
 
-**Edge case (toolz)**: a git-versioned repo's version failed because
+**Edge case (toolz, observed during development; no artifacts committed)**: a
+git-versioned repo's version failed because
 `.dockerignore` dropped `.git` and the slim image has no `git`. Fixed by
 detecting `git_version_tools` in the build deps and keeping `.git` + installing
 git.
@@ -137,7 +138,10 @@ classifications), `test_command.txt`.
 **Config**: `baseline.framework_priority`, `baseline.quarantine_file`,
 `baseline.agent_fix_allowed_globs`, `agent.baseline_fix_max_attempts`.
 
-**On glom**: 202 tests passing, 0 quarantined, 0 LLM tokens.
+**On glom**: 202 tests passing, 0 quarantined, 0 LLM tokens. Note that
+`baseline.json` is re-recorded after test generation (`testgen_refreshed:
+true`), so the committed record holds the post-generation count of 239; 202 is
+the suite as glom shipped it.
 
 
 ## testgen
@@ -179,8 +183,9 @@ Decisions persist per module.
 
 **On glom**: 4 modules ranked, 9 target functions. Kept glom.cli (3/3
 functions, 10/12 mutants killed) and glom.streaming (1/1, 4/4). Dropped
-glom.core and glom.grouping: the agent spent its 12-turn budget reading
-the modules without writing a test file. Suite after: 240 tests passing,
+glom.core and glom.grouping: the agent never wrote a test file
+(`dropped_no_file`). `testgen.json` records `stopped: reached max turns` for
+glom.core; glom.grouping's summary is empty. Suite after: 239 tests passing,
 verify-twice identical. Testgen tokens: ~550k (70% of the run's total).
 
 **Edge case**: a 30-turn budget was tried for glom.core during development.

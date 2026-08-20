@@ -25,7 +25,7 @@ Source excludes: `docs/`, `examples/`, `scripts/`, `build/`, `dist/`,
 **Artifacts**: `knowledge/symbol_index.json`.
 
 **Config**: `graph.nonsource_dirs`, `graph.nonsource_files`,
-`graph.test_dir_globs`, `knowledge.source_roots`.
+`graph.test_file_globs`, `knowledge.source_roots`.
 
 **On glom**: 11 source modules indexed.
 
@@ -59,7 +59,8 @@ percentages and test references derived from the indexes.
 **Config**: `knowledge.coveragerc_filename`, `knowledge.ctx_plugin_module`,
 `knowledge.pr_number_regex`, `knowledge.source_roots`.
 
-**On glom**: test_map covers 232 functions. The index run takes ~130 seconds
+**On glom**: test_map maps 231 test nodeids to 297 distinct functions. The
+index run takes ~130 seconds
 (parsing AST spans at each of 1,050 commits).
 
 **Edge case**: doctests are excluded from the test_map because the coverage
@@ -145,9 +146,11 @@ functions above `min_private_page_complexity`), capped at
 - **callers/links**: reported as true-by-construction (graph-derived), not
   independently verified.
 
-A page is stamped `verified` only if at least one claim was actually checked
-and passed. Unchecked claim kinds (inputs, outputs, invariants) are listed.
-Pages with no checkable claims or failed checks stay `draft`.
+A page is stamped `status: "stable"` (`okf.verified_status`) with a `verified:`
+list naming the claims that were checked, and only if at least one claim was
+actually checked and passed. Unchecked claim kinds (inputs, outputs,
+invariants) are listed. Pages with no checkable claims or failed checks stay
+`status: "draft"`.
 
 **Artifacts**: `knowledge/.okf/` (the bundle), `knowledge/okf.json`,
 `knowledge/okf_decisions.json`, `knowledge/okf_verification.json`.
@@ -156,7 +159,9 @@ Pages with no checkable claims or failed checks stay `draft`.
 `okf.min_private_page_complexity`, `okf.side_effect_call_names`,
 `okf.okf_version`.
 
-**On glom**: 164 pages (106 verified, 44 draft). OKF conformance: true.
+**On glom**: 164 pages total. Of the 150 function pages, 106 are `stable` and
+44 are `draft`; the 11 module pages and the three reserved pages (index, repo,
+log) sit outside those counts and stay `draft`. OKF conformance: true.
 Semantic precision: callees 1.0, raises ~0.75, side_effects ~0.87.
 Callers/links by-construction: 1.0. Unchecked: inputs, outputs, invariants.
 The conservative approach (implicit or under-claimed exceptions stay `draft`)

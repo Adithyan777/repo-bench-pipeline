@@ -1,6 +1,6 @@
 # tests/cassettes/
 
-Recorded LLM request/response pairs for deterministic test replay. Tests run with `LLM_MODE=replay` and load responses from here instead of calling the live API.
+Recorded LLM request/response pairs for deterministic test replay. `tests/conftest.py` passes `llm_mode="replay"` to `build_context`, so tests load responses from here instead of calling the live API; no environment variable is needed. The `LLM_MODE` env var is honored by the client itself and is what `scripts/record_cassettes.py` sets when re-recording.
 
 ## Layout
 

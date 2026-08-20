@@ -22,14 +22,19 @@ an unchanged repo cost zero tokens.
 |---|---|
 | Wall clock (full `--fresh` run) | ~13 min |
 | LLM tokens | 779,614 total (big 762,657 / small 16,957) |
-| Baseline tests | 202 passing, 0 quarantined |
+| Baseline tests | 202 passing before test generation, 0 quarantined |
 | Generated tests kept | 4 functions across 2 modules (14/16 mutants killed) |
-| Suite after test-gen | 240 tests passing (verify-twice identical) |
+| Suite after test-gen | 239 tests passing (verify-twice identical) |
 | Graph | 378 nodes, 4,612 edges; verification precision 1.0 all edge types |
-| OKF | 164 pages (106 verified / 44 draft); conformant |
+| OKF | 164 pages total; of the 150 function pages, 106 stable / 44 draft; conformant |
 | Tasks built | 14 (5 excision, 9 history); 13 VALID |
 | Selected 10 | 4 excision + 6 history, 4 distinct modules |
 | Difficulty spread | easy 5, medium 4, hard 1 |
+
+202 is the suite as glom shipped it; `baseline.json` is re-recorded after test
+generation, so the committed baseline holds the 239. Of the 164 OKF pages, 150
+are function pages (106 stable / 44 draft); the 11 module pages and the three
+reserved pages (index, repo, log) are outside those counts and stay draft.
 
 
 ## Quick start
@@ -140,14 +145,31 @@ Each task folder is self-contained. To re-validate on a fresh machine:
 # build the image from the task's own Dockerfile
 docker build -t <image_tag> tasks/<repo>/<task_id>/input
 
-# run the harness
+# run the harness (add --json to print the full verdicts, --set to override config)
 python -m pipeline.validate tasks/<repo>/<task_id>
+python -m pipeline.validate tasks/<repo>/<task_id> --json
 ```
 
 The harness runs fail-before (with right-reason classification), pass-after,
 determinism (3x by default), and collateral checks. It re-copies the canonical
 `verifier/` into the workdir before each run. Results go to
-`<task>/evidence/verdict.json`.
+`<task>/evidence/verdict.json`; `--json` prints the same verdicts to stdout.
+
+
+## Rebuild the report
+
+`REPORT.md` and `report_summary.json` for a run dir are rebuilt from the
+committed artifacts alone -- no container, no LLM call when `--no-draft` is used:
+
+```bash
+python -m pipeline.report glom --no-draft            # tables only, 0 tokens
+python -m pipeline.report glom                       # + one BIG narrative draft
+python -m pipeline.report glom --output-root output  # non-default run root
+```
+
+`<repo>` is a repo URL/path or the `output/<name>` run-dir name. Output goes to
+`output/<repo>/report_summary.json` and `output/<repo>/REPORT.md`; the repo-root
+`REPORT.md` is hand-maintained and never overwritten.
 
 
 ## Pipeline tests
@@ -166,22 +188,27 @@ slow: 3 passed; ruff clean.
 
 ## Deliverables map
 
+`output/glom/REPORT.md` is the raw generated report; the finished report is
+`REPORT.md` at the repo root.
+
 | Path | Committed | Description |
 |---|---|---|
 | `pipeline/` | yes | Pipeline source |
 | `tests/` | yes | Integration tests, fixtures, cassettes |
 | `docs/` | yes | Architecture, pipeline docs, configuration, decisions, gaps |
 | `transcripts/dev/` | yes | Development methodology, prompts, review rounds |
+| `transcripts/glom-console.log` | yes | Console log of the glom run (wall-clock evidence) |
+| `transcripts/pipeline/`, `transcripts/agent/` | yes | Per-call LLM transcripts (236) and agent trajectories (12) |
 | `tasks.json` (root) | yes | The final 10 selected tasks |
 | `tasks/glom/<id>/` | yes | The 10 selected task folders |
 | `tasks/glom/tasks.json` | yes | Full manifest of all built tasks |
+| `output/glom/repo/` | yes | Transformed clone, 79 files (working tree only, no nested `.git`) |
 | `output/glom/knowledge/repo_graph.json` | yes | Static knowledge graph |
 | `output/glom/knowledge/.okf/` | yes | OKF v0.2 knowledge bundle |
 | `output/glom/report_summary.json` | yes | Aggregated run data |
-| `REPORT.md` | yes | Assignment report (six sections) |
-| `output/glom/repo/` | no | Transformed clone (regenerable) |
-| `output/glom/hygiene/`, `tasks/`, `audit/` | no | Step records, caches (regenerable) |
-| `transcripts/pipeline/`, `transcripts/agent/` | no | Per-call LLM transcripts (regenerable) |
+| `output/glom/REPORT.md` | yes | Generated report (tables auto-filled, `AUTHOR` markers) |
+| `REPORT.md` | yes | Assignment report (six sections), hand-finished |
+| `output/glom/hygiene/`, `output/glom/tasks/`, `output/glom/audit/` | no | Step records, caches (regenerable) |
 
 
 ## Documentation index

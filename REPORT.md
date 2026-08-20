@@ -27,8 +27,11 @@ first attempt with no repair agent needed.
 **Coverage gaps in the test suite.** 4 modules were ranked for test generation.
 The agent produced tests for glom.cli (3 functions, 10/12 mutants killed) and
 glom.streaming (1 function, 4/4 mutants killed). Two modules (glom.core,
-glom.grouping) were dropped because the agent spent its turn budget reading
-without writing. Suite after generation: 240 tests, verify-twice identical.
+glom.grouping) were dropped because the agent never wrote a test file
+(`dropped_no_file`): glom.core stopped on `reached max turns`, glom.grouping
+returned nothing. Suite after generation: 239 tests, verify-twice identical.
+`baseline.json` is re-recorded after test generation, so its 239 is the
+post-generation count; 202 is the suite as glom shipped it.
 
 **No lint configuration.** ruff was run with rules (E, F, W, I, B, UP). 34
 files would change, 265 unfixable findings across 23 files. The lint step was
@@ -43,7 +46,7 @@ recorded in `lint.json`.
 | Packaging style | setup.py |
 | Python version | 3.12 |
 | Test framework | pytest |
-| Extras folded into lock | - |
+| Extras folded into lock | ['test'] |
 | Dropped (unresolvable) extras | [] |
 | Unresolved inferred imports | [] |
 | Image tag | bench-glom |
@@ -122,7 +125,7 @@ Coverage alone would accept a test that imports a module and calls a function
 without assertions. The mutation gate mirrors how graders evaluate test quality
 (inject bugs, check if tests catch them).
 
-All thresholds are centralized in `pipeline/config.py` (19 dataclasses, ~680
+All thresholds are centralized in `pipeline/config.py` (21 dataclasses, ~680
 lines) with `--set section.key=value` overrides at runtime. No magic numbers
 in the code. Full rationale in [docs/decisions.md](docs/decisions.md).
 
@@ -132,9 +135,9 @@ Two task sources were used: excision (remove a function body, tests define
 behavior) and history (a real commit's change). Net-new tasks were designed but
 not built, since the other two sources yielded more than enough valid tasks.
 
-**Excision.** Every function in the symbol index (536 total, excluding one
-uncollected function) was evaluated. The largest rejection categories: test-code
-(234, functions inside test files), private (196, `_`-prefixed names), and
+**Excision.** Every function in the symbol index (536 total) was evaluated.
+The largest rejection categories: test-code (234, functions inside test files),
+private (196, `_`-prefixed names), and
 few-covering-tests (27, fewer than 2 passing baseline tests). 7 functions were
 rejected as too-central (more than 40 covering tests; excising them would fail
 most of the suite). 1 was screened out by the SMALL model (docstring leaks the
@@ -148,10 +151,13 @@ reaching the test. The strict classifier sees `error_before_repo_call`.
 **History.** 1,050 commits were considered. The funnel is aggressive: 136
 rejected as docs-or-CI-only, 135 as uncovered-and-no-tests, 128 as
 no-source-change, 97 as dependency-changing, 64 as too-small, 39 as non-PR
-merges, 37 as superseded-by-merge. After hard filters and scoring, 441
-survivors were classified by the SMALL model (17 classified out as
-refactor/chore/test-only). 20 were shortlisted, 9 built. During building, 5
-were rejected for verifier-fails-on-solution (env drift on old commits), 3 for
+merges, 37 as superseded-by-merge. Hard filters removed 646 commits, leaving
+404 survivors; of those, 45 were classified by the SMALL model
+before the shortlist filled (17 classified out as refactor/chore/test-only). 20
+were shortlisted, 9 built. During building, 5 were rejected as
+verifier-fails-on-solution -- the commit's own tests do not pass on its solution
+tree in today's image, typically dependency or environment drift on old commits;
+no candidate hit the explicit env-drift import check. 3 were rejected for
 verifier-not-implementation-neutral (rewrite unchanged), and 1 for
 error_before_repo_call. All 9 built tasks were VALID.
 
@@ -203,18 +209,18 @@ medium 4 / hard 1 (soft target was 2/5/3; the eligible pool skews easy).
 
 | Metric | Value |
 | --- | --- |
-| Tasks validated | - |
-| VALID | - |
+| Tasks validated | 14 |
+| VALID | 13 |
 
 **Instruction authoring**
 
 | Metric | Value |
 | --- | --- |
-| Tasks | - |
-| Final | - |
-| Failed | - |
-| Regenerations | - |
-| Difficulty spread | - |
+| Tasks | 13 |
+| Final | 13 |
+| Failed | 0 |
+| Regenerations | 0 |
+| Difficulty spread | easy=8, hard=1, medium=4 |
 
 **Final selection (the 10)**
 
@@ -297,10 +303,15 @@ python -m pipeline.validate tasks/glom/<task_id>
 | pin | - | True |
 | testgen | 23.61 | False |
 
-The glom run took ~13 minutes wall clock and consumed ~780k tokens across 11
-agent runs. Testgen accounts for ~70% of the tokens. At these rates, 100 repos
-would cost roughly 78M tokens and 22 hours of sequential wall time. Several
-things break at that scale.
+_Timings and token counts come from the runner's `report_data.json`; steps that were skipped as up-to-date record no duration. The console log of the full run is the authoritative wall-clock record._
+
+The table above carries only the steps re-run by the last, hygiene-only
+invocation that wrote `report_data.json`; the full-run timings are in the
+console log ([transcripts/glom-console.log](transcripts/glom-console.log),
+`[summary]` blocks). The glom run took 768 s (~13 minutes) wall clock and
+consumed ~780k tokens across 11 agent runs. Testgen accounts for ~70% of the
+tokens. At these rates, 100 repos would cost roughly 78M tokens and 22 hours of
+sequential wall time. Several things break at that scale.
 
 **Token cost.** At ~780k tokens per repo, 100 repos would consume ~78M tokens.
 The per-repo budget (`llm.max_tokens_per_repo`, default 5M) already caps
@@ -309,10 +320,12 @@ large modules. Per-function prompts (instead of per-module) would reduce
 context size and cost.
 
 **Wall clock.** Agent steps are sequential within a repo: build_history alone
-took 220 seconds on glom. A job queue (e.g., Celery with per-repo workers)
-would parallelize across repos. Within a repo, the validation harness already
-parallelizes (`docker.harness_parallel_workers=4`), but funnels and build steps
-are sequential.
+took 208 seconds on glom (`[summary/tasks]` in
+[transcripts/glom-console.log](transcripts/glom-console.log)). A job queue
+(e.g., Celery with per-repo workers) would parallelize across repos. Within a
+repo, the validation harness already parallelizes
+(`docker.harness_parallel_workers=4`), but funnels and build steps are
+sequential.
 
 **Image storage.** One `bench-<repo>` image per repo, each ~150 MB based on
 `python:3.12-slim`. 100 images = ~15 GB before layer sharing. An image
@@ -342,10 +355,10 @@ Each gap has a detailed entry in [docs/gaps.md](docs/gaps.md).
 
 - **Net-new tasks not generated.** History + excision fill the 10. Net-new is designed but unbuilt.
 - **Lint reverted on glom.** 7 test_error.py tests assert exact source lines; formatting breaks them.
-- **Test-gen drops large modules.** glom.core and glom.grouping: agent explores without writing.
+- **Test-gen drops large modules.** glom.core and glom.grouping: agent explored without ever writing a test file.
 - **OKF verification is partial.** raises ~0.75, side_effects ~0.87; inputs/outputs/invariants unchecked.
 - **test_map excludes doctests.** Coverage context plugin sees only pytest nodeids.
-- **Old-commit dependency drift.** Recorded as env-drift, never re-locked (2 candidates lost).
+- **Old-commit dependency drift.** 5 candidates rejected as verifier-fails-on-solution; never re-locked.
 - **Collection-broken baseline path.** Not implemented; no repo triggered it.
 - **Git in images is not byte-reproducible.** `apt-get git` pulls latest; digests recorded.
 - **Difficulty skew.** easy 5 / medium 4 / hard 1 vs target 2/5/3; eligible pool skews easy.
@@ -353,5 +366,5 @@ Each gap has a detailed entry in [docs/gaps.md](docs/gaps.md).
 - **New-API imports stay INVALID by design.** getattr convention is required.
 - **Single ecosystem.** Python only, behind the adapter interface.
 - **SyntaxWarning silenced globally.** From target-code AST parsing.
-- **Held-out fresh-clone results.** [To be filled after held-out runs.]
+- **Held-out fresh-clone runs.** Pending at time of writing; results will be appended to docs/gaps.md section 14 when run.
 - **Testgen tokens dominate cost.** ~70% of total; per-function prompts would help.

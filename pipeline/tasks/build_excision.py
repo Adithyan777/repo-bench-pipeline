@@ -1,4 +1,4 @@
-"""Excision task construction (DESIGN 5.3 build + 5.6 folder format).
+"""Excision task construction (docs/pipeline-3-tasks.md).
 
 tasks/<repo>/<task_id>/{task.json, input/, solution/, verifier/, goldenSolution.md, evidence/}.
 solution/ = current repo tree (no .git); input/ = same with the target body spliced to

@@ -1,4 +1,5 @@
-"""Step 3.7: ruff check --fix + ruff format on the repo clone, inside the pinned container.
+"""Hygiene step 8 (lint): ruff check --fix + ruff format on the repo clone, inside the
+pinned container.
 
 Adapter writes ``[tool.ruff.lint]`` into pyproject.toml (minimal one created if absent),
 runs on a throwaway copy, changes are synced back host-side. The image is rebuilt and

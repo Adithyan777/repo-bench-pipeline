@@ -69,6 +69,28 @@ class HygieneContext:
         return json.loads((self.hygiene_dir / f"{name}.json").read_text())
 
 
+def write_report_data(ctx: HygieneContext) -> None:
+    """Merge ``ctx.report`` into output/<repo>/report_data.json.
+
+    A single-stage invocation (a hygiene-only rerun, ``--verify-twice``, a lint retry)
+    only carries its own records, so the file is loaded and updated in place: other
+    stages' keys and their per-stage timings survive. The JSON shape is unchanged.
+    """
+    path = ctx.run_dir / ctx.config.report.report_data_filename
+    data: dict = {}
+    if path.is_file():
+        try:
+            data = json.loads(path.read_text())
+        except json.JSONDecodeError:
+            data = {}
+    stages = {**(data.get("stages") or {}), **(ctx.report.get("stages") or {})}
+    data.update(ctx.report)
+    if stages:
+        data["stages"] = stages
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, sort_keys=True))
+
+
 def append_agent_action(audit_dir: Path, record: dict) -> None:
     """Append one record to ``audit/agent_actions.jsonl``."""
     audit_dir.mkdir(parents=True, exist_ok=True)

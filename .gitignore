@@ -44,10 +44,8 @@ output/glom/knowledge/*
 !output/glom/report_summary.json
 !output/glom/REPORT.md
 
-# transcripts/: the final glom run's per-call LLM transcripts and agent trajectories are
-# committed as evidence; dev/ holds the methodology notes.
-transcripts/README.md
-!transcripts/README.md
+# transcripts/: the final glom run's per-call LLM transcripts, agent trajectories and
+# console log are committed as evidence; dev/ holds the methodology notes.
 
 # tasks/: the committed deliverable is the repo-root tasks.json plus the 10 SELECTED task
 # folders under tasks/glom/ (see output/glom/tasks/selection.json) and the glom manifest.

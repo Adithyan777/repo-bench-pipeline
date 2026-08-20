@@ -1,4 +1,4 @@
-"""Step 3.6: generate tests, gated by mutation kill.
+"""Hygiene step 7 (testgen): generate tests, gated by mutation kill.
 
 Rank functions from an in-container coverage run + AST index (no knowledge artifacts);
 a BIG agent writes only the generated test file per module; each target must pass on

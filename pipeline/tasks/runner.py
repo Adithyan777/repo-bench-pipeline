@@ -1,5 +1,5 @@
 """Tasks stage runner: excision funnel -> build -> history funnel -> build -> validate ->
-instruct -> select -> manifest.
+instruct -> manifest -> select.
 
 Resumable via state.py with a pipeline-code fingerprint in every step's input hash;
 per-step timing + LLM usage into report_data.json.
@@ -14,7 +14,7 @@ import time
 from pathlib import Path
 
 from pipeline.ecosystems.source_ops import ExciseError
-from pipeline.hygiene.context import HygieneContext
+from pipeline.hygiene.context import HygieneContext, write_report_data
 from pipeline.knowledge.runner import knowledge_paths
 from pipeline.log import fmt_counts, log, step_skipped, step_start
 from pipeline.state import code_fingerprint, hash_inputs
@@ -718,4 +718,4 @@ def _write_report(ctx: HygieneContext) -> None:
     usage_path = ctx.audit_dir / "llm_usage.json"
     if usage_path.is_file():
         ctx.report["llm_usage"] = json.loads(usage_path.read_text())
-    (ctx.run_dir / "report_data.json").write_text(json.dumps(ctx.report, indent=2, sort_keys=True))
+    write_report_data(ctx)

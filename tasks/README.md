@@ -16,9 +16,14 @@ tasks/
       goldenSolution.md     # LLM-authored rationale explaining why the solution is correct
       evidence/             # machine-generated validation artifacts
         verdict.json        # the harness verdict (valid/invalid + reasons). Never hand-edited
-        fail_before.json    # test output from running verifier against input/
-        pass_after.json     # test output from running verifier against solution/
-        ...
+        fail_before.log     # console output of the verifier against input/
+        fail_before.report.json
+        pass_after.log      # console output of the verifier against solution/
+        pass_after.report.json
+        collateral.log      # console output of the collateral run
+        collateral.report.json
+        collateral.json     # collateral-damage comparison
+        determinism.json    # repeat-run comparison
 ```
 
 Task IDs are prefixed `exc-` (excision: function body removed) or `hist-` (history: a real commit's change).

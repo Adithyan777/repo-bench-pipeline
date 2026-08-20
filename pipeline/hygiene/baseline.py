@@ -1,4 +1,4 @@
-"""Step 3.5: baseline suite in the container; classify failures (SMALL model).
+"""Hygiene step 6 (baseline): baseline suite in the container; classify failures (SMALL model).
 
 env + missing dep -> one env-fix (add dep, re-lock, rebuild); genuine -> one bounded
 agent-fix limited to tests/config/deps (edits elsewhere reverted + audited); anything

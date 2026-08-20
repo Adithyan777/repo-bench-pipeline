@@ -12,8 +12,10 @@ every threshold centralized in one config file with documentation, the task
 format and harness rules, the report structure, and a decision log with
 rejected alternatives.
 
-The grill's output became `docs/DESIGN.md`, which every subsequent
-implementation session re-read as its first step.
+The grill's output became the design contract, which every subsequent
+implementation session re-read as its first step. It has since been split into
+[docs/architecture.md](../../docs/architecture.md) and
+[docs/decisions.md](../../docs/decisions.md).
 
 
 ## Build order
@@ -60,9 +62,10 @@ from the previous one. The harness came before history tasks (step 4 before
 
 ## Session discipline
 
-Each coding session started by re-reading the contract documents (`DESIGN.md`,
-`config.py`, `PROGRESS.md`). The session did its step, updated the progress
-log, and left changes staged for author review.
+Each coding session started by re-reading the contract documents: the design
+contract, `config.py`, and a running progress log (a working file, not part of
+the deliverable). The session did its step, updated the progress log, and left
+changes staged for author review.
 
 Closely related steps (e.g., P1 core parts) reused a warm session after
 context compaction for faster iteration. The strongest available model was
@@ -104,4 +107,8 @@ The committed artifacts come from a single `./run.sh <glom> --fresh` pass
 run by the author. The run accumulated over an initial run (that hit an API
 payment error mid-testgen and resumed) and a second `--fresh` run with a
 larger history target. The second run's summary block
-(`glom-run.log`) is the authoritative source for timings and token counts.
+([transcripts/glom-console.log](../glom-console.log)) is the authoritative
+source for timings and token counts: `total 768s`, `tokens total=779614`,
+`VALID 13/14`. It also records the test-gen drops
+(`agent wrote no file` for glom.core and glom.grouping), which
+`output/glom/hygiene/testgen.json` keeps as `dropped_no_file`.

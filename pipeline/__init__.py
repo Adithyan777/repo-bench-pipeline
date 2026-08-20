@@ -1,4 +1,4 @@
-"""AI task benchmark pipeline. See docs/DESIGN.md."""
+"""AI task benchmark pipeline. See docs/architecture.md."""
 
 import warnings
 

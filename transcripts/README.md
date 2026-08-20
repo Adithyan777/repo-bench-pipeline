@@ -1,13 +1,14 @@
 # transcripts/
 
-LLM call transcripts and development session logs. The bulky per-call transcripts are gitignored; only the curated dev logs are committed.
+LLM call transcripts, the console log of the glom run, and development session logs. All of it is committed as evidence.
 
 ## Layout
 
-| Directory | Committed | What it contains |
+| Path | Committed | What it contains |
 |---|---|---|
-| `pipeline/` | No | Auto-generated per-call LLM transcripts, one JSON file per `LLMClient.chat()` call. Organized by stage. Regenerated on every run |
-| `agent/` | No | Agent trajectory files (full message lists per agent run), organized by step name |
+| `pipeline/` | Yes | Auto-generated per-call LLM transcripts (236 files), one JSON file per `LLMClient.chat()` call. Organized by stage. Regenerated on every run |
+| `agent/` | Yes | Agent trajectory files (12 files: full message lists per agent run), organized by step name |
+| `glom-console.log` | Yes | Console log of the glom run: per-step durations, the `[summary]` blocks, and the wall-clock record |
 | `dev/` | Yes | Curated development logs (see below) |
 
 ## dev/

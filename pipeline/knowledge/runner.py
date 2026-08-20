@@ -1,4 +1,4 @@
-"""Knowledge stage runner: symbol_index -> indexes -> graph -> verify.
+"""Knowledge stage runner: symbol_index -> indexes -> graph -> verify -> okf.
 
 Indexes precede graph because node coverage/test refs and ``tested_by`` derive from
 test_map/coverage. Steps are resumable via state.py; timing goes to report_data.json.
@@ -10,7 +10,7 @@ import json
 import time
 from pathlib import Path
 
-from pipeline.hygiene.context import HygieneContext
+from pipeline.hygiene.context import HygieneContext, write_report_data
 from pipeline.knowledge import graph as graph_mod
 from pipeline.knowledge import indexes, okf, okf_verify, verify
 from pipeline.log import fmt_counts, log, step_skipped, step_start
@@ -271,4 +271,4 @@ def _load_existing_report(ctx: HygieneContext) -> None:
 
 
 def _write_report(ctx: HygieneContext) -> None:
-    (ctx.run_dir / "report_data.json").write_text(json.dumps(ctx.report, indent=2, sort_keys=True))
+    write_report_data(ctx)

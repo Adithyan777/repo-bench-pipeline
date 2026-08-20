@@ -1,4 +1,4 @@
-"""Step 3.4: build the repo image; bounded LLM repair loop on failure.
+"""Hygiene step 5 (build): build the repo image; bounded LLM repair loop on failure.
 
 Repair agent gets read_file/grep/write_file + the build log (no `run`: no image yet).
 Every attempt is appended to output/<repo>/audit/agent_actions.jsonl.

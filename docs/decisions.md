@@ -29,9 +29,8 @@ using OpenAI-compatible function calling, reused across all stages.
 **Why**: zero external harness dependencies. The loop is small enough to
 audit and test directly.
 
-**Alternatives considered**: [pi](https://github.com/anthropics/pi) (Node
-dependency, TypeScript runtime); mini-swe-agent (wanted no external harness);
-PiPy (bundled inside SuperQode, not standalone).
+**Alternatives considered**: an existing minimal harness (pi, Node-based) or a
+Python port of one; mini-swe-agent (wanted no external harness).
 
 **Consequence**: the loop is simple (ends on no tool calls or turn cap; tool
 errors returned as text) but lacks features like memory or self-correction.
@@ -89,7 +88,7 @@ override, and one document (docs/configuration.md) to explain them all.
 
 **Alternatives**: per-module constants; YAML config file.
 
-**Consequence**: `config.py` is large (~680 lines, 19 dataclasses). Worth it
+**Consequence**: `config.py` is large (~680 lines, 21 dataclasses). Worth it
 for auditability.
 
 
@@ -220,15 +219,17 @@ testing with mutmut (slow, external dependency).
 
 **Consequence**: test-gen is more expensive (4 mutant runs per function,
 up to 2 retries with feedback). On glom, testgen consumed ~70% of the run's
-total tokens. Some modules (glom.core, glom.grouping) were dropped when the
-agent could not produce tests that killed mutants.
+total tokens. Some modules (glom.core, glom.grouping) were dropped before the
+mutation gate ever ran, because the agent never wrote a test file
+(`dropped_no_file`).
 
 
 ## OKF honesty: draft over over-claim
 
-**Decision**: OKF pages are stamped `verified` only when at least one claim
-was actually checked (raises, side_effects, or callees) and passed. Pages
-with no checkable claims or failed checks stay `draft`. Callers and internal
+**Decision**: OKF pages are stamped `status: "stable"` -- with a `verified:`
+list naming the checked claims -- only when at least one claim was actually
+checked (raises, side_effects, or callees) and passed. Pages with no checkable
+claims or failed checks stay `status: "draft"`. Callers and internal
 links are reported as by-construction (graph-derived), not independently
 verified.
 
