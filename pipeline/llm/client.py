@@ -62,6 +62,27 @@ def _reasoning_extra_body(model: str, reasoning: str) -> dict[str, Any]:
     return {param: value}  # DeepSeek / GLM: reasoning_effort string
 
 
+def _undouble_encoded(payload: Any, schema: dict) -> Any:
+    """Models sometimes emit a top-level array/object property as a JSON string
+    (observed with screen batches on held-out repos). Decode those in place."""
+    if not isinstance(payload, dict):
+        return payload
+    for key, sub in schema.get("properties", {}).items():
+        if sub.get("type") in ("array", "object") and isinstance(payload.get(key), str):
+            try:
+                payload[key] = json.loads(payload[key])
+            except json.JSONDecodeError:
+                pass
+    return payload
+
+
+def _raw_tool_arguments(message: Any, tool_name: str) -> str:
+    for call in message.tool_calls or []:
+        if call.function.name == tool_name:
+            return call.function.arguments or ""
+    return ""
+
+
 def _resolve_secrets() -> tuple[str, str]:
     return os.environ.get("LLM_BASE_URL", ""), os.environ.get("LLM_API_KEY", "")
 
@@ -149,13 +170,17 @@ class LLMClient:
             if payload is None:
                 last_error = "no tool call or fenced JSON found in response"
             else:
+                payload = _undouble_encoded(payload, schema)
                 try:
                     jsonschema.validate(payload, schema)
                     return payload
                 except jsonschema.ValidationError as exc:
                     last_error = f"schema validation failed: {exc.message}"
+            # For a forced tool call the invalid output is in tool_calls, not
+            # content; echo it so the model sees what to correct.
+            bad_output = message.content or _raw_tool_arguments(message, tool_name)
             convo = convo + [
-                {"role": "assistant", "content": message.content or ""},
+                {"role": "assistant", "content": bad_output},
                 {
                     "role": "user",
                     "content": (

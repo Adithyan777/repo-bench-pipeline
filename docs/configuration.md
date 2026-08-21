@@ -95,7 +95,7 @@ Reasoning parameters are translated per model via `MODEL_CAPS`:
 | Key                           | Default           | Type   | Meaning                                                   | When to change                                          |
 | ----------------------------- | ----------------- | ------ | --------------------------------------------------------- | ------------------------------------------------------- |
 | `temperature`                 | 0.0               | tuning | Sampling temperature for all calls                        | Raise for more diverse test generation                  |
-| `max_schema_retries`          | 2                 | tuning | Retries when schema validation fails client-side          | Raise if the endpoint frequently returns malformed JSON |
+| `max_schema_retries`          | 3                 | tuning | Retries when schema validation fails client-side          | Raise if the endpoint frequently returns malformed JSON |
 | `accept_fenced_json_fallback` | true              | policy | Parse fenced JSON from text if tool-call extraction fails | Disable to enforce strict tool-call compliance          |
 | `api_max_retries`             | 5                 | tuning | Retries with exponential backoff on API errors            | Raise for unreliable endpoints                          |
 | `api_backoff_base_s`          | 1.0               | tuning | Base delay for exponential backoff                        |                                                         |

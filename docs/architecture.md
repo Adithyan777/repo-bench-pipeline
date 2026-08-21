@@ -8,16 +8,28 @@ all three).
 
 ```mermaid
 flowchart LR
-  subgraph "hygiene"
-    detect --> pin --> dockerfile --> compose --> build --> baseline --> testgen --> lint
-  end
-  subgraph "knowledge"
-    symbol_index --> indexes --> graph --> verify --> okf
-  end
-  subgraph "tasks"
-    excision_funnel --> build_excision --> history_funnel --> build_history --> validate --> instruct --> manifest --> select
-  end
-  hygiene --> knowledge --> tasks
+  hygiene --> knowledge --> tasks --> report
+```
+
+**Hygiene** — make the repo reproducible and testable:
+
+```mermaid
+flowchart LR
+  detect --> pin --> dockerfile --> compose --> build --> baseline --> testgen --> lint
+```
+
+**Knowledge** — build the machine-readable layer:
+
+```mermaid
+flowchart LR
+  symbol_index --> indexes --> G["graph"] --> verify --> okf
+```
+
+**Tasks** — mine, build, validate, and select the benchmark tasks:
+
+```mermaid
+flowchart LR
+  excision_funnel --> build_excision --> history_funnel --> build_history --> validate --> instruct --> manifest --> select
 ```
 
 After the tasks stage completes, the report builder aggregates all artifacts

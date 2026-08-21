@@ -73,9 +73,10 @@ class TaskFacts:
     source_files: list[str]  # repo-relative source files that differ input->solution
     touched_functions: list[str]
     contract: str  # signatures + docstrings AS IN input/
-    tests_source: str
+    tests_source: str  # truncated to tests_max_chars: prompt use only
     summary: str  # behavior summary (history) / excised contract note (excision)
     diff: str  # unified diff input->solution over source_files (never shown to the authoring model)
+    tests_full: str = ""  # untruncated: leak exemptions only, never prompted
     new_names: set[str] = field(default_factory=set)
     public_names: set[str] = field(default_factory=set)
     test_names: set[str] = field(default_factory=set)
@@ -100,16 +101,22 @@ def task_facts(task_dir: Path, config: Config = DEFAULT) -> TaskFacts:
         summary = (prov.get("classification") or {}).get("behavior_change_summary") or ""
     inp, sol = task_dir / "input", task_dir / "solution"
     contract = _contract(inp, source_files, touched, config)
-    tests_source = _tests_source(task_dir / "verifier", task["verifier_tests"], config)
+    tests_full = _tests_source(task_dir / "verifier", task["verifier_tests"])
+    limit = config.instruction.tests_max_chars
+    tests_source = tests_full
+    if len(tests_full) > limit:
+        tests_source = tests_full[:limit] + "\n... (truncated)"
     diff = "".join(_diff(inp, sol, f) for f in source_files)
-    facts = TaskFacts(task_dir, task, source_files, touched, contract, tests_source, summary, diff)
+    facts = TaskFacts(
+        task_dir, task, source_files, touched, contract, tests_source, summary, diff, tests_full
+    )
     for rel in source_files:
         before = read_source(inp / rel) if (inp / rel).is_file() else None
         after = read_source(sol / rel) if (sol / rel).is_file() else ""
         pick = new_api_names if config.instruction.leak_api_names_only else new_identifiers
         facts.new_names |= pick(before, after)
     facts.public_names = _public_names(inp, config)
-    facts.test_names = defined_names(tests_source) | set(re.findall(r"\w+", tests_source))
+    facts.test_names = defined_names(tests_full) | set(re.findall(r"\w+", tests_full))
     return facts
 
 
@@ -132,15 +139,13 @@ def _contract(inp: Path, files: list[str], touched: list[str], config: Config) -
     return "\n".join(lines) or "- (touched functions have no contract in the current tree)"
 
 
-def _tests_source(verifier: Path, nodeids: list[str], config: Config) -> str:
+def _tests_source(verifier: Path, nodeids: list[str]) -> str:
     blocks = []
     for rel in sorted({n.split("::", 1)[0] for n in nodeids}):
         names = sorted({n.split("::", 1)[1] for n in nodeids if n.startswith(rel + "::")})
         source = read_source(verifier / rel)
         blocks.append(f"### {rel} (verifier tests: {', '.join(names)})\n```python\n{source}\n```")
-    text = "\n\n".join(blocks)
-    limit = config.instruction.tests_max_chars
-    return text if len(text) <= limit else text[:limit] + "\n... (truncated)"
+    return "\n\n".join(blocks)
 
 
 def _diff(inp: Path, sol: Path, rel: str) -> str:
@@ -211,7 +216,7 @@ def leak_issues(
     """(detailed issues for the record, sanitized feedback for the authoring model); feedback
     never echoes the leaked line/identifier."""
     ic = config.instruction
-    exempt = facts.tests_source if ic.exempt_diff_lines_in_tests else ""
+    exempt = facts.tests_full if ic.exempt_diff_lines_in_tests else ""
     lines = diff_leaks(text, facts.diff, ic.leak_min_tokens, exempt)
     names = identifier_leaks(text, facts, config) if ic.forbid_new_identifiers_from_diff else []
     issues = [f"{what} leaks a solution line: `{ln}`" for ln in lines]
@@ -355,7 +360,11 @@ def write_instruction(
     ic = config.instruction
     key = content_key(facts, config)
     if decisions is not None and key in decisions:
-        return {**decisions[key], "reused": True}
+        prior = decisions[key]
+        # Reuse finals only: the step re-runs only when code/config changed, and a
+        # prior failure may be exactly what that change fixed.
+        if prior.get("status") != ic.status_failed:
+            return {**prior, "reused": True}
     feedback: list[str] = []
     attempts: list[dict] = []
     record: dict = {"key": key, "status": ic.status_failed}

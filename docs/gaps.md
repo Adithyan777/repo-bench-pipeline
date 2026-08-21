@@ -222,8 +222,51 @@ Silencing them keeps the console output clean.
 
 ## 14. Held-out fresh-clone results
 
-Pending at time of writing. Results will be appended to this section when the
-held-out runs are done.
+Run on 2026-08-21 from a fresh clone of the published repository into a clean
+directory (setup exactly as the README quick start), against two repos the
+pipeline had never seen: `pytoolz/toolz` and `skelsec/minidump`.
+
+**toolz — 10/10 selected.** Hygiene and knowledge passed unchanged on the first
+attempt (240 baseline tests, 177-node graph with verification mismatches 0,
+conformant OKF). The tasks stage surfaced three real generality bugs, each
+fixed and covered by a new unit test:
+
+1. **Schema-retry feedback was empty for forced tool calls.** The excision
+   screen died after retries: the model's invalid output lives in
+   `tool_calls`, but the retry echoed `message.content` (empty), so the model
+   never saw what to correct and drifted into double-encoding the array as a
+   JSON string. Fixed: echo the raw tool arguments, decode double-encoded
+   top-level properties, `max_schema_retries` 2 -> 3.
+2. **Leak-gate exemptions computed from truncated test source.** The
+   "add `peek`" history task requires the instruction to name `peek` (the
+   verifier tests call it), and names appearing in the verifier tests are
+   exempt by design -- but the exemption set was built from test source already
+   truncated to `tests_max_chars`, and `test_peek` sat past the cut. All three
+   authoring attempts were rejected. Fixed: truncate for prompts only; build
+   exemption sets from the full source.
+3. **Cached instruction failures were reused on rerun.** After fixing (2) the
+   rerun replayed the cached "failed" decision instead of retrying. Fixed:
+   reuse final decisions only -- the step re-runs only when code or config
+   changed, and a prior failure may be exactly what that change fixed.
+
+One knob was needed: `--set history.max_agent_runs_per_repo=16` (default 6,
+tuned on glom) -- the verifier-rewrite agent budget ran out before enough
+history candidates were repaired. Final result: 12 tasks built, 12/12 VALID,
+10 selected (4 excision + 6 history, 5 distinct modules, easy 4 / medium 5 /
+hard 1). Tasks-stage rerun cost ~102k tokens; cached decisions made the
+repeated attempts nearly free.
+
+**minidump — honest infeasibility.** The full pipeline ran end-to-end with no
+errors (~18 min, ~926k tokens, of which testgen 861k) and everything it built
+is sound: 6/6 tasks VALID, all instructions final on the first attempt. But
+the repo's sparse test suite starves both funnels: 299 of 568 excision
+candidates rejected as uncovered, and 41 of 118 history commits rejected
+uncovered-and-no-tests, leaving a shortlist of 2. Selection correctly reports
+`infeasible: only 6 eligible VALID+final tasks, need 10` instead of shipping
+filler. This is the scenario documented in docs/decisions.md where the cut
+net-new source would be required to reach 10 tasks on a coverage-poor repo.
+
+Nothing from either held-out run is committed; the fixes above are.
 
 
 ## 15. Testgen tokens dominate cost

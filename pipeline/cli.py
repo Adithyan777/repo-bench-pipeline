@@ -195,7 +195,13 @@ def _run_tasks(args: argparse.Namespace, config: Config) -> None:
         output_root=OUTPUT_ROOT,
         llm_stage="tasks",
     )
-    run_tasks(ctx)
+    try:
+        run_tasks(ctx)
+    except SystemExit:
+        # Selection infeasibility is a hard error, but the report over what WAS
+        # built is still worth having.
+        _build_report(ctx)
+        raise
     summary = ctx.report.get("tasks", {}).get("validate", {})
     valid, total = summary.get("valid", 0), summary.get("tasks", 0)
     print(f"tasks done: {repo_tasks_dir(ctx)} ({valid}/{total} VALID)")

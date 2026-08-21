@@ -123,6 +123,26 @@ def test_task_facts_and_leak_gates(tmp_path: Path) -> None:
     cfg = Config()
     cfg.instruction.forbid_new_identifiers_from_diff = False
     assert I.leak_issues("call _split_division", facts, cfg) == ([], [])
+
+
+def test_leak_exemptions_survive_test_source_truncation(tmp_path: Path) -> None:
+    """A new API name a solver must produce (named in the verifier tests) stays exempt even
+    when the test file is longer than tests_max_chars (toolz `peek`: named only at the end)."""
+    task_dir = _fake_task(tmp_path)
+    test_file = task_dir / "verifier" / "tests" / "test_calc.py"
+    padding = "\n".join(f"def test_pad_{i}():\n    assert True\n" for i in range(400))
+    test_file.write_text(padding + "\n\ndef test_peek():\n    assert peek([1]) == 1\n")
+    task = json.loads((task_dir / "task.json").read_text())
+    task["verifier_tests"] = ["tests/test_calc.py::test_peek"]
+    (task_dir / "task.json").write_text(json.dumps(task))
+    cfg = Config()
+    assert len((task_dir / "verifier" / "tests" / "test_calc.py").read_text()) > (
+        cfg.instruction.tests_max_chars
+    )
+    facts = I.task_facts(task_dir, cfg)
+    assert facts.tests_source.endswith("... (truncated)")  # prompt text is capped
+    assert "peek" in facts.test_names  # exemption built from the full source
+    assert I.identifier_leaks("Add a function `peek` returning the first element.", facts) == []
     # the classifier's summary is masked before it reaches a prompt
     facts.summary = "Uses _split_division to compute ceil_div."
     assert I.mask_names(facts.summary, facts) == "Uses [...] to compute ceil_div."

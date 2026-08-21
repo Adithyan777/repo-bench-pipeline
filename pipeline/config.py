@@ -73,7 +73,7 @@ TIER_REASONING: dict[Tier, Reasoning] = {"small": "low", "big": "high"}
 @dataclass
 class LLMConfig:
     temperature: float = 0.0
-    max_schema_retries: int = 2  # server does not enforce tool schemas
+    max_schema_retries: int = 3  # server does not enforce tool schemas
     accept_fenced_json_fallback: bool = True
     api_max_retries: int = 5  # exponential backoff on API errors
     api_backoff_base_s: float = 1.0

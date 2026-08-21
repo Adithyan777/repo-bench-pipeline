@@ -117,6 +117,41 @@ def test_schema_retry_recovers(tmp_path: Path) -> None:
     assert calls["n"] == 2
 
 
+def test_schema_retry_echoes_bad_tool_arguments(tmp_path: Path) -> None:
+    c = _client(tmp_path)
+    seq = iter(
+        [
+            make_completion(tool_calls=[("emit", '{"name": 1}')]),  # wrong type -> invalid
+            make_completion(tool_calls=[("emit", '{"name": "ok"}')]),
+        ]
+    )
+    requests = []
+
+    def fake(request):
+        requests.append(request)
+        return next(seq)
+
+    c._call_api = fake
+    c.complete_json(SMALL_STEP, [{"role": "user", "content": "go"}], SCHEMA)
+    retry_msgs = requests[1]["messages"]
+    assert retry_msgs[-2]["role"] == "assistant"
+    assert '{"name": 1}' in retry_msgs[-2]["content"]  # bad output echoed, not empty
+
+
+def test_double_encoded_array_property_is_decoded(tmp_path: Path) -> None:
+    c = _client(tmp_path)
+    schema = {
+        "type": "object",
+        "properties": {"items": {"type": "array", "items": {"type": "string"}}},
+        "required": ["items"],
+    }
+    args = '{"items": "[\\"a\\", \\"b\\"]"}'  # array emitted as a JSON string
+
+    c._call_api = lambda request: make_completion(tool_calls=[("emit", args)])
+    result = c.complete_json(SMALL_STEP, [{"role": "user", "content": "go"}], schema)
+    assert result == {"items": ["a", "b"]}
+
+
 # --- usage accounting incl. reasoning tokens ---
 
 
