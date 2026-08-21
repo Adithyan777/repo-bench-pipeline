@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+cd "$(dirname "$0")"
+python -m pytest -q tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset

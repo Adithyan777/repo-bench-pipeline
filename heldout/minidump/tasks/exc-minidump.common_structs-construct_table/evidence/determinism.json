@@ -1,0 +1,80 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

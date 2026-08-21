@@ -1,0 +1,98 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

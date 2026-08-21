@@ -1,0 +1,74 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses": "failed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses": "passed",
+        "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

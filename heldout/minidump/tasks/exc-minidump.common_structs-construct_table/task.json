@@ -1,0 +1,168 @@
+{
+  "assertions_touching_fn": 14,
+  "base_sha": "4d22796e57203b37467a150e451b9879b45aeb3b",
+  "collateral": {
+    "baseline_passing": [
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_cross_boundary_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_offset",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_restores_position",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_success",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_wrong_segment_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_binary_string",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_decimal_string",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_hex_string_lowercase_prefix",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_hex_string_uppercase_prefix",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_int_input_returns_same",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_unknown_format_raises",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments::test_do_comments_prints_comments",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments::test_do_comments_skips_none",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory::test_do_memory_prints_segments",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory::test_do_memory_skips_none",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules::test_do_modules_prints_modules",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules::test_do_modules_skips_none",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell::test_do_tell_none_prints_warning_then_raises",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell::test_do_tell_prints_hex_position",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads::test_do_threads_prints_threads",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads::test_do_threads_skips_none"
+    ],
+    "cmd": "python -m pytest -p no:cacheprovider -q --json-report --json-report-file=.pytest-report.json",
+    "report": ".pytest-report.json"
+  },
+  "difficulty": "easy",
+  "difficulty_features": {
+    "callers_count": 0,
+    "cross_module_edges": 0,
+    "diff_size": 22,
+    "files_touched": 1,
+    "functions_touched": 1,
+    "similar_named_functions_nearby": 0,
+    "test_count": 7
+  },
+  "difficulty_rationale": "Only one function with diff_size=22 and no cross-module dependencies needs restoring, and test_count=7 gives good coverage for validation.",
+  "difficulty_status": "final",
+  "files_in_scope": [
+    "minidump/__amain__.py",
+    "minidump/__main__.py",
+    "minidump/aminidumpfile.py",
+    "minidump/aminidumpreader.py",
+    "minidump/common_structs.py",
+    "minidump/directory.py",
+    "minidump/minidumpfile.py",
+    "minidump/minidumpreader.py",
+    "minidump/minidumpshell.py",
+    "minidump/streams/ExceptionStream.py",
+    "minidump/streams/HandleDataStream.py",
+    "minidump/streams/Memory64ListStream.py",
+    "minidump/streams/MemoryInfoListStream.py",
+    "minidump/streams/MemoryListStream.py",
+    "minidump/streams/ModuleListStream.py",
+    "minidump/streams/SystemInfoStream.py",
+    "minidump/streams/ThreadExListStream.py",
+    "minidump/streams/ThreadInfoListStream.py",
+    "minidump/streams/ThreadListStream.py",
+    "minidump/streams/UnloadedModuleListStream.py",
+    "tests/generated/test_minidump_common_structs.py"
+  ],
+  "id": "exc-minidump.common_structs-construct_table",
+  "image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+  "image_tag": "bench-minidump",
+  "instruction": "## Goal\nRestore the original behavior of `minidump.common_structs.construct_table` so it correctly formats and prints a table from a two-dimensional array of strings.\n\n## Observable behavior\n```python\nlines = [[\"Name\", \"Age\"], [\"Alice\", \"30\"]]\nresult = construct_table(lines)\nassert \"Name\" in result\nassert \"Alice\" in result\nassert \"---\" in result  # separator line\n```\n\n```python\nlines = [[\"Name\", \"Age\"], [\"Alice\", \"30\"]]\nresult = construct_table(lines, separate_head=False)\nassert \"---\" not in result\n```\n\n## Constraints\n- The function signature to preserve is `construct_table(lines, separate_head=True)`.\n- The implementation must live in `minidump/common_structs.py`.\n- Do not modify the test file or any other file in scope.\n\n## How success is measured\nRun the verifier tests with:\n```bash\npython -m pytest -q tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator\n```\nAll listed tests must pass.",
+  "instruction_attempts": [
+    {
+      "attempt": 1,
+      "draft_title": "Restore construct_table formatting in minidump.common_structs",
+      "issues": [],
+      "review": {
+        "implementation_neutral": true,
+        "issues": [],
+        "self_contained": true,
+        "solvable_by_transcription": false,
+        "states_mechanical_edit": false
+      }
+    }
+  ],
+  "instruction_review": {
+    "implementation_neutral": true,
+    "issues": [],
+    "self_contained": true,
+    "solvable_by_transcription": false,
+    "states_mechanical_edit": false
+  },
+  "instruction_status": "final",
+  "module": "minidump.common_structs",
+  "modules": [
+    "minidump.common_structs"
+  ],
+  "provenance": {
+    "docstring_kept": true,
+    "excised_lines": [
+      340,
+      363
+    ],
+    "file": "minidump/common_structs.py",
+    "span": [
+      337,
+      363
+    ],
+    "target": "minidump.common_structs.construct_table",
+    "type": "excision"
+  },
+  "repo": "minidump",
+  "title": "Restore construct_table formatting in minidump.common_structs",
+  "verifier_agent": null,
+  "verifier_cmd": "python -m pytest -q tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+  "verifier_files": [
+    "run.sh",
+    "tests/conftest.py",
+    "tests/generated/test_minidump_common_structs.py"
+  ],
+  "verifier_on_input": {
+    "exit_code": 1,
+    "n_failing": 7,
+    "n_passing": 0
+  },
+  "verifier_tests": [
+    "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic",
+    "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding",
+    "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines",
+    "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns",
+    "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head",
+    "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row",
+    "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator"
+  ],
+  "verifier_visibility": "visible"
+}

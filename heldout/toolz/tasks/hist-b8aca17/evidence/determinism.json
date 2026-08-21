@@ -1,0 +1,44 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

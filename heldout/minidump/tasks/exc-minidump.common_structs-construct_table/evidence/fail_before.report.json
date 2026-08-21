@@ -1,0 +1,365 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 74,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic",
+          "type": "Function"
+        },
+        {
+          "lineno": 111,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding",
+          "type": "Function"
+        },
+        {
+          "lineno": 86,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines",
+          "type": "Function"
+        },
+        {
+          "lineno": 90,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns",
+          "type": "Function"
+        },
+        {
+          "lineno": 81,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head",
+          "type": "Function"
+        },
+        {
+          "lineno": 96,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row",
+          "type": "Function"
+        },
+        {
+          "lineno": 104,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787297112.6865377,
+  "duration": 0.28560948371887207,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 7,
+    "failed": 7,
+    "total": 7
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 340,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.0001501669903518632,
+        "longrepr": "self = <test_minidump_common_structs.TestConstructTable object at 0xffff8125b290>\n\n    def test_basic(self):\n        lines = [[\"Name\", \"Age\"], [\"Alice\", \"30\"]]\n>       result = construct_table(lines)\n                 ^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:77: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nlines = [['Name', 'Age'], ['Alice', '30']], separate_head = True\n\n    def construct_table(lines, separate_head=True):\n        \"\"\"Prints a formatted table given a 2 dimensional array\"\"\"\n        # Count the column width\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:340: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 77,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 340,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_basic",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 74,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0001722510060062632,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001747920032357797,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 340,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.00013475000741891563,
+        "longrepr": "self = <test_minidump_common_structs.TestConstructTable object at 0xffff81170500>\n\n    def test_column_padding(self):\n        lines = [[\"X\", \"YYYYY\"], [\"ZZZZZ\", \"A\"]]\n>       result = construct_table(lines)\n                 ^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:114: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nlines = [['X', 'YYYYY'], ['ZZZZZ', 'A']], separate_head = True\n\n    def construct_table(lines, separate_head=True):\n        \"\"\"Prints a formatted table given a 2 dimensional array\"\"\"\n        # Count the column width\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:340: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 114,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 340,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_column_padding",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 111,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0001111250021494925,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013837599544785917,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 340,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.00011983398871961981,
+        "longrepr": "self = <test_minidump_common_structs.TestConstructTable object at 0xffff810e3ad0>\n\n    def test_empty_lines(self):\n>       result = construct_table([])\n                 ^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:88: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nlines = [], separate_head = True\n\n    def construct_table(lines, separate_head=True):\n        \"\"\"Prints a formatted table given a 2 dimensional array\"\"\"\n        # Count the column width\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:340: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 88,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 340,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_empty_lines",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 86,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00010991698945872486,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001350419915979728,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 340,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.00014699999883305281,
+        "longrepr": "self = <test_minidump_common_structs.TestConstructTable object at 0xffff810e3e60>\n\n    def test_multiple_columns(self):\n        lines = [[\"A\", \"BB\", \"CCC\"], [\"DD\", \"E\", \"FFFF\"]]\n>       result = construct_table(lines)\n                 ^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:93: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nlines = [['A', 'BB', 'CCC'], ['DD', 'E', 'FFFF']], separate_head = True\n\n    def construct_table(lines, separate_head=True):\n        \"\"\"Prints a formatted table given a 2 dimensional array\"\"\"\n        # Count the column width\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:340: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 93,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 340,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_multiple_columns",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 90,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00014575099339708686,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001326670026173815,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 340,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.00013512501027435064,
+        "longrepr": "self = <test_minidump_common_structs.TestConstructTable object at 0xffff810e3650>\n\n    def test_no_separate_head(self):\n        lines = [[\"Name\", \"Age\"], [\"Alice\", \"30\"]]\n>       result = construct_table(lines, separate_head=False)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:84: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nlines = [['Name', 'Age'], ['Alice', '30']], separate_head = False\n\n    def construct_table(lines, separate_head=True):\n        \"\"\"Prints a formatted table given a 2 dimensional array\"\"\"\n        # Count the column width\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:340: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 84,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 340,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_no_separate_head",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 81,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00013191699690651149,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00014745899534318596,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 340,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.00013179199595469981,
+        "longrepr": "self = <test_minidump_common_structs.TestConstructTable object at 0xffff81171880>\n\n    def test_single_row(self):\n        lines = [[\"Only\", \"Row\"]]\n>       result = construct_table(lines)\n                 ^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:99: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nlines = [['Only', 'Row']], separate_head = True\n\n    def construct_table(lines, separate_head=True):\n        \"\"\"Prints a formatted table given a 2 dimensional array\"\"\"\n        # Count the column width\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:340: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 99,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 340,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_single_row",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 96,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00012441699800547212,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001727920025587082,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 340,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.00012291799066588283,
+        "longrepr": "self = <test_minidump_common_structs.TestConstructTable object at 0xffff811701d0>\n\n    def test_single_row_no_separator(self):\n        lines = [[\"Only\", \"Row\"]]\n>       result = construct_table(lines, separate_head=False)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:107: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nlines = [['Only', 'Row']], separate_head = False\n\n    def construct_table(lines, separate_head=True):\n        \"\"\"Prints a formatted table given a 2 dimensional array\"\"\"\n        # Count the column width\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:340: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 107,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 340,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_single_row_no_separator",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 104,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00010250000923406333,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019662600243464112,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

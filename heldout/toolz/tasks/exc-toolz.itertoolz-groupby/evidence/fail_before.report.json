@@ -1,0 +1,489 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 79,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_groupby",
+          "type": "Function"
+        },
+        {
+          "lineno": 83,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_groupby_non_callable",
+          "type": "Function"
+        },
+        {
+          "lineno": 478,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_join",
+          "type": "Function"
+        },
+        {
+          "lineno": 535,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_join_double_repeats",
+          "type": "Function"
+        },
+        {
+          "lineno": 555,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_join_missing_element",
+          "type": "Function"
+        },
+        {
+          "lineno": 518,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_key_as_getter",
+          "type": "Function"
+        },
+        {
+          "lineno": 566,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_left_outer_join",
+          "type": "Function"
+        },
+        {
+          "lineno": 580,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_outer_join",
+          "type": "Function"
+        },
+        {
+          "lineno": 573,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_right_outer_join",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296043.7487438,
+  "duration": 0.4162437915802002,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 9,
+    "failed": 9,
+    "total": 9
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 128,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/itertoolz.py"
+        },
+        "duration": 0.0001246250030817464,
+        "longrepr": "def test_groupby():\n>       assert groupby(iseven, [1, 2, 3, 4]) == {True: [2, 4], False: [1, 3]}\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_itertoolz.py:81: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nkey = <function iseven at 0xffff85e3ec00>, seq = [1, 2, 3, 4]\n\n    def groupby(key, seq):\n        \"\"\"Group a collection by a key function\n    \n        >>> names = ['Alice', 'Bob', 'Charlie', 'Dan', 'Edith', 'Frank']\n        >>> groupby(len, names)  # doctest: +SKIP\n        {3: ['Bob', 'Dan'], 5: ['Alice', 'Edith', 'Frank'], 7: ['Charlie']}\n    \n        >>> iseven = lambda x: x % 2 == 0\n        >>> groupby(iseven, [1, 2, 3, 4, 5, 6, 7, 8])  # doctest: +SKIP\n        {False: [1, 3, 5, 7], True: [2, 4, 6, 8]}\n    \n        Non-callable keys imply grouping on a member.\n    \n        >>> groupby('gender', [{'name': 'Alice', 'gender': 'F'},\n        ...                    {'name': 'Bob', 'gender': 'M'},\n        ...                    {'name': 'Charlie', 'gender': 'M'}]) # doctest:+SKIP\n        {'F': [{'gender': 'F', 'name': 'Alice'}],\n         'M': [{'gender': 'M', 'name': 'Bob'},\n               {'gender': 'M', 'name': 'Charlie'}]}\n    \n        Not to be confused with ``itertools.groupby``\n    \n        See Also:\n            countby\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/itertoolz.py:128: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 81,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 128,
+            "message": "NotImplementedError",
+            "path": "toolz/itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_groupby",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 79,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_groupby",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0005172490054974332,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00016620800306554884,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 128,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/itertoolz.py"
+        },
+        "duration": 0.00010420801118016243,
+        "longrepr": "def test_groupby_non_callable():\n>       assert groupby(0, [(1, 2), (1, 3), (2, 2), (2, 4)]) == {\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            1: [(1, 2), (1, 3)],\n            2: [(2, 2), (2, 4)],\n        }\n\ntoolz/tests/test_itertoolz.py:85: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nkey = 0, seq = [(1, 2), (1, 3), (2, 2), (2, 4)]\n\n    def groupby(key, seq):\n        \"\"\"Group a collection by a key function\n    \n        >>> names = ['Alice', 'Bob', 'Charlie', 'Dan', 'Edith', 'Frank']\n        >>> groupby(len, names)  # doctest: +SKIP\n        {3: ['Bob', 'Dan'], 5: ['Alice', 'Edith', 'Frank'], 7: ['Charlie']}\n    \n        >>> iseven = lambda x: x % 2 == 0\n        >>> groupby(iseven, [1, 2, 3, 4, 5, 6, 7, 8])  # doctest: +SKIP\n        {False: [1, 3, 5, 7], True: [2, 4, 6, 8]}\n    \n        Non-callable keys imply grouping on a member.\n    \n        >>> groupby('gender', [{'name': 'Alice', 'gender': 'F'},\n        ...                    {'name': 'Bob', 'gender': 'M'},\n        ...                    {'name': 'Charlie', 'gender': 'M'}]) # doctest:+SKIP\n        {'F': [{'gender': 'F', 'name': 'Alice'}],\n         'M': [{'gender': 'M', 'name': 'Bob'},\n               {'gender': 'M', 'name': 'Charlie'}]}\n    \n        Not to be confused with ``itertools.groupby``\n    \n        See Also:\n            countby\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/itertoolz.py:128: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 85,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 128,
+            "message": "NotImplementedError",
+            "path": "toolz/itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_groupby_non_callable",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 83,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_groupby_non_callable",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00010299999848939478,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00016166700515896082,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 128,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/itertoolz.py"
+        },
+        "duration": 0.00016066699754446745,
+        "longrepr": "def test_join():\n        names = [(1, \"one\"), (2, \"two\"), (3, \"three\")]\n        fruit = [(\"apple\", 1), (\"orange\", 1), (\"banana\", 2), (\"coconut\", 2)]\n    \n        def addpair(pair):\n            return pair[0] + pair[1]\n    \n>       result = set(starmap(add, join(first, names, second, fruit)))\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_itertoolz.py:486: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntoolz/itertoolz.py:910: in join\n    d = groupby(leftkey, leftseq)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nkey = <function first at 0xffff85e3d9e0>\nseq = [(1, 'one'), (2, 'two'), (3, 'three')]\n\n    def groupby(key, seq):\n        \"\"\"Group a collection by a key function\n    \n        >>> names = ['Alice', 'Bob', 'Charlie', 'Dan', 'Edith', 'Frank']\n        >>> groupby(len, names)  # doctest: +SKIP\n        {3: ['Bob', 'Dan'], 5: ['Alice', 'Edith', 'Frank'], 7: ['Charlie']}\n    \n        >>> iseven = lambda x: x % 2 == 0\n        >>> groupby(iseven, [1, 2, 3, 4, 5, 6, 7, 8])  # doctest: +SKIP\n        {False: [1, 3, 5, 7], True: [2, 4, 6, 8]}\n    \n        Non-callable keys imply grouping on a member.\n    \n        >>> groupby('gender', [{'name': 'Alice', 'gender': 'F'},\n        ...                    {'name': 'Bob', 'gender': 'M'},\n        ...                    {'name': 'Charlie', 'gender': 'M'}]) # doctest:+SKIP\n        {'F': [{'gender': 'F', 'name': 'Alice'}],\n         'M': [{'gender': 'M', 'name': 'Bob'},\n               {'gender': 'M', 'name': 'Charlie'}]}\n    \n        Not to be confused with ``itertools.groupby``\n    \n        See Also:\n            countby\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/itertoolz.py:128: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 486,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 910,
+            "message": "in join",
+            "path": "toolz/itertoolz.py"
+          },
+          {
+            "lineno": 128,
+            "message": "NotImplementedError",
+            "path": "toolz/itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_join",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 478,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_join",
+      "outcome": "failed",
+      "setup": {
+        "duration": 8.745800005272031e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001647909957682714,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 128,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/itertoolz.py"
+        },
+        "duration": 0.0001136250066338107,
+        "longrepr": "def test_join_double_repeats():\n        names = [(1, \"one\"), (2, \"two\"), (3, \"three\"), (1, \"uno\"), (2, \"dos\")]\n        fruit = [(\"apple\", 1), (\"orange\", 1), (\"banana\", 2), (\"coconut\", 2)]\n    \n>       result = set(starmap(add, join(first, names, second, fruit)))\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_itertoolz.py:540: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntoolz/itertoolz.py:910: in join\n    d = groupby(leftkey, leftseq)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nkey = <function first at 0xffff85e3d9e0>\nseq = [(1, 'one'), (2, 'two'), (3, 'three'), (1, 'uno'), (2, 'dos')]\n\n    def groupby(key, seq):\n        \"\"\"Group a collection by a key function\n    \n        >>> names = ['Alice', 'Bob', 'Charlie', 'Dan', 'Edith', 'Frank']\n        >>> groupby(len, names)  # doctest: +SKIP\n        {3: ['Bob', 'Dan'], 5: ['Alice', 'Edith', 'Frank'], 7: ['Charlie']}\n    \n        >>> iseven = lambda x: x % 2 == 0\n        >>> groupby(iseven, [1, 2, 3, 4, 5, 6, 7, 8])  # doctest: +SKIP\n        {False: [1, 3, 5, 7], True: [2, 4, 6, 8]}\n    \n        Non-callable keys imply grouping on a member.\n    \n        >>> groupby('gender', [{'name': 'Alice', 'gender': 'F'},\n        ...                    {'name': 'Bob', 'gender': 'M'},\n        ...                    {'name': 'Charlie', 'gender': 'M'}]) # doctest:+SKIP\n        {'F': [{'gender': 'F', 'name': 'Alice'}],\n         'M': [{'gender': 'M', 'name': 'Bob'},\n               {'gender': 'M', 'name': 'Charlie'}]}\n    \n        Not to be confused with ``itertools.groupby``\n    \n        See Also:\n            countby\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/itertoolz.py:128: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 540,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 910,
+            "message": "in join",
+            "path": "toolz/itertoolz.py"
+          },
+          {
+            "lineno": 128,
+            "message": "NotImplementedError",
+            "path": "toolz/itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_join_double_repeats",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 535,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_join_double_repeats",
+      "outcome": "failed",
+      "setup": {
+        "duration": 8.437498763669282e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00015908299246802926,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 128,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/itertoolz.py"
+        },
+        "duration": 0.00010925000242423266,
+        "longrepr": "def test_join_missing_element():\n        names = [(1, \"one\"), (2, \"two\"), (3, \"three\")]\n        fruit = [(\"apple\", 5), (\"orange\", 1)]\n    \n>       result = set(starmap(add, join(first, names, second, fruit)))\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_itertoolz.py:560: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntoolz/itertoolz.py:910: in join\n    d = groupby(leftkey, leftseq)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nkey = <function first at 0xffff85e3d9e0>\nseq = [(1, 'one'), (2, 'two'), (3, 'three')]\n\n    def groupby(key, seq):\n        \"\"\"Group a collection by a key function\n    \n        >>> names = ['Alice', 'Bob', 'Charlie', 'Dan', 'Edith', 'Frank']\n        >>> groupby(len, names)  # doctest: +SKIP\n        {3: ['Bob', 'Dan'], 5: ['Alice', 'Edith', 'Frank'], 7: ['Charlie']}\n    \n        >>> iseven = lambda x: x % 2 == 0\n        >>> groupby(iseven, [1, 2, 3, 4, 5, 6, 7, 8])  # doctest: +SKIP\n        {False: [1, 3, 5, 7], True: [2, 4, 6, 8]}\n    \n        Non-callable keys imply grouping on a member.\n    \n        >>> groupby('gender', [{'name': 'Alice', 'gender': 'F'},\n        ...                    {'name': 'Bob', 'gender': 'M'},\n        ...                    {'name': 'Charlie', 'gender': 'M'}]) # doctest:+SKIP\n        {'F': [{'gender': 'F', 'name': 'Alice'}],\n         'M': [{'gender': 'M', 'name': 'Bob'},\n               {'gender': 'M', 'name': 'Charlie'}]}\n    \n        Not to be confused with ``itertools.groupby``\n    \n        See Also:\n            countby\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/itertoolz.py:128: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 560,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 910,
+            "message": "in join",
+            "path": "toolz/itertoolz.py"
+          },
+          {
+            "lineno": 128,
+            "message": "NotImplementedError",
+            "path": "toolz/itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_join_missing_element",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 555,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_join_missing_element",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.787501090206206e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012054100807290524,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 128,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/itertoolz.py"
+        },
+        "duration": 9.358400711789727e-05,
+        "longrepr": "def test_key_as_getter():\n        squares = [(i, i**2) for i in range(5)]\n        pows = [(i, i**2, i**3) for i in range(5)]\n    \n>       assert set(join(0, squares, 0, pows)) == set(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            join(lambda x: x[0], squares, lambda x: x[0], pows)\n        )\n\ntoolz/tests/test_itertoolz.py:523: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntoolz/itertoolz.py:910: in join\n    d = groupby(leftkey, leftseq)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nkey = operator.itemgetter(0), seq = [(0, 0), (1, 1), (2, 4), (3, 9), (4, 16)]\n\n    def groupby(key, seq):\n        \"\"\"Group a collection by a key function\n    \n        >>> names = ['Alice', 'Bob', 'Charlie', 'Dan', 'Edith', 'Frank']\n        >>> groupby(len, names)  # doctest: +SKIP\n        {3: ['Bob', 'Dan'], 5: ['Alice', 'Edith', 'Frank'], 7: ['Charlie']}\n    \n        >>> iseven = lambda x: x % 2 == 0\n        >>> groupby(iseven, [1, 2, 3, 4, 5, 6, 7, 8])  # doctest: +SKIP\n        {False: [1, 3, 5, 7], True: [2, 4, 6, 8]}\n    \n        Non-callable keys imply grouping on a member.\n    \n        >>> groupby('gender', [{'name': 'Alice', 'gender': 'F'},\n        ...                    {'name': 'Bob', 'gender': 'M'},\n        ...                    {'name': 'Charlie', 'gender': 'M'}]) # doctest:+SKIP\n        {'F': [{'gender': 'F', 'name': 'Alice'}],\n         'M': [{'gender': 'M', 'name': 'Bob'},\n               {'gender': 'M', 'name': 'Charlie'}]}\n    \n        Not to be confused with ``itertools.groupby``\n    \n        See Also:\n            countby\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/itertoolz.py:128: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 523,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 910,
+            "message": "in join",
+            "path": "toolz/itertoolz.py"
+          },
+          {
+            "lineno": 128,
+            "message": "NotImplementedError",
+            "path": "toolz/itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_key_as_getter",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 518,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_key_as_getter",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.370799721684307e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013666599988937378,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 128,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/itertoolz.py"
+        },
+        "duration": 9.191699791699648e-05,
+        "longrepr": "def test_left_outer_join():\n>       result = set(join(identity, [1, 2], identity, [2, 3], left_default=None))\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_itertoolz.py:568: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntoolz/itertoolz.py:910: in join\n    d = groupby(leftkey, leftseq)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nkey = <function identity at 0xffff85e05da0>, seq = [1, 2]\n\n    def groupby(key, seq):\n        \"\"\"Group a collection by a key function\n    \n        >>> names = ['Alice', 'Bob', 'Charlie', 'Dan', 'Edith', 'Frank']\n        >>> groupby(len, names)  # doctest: +SKIP\n        {3: ['Bob', 'Dan'], 5: ['Alice', 'Edith', 'Frank'], 7: ['Charlie']}\n    \n        >>> iseven = lambda x: x % 2 == 0\n        >>> groupby(iseven, [1, 2, 3, 4, 5, 6, 7, 8])  # doctest: +SKIP\n        {False: [1, 3, 5, 7], True: [2, 4, 6, 8]}\n    \n        Non-callable keys imply grouping on a member.\n    \n        >>> groupby('gender', [{'name': 'Alice', 'gender': 'F'},\n        ...                    {'name': 'Bob', 'gender': 'M'},\n        ...                    {'name': 'Charlie', 'gender': 'M'}]) # doctest:+SKIP\n        {'F': [{'gender': 'F', 'name': 'Alice'}],\n         'M': [{'gender': 'M', 'name': 'Bob'},\n               {'gender': 'M', 'name': 'Charlie'}]}\n    \n        Not to be confused with ``itertools.groupby``\n    \n        See Also:\n            countby\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/itertoolz.py:128: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 568,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 910,
+            "message": "in join",
+            "path": "toolz/itertoolz.py"
+          },
+          {
+            "lineno": 128,
+            "message": "NotImplementedError",
+            "path": "toolz/itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_left_outer_join",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 566,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_left_outer_join",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.916599861346185e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00018345800344832242,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 128,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/itertoolz.py"
+        },
+        "duration": 0.00010174998897127807,
+        "longrepr": "def test_outer_join():\n>       result = set(\n            join(identity, [1, 2], identity, [2, 3], left_default=None, right_default=None)\n        )\n\ntoolz/tests/test_itertoolz.py:582: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntoolz/itertoolz.py:910: in join\n    d = groupby(leftkey, leftseq)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nkey = <function identity at 0xffff85e05da0>, seq = [1, 2]\n\n    def groupby(key, seq):\n        \"\"\"Group a collection by a key function\n    \n        >>> names = ['Alice', 'Bob', 'Charlie', 'Dan', 'Edith', 'Frank']\n        >>> groupby(len, names)  # doctest: +SKIP\n        {3: ['Bob', 'Dan'], 5: ['Alice', 'Edith', 'Frank'], 7: ['Charlie']}\n    \n        >>> iseven = lambda x: x % 2 == 0\n        >>> groupby(iseven, [1, 2, 3, 4, 5, 6, 7, 8])  # doctest: +SKIP\n        {False: [1, 3, 5, 7], True: [2, 4, 6, 8]}\n    \n        Non-callable keys imply grouping on a member.\n    \n        >>> groupby('gender', [{'name': 'Alice', 'gender': 'F'},\n        ...                    {'name': 'Bob', 'gender': 'M'},\n        ...                    {'name': 'Charlie', 'gender': 'M'}]) # doctest:+SKIP\n        {'F': [{'gender': 'F', 'name': 'Alice'}],\n         'M': [{'gender': 'M', 'name': 'Bob'},\n               {'gender': 'M', 'name': 'Charlie'}]}\n    \n        Not to be confused with ``itertools.groupby``\n    \n        See Also:\n            countby\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/itertoolz.py:128: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 582,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 910,
+            "message": "in join",
+            "path": "toolz/itertoolz.py"
+          },
+          {
+            "lineno": 128,
+            "message": "NotImplementedError",
+            "path": "toolz/itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_outer_join",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 580,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_outer_join",
+      "outcome": "failed",
+      "setup": {
+        "duration": 8.466601138934493e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019887399685103446,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 128,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/itertoolz.py"
+        },
+        "duration": 0.00011204200563952327,
+        "longrepr": "def test_right_outer_join():\n>       result = set(join(identity, [1, 2], identity, [2, 3], right_default=None))\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_itertoolz.py:575: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntoolz/itertoolz.py:910: in join\n    d = groupby(leftkey, leftseq)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nkey = <function identity at 0xffff85e05da0>, seq = [1, 2]\n\n    def groupby(key, seq):\n        \"\"\"Group a collection by a key function\n    \n        >>> names = ['Alice', 'Bob', 'Charlie', 'Dan', 'Edith', 'Frank']\n        >>> groupby(len, names)  # doctest: +SKIP\n        {3: ['Bob', 'Dan'], 5: ['Alice', 'Edith', 'Frank'], 7: ['Charlie']}\n    \n        >>> iseven = lambda x: x % 2 == 0\n        >>> groupby(iseven, [1, 2, 3, 4, 5, 6, 7, 8])  # doctest: +SKIP\n        {False: [1, 3, 5, 7], True: [2, 4, 6, 8]}\n    \n        Non-callable keys imply grouping on a member.\n    \n        >>> groupby('gender', [{'name': 'Alice', 'gender': 'F'},\n        ...                    {'name': 'Bob', 'gender': 'M'},\n        ...                    {'name': 'Charlie', 'gender': 'M'}]) # doctest:+SKIP\n        {'F': [{'gender': 'F', 'name': 'Alice'}],\n         'M': [{'gender': 'M', 'name': 'Bob'},\n               {'gender': 'M', 'name': 'Charlie'}]}\n    \n        Not to be confused with ``itertools.groupby``\n    \n        See Also:\n            countby\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/itertoolz.py:128: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 575,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 910,
+            "message": "in join",
+            "path": "toolz/itertoolz.py"
+          },
+          {
+            "lineno": 128,
+            "message": "NotImplementedError",
+            "path": "toolz/itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_right_outer_join",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 573,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_right_outer_join",
+      "outcome": "failed",
+      "setup": {
+        "duration": 9.274999320041388e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00015675000031478703,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+cd "$(dirname "$0")"
+python -m pytest -q toolz/tests/test_curried.py::test_curried_namespace toolz/tests/test_curried.py::test_merge toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg toolz/tests/test_dicttoolz.py::TestDict::test_factory toolz/tests/test_dicttoolz.py::TestDict::test_merge toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings toolz/tests/test_tlz.py::test_tlz

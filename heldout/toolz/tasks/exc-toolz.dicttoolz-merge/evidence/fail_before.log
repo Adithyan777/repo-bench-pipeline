@@ -1,0 +1,479 @@
+$ python -m pytest -q toolz/tests/test_curried.py::test_curried_namespace toolz/tests/test_curried.py::test_merge toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg toolz/tests/test_dicttoolz.py::TestDict::test_factory toolz/tests/test_dicttoolz.py::TestDict::test_merge toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings toolz/tests/test_tlz.py::test_tlz -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+FFFFFFFFFFFFF                                                            [100%]
+=================================== FAILURES ===================================
+____________________________ test_curried_namespace ____________________________
+
+    def test_curried_namespace():
+        exceptions = import_module("toolz.curried.exceptions")
+        namespace = {}
+    
+        def curry_namespace(ns):
+            return {
+                name: toolz.curry(f) if should_curry(f) else f
+                for name, f in ns.items()
+                if "__" not in name
+            }
+    
+        from_toolz = curry_namespace(vars(toolz))
+        from_exceptions = curry_namespace(vars(exceptions))
+>       namespace.update(toolz.merge(from_toolz, from_exceptions))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_curried.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = ({'partial': <class 'functools.partial'>, 'reduce': <built-in function reduce>, 'dicttoolz': <module 'toolz.dicttoolz'...olz/__init__.py'>, 'merge_with': <function merge_with at 0xffffa09faf20>, 'merge': <function merge at 0xffffa09fafc0>})
+kwargs = {}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+__________________________________ test_merge __________________________________
+
+    def test_merge():
+>       assert merge(factory=lambda: defaultdict(int))({1: 1}) == {1: 1}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_curried.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+toolz/functoolz.py:330: in __call__
+    return self._partial(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+toolz/curried/exceptions.py:13: in merge
+    return toolz.merge(d, *dicts, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = ({1: 1},)
+kwargs = {'factory': <function test_merge.<locals>.<lambda> at 0xffffa0766ca0>}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+________________________ TestCustomMapping.test_factory ________________________
+
+self = <toolz.tests.test_dicttoolz.TestCustomMapping object at 0xffffa09648f0>
+
+    def test_factory(self):
+        D, kw = self.D, self.kw  # noqa: F841
+>       assert merge(defaultdict(int, D({1: 2})), D({2: 3})) == {1: 2, 2: 3}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:171: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = (defaultdict(<class 'int'>, {1: 2}), <toolz.tests.test_dicttoolz.CustomMapping object at 0xffffa0af0b60>)
+kwargs = {}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+_________________________ TestCustomMapping.test_merge _________________________
+
+self = <toolz.tests.test_dicttoolz.TestCustomMapping object at 0xffffa0967b00>
+
+    def test_merge(self):
+        D, kw = self.D, self.kw
+>       assert merge(D({1: 1, 2: 2}), D({3: 4}), **kw) == D({1: 1, 2: 2, 3: 4})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = (<toolz.tests.test_dicttoolz.CustomMapping object at 0xffffa0965610>, <toolz.tests.test_dicttoolz.CustomMapping object at 0xffffa0964d40>)
+kwargs = {'factory': <function TestCustomMapping.<lambda> at 0xffffa0765b20>}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+__________________ TestCustomMapping.test_merge_iterable_arg ___________________
+
+self = <toolz.tests.test_dicttoolz.TestCustomMapping object at 0xffffa0967710>
+
+    def test_merge_iterable_arg(self):
+        D, kw = self.D, self.kw
+>       assert merge([D({1: 1, 2: 2}), D({3: 4})], **kw) == D({1: 1, 2: 2, 3: 4})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = ([<toolz.tests.test_dicttoolz.CustomMapping object at 0xffffa0bf48f0>, <toolz.tests.test_dicttoolz.CustomMapping object at 0xffffa0bf4260>],)
+kwargs = {'factory': <function TestCustomMapping.<lambda> at 0xffffa0765b20>}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+_________________________ TestDefaultDict.test_factory _________________________
+
+self = <toolz.tests.test_dicttoolz.TestDefaultDict object at 0xffffa0963d70>
+
+    def test_factory(self):
+        D, kw = self.D, self.kw  # noqa: F841
+>       assert merge(defaultdict(int, D({1: 2})), D({2: 3})) == {1: 2, 2: 3}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:171: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = (defaultdict(<class 'int'>, {1: 2}), defaultdict(<class 'int'>, {2: 3}))
+kwargs = {}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+__________________________ TestDefaultDict.test_merge __________________________
+
+self = <toolz.tests.test_dicttoolz.TestDefaultDict object at 0xffffa0964800>
+
+    def test_merge(self):
+        D, kw = self.D, self.kw
+>       assert merge(D({1: 1, 2: 2}), D({3: 4}), **kw) == D({1: 1, 2: 2, 3: 4})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = (defaultdict(<class 'int'>, {1: 1, 2: 2}), defaultdict(<class 'int'>, {3: 4}))
+kwargs = {'factory': <function TestDefaultDict.<lambda> at 0xffffa07651c0>}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+___________________ TestDefaultDict.test_merge_iterable_arg ____________________
+
+self = <toolz.tests.test_dicttoolz.TestDefaultDict object at 0xffffa0964560>
+
+    def test_merge_iterable_arg(self):
+        D, kw = self.D, self.kw
+>       assert merge([D({1: 1, 2: 2}), D({3: 4})], **kw) == D({1: 1, 2: 2, 3: 4})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = ([defaultdict(<class 'int'>, {1: 1, 2: 2}), defaultdict(<class 'int'>, {3: 4})],)
+kwargs = {'factory': <function TestDefaultDict.<lambda> at 0xffffa07651c0>}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+____________________________ TestDict.test_factory _____________________________
+
+self = <toolz.tests.test_dicttoolz.TestDict object at 0xffffa0962090>
+
+    def test_factory(self):
+        D, kw = self.D, self.kw  # noqa: F841
+>       assert merge(defaultdict(int, D({1: 2})), D({2: 3})) == {1: 2, 2: 3}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:171: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = (defaultdict(<class 'int'>, {1: 2}), {2: 3}), kwargs = {}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+_____________________________ TestDict.test_merge ______________________________
+
+self = <toolz.tests.test_dicttoolz.TestDict object at 0xffffa0961610>
+
+    def test_merge(self):
+        D, kw = self.D, self.kw
+>       assert merge(D({1: 1, 2: 2}), D({3: 4}), **kw) == D({1: 1, 2: 2, 3: 4})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = ({1: 1, 2: 2}, {3: 4}), kwargs = {}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+_______________________ TestDict.test_merge_iterable_arg _______________________
+
+self = <toolz.tests.test_dicttoolz.TestDict object at 0xffffa0961ac0>
+
+    def test_merge_iterable_arg(self):
+        D, kw = self.D, self.kw
+>       assert merge([D({1: 1, 2: 2}), D({3: 4})], **kw) == D({1: 1, 2: 2, 3: 4})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = ([{1: 1, 2: 2}, {3: 4}],), kwargs = {}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+______________________ test_merge_with_non_dict_mappings _______________________
+
+    def test_merge_with_non_dict_mappings():
+        class Foo(Mapping):
+            def __init__(self, d):
+                self.d = d
+    
+            def __iter__(self):
+                return iter(self.d)
+    
+            def __getitem__(self, key):
+                return self.d[key]
+    
+            def __len__(self):
+                return len(self.d)
+    
+        d = Foo({1: 1})
+    
+>       assert merge(d) is d or merge(d) == {1: 1}
+               ^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:302: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = (<toolz.tests.test_dicttoolz.test_merge_with_non_dict_mappings.<locals>.Foo object at 0xffffa09616d0>,)
+kwargs = {}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+___________________________________ test_tlz ___________________________________
+
+    def test_tlz():
+>       import tlz
+
+toolz/tests/test_tlz.py:5: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tlz/__init__.py:9: in <module>
+    from . import _build_tlz  # noqa: F401
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+tlz/_build_tlz.py:91: in <module>
+    tlz_loader.exec_module(sys.modules["tlz"])
+tlz/_build_tlz.py:60: in exec_module
+    module.__dict__.update(toolz.merge(fast_mod.__dict__, module.__dict__))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dicts = ({'__name__': 'toolz', '__doc__': None, '__package__': 'toolz', '__loader__': <_frozen_importlib_external.SourceFileLo....\n', '__package__': 'tlz', '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0xffffa0965940>, ...})
+kwargs = {}
+
+    def merge(*dicts, **kwargs):
+        """Merge a collection of dictionaries
+    
+        >>> merge({1: 'one'}, {2: 'two'})
+        {1: 'one', 2: 'two'}
+    
+        Later dictionaries have precedence
+    
+        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})
+        {1: 2, 3: 3, 4: 4}
+    
+        See Also:
+            merge_with
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:46: NotImplementedError
+=========================== short test summary info ============================
+FAILED toolz/tests/test_curried.py::test_curried_namespace - NotImplementedEr...
+FAILED toolz/tests/test_curried.py::test_merge - NotImplementedError: excised
+FAILED toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory - NotIm...
+FAILED toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge - NotImpl...
+FAILED toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg
+FAILED toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory - NotImpl...
+FAILED toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge - NotImplem...
+FAILED toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg
+FAILED toolz/tests/test_dicttoolz.py::TestDict::test_factory - NotImplemented...
+FAILED toolz/tests/test_dicttoolz.py::TestDict::test_merge - NotImplementedEr...
+FAILED toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg - Not...
+FAILED toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings - Not...
+FAILED toolz/tests/test_tlz.py::test_tlz - NotImplementedError: excised
+13 failed in 0.24s
+
+--- stderr ---
+

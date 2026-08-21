@@ -1,0 +1,44 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_peek": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_peek": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_peek": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_peek": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_peek": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_peek": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

@@ -1,0 +1,8 @@
+$ python -m pytest -p no:cacheprovider -q --json-report --json-report-file=.pytest-report.json
+exit_code=0
+--- stdout ---
+.......................................................                  [100%]
+55 passed in 0.22s
+
+--- stderr ---
+

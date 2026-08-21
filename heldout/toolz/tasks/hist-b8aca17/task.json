@@ -1,0 +1,140 @@
+{
+  "base_sha": "568c2b8393973cd172a466546c9d95779c452438",
+  "collateral": null,
+  "difficulty": "medium",
+  "difficulty_features": {
+    "callers_count": 0,
+    "cross_module_edges": 0,
+    "diff_size": 18,
+    "files_touched": 1,
+    "functions_touched": 1,
+    "similar_named_functions_nearby": 0,
+    "test_count": 1
+  },
+  "difficulty_rationale": "Supporting callable `init` in `reduceby` involves modifying a single function but requires carefully handling lazy per-key initialization with diff_size=18 and no similar named functions nearby (similar_named_functions_nearby=0), which adds moderate complexity.",
+  "difficulty_status": "final",
+  "dropped_tests": {
+    "failing_on_solution": [],
+    "passing_on_input": []
+  },
+  "files_in_scope": [
+    "toolz/__init__.py",
+    "toolz/itertoolz.py",
+    "toolz/recipes.py",
+    "toolz/sandbox/core.py",
+    "toolz/sandbox/parallel.py",
+    "toolz/tests/test_itertoolz.py"
+  ],
+  "id": "hist-b8aca17",
+  "image_digest": "sha256:ea390db0b06a75508772ea648c158ae15d4d1ea5b2764103f4ec7f9352f828a5",
+  "image_tag": "bench-toolz",
+  "instruction": "## Goal\n\nMake `reduceby` accept a callable for its `init` argument. When `init` is callable, it should be invoked once per group to produce the initial accumulator value for that group, instead of using a single constant value for all groups.\n\n## Observable behavior\n\n```python\nfrom toolz.itertoolz import reduceby\n\ndef set_add(s, i):\n    s.add(i)\n    return s\n\niseven = lambda x: x % 2 == 0\n\nassert reduceby(iseven, set_add, [1, 2, 3, 4, 1, 2], set) == \\\n    {True: set([2, 4]), False: set([1, 3])}\n```\n\n```python\nfrom toolz.itertoolz import reduceby\n\nassert reduceby(lambda x: x % 2 == 0, lambda acc, x: acc + x, [1, 2, 3, 4], 0) == {False: 9, True: 6}\n```\n\n## Constraints\n\n- Keep the existing `reduceby(key, binop, seq, init=no_default)` signature.\n- Only modify files in scope: `toolz/__init__.py`, `toolz/itertoolz.py`, `toolz/recipes.py`, `toolz/sandbox/core.py`, `toolz/sandbox/parallel.py`, `toolz/tests/test_itertoolz.py`.\n\n## How success is measured\n\nRun `python -m pytest -q toolz/tests/test_itertoolz.py::test_reduce_by_callable_default` and ensure it passes.",
+  "instruction_attempts": [
+    {
+      "attempt": 1,
+      "draft_title": "Support callable init in reduceby",
+      "issues": [],
+      "review": {
+        "implementation_neutral": true,
+        "issues": [],
+        "self_contained": true,
+        "solvable_by_transcription": false,
+        "states_mechanical_edit": false
+      }
+    }
+  ],
+  "instruction_review": {
+    "implementation_neutral": true,
+    "issues": [],
+    "self_contained": true,
+    "solvable_by_transcription": false,
+    "states_mechanical_edit": false
+  },
+  "instruction_status": "final",
+  "module": "toolz.itertoolz",
+  "modules": [
+    "toolz.itertoolz"
+  ],
+  "neutrality": {
+    "checked": true,
+    "decision": {
+      "flagged_tests": [],
+      "issues": [],
+      "neutral": true
+    },
+    "key": "645dbce50850cdef",
+    "reused": true,
+    "step": "p3.build.neutrality_check_rewrite"
+  },
+  "new_symbol_rewrite": null,
+  "overlay_files": {
+    "input": [
+      ".dockerignore",
+      "Dockerfile",
+      "bench/generated/test_toolz_dicttoolz.py",
+      "constraints.txt",
+      "pipeline-requirements.in",
+      "requirements.lock.txt"
+    ],
+    "solution": [
+      ".dockerignore",
+      "Dockerfile",
+      "bench/generated/test_toolz_dicttoolz.py",
+      "constraints.txt",
+      "pipeline-requirements.in",
+      "requirements.lock.txt"
+    ]
+  },
+  "provenance": {
+    "classification": {
+      "behavior_change_summary": "`reduceby`'s `init` argument may now be a callable (like a factory) that is invoked to produce the initial accumulator value for each new key, in addition to accepting a constant. Callers can pass a callable to lazily create per-group initial values.",
+      "difficulty_guess": "easy",
+      "kind": "feature",
+      "self_contained": true,
+      "sha": "b8aca17",
+      "verifiable_via_tests": true
+    },
+    "commit": "b8aca172cb70f4ba39ce5eda76a711e442dad375",
+    "files": [
+      "toolz/itertoolz.py",
+      "toolz/tests/test_itertoolz.py"
+    ],
+    "is_merge": true,
+    "message": "Merge pull request #206 from mrocklin/reduceby-callable",
+    "modules": [
+      "toolz.itertoolz"
+    ],
+    "parent": "ec378f6deebdd118106c72096fb388d12672968f",
+    "pr_number": 206,
+    "source_files": [
+      "toolz/itertoolz.py"
+    ],
+    "touched_functions": [
+      "toolz.itertoolz.reduceby"
+    ],
+    "type": "history",
+    "verifier_source": "commit-tests"
+  },
+  "repo": "toolz",
+  "title": "Support callable init in reduceby",
+  "verifier_agent": null,
+  "verifier_cmd": "python -m pytest -q toolz/tests/test_itertoolz.py::test_reduce_by_callable_default",
+  "verifier_files": [
+    "run.sh",
+    "toolz/tests/test_itertoolz.py"
+  ],
+  "verifier_on_input": {
+    "exit_code": 1,
+    "n_failing": 1,
+    "n_passing": 0
+  },
+  "verifier_on_solution": {
+    "exit_code": 0,
+    "n_failing": 0,
+    "n_passing": 1
+  },
+  "verifier_tests": [
+    "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default"
+  ],
+  "verifier_visibility": "visible"
+}

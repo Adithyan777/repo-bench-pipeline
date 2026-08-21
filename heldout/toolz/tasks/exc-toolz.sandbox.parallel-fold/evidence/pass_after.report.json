@@ -1,0 +1,83 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 11,
+          "nodeid": "toolz/sandbox/tests/test_parallel.py::test_fold",
+          "type": "Function"
+        },
+        {
+          "lineno": 3,
+          "nodeid": "toolz/tests/test_tlz.py::test_tlz",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296057.1208234,
+  "duration": 0.15092849731445312,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 2,
+    "passed": 2,
+    "total": 2
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.04465441399952397,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_fold",
+        "test_parallel.py",
+        "tests",
+        "sandbox",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 11,
+      "nodeid": "toolz/sandbox/tests/test_parallel.py::test_fold",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0008016689971555024,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00020470899471547455,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00861411499499809,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_tlz",
+        "test_tlz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 3,
+      "nodeid": "toolz/tests/test_tlz.py::test_tlz",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0008253370033344254,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00016295899695251137,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

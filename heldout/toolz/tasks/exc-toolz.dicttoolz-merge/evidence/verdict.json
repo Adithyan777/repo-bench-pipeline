@@ -1,0 +1,153 @@
+{
+  "checks": {
+    "collateral": {
+      "newly_failing": 0,
+      "not_run": 0,
+      "ok": true,
+      "report_present": true
+    },
+    "determinism": {
+      "ok": true,
+      "runs": 3
+    },
+    "fail_before": {
+      "exit_code": 1,
+      "n_failing": 13,
+      "n_passing": 0,
+      "ok": true
+    },
+    "image": {
+      "built_from_input": false,
+      "digest_matches_task": true,
+      "environment_hashes": {
+        "Dockerfile": "abe63c386db9d1d0239166651451c5821513adc92baf2f5cc0dbd96fa01a54ef",
+        "requirements.lock.txt": "809ab2c262961d8deb4425494ee787d6536ba5184f9a62401aabc51b5f8eb4ba"
+      },
+      "live_digest": "sha256:ea390db0b06a75508772ea648c158ae15d4d1ea5b2764103f4ec7f9352f828a5",
+      "ok": true,
+      "present": true
+    },
+    "pass_after": {
+      "exit_code": 0,
+      "n_failing": 0,
+      "n_passing": 13,
+      "ok": true
+    },
+    "right_reason": {
+      "invalid": [],
+      "ok": true,
+      "tests": {
+        "toolz/tests/test_curried.py::test_curried_namespace": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_curried.py::test_curried_namespace",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_curried.py::test_merge": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_curried.py::test_merge",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_dicttoolz.py::TestDict::test_factory": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_factory",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "toolz/tests/test_tlz.py::test_tlz": {
+          "detail": "in toolz/dicttoolz.py",
+          "nodeid": "toolz/tests/test_tlz.py::test_tlz",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        }
+      }
+    },
+    "static_gate": {
+      "ok": true,
+      "violations": []
+    }
+  },
+  "environment_hashes": {
+    "Dockerfile": "abe63c386db9d1d0239166651451c5821513adc92baf2f5cc0dbd96fa01a54ef",
+    "requirements.lock.txt": "809ab2c262961d8deb4425494ee787d6536ba5184f9a62401aabc51b5f8eb4ba"
+  },
+  "image_digest": "sha256:ea390db0b06a75508772ea648c158ae15d4d1ea5b2764103f4ec7f9352f828a5",
+  "image_tag": "bench-toolz",
+  "reasons": [],
+  "repeat_count": 3,
+  "task_id": "exc-toolz.dicttoolz-merge",
+  "task_image_digest": "sha256:ea390db0b06a75508772ea648c158ae15d4d1ea5b2764103f4ec7f9352f828a5",
+  "timestamps": {
+    "finished": "2026-08-21T07:07:34+00:00",
+    "started": "2026-08-21T07:07:22+00:00"
+  },
+  "valid": true
+}

@@ -1,0 +1,52 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 463,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_peek",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296068.8535552,
+  "duration": 0.196333646774292,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "passed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00016745900211390108,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_peek",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 463,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_peek",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.000440459989476949,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019420900207478553,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

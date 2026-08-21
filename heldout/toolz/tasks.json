@@ -1,0 +1,549 @@
+{
+  "repo": "toolz",
+  "tasks": [
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "exc-toolz.dicttoolz-merge",
+      "instruction_status": "final",
+      "module": "toolz.dicttoolz",
+      "modules": [
+        "toolz.dicttoolz"
+      ],
+      "path": "exc-toolz.dicttoolz-merge",
+      "provenance": {
+        "docstring_kept": true,
+        "excised_lines": [
+          46,
+          53
+        ],
+        "file": "toolz/dicttoolz.py",
+        "span": [
+          32,
+          53
+        ],
+        "target": "toolz.dicttoolz.merge",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore merge behavior in dicttoolz",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/tests/test_curried.py::test_curried_namespace toolz/tests/test_curried.py::test_merge toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg toolz/tests/test_dicttoolz.py::TestDict::test_factory toolz/tests/test_dicttoolz.py::TestDict::test_merge toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings toolz/tests/test_tlz.py::test_tlz",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 13,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "exc-toolz.dicttoolz-merge_with",
+      "instruction_status": "final",
+      "module": "toolz.dicttoolz",
+      "modules": [
+        "toolz.dicttoolz"
+      ],
+      "path": "exc-toolz.dicttoolz-merge_with",
+      "provenance": {
+        "docstring_kept": true,
+        "excised_lines": [
+          71,
+          83
+        ],
+        "file": "toolz/dicttoolz.py",
+        "span": [
+          56,
+          83
+        ],
+        "target": "toolz.dicttoolz.merge_with",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore merge_with to merge dicts and apply function to combined values",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/tests/test_curried.py::test_merge_with toolz/tests/test_curried.py::test_merge_with_list toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with_iterable_arg toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with_iterable_arg toolz/tests/test_dicttoolz.py::TestDict::test_merge_with toolz/tests/test_dicttoolz.py::TestDict::test_merge_with_iterable_arg toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 9,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "exc-toolz.functoolz-compose",
+      "instruction_status": "final",
+      "module": "toolz.functoolz",
+      "modules": [
+        "toolz.functoolz"
+      ],
+      "path": "exc-toolz.functoolz-compose",
+      "provenance": {
+        "docstring_kept": true,
+        "excised_lines": [
+          607,
+          612
+        ],
+        "file": "toolz/functoolz.py",
+        "span": [
+          589,
+          612
+        ],
+        "target": "toolz.functoolz.compose",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore compose function in toolz.functoolz",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/tests/test_functoolz.py::test_complement toolz/tests/test_functoolz.py::test_compose toolz/tests/test_functoolz.py::test_compose_left toolz/tests/test_functoolz.py::test_compose_metadata toolz/tests/test_serialization.py::test_complement toolz/tests/test_serialization.py::test_compose",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 6,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "medium",
+      "difficulty_status": "final",
+      "id": "exc-toolz.itertoolz-groupby",
+      "instruction_status": "final",
+      "module": "toolz.itertoolz",
+      "modules": [
+        "toolz.itertoolz"
+      ],
+      "path": "exc-toolz.itertoolz-groupby",
+      "provenance": {
+        "docstring_kept": true,
+        "excised_lines": [
+          128,
+          136
+        ],
+        "file": "toolz/itertoolz.py",
+        "span": [
+          103,
+          136
+        ],
+        "target": "toolz.itertoolz.groupby",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore groupby implementation in toolz.itertoolz",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/tests/test_itertoolz.py::test_groupby toolz/tests/test_itertoolz.py::test_groupby_non_callable toolz/tests/test_itertoolz.py::test_join toolz/tests/test_itertoolz.py::test_join_double_repeats toolz/tests/test_itertoolz.py::test_join_missing_element toolz/tests/test_itertoolz.py::test_key_as_getter toolz/tests/test_itertoolz.py::test_left_outer_join toolz/tests/test_itertoolz.py::test_outer_join toolz/tests/test_itertoolz.py::test_right_outer_join",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 9,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "hard",
+      "difficulty_status": "final",
+      "id": "exc-toolz.sandbox.parallel-fold",
+      "instruction_status": "final",
+      "module": "toolz.sandbox.parallel",
+      "modules": [
+        "toolz.sandbox.parallel"
+      ],
+      "path": "exc-toolz.sandbox.parallel-fold",
+      "provenance": {
+        "docstring_kept": true,
+        "excised_lines": [
+          62,
+          80
+        ],
+        "file": "toolz/sandbox/parallel.py",
+        "span": [
+          14,
+          80
+        ],
+        "target": "toolz.sandbox.parallel.fold",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore toolz.sandbox.parallel.fold implementation",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/sandbox/tests/test_parallel.py::test_fold toolz/tests/test_tlz.py::test_tlz",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 1
+      }
+    },
+    {
+      "difficulty": "medium",
+      "difficulty_status": "final",
+      "id": "hist-2bd9139",
+      "instruction_status": "final",
+      "module": "toolz.itertoolz",
+      "modules": [
+        "toolz.itertoolz"
+      ],
+      "path": "hist-2bd9139",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "partition_all now correctly trims padding for sequences that define __len__, using len(seq) % n to compute the final chunk instead of searching for the sentinel, fixing incorrect results for such sequences.",
+          "difficulty_guess": "medium",
+          "kind": "bugfix",
+          "self_contained": true,
+          "sha": "2bd9139",
+          "verifiable_via_tests": true
+        },
+        "commit": "2bd9139d0d0e17d3426cb467b5f58b1fb6d8a439",
+        "files": [
+          "toolz/itertoolz.py",
+          "toolz/tests/test_itertoolz.py"
+        ],
+        "is_merge": true,
+        "message": "Merge pull request #399 from groutr/fix-partition-all",
+        "modules": [
+          "toolz.itertoolz"
+        ],
+        "parent": "e052d819b2d8dcf50f0147b5659b9a530204d05f",
+        "pr_number": 399,
+        "source_files": [
+          "toolz/itertoolz.py"
+        ],
+        "touched_functions": [
+          "toolz.itertoolz.partition_all"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Fix partition_all padding for sequences with __len__",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/tests/test_itertoolz.py::test_partition_all",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "hist-386c750",
+      "instruction_status": "final",
+      "module": "toolz.itertoolz",
+      "modules": [
+        "toolz.itertoolz"
+      ],
+      "path": "hist-386c750",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "isiterable now returns True only for objects that can actually be iterated (via iter()), rather than merely having an __iter__ attribute. Objects with a broken or non-callable __iter__ are now correctly reported as not iterable.",
+          "difficulty_guess": "easy",
+          "kind": "bugfix",
+          "self_contained": true,
+          "sha": "386c750",
+          "verifiable_via_tests": true
+        },
+        "commit": "386c75033d64f7be4bac9536cea291b848a47fbf",
+        "files": [
+          "toolz/itertoolz.py",
+          "toolz/tests/test_itertoolz.py"
+        ],
+        "is_merge": true,
+        "message": "Merge pull request #551 from LincolnPuzey/revert-isiterable-change",
+        "modules": [
+          "toolz.itertoolz"
+        ],
+        "parent": "1aa72df3a75b3584eb26c4456269e9c0afbc043f",
+        "pr_number": 551,
+        "source_files": [
+          "toolz/itertoolz.py"
+        ],
+        "touched_functions": [
+          "toolz.itertoolz.isiterable"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Fix isiterable to check actual iterability",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/tests/test_itertoolz.py::test_isiterable",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "medium",
+      "difficulty_status": "final",
+      "id": "hist-639043e",
+      "instruction_status": "final",
+      "module": "toolz.functoolz",
+      "modules": [
+        "toolz.curried",
+        "toolz.functoolz"
+      ],
+      "path": "hist-639043e",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Adds a new public apply function that calls a function with given arguments, and exposes it in the curried namespace. Callers can now use apply to invoke functions in a curried/functional style.",
+          "difficulty_guess": "easy",
+          "kind": "feature",
+          "self_contained": true,
+          "sha": "639043e",
+          "verifiable_via_tests": true
+        },
+        "commit": "639043e5ead3c78ade96890336ffe33f9a8d6bb6",
+        "files": [
+          "toolz/curried/__init__.py",
+          "toolz/functoolz.py",
+          "toolz/tests/test_functoolz.py"
+        ],
+        "is_merge": true,
+        "message": "Merge pull request #411 from eliasmistler/master",
+        "modules": [
+          "toolz.curried",
+          "toolz.functoolz"
+        ],
+        "parent": "2ac03ce80c60085de6a6d6e16bb5b9dbfed943dc",
+        "pr_number": 411,
+        "source_files": [
+          "toolz/curried/__init__.py",
+          "toolz/functoolz.py"
+        ],
+        "touched_functions": [
+          "toolz.functoolz.apply"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Add public apply function and expose it in curried namespace",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/tests/test_functoolz.py::test_apply",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "hist-699e0c2",
+      "instruction_status": "final",
+      "module": "toolz.itertoolz",
+      "modules": [
+        "toolz.itertoolz"
+      ],
+      "path": "hist-699e0c2",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Adds a new peek function that returns the first element of a sequence along with an equivalent iterable that still contains that element.",
+          "difficulty_guess": "easy",
+          "kind": "feature",
+          "self_contained": true,
+          "sha": "699e0c2",
+          "verifiable_via_tests": true
+        },
+        "commit": "699e0c217622abacd99498377faa9a7531100a90",
+        "files": [
+          "AUTHORS.md",
+          "doc/source/api.rst",
+          "toolz/itertoolz.py",
+          "toolz/tests/test_itertoolz.py"
+        ],
+        "is_merge": true,
+        "message": "Merge pull request #244 from themiurgo/peek",
+        "modules": [
+          "toolz.itertoolz"
+        ],
+        "parent": "8cdc7fec3da3196f74ddc1dd25da81a1446a0bfc",
+        "pr_number": 244,
+        "source_files": [
+          "toolz/itertoolz.py"
+        ],
+        "touched_functions": [
+          "toolz.itertoolz.peek"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Add peek function to itertoolz",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/tests/test_itertoolz.py::test_peek",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "hist-84f1c77",
+      "instruction_status": "final",
+      "module": "toolz.dicttoolz",
+      "modules": [
+        "toolz.dicttoolz"
+      ],
+      "path": "hist-84f1c77",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Adds a new `dissoc` function in toolz.dicttoolz that returns a new dict with a given key removed, without mutating the original. Callers can now non-destructively remove a key from a dict.",
+          "difficulty_guess": "easy",
+          "kind": "feature",
+          "self_contained": true,
+          "sha": "84f1c77",
+          "verifiable_via_tests": true
+        },
+        "commit": "84f1c772e6bcf56ce2919058ce0c0fc927ee7397",
+        "files": [
+          "doc/source/api.rst",
+          "toolz/dicttoolz.py",
+          "toolz/tests/test_dicttoolz.py"
+        ],
+        "is_merge": true,
+        "message": "Merge pull request #215 from toddrjen/dissoc",
+        "modules": [
+          "toolz.dicttoolz"
+        ],
+        "parent": "0ad38b685bb3c5e2fec9f520881e2a108cee571b",
+        "pr_number": 215,
+        "source_files": [
+          "toolz/dicttoolz.py"
+        ],
+        "touched_functions": [
+          "toolz.dicttoolz.dissoc"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Add dissoc function to dicttoolz for non-destructive key removal",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/tests/test_dicttoolz.py::test_dissoc",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "medium",
+      "difficulty_status": "final",
+      "id": "hist-8cdc7fe",
+      "instruction_status": "final",
+      "module": "toolz.sandbox.core",
+      "modules": [
+        "toolz.sandbox",
+        "toolz.sandbox.core"
+      ],
+      "path": "hist-8cdc7fe",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "Adds a new `unzip` function in toolz.sandbox that inverts `zip`, producing one iterator per column from a sequence of tuples, and can handle finite sequences of infinite iterators. Callers can now import and use `unzip` from toolz.sandbox.",
+          "difficulty_guess": "medium",
+          "kind": "feature",
+          "self_contained": true,
+          "sha": "8cdc7fe",
+          "verifiable_via_tests": true
+        },
+        "commit": "8cdc7fec3da3196f74ddc1dd25da81a1446a0bfc",
+        "files": [
+          "doc/source/api.rst",
+          "toolz/sandbox/__init__.py",
+          "toolz/sandbox/core.py",
+          "toolz/sandbox/tests/test_core.py"
+        ],
+        "is_merge": true,
+        "message": "Merge pull request #241 from davidshepherd7/unzip-2",
+        "modules": [
+          "toolz.sandbox",
+          "toolz.sandbox.core"
+        ],
+        "parent": "7994485b37bcb0263c74988861c8cea0ea9b7770",
+        "pr_number": 241,
+        "source_files": [
+          "toolz/sandbox/__init__.py",
+          "toolz/sandbox/core.py"
+        ],
+        "touched_functions": [
+          "toolz.sandbox.core.unzip"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Add unzip to toolz.sandbox",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/sandbox/tests/test_core.py::test_unzip",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "medium",
+      "difficulty_status": "final",
+      "id": "hist-b8aca17",
+      "instruction_status": "final",
+      "module": "toolz.itertoolz",
+      "modules": [
+        "toolz.itertoolz"
+      ],
+      "path": "hist-b8aca17",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "`reduceby`'s `init` argument may now be a callable (like a factory) that is invoked to produce the initial accumulator value for each new key, in addition to accepting a constant. Callers can pass a callable to lazily create per-group initial values.",
+          "difficulty_guess": "easy",
+          "kind": "feature",
+          "self_contained": true,
+          "sha": "b8aca17",
+          "verifiable_via_tests": true
+        },
+        "commit": "b8aca172cb70f4ba39ce5eda76a711e442dad375",
+        "files": [
+          "toolz/itertoolz.py",
+          "toolz/tests/test_itertoolz.py"
+        ],
+        "is_merge": true,
+        "message": "Merge pull request #206 from mrocklin/reduceby-callable",
+        "modules": [
+          "toolz.itertoolz"
+        ],
+        "parent": "ec378f6deebdd118106c72096fb388d12672968f",
+        "pr_number": 206,
+        "source_files": [
+          "toolz/itertoolz.py"
+        ],
+        "touched_functions": [
+          "toolz.itertoolz.reduceby"
+        ],
+        "type": "history",
+        "verifier_source": "commit-tests"
+      },
+      "source_type": "history",
+      "title": "Support callable init in reduceby",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q toolz/tests/test_itertoolz.py::test_reduce_by_callable_default",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 1,
+        "n_passing": 0
+      }
+    }
+  ]
+}

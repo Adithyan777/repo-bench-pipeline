@@ -198,6 +198,7 @@ slow: 3 passed; ruff clean.
 | `docs/` | yes | Architecture, pipeline docs, configuration, decisions, gaps |
 | `transcripts/dev/` | yes | Development methodology, prompts, review rounds |
 | `transcripts/glom-console.log` | yes | Console log of the glom run (wall-clock evidence) |
+| `heldout/` | yes | Held-out runs on toolz and minidump: logs, reports, task folders (see docs/gaps.md section 14) |
 | `transcripts/pipeline/`, `transcripts/agent/` | yes | Per-call LLM transcripts (236) and agent trajectories (12) |
 | `tasks.json` (root) | yes | The final 10 selected tasks |
 | `tasks/glom/<id>/` | yes | The 10 selected task folders |

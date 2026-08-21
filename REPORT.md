@@ -366,5 +366,5 @@ Each gap has a detailed entry in [docs/gaps.md](docs/gaps.md).
 - **New-API imports stay INVALID by design.** getattr convention is required.
 - **Single ecosystem.** Python only, behind the adapter interface.
 - **SyntaxWarning silenced globally.** From target-code AST parsing.
-- **Held-out fresh-clone runs.** Done on toolz (10/10 selected, all VALID, after three generality fixes and one budget knob) and minidump (6/6 built tasks VALID; selection honestly infeasible on its sparse test coverage). Full account in docs/gaps.md section 14.
+- **Held-out fresh-clone runs.** Done on toolz (10/10 selected, all VALID, after three generality fixes and one budget knob) and minidump (6/6 built tasks VALID; selection honestly infeasible on its sparse test coverage). Full account in docs/gaps.md section 14; logs, reports, and task folders committed under `heldout/`.
 - **Testgen tokens dominate cost.** ~70% of total; per-function prompts would help.

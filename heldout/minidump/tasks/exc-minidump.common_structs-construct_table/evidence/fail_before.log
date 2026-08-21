@@ -1,0 +1,163 @@
+$ python -m pytest -q tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+________________________ TestConstructTable.test_basic _________________________
+
+self = <test_minidump_common_structs.TestConstructTable object at 0xffff8125b290>
+
+    def test_basic(self):
+        lines = [["Name", "Age"], ["Alice", "30"]]
+>       result = construct_table(lines)
+                 ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+lines = [['Name', 'Age'], ['Alice', '30']], separate_head = True
+
+    def construct_table(lines, separate_head=True):
+        """Prints a formatted table given a 2 dimensional array"""
+        # Count the column width
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:340: NotImplementedError
+____________________ TestConstructTable.test_column_padding ____________________
+
+self = <test_minidump_common_structs.TestConstructTable object at 0xffff81170500>
+
+    def test_column_padding(self):
+        lines = [["X", "YYYYY"], ["ZZZZZ", "A"]]
+>       result = construct_table(lines)
+                 ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+lines = [['X', 'YYYYY'], ['ZZZZZ', 'A']], separate_head = True
+
+    def construct_table(lines, separate_head=True):
+        """Prints a formatted table given a 2 dimensional array"""
+        # Count the column width
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:340: NotImplementedError
+_____________________ TestConstructTable.test_empty_lines ______________________
+
+self = <test_minidump_common_structs.TestConstructTable object at 0xffff810e3ad0>
+
+    def test_empty_lines(self):
+>       result = construct_table([])
+                 ^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:88: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+lines = [], separate_head = True
+
+    def construct_table(lines, separate_head=True):
+        """Prints a formatted table given a 2 dimensional array"""
+        # Count the column width
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:340: NotImplementedError
+___________________ TestConstructTable.test_multiple_columns ___________________
+
+self = <test_minidump_common_structs.TestConstructTable object at 0xffff810e3e60>
+
+    def test_multiple_columns(self):
+        lines = [["A", "BB", "CCC"], ["DD", "E", "FFFF"]]
+>       result = construct_table(lines)
+                 ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+lines = [['A', 'BB', 'CCC'], ['DD', 'E', 'FFFF']], separate_head = True
+
+    def construct_table(lines, separate_head=True):
+        """Prints a formatted table given a 2 dimensional array"""
+        # Count the column width
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:340: NotImplementedError
+___________________ TestConstructTable.test_no_separate_head ___________________
+
+self = <test_minidump_common_structs.TestConstructTable object at 0xffff810e3650>
+
+    def test_no_separate_head(self):
+        lines = [["Name", "Age"], ["Alice", "30"]]
+>       result = construct_table(lines, separate_head=False)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+lines = [['Name', 'Age'], ['Alice', '30']], separate_head = False
+
+    def construct_table(lines, separate_head=True):
+        """Prints a formatted table given a 2 dimensional array"""
+        # Count the column width
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:340: NotImplementedError
+______________________ TestConstructTable.test_single_row ______________________
+
+self = <test_minidump_common_structs.TestConstructTable object at 0xffff81171880>
+
+    def test_single_row(self):
+        lines = [["Only", "Row"]]
+>       result = construct_table(lines)
+                 ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+lines = [['Only', 'Row']], separate_head = True
+
+    def construct_table(lines, separate_head=True):
+        """Prints a formatted table given a 2 dimensional array"""
+        # Count the column width
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:340: NotImplementedError
+_______________ TestConstructTable.test_single_row_no_separator ________________
+
+self = <test_minidump_common_structs.TestConstructTable object at 0xffff811701d0>
+
+    def test_single_row_no_separator(self):
+        lines = [["Only", "Row"]]
+>       result = construct_table(lines, separate_head=False)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:107: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+lines = [['Only', 'Row']], separate_head = False
+
+    def construct_table(lines, separate_head=True):
+        """Prints a formatted table given a 2 dimensional array"""
+        # Count the column width
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:340: NotImplementedError
+=========================== short test summary info ============================
+FAILED tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic
+FAILED tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding
+FAILED tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines
+FAILED tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns
+FAILED tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head
+FAILED tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row
+FAILED tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator
+7 failed in 0.29s
+
+--- stderr ---
+

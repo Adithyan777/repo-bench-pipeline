@@ -266,7 +266,9 @@ uncovered-and-no-tests, leaving a shortlist of 2. Selection correctly reports
 filler. This is the scenario documented in docs/decisions.md where the cut
 net-new source would be required to reach 10 tasks on a coverage-poor repo.
 
-Nothing from either held-out run is committed; the fixes above are.
+Evidence from both runs is committed under `heldout/`: run logs, generated
+reports, task manifests, and the task folders (the selected 10 for toolz, all
+6 built for minidump).
 
 
 ## 15. Testgen tokens dominate cost

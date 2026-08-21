@@ -1,0 +1,298 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 24,
+          "nodeid": "toolz/tests/test_curried.py::test_merge_with",
+          "type": "Function"
+        },
+        {
+          "lineno": 28,
+          "nodeid": "toolz/tests/test_curried.py::test_merge_with_list",
+          "type": "Function"
+        },
+        {
+          "lineno": 49,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with",
+          "type": "Function"
+        },
+        {
+          "lineno": 61,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 49,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with",
+          "type": "Function"
+        },
+        {
+          "lineno": 61,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 49,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_with",
+          "type": "Function"
+        },
+        {
+          "lineno": 61,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_with_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 285,
+          "nodeid": "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296044.532745,
+  "duration": 0.09195876121520996,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 9,
+    "passed": 9,
+    "total": 9
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00016829099331516773,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 24,
+      "nodeid": "toolz/tests/test_curried.py::test_merge_with",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00041520799277350307,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.54999928176403e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012450000212993473,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with_list",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 28,
+      "nodeid": "toolz/tests/test_curried.py::test_merge_with_list",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.433299419470131e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.483301255386323e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001222080027218908,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 49,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.270799298770726e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 5.5540993344038725e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001281249860767275,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with_iterable_arg",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 61,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with_iterable_arg",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.066699618007988e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011104100849479437,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011137500405311584,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 49,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.150000601541251e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.745799328200519e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.745799666736275e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with_iterable_arg",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 61,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with_iterable_arg",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.629200313705951e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.483300239779055e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.875000301282853e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 49,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_with",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.6374992709606886e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.308300362434238e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 7.187400478869677e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with_iterable_arg",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 61,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_with_iterable_arg",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.874999624211341e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.216700421646237e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001251659996341914,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with_non_dict_mappings",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 285,
+      "nodeid": "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings",
+      "outcome": "passed",
+      "setup": {
+        "duration": 5.8582998462952673e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 6.533300620503724e-05,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

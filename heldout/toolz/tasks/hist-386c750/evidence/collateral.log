@@ -1,0 +1,46 @@
+$ python -m pytest -p no:cacheprovider -q --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+.......................................F................................ [ 32%]
+........................................................................ [ 64%]
+..............F......................................................... [ 96%]
+.........                                                                [100%]
+=================================== FAILURES ===================================
+_______________________________ test_shakespeare _______________________________
+
+    def test_shakespeare():
+>       with open('bench/shakespeare.txt') as f:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'bench/shakespeare.txt'
+
+bench/test_wordcount.py:17: FileNotFoundError
+________________________ test_inspect_wrapped_property _________________________
+
+    def test_inspect_wrapped_property():
+        class Wrapped(object):
+            def __init__(self, func):
+                self.func = func
+    
+            def __call__(self, *args, **kwargs):
+                return self.func(*args, **kwargs)
+    
+            @property
+            def __wrapped__(self):
+                return self.func
+    
+        func = lambda x: x
+        wrapped = Wrapped(func)
+        assert inspect.signature(func) == inspect.signature(wrapped)
+    
+>       assert num_required_args(Wrapped) is None
+E       AssertionError: assert 1 is None
+E        +  where 1 = num_required_args(<class 'test_inspect_args.test_inspect_wrapped_property.<locals>.Wrapped'>)
+
+toolz/tests/test_inspect_args.py:485: AssertionError
+=========================== short test summary info ============================
+FAILED bench/test_wordcount.py::test_shakespeare - FileNotFoundError: [Errno ...
+FAILED toolz/tests/test_inspect_args.py::test_inspect_wrapped_property - Asse...
+2 failed, 223 passed in 4.99s
+
+--- stderr ---
+

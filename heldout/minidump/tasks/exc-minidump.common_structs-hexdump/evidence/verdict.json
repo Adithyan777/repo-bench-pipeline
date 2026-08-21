@@ -1,0 +1,132 @@
+{
+  "checks": {
+    "collateral": {
+      "newly_failing": 0,
+      "not_run": 0,
+      "ok": true,
+      "report_present": true
+    },
+    "determinism": {
+      "ok": true,
+      "runs": 3
+    },
+    "fail_before": {
+      "exit_code": 1,
+      "n_failing": 10,
+      "n_passing": 0,
+      "ok": true
+    },
+    "image": {
+      "built_from_input": false,
+      "digest_matches_task": true,
+      "environment_hashes": {
+        "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+        "requirements.lock.txt": "03b5265dd19f0c7405bf2a9cf5bc18925be22a49df936c696b350ef5dc8c4e4e"
+      },
+      "live_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+      "ok": true,
+      "present": true
+    },
+    "pass_after": {
+      "exit_code": 0,
+      "n_failing": 0,
+      "n_passing": 10,
+      "ok": true
+    },
+    "right_reason": {
+      "invalid": [],
+      "ok": true,
+      "tests": {
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        }
+      }
+    },
+    "static_gate": {
+      "ok": true,
+      "violations": []
+    }
+  },
+  "environment_hashes": {
+    "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+    "requirements.lock.txt": "03b5265dd19f0c7405bf2a9cf5bc18925be22a49df936c696b350ef5dc8c4e4e"
+  },
+  "image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+  "image_tag": "bench-minidump",
+  "reasons": [],
+  "repeat_count": 3,
+  "task_id": "exc-minidump.common_structs-hexdump",
+  "task_image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+  "timestamps": {
+    "finished": "2026-08-21T07:25:33+00:00",
+    "started": "2026-08-21T07:25:23+00:00"
+  },
+  "valid": true
+}

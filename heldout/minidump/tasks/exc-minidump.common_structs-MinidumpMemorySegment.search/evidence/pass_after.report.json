@@ -1,0 +1,208 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 366,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary",
+          "type": "Function"
+        },
+        {
+          "lineno": 299,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all",
+          "type": "Function"
+        },
+        {
+          "lineno": 314,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first",
+          "type": "Function"
+        },
+        {
+          "lineno": 327,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found",
+          "type": "Function"
+        },
+        {
+          "lineno": 340,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long",
+          "type": "Function"
+        },
+        {
+          "lineno": 352,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787297114.3499453,
+  "duration": 0.17522025108337402,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 6,
+    "passed": 6,
+    "total": 6
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.0001460430066799745,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_chunksize_boundary",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 366,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00017275099526159465,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012304198753554374,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00019541700021363795,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_find_all",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 299,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011533399811014533,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010983399988617748,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010733399540185928,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_find_first",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 314,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010408301022835076,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001722919987514615,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011408299906179309,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_not_found",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 327,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001229170011356473,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.100000559352338e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.041700104717165e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_pattern_too_long",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 340,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.983300019986928e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011666701175272465,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.254200267605484e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_restores_position",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 352,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position",
+      "outcome": "passed",
+      "setup": {
+        "duration": 7.995899068191648e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.824999920558184e-05,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

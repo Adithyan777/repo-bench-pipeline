@@ -1,0 +1,8 @@
+$ python -m pytest -q tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=0
+--- stdout ---
+.....                                                                    [100%]
+5 passed in 0.18s
+
+--- stderr ---
+

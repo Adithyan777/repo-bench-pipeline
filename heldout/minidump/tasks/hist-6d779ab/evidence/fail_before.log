@@ -1,0 +1,171 @@
+$ python -m pytest -q tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_________ TestSearchOffsetAccumulation.test_asearch_adjacent_patterns __________
+
+self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb4741cd0>
+
+    def test_asearch_adjacent_patterns(self):
+        """Async adjacent patterns must all be found at correct offsets."""
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x3000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x3100
+    
+        data = b"A" * 8 + b"PAT" * 3 + b"B" * 200
+        fh = AsyncFakeFileHandler(data)
+    
+        result = run_async(seg.asearch(b"PAT", fh))
+        assert len(result) == 3
+        assert result[0] == 0x3000 + 8
+        assert result[1] == 0x3000 + 8 + 3
+>       assert result[2] == 0x3000 + 8 + 3 + 3
+E       assert 12293 == (((12288 + 8) + 3) + 3)
+
+tests/generated/test_hist_6d779ab.py:180: AssertionError
+_ TestSearchOffsetAccumulation.test_asearch_five_matches_progressive_addresses _
+
+self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb4741520>
+
+    def test_asearch_five_matches_progressive_addresses(self):
+        """Async version: five matches must all have distinct correct addresses."""
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x2000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x2100
+    
+        data = b"X" * 4 + b"HI" + b"Y" * 4 + b"HI" + b"Z" * 4 + b"HI" + b"W" * 4 + b"HI" + b"V" * 4 + b"HI" + b"U" * 200
+        fh = AsyncFakeFileHandler(data)
+    
+        result = run_async(seg.asearch(b"HI", fh))
+        assert len(result) == 5
+        expected = [
+            0x2000 + 4,
+            0x2000 + 4 + 2 + 4,
+            0x2000 + 4 + 2 + 4 + 2 + 4,
+            0x2000 + 4 + 2 + 4 + 2 + 4 + 2 + 4,
+            0x2000 + 4 + 2 + 4 + 2 + 4 + 2 + 4 + 2 + 4,
+        ]
+>       assert result == expected
+E       assert [8196, 8202, 8203, 8203, 8203] == [8196, 8202, 8208, 8214, 8220]
+E         
+E         At index 2 diff: 8203 != 8208
+E         Use -v to get more diff
+
+tests/generated/test_hist_6d779ab.py:146: AssertionError
+__ TestSearchOffsetAccumulation.test_asearch_three_matches_correct_addresses ___
+
+self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb4740da0>
+
+    def test_asearch_three_matches_correct_addresses(self):
+        """Async version: three matches must have correct addresses."""
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        data = b"A" * 5 + b"PAT" + b"B" * 5 + b"PAT" + b"C" * 5 + b"PAT" + b"D" * 200
+        fh = AsyncFakeFileHandler(data)
+    
+        result = run_async(seg.asearch(b"PAT", fh))
+        assert len(result) == 3
+        assert result[0] == 0x1000 + 5
+        assert result[1] == 0x1000 + 5 + 3 + 5
+>       assert result[2] == 0x1000 + 5 + 3 + 5 + 3 + 5
+E       assert 4111 == (((((4096 + 5) + 3) + 5) + 3) + 5)
+
+tests/generated/test_hist_6d779ab.py:102: AssertionError
+__________ TestSearchOffsetAccumulation.test_search_adjacent_patterns __________
+
+self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb47418b0>
+
+    def test_search_adjacent_patterns(self):
+        """Adjacent patterns: ``PAT`` immediately followed by ``PAT``."""
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x3000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x3100
+    
+        data = b"A" * 8 + b"PAT" * 3 + b"B" * 200
+        fh = FakeFileHandler(data)
+    
+        result = seg.search(b"PAT", fh)
+        assert len(result) == 3
+        assert result[0] == 0x3000 + 8
+        assert result[1] == 0x3000 + 8 + 3
+>       assert result[2] == 0x3000 + 8 + 3 + 3
+E       assert 12293 == (((12288 + 8) + 3) + 3)
+
+tests/generated/test_hist_6d779ab.py:163: AssertionError
+_ TestSearchOffsetAccumulation.test_search_five_matches_progressive_addresses __
+
+self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb47410d0>
+
+    def test_search_five_matches_progressive_addresses(self):
+        """Five matches: bug would produce same wrong address for later hits."""
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x2000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x2100
+    
+        data = b"X" * 4 + b"HI" + b"Y" * 4 + b"HI" + b"Z" * 4 + b"HI" + b"W" * 4 + b"HI" + b"V" * 4 + b"HI" + b"U" * 200
+        fh = FakeFileHandler(data)
+    
+        result = seg.search(b"HI", fh)
+        assert len(result) == 5
+        expected = [
+            0x2000 + 4,
+            0x2000 + 4 + 2 + 4,
+            0x2000 + 4 + 2 + 4 + 2 + 4,
+            0x2000 + 4 + 2 + 4 + 2 + 4 + 2 + 4,
+            0x2000 + 4 + 2 + 4 + 2 + 4 + 2 + 4 + 2 + 4,
+        ]
+>       assert result == expected
+E       assert [8196, 8202, 8203, 8203, 8203] == [8196, 8202, 8208, 8214, 8220]
+E         
+E         At index 2 diff: 8203 != 8208
+E         Use -v to get more diff
+
+tests/generated/test_hist_6d779ab.py:124: AssertionError
+___ TestSearchOffsetAccumulation.test_search_three_matches_correct_addresses ___
+
+self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb48af470>
+
+    def test_search_three_matches_correct_addresses(self):
+        """Three matches: bug would misreport second and third addresses."""
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        # Three occurrences of "PAT" at known offsets
+        data = b"A" * 5 + b"PAT" + b"B" * 5 + b"PAT" + b"C" * 5 + b"PAT" + b"D" * 200
+        fh = FakeFileHandler(data)
+    
+        result = seg.search(b"PAT", fh)
+        assert len(result) == 3
+        assert result[0] == 0x1000 + 5
+        assert result[1] == 0x1000 + 5 + 3 + 5
+>       assert result[2] == 0x1000 + 5 + 3 + 5 + 3 + 5
+E       assert 4111 == (((((4096 + 5) + 3) + 5) + 3) + 5)
+
+tests/generated/test_hist_6d779ab.py:85: AssertionError
+=========================== short test summary info ============================
+FAILED tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns
+FAILED tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses
+FAILED tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses
+FAILED tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns
+FAILED tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses
+FAILED tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses
+6 failed in 0.16s
+
+--- stderr ---
+

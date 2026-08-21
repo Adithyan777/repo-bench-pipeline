@@ -1,0 +1,8 @@
+$ python -m pytest -q toolz/tests/test_itertoolz.py::test_isiterable -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=0
+--- stdout ---
+.                                                                        [100%]
+1 passed in 0.26s
+
+--- stderr ---
+

@@ -1,0 +1,92 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_groupby": "failed",
+        "toolz/tests/test_itertoolz.py::test_groupby_non_callable": "failed",
+        "toolz/tests/test_itertoolz.py::test_join": "failed",
+        "toolz/tests/test_itertoolz.py::test_join_double_repeats": "failed",
+        "toolz/tests/test_itertoolz.py::test_join_missing_element": "failed",
+        "toolz/tests/test_itertoolz.py::test_key_as_getter": "failed",
+        "toolz/tests/test_itertoolz.py::test_left_outer_join": "failed",
+        "toolz/tests/test_itertoolz.py::test_outer_join": "failed",
+        "toolz/tests/test_itertoolz.py::test_right_outer_join": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_groupby": "failed",
+        "toolz/tests/test_itertoolz.py::test_groupby_non_callable": "failed",
+        "toolz/tests/test_itertoolz.py::test_join": "failed",
+        "toolz/tests/test_itertoolz.py::test_join_double_repeats": "failed",
+        "toolz/tests/test_itertoolz.py::test_join_missing_element": "failed",
+        "toolz/tests/test_itertoolz.py::test_key_as_getter": "failed",
+        "toolz/tests/test_itertoolz.py::test_left_outer_join": "failed",
+        "toolz/tests/test_itertoolz.py::test_outer_join": "failed",
+        "toolz/tests/test_itertoolz.py::test_right_outer_join": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_groupby": "failed",
+        "toolz/tests/test_itertoolz.py::test_groupby_non_callable": "failed",
+        "toolz/tests/test_itertoolz.py::test_join": "failed",
+        "toolz/tests/test_itertoolz.py::test_join_double_repeats": "failed",
+        "toolz/tests/test_itertoolz.py::test_join_missing_element": "failed",
+        "toolz/tests/test_itertoolz.py::test_key_as_getter": "failed",
+        "toolz/tests/test_itertoolz.py::test_left_outer_join": "failed",
+        "toolz/tests/test_itertoolz.py::test_outer_join": "failed",
+        "toolz/tests/test_itertoolz.py::test_right_outer_join": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_groupby": "passed",
+        "toolz/tests/test_itertoolz.py::test_groupby_non_callable": "passed",
+        "toolz/tests/test_itertoolz.py::test_join": "passed",
+        "toolz/tests/test_itertoolz.py::test_join_double_repeats": "passed",
+        "toolz/tests/test_itertoolz.py::test_join_missing_element": "passed",
+        "toolz/tests/test_itertoolz.py::test_key_as_getter": "passed",
+        "toolz/tests/test_itertoolz.py::test_left_outer_join": "passed",
+        "toolz/tests/test_itertoolz.py::test_outer_join": "passed",
+        "toolz/tests/test_itertoolz.py::test_right_outer_join": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_groupby": "passed",
+        "toolz/tests/test_itertoolz.py::test_groupby_non_callable": "passed",
+        "toolz/tests/test_itertoolz.py::test_join": "passed",
+        "toolz/tests/test_itertoolz.py::test_join_double_repeats": "passed",
+        "toolz/tests/test_itertoolz.py::test_join_missing_element": "passed",
+        "toolz/tests/test_itertoolz.py::test_key_as_getter": "passed",
+        "toolz/tests/test_itertoolz.py::test_left_outer_join": "passed",
+        "toolz/tests/test_itertoolz.py::test_outer_join": "passed",
+        "toolz/tests/test_itertoolz.py::test_right_outer_join": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_groupby": "passed",
+        "toolz/tests/test_itertoolz.py::test_groupby_non_callable": "passed",
+        "toolz/tests/test_itertoolz.py::test_join": "passed",
+        "toolz/tests/test_itertoolz.py::test_join_double_repeats": "passed",
+        "toolz/tests/test_itertoolz.py::test_join_missing_element": "passed",
+        "toolz/tests/test_itertoolz.py::test_key_as_getter": "passed",
+        "toolz/tests/test_itertoolz.py::test_left_outer_join": "passed",
+        "toolz/tests/test_itertoolz.py::test_outer_join": "passed",
+        "toolz/tests/test_itertoolz.py::test_right_outer_join": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

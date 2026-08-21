@@ -1,0 +1,239 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 74,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic",
+          "type": "Function"
+        },
+        {
+          "lineno": 111,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding",
+          "type": "Function"
+        },
+        {
+          "lineno": 86,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines",
+          "type": "Function"
+        },
+        {
+          "lineno": 90,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns",
+          "type": "Function"
+        },
+        {
+          "lineno": 81,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head",
+          "type": "Function"
+        },
+        {
+          "lineno": 96,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row",
+          "type": "Function"
+        },
+        {
+          "lineno": 104,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787297114.2563632,
+  "duration": 0.1668844223022461,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 7,
+    "passed": 7,
+    "total": 7
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00016454298747703433,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_basic",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 74,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00029687599453609437,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019545899704098701,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001531669986434281,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_column_padding",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 111,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013204199785832316,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011270900722593069,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.620899800211191e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_empty_lines",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 86,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.095898712985218e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.262500341515988e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010449999535921961,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_multiple_columns",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 90,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.133400115184486e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.058399882633239e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001010000123642385,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_no_separate_head",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 81,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.370800060220063e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.362499647773802e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011149999045301229,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_single_row",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 96,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.212501415982842e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.13750084489584e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.695898916106671e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_single_row_no_separator",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 104,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.033300400711596e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.487599891144782e-05,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

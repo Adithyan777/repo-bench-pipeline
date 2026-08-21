@@ -1,0 +1,471 @@
+{
+  "agents": {
+    "by_stage": {
+      "p1.testgen.write_tests_agent": 4,
+      "p3.build.neutrality_check_rewrite": 7
+    },
+    "outcomes": {
+      "kept": 4,
+      "rewritten": 5,
+      "unchanged": 2
+    },
+    "runs": 11
+  },
+  "base_sha": "568c2b8393973cd172a466546c9d95779c452438",
+  "hygiene": {
+    "baseline": {
+      "classifications": [],
+      "counts": {
+        "failed": 0,
+        "passed": 186,
+        "quarantined": 0,
+        "skipped": 0,
+        "tests": 186
+      },
+      "quarantined": [],
+      "testgen_refreshed": true
+    },
+    "dropped_extras": [],
+    "extras_used": [],
+    "image_digest": "sha256:ea390db0b06a75508772ea648c158ae15d4d1ea5b2764103f4ec7f9352f828a5",
+    "image_tag": "bench-toolz",
+    "lint": {
+      "clean": true,
+      "codes": {},
+      "config_created": false,
+      "files_changed": 1,
+      "image_rebuilt": true,
+      "noqa_files": 0,
+      "regressed": false,
+      "unfixable": 0
+    },
+    "packaging_style": "pyproject",
+    "python_version": "3.12",
+    "test_framework": "pytest",
+    "testgen": {
+      "functions_kept": 5,
+      "functions_weak": 0,
+      "modules_kept": 2,
+      "modules_selected": 2,
+      "mutants_killed": 16,
+      "mutants_valid": 18,
+      "mutation_score": 0.889,
+      "suite_after": {
+        "failed": 0,
+        "passed": 186,
+        "tests": 186
+      },
+      "targets": 5
+    },
+    "unresolved_imports": []
+  },
+  "knowledge": {
+    "graph": {
+      "edges": {
+        "calls": 79,
+        "contains": 161,
+        "imports": 23,
+        "tested_by": 853
+      },
+      "nodes": 177,
+      "total_edges": 1116
+    },
+    "graph_verification": {
+      "mismatches": 0,
+      "precision_by_edge_type": {
+        "calls": 1.0,
+        "contains": 1.0,
+        "imports": 1.0,
+        "tested_by": 1.0
+      },
+      "sample_size": 173,
+      "symbol_existence": {
+        "checked": 124,
+        "missing_attr": [],
+        "precision": 1.0,
+        "present": 124,
+        "unimportable_modules": []
+      }
+    },
+    "okf": {
+      "by_construction": {
+        "counts": {
+          "callers": 71,
+          "link": 138
+        },
+        "note": "graph-derived / structural; true by construction, not independent evidence",
+        "precision": {
+          "callers": 1.0,
+          "link": 1.0
+        }
+      },
+      "conformance": {
+        "conformant": true,
+        "issues": []
+      },
+      "counts": {
+        "function_pages": 136,
+        "modules": 16,
+        "pages": 155,
+        "reserved_pages": 3
+      },
+      "pages_draft": 32,
+      "pages_verified": 104,
+      "semantic_precision": {
+        "callees": 1.0,
+        "raises": 0.25,
+        "side_effects": 0.984
+      },
+      "unchecked_claim_kinds": [
+        "inputs",
+        "outputs",
+        "invariants"
+      ]
+    },
+    "source_module_count": 16
+  },
+  "llm": {
+    "by_step": {
+      "p1.testgen.write_tests_agent": 23943,
+      "p2.okf.function_contracts": 33319,
+      "p2.okf.module_purpose": 8792,
+      "p3.build.difficulty_label": 363,
+      "p3.build.golden_rationale": 6753,
+      "p3.build.neutrality_check_rewrite": 13342,
+      "p3.build.review_instruction": 6607,
+      "p3.build.write_instruction": 6950
+    },
+    "reasoning_tokens": 10213,
+    "total_tokens": 100069
+  },
+  "missing_artifacts": [],
+  "repo": "toolz",
+  "stages": {
+    "baseline": {
+      "duration_s": 2.0,
+      "skipped": false
+    },
+    "build": {
+      "skipped": true
+    },
+    "build_excision": {
+      "duration_s": 5.82,
+      "skipped": false
+    },
+    "build_history": {
+      "duration_s": 70.82,
+      "skipped": false
+    },
+    "compose": {
+      "skipped": true
+    },
+    "detect": {
+      "skipped": true
+    },
+    "dockerfile": {
+      "skipped": true
+    },
+    "excision_funnel": {
+      "duration_s": 0.06,
+      "skipped": false
+    },
+    "graph": {
+      "duration_s": 0.03,
+      "skipped": false
+    },
+    "history_funnel": {
+      "duration_s": 40.09,
+      "skipped": false
+    },
+    "indexes": {
+      "coverage_status": "ok",
+      "duration_s": 117.62,
+      "skipped": false
+    },
+    "instruct": {
+      "duration_s": 11.86,
+      "skipped": false
+    },
+    "lint": {
+      "duration_s": 12.93,
+      "skipped": false
+    },
+    "manifest": {
+      "duration_s": 0.0,
+      "skipped": false
+    },
+    "okf": {
+      "duration_s": 1.85,
+      "skipped": false
+    },
+    "pin": {
+      "duration_s": 0.26,
+      "skipped": false
+    },
+    "select": {
+      "duration_s": 0.0,
+      "skipped": false
+    },
+    "symbol_index": {
+      "duration_s": 0.23,
+      "skipped": false
+    },
+    "testgen": {
+      "duration_s": 82.58,
+      "skipped": false
+    },
+    "validate": {
+      "duration_s": 37.9,
+      "skipped": false
+    },
+    "verify": {
+      "duration_s": 0.83,
+      "skipped": false
+    }
+  },
+  "tasks": {
+    "build_excision": {
+      "built": 5,
+      "unsplittable": 0
+    },
+    "build_history": {
+      "attempted": 20,
+      "built": 7,
+      "rejected": {
+        "commit-tests-pass-on-input": 1,
+        "env-drift": 5,
+        "verifier-fails-on-solution": 2,
+        "verifier-imports-non-public-or-missing": 1,
+        "verifier-not-implementation-neutral": 2,
+        "verifier-on-input:error_before_repo_call": 2
+      },
+      "verifier_source": {
+        "hist-2bd9139": "commit-tests",
+        "hist-386c750": "commit-tests",
+        "hist-639043e": "commit-tests",
+        "hist-699e0c2": "commit-tests",
+        "hist-84f1c77": "commit-tests",
+        "hist-8cdc7fe": "commit-tests",
+        "hist-b8aca17": "commit-tests"
+      }
+    },
+    "excision_funnel": {
+      "considered": 409,
+      "counts": {
+        "rejected:few-covering-tests": 38,
+        "rejected:init-module": 1,
+        "rejected:low-complexity": 14,
+        "rejected:private": 55,
+        "rejected:test-code": 251,
+        "rejected:too-long": 2,
+        "rejected:too-short": 15,
+        "rejected:uncovered": 8,
+        "rejected:verifier-imports-private": 7,
+        "screened_out": 1,
+        "selected": 5,
+        "surplus": 12
+      },
+      "ranked": 18,
+      "selected": 5
+    },
+    "excision_funnel_counts": {
+      "rejected:few-covering-tests": 38,
+      "rejected:init-module": 1,
+      "rejected:low-complexity": 14,
+      "rejected:private": 55,
+      "rejected:test-code": 251,
+      "rejected:too-long": 2,
+      "rejected:too-short": 15,
+      "rejected:uncovered": 8,
+      "rejected:verifier-imports-private": 7,
+      "screened_out": 1,
+      "selected": 5,
+      "surplus": 12
+    },
+    "history_funnel": {
+      "classified": 30,
+      "considered": 1230,
+      "counts": {
+        "classified_out": 6,
+        "rejected:dependency-changing": 54,
+        "rejected:docs-or-ci-only": 211,
+        "rejected:no-source-change": 218,
+        "rejected:non-pr-merge": 36,
+        "rejected:reverted-by": 3,
+        "rejected:root-commit": 1,
+        "rejected:superseded-by-merge": 45,
+        "rejected:too-large": 7,
+        "rejected:too-many-files": 4,
+        "rejected:too-small": 157,
+        "rejected:uncovered-and-no-tests": 167,
+        "rejected:unparseable": 23,
+        "shortlisted": 20,
+        "surplus": 278
+      },
+      "kept": 23,
+      "shortlisted": 20,
+      "survivors": 349
+    },
+    "history_funnel_counts": {
+      "built": 7,
+      "classified_out": 6,
+      "rejected:commit-tests-pass-on-input": 1,
+      "rejected:dependency-changing": 54,
+      "rejected:docs-or-ci-only": 211,
+      "rejected:env-drift": 5,
+      "rejected:no-source-change": 218,
+      "rejected:non-pr-merge": 36,
+      "rejected:reverted-by": 3,
+      "rejected:root-commit": 1,
+      "rejected:superseded-by-merge": 45,
+      "rejected:too-large": 7,
+      "rejected:too-many-files": 4,
+      "rejected:too-small": 157,
+      "rejected:uncovered-and-no-tests": 167,
+      "rejected:unparseable": 23,
+      "rejected:verifier-fails-on-solution": 2,
+      "rejected:verifier-imports-non-public-or-missing": 1,
+      "rejected:verifier-not-implementation-neutral": 2,
+      "rejected:verifier-on-input:error_before_repo_call": 2,
+      "surplus": 278
+    },
+    "instruct": {
+      "difficulty_failed": 0,
+      "difficulty_spread": {
+        "easy": 6,
+        "hard": 1,
+        "medium": 5
+      },
+      "failed": 0,
+      "final": 12,
+      "leak_rejections": 0,
+      "regenerations": 0,
+      "reused": 10,
+      "reviewer_rejections": 0,
+      "tasks": 12
+    },
+    "manifest": "tasks/toolz/tasks.json",
+    "select": {
+      "counts": {
+        "excision": 4,
+        "history": 6
+      },
+      "difficulty_spread": {
+        "easy": 4,
+        "hard": 1,
+        "medium": 5
+      },
+      "distinct_modules": [
+        "toolz.dicttoolz",
+        "toolz.functoolz",
+        "toolz.itertoolz",
+        "toolz.sandbox.core",
+        "toolz.sandbox.parallel"
+      ],
+      "root_manifest": "tasks.json",
+      "selected": [
+        "exc-toolz.dicttoolz-merge",
+        "exc-toolz.dicttoolz-merge_with",
+        "exc-toolz.itertoolz-groupby",
+        "exc-toolz.sandbox.parallel-fold",
+        "hist-2bd9139",
+        "hist-386c750",
+        "hist-639043e",
+        "hist-699e0c2",
+        "hist-8cdc7fe",
+        "hist-b8aca17"
+      ],
+      "selection": "output/toolz/tasks/selection.json"
+    },
+    "selection": {
+      "achieved_spread": {
+        "easy": 4,
+        "hard": 1,
+        "medium": 5
+      },
+      "counts": {
+        "excision": 4,
+        "history": 6,
+        "net-new": 0
+      },
+      "distinct_modules": [
+        "toolz.dicttoolz",
+        "toolz.functoolz",
+        "toolz.itertoolz",
+        "toolz.sandbox.core",
+        "toolz.sandbox.parallel"
+      ],
+      "selected": [
+        "exc-toolz.dicttoolz-merge",
+        "exc-toolz.dicttoolz-merge_with",
+        "exc-toolz.itertoolz-groupby",
+        "exc-toolz.sandbox.parallel-fold",
+        "hist-2bd9139",
+        "hist-386c750",
+        "hist-639043e",
+        "hist-699e0c2",
+        "hist-8cdc7fe",
+        "hist-b8aca17"
+      ],
+      "target_spread": {
+        "easy": 2,
+        "hard": 3,
+        "medium": 5
+      }
+    },
+    "validate": {
+      "tasks": 12,
+      "valid": 12,
+      "verdicts": {
+        "exc-toolz.dicttoolz-merge": {
+          "reasons": [],
+          "valid": true
+        },
+        "exc-toolz.dicttoolz-merge_with": {
+          "reasons": [],
+          "valid": true
+        },
+        "exc-toolz.functoolz-compose": {
+          "reasons": [],
+          "valid": true
+        },
+        "exc-toolz.itertoolz-groupby": {
+          "reasons": [],
+          "valid": true
+        },
+        "exc-toolz.sandbox.parallel-fold": {
+          "reasons": [],
+          "valid": true
+        },
+        "hist-2bd9139": {
+          "reasons": [],
+          "valid": true
+        },
+        "hist-386c750": {
+          "reasons": [],
+          "valid": true
+        },
+        "hist-639043e": {
+          "reasons": [],
+          "valid": true
+        },
+        "hist-699e0c2": {
+          "reasons": [],
+          "valid": true
+        },
+        "hist-84f1c77": {
+          "reasons": [],
+          "valid": true
+        },
+        "hist-8cdc7fe": {
+          "reasons": [],
+          "valid": true
+        },
+        "hist-b8aca17": {
+          "reasons": [],
+          "valid": true
+        }
+      }
+    }
+  }
+}

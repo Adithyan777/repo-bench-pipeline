@@ -1,0 +1,74 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

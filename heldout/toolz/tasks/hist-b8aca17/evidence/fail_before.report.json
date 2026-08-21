@@ -1,0 +1,75 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 245,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296073.838102,
+  "duration": 0.2445077896118164,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "failed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 248,
+          "message": "TypeError: descriptor 'add' for 'set' objects doesn't apply to a 'int' object",
+          "path": "/repo/toolz/tests/test_itertoolz.py"
+        },
+        "duration": 0.00023283400514628738,
+        "longrepr": "def test_reduce_by_callable_default():\n        def set_add(s, i):\n            s.add(i)\n            return s\n    \n>       assert reduceby(iseven, set_add, [1, 2, 3, 4, 1, 2], set) == \\\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            {True: set([2, 4]), False: set([1, 3])}\n\ntoolz/tests/test_itertoolz.py:251: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntoolz/itertoolz.py:547: in reduceby\n    d[k] = binop(d[k], item)\n           ^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ns = <class 'set'>, i = 1\n\n    def set_add(s, i):\n>       s.add(i)\nE       TypeError: descriptor 'add' for 'set' objects doesn't apply to a 'int' object\n\ntoolz/tests/test_itertoolz.py:248: TypeError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 251,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 547,
+            "message": "in reduceby",
+            "path": "toolz/itertoolz.py"
+          },
+          {
+            "lineno": 248,
+            "message": "TypeError",
+            "path": "toolz/tests/test_itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_reduce_by_callable_default",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 245,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0004460850032046437,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00026996000087819993,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+$ python -m pytest -q toolz/tests/test_functoolz.py::test_apply -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________________________________ test_apply __________________________________
+
+    def test_apply():
+        import toolz.functoolz as ft
+        apply = getattr(ft, 'apply', None)
+>       assert apply is not None
+E       assert None is not None
+
+toolz/tests/test_functoolz.py:29: AssertionError
+=========================== short test summary info ============================
+FAILED toolz/tests/test_functoolz.py::test_apply - assert None is not None
+1 failed in 0.25s
+
+--- stderr ---
+

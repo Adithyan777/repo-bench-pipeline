@@ -1,0 +1,355 @@
+$ python -m pytest -q toolz/tests/test_curried.py::test_merge_with toolz/tests/test_curried.py::test_merge_with_list toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with_iterable_arg toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with_iterable_arg toolz/tests/test_dicttoolz.py::TestDict::test_merge_with toolz/tests/test_dicttoolz.py::TestDict::test_merge_with_iterable_arg toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+FFFFFFFFF                                                                [100%]
+=================================== FAILURES ===================================
+_______________________________ test_merge_with ________________________________
+
+    def test_merge_with():
+>       assert merge_with(sum)({1: 1}, {1: 2}) == {1: 3}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_curried.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+toolz/functoolz.py:330: in __call__
+    return self._partial(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+toolz/curried/exceptions.py:8: in merge_with
+    return toolz.merge_with(func, d, *dicts, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+func = <built-in function sum>, dicts = ({1: 1}, {1: 2}), kwargs = {}
+
+    def merge_with(func, *dicts, **kwargs):
+        """Merge dictionaries and apply function to combined values
+    
+        A key may occur in more than one dict, and all values mapped from the key
+        will be passed to the function as a list, such as func([val1, val2, ...]).
+    
+        >>> merge_with(sum, {1: 1, 2: 2}, {1: 10, 2: 20})
+        {1: 11, 2: 22}
+    
+        >>> merge_with(first, {1: 1, 2: 2}, {2: 20, 3: 30})  # doctest: +SKIP
+        {1: 1, 2: 2, 3: 30}
+    
+        See Also:
+            merge
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:71: NotImplementedError
+_____________________________ test_merge_with_list _____________________________
+
+    def test_merge_with_list():
+>       assert merge_with(sum, [{"a": 1}, {"a": 2}]) == {"a": 3}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_curried.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+toolz/functoolz.py:330: in __call__
+    return self._partial(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+toolz/curried/exceptions.py:8: in merge_with
+    return toolz.merge_with(func, d, *dicts, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+func = <built-in function sum>, dicts = ([{'a': 1}, {'a': 2}],), kwargs = {}
+
+    def merge_with(func, *dicts, **kwargs):
+        """Merge dictionaries and apply function to combined values
+    
+        A key may occur in more than one dict, and all values mapped from the key
+        will be passed to the function as a list, such as func([val1, val2, ...]).
+    
+        >>> merge_with(sum, {1: 1, 2: 2}, {1: 10, 2: 20})
+        {1: 11, 2: 22}
+    
+        >>> merge_with(first, {1: 1, 2: 2}, {2: 20, 3: 30})  # doctest: +SKIP
+        {1: 1, 2: 2, 3: 30}
+    
+        See Also:
+            merge
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:71: NotImplementedError
+______________________ TestCustomMapping.test_merge_with _______________________
+
+self = <toolz.tests.test_dicttoolz.TestCustomMapping object at 0xffffafe372f0>
+
+    def test_merge_with(self):
+        D, kw = self.D, self.kw
+        dicts = D({1: 1, 2: 2}), D({1: 10, 2: 20})
+>       assert merge_with(sum, *dicts, **kw) == D({1: 11, 2: 22})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+func = <built-in function sum>
+dicts = (<toolz.tests.test_dicttoolz.CustomMapping object at 0xffffafe37e90>, <toolz.tests.test_dicttoolz.CustomMapping object at 0xffffafe34080>)
+kwargs = {'factory': <function TestCustomMapping.<lambda> at 0xffffafbf5a80>}
+
+    def merge_with(func, *dicts, **kwargs):
+        """Merge dictionaries and apply function to combined values
+    
+        A key may occur in more than one dict, and all values mapped from the key
+        will be passed to the function as a list, such as func([val1, val2, ...]).
+    
+        >>> merge_with(sum, {1: 1, 2: 2}, {1: 10, 2: 20})
+        {1: 11, 2: 22}
+    
+        >>> merge_with(first, {1: 1, 2: 2}, {2: 20, 3: 30})  # doctest: +SKIP
+        {1: 1, 2: 2, 3: 30}
+    
+        See Also:
+            merge
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:71: NotImplementedError
+________________ TestCustomMapping.test_merge_with_iterable_arg ________________
+
+self = <toolz.tests.test_dicttoolz.TestCustomMapping object at 0xffffafe36f60>
+
+    def test_merge_with_iterable_arg(self):
+        D, kw = self.D, self.kw
+        dicts = D({1: 1, 2: 2}), D({1: 10, 2: 20})
+>       assert merge_with(sum, *dicts, **kw) == D({1: 11, 2: 22})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+func = <built-in function sum>
+dicts = (<toolz.tests.test_dicttoolz.CustomMapping object at 0xffffafe33b60>, <toolz.tests.test_dicttoolz.CustomMapping object at 0xffffafe33d10>)
+kwargs = {'factory': <function TestCustomMapping.<lambda> at 0xffffafbf5a80>}
+
+    def merge_with(func, *dicts, **kwargs):
+        """Merge dictionaries and apply function to combined values
+    
+        A key may occur in more than one dict, and all values mapped from the key
+        will be passed to the function as a list, such as func([val1, val2, ...]).
+    
+        >>> merge_with(sum, {1: 1, 2: 2}, {1: 10, 2: 20})
+        {1: 11, 2: 22}
+    
+        >>> merge_with(first, {1: 1, 2: 2}, {2: 20, 3: 30})  # doctest: +SKIP
+        {1: 1, 2: 2, 3: 30}
+    
+        See Also:
+            merge
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:71: NotImplementedError
+_______________________ TestDefaultDict.test_merge_with ________________________
+
+self = <toolz.tests.test_dicttoolz.TestDefaultDict object at 0xffffafe36210>
+
+    def test_merge_with(self):
+        D, kw = self.D, self.kw
+        dicts = D({1: 1, 2: 2}), D({1: 10, 2: 20})
+>       assert merge_with(sum, *dicts, **kw) == D({1: 11, 2: 22})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+func = <built-in function sum>
+dicts = (defaultdict(<class 'int'>, {1: 1, 2: 2}), defaultdict(<class 'int'>, {1: 10, 2: 20}))
+kwargs = {'factory': <function TestDefaultDict.<lambda> at 0xffffafbf5120>}
+
+    def merge_with(func, *dicts, **kwargs):
+        """Merge dictionaries and apply function to combined values
+    
+        A key may occur in more than one dict, and all values mapped from the key
+        will be passed to the function as a list, such as func([val1, val2, ...]).
+    
+        >>> merge_with(sum, {1: 1, 2: 2}, {1: 10, 2: 20})
+        {1: 11, 2: 22}
+    
+        >>> merge_with(first, {1: 1, 2: 2}, {2: 20, 3: 30})  # doctest: +SKIP
+        {1: 1, 2: 2, 3: 30}
+    
+        See Also:
+            merge
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:71: NotImplementedError
+_________________ TestDefaultDict.test_merge_with_iterable_arg _________________
+
+self = <toolz.tests.test_dicttoolz.TestDefaultDict object at 0xffffafe35070>
+
+    def test_merge_with_iterable_arg(self):
+        D, kw = self.D, self.kw
+        dicts = D({1: 1, 2: 2}), D({1: 10, 2: 20})
+>       assert merge_with(sum, *dicts, **kw) == D({1: 11, 2: 22})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+func = <built-in function sum>
+dicts = (defaultdict(<class 'int'>, {1: 1, 2: 2}), defaultdict(<class 'int'>, {1: 10, 2: 20}))
+kwargs = {'factory': <function TestDefaultDict.<lambda> at 0xffffafbf5120>}
+
+    def merge_with(func, *dicts, **kwargs):
+        """Merge dictionaries and apply function to combined values
+    
+        A key may occur in more than one dict, and all values mapped from the key
+        will be passed to the function as a list, such as func([val1, val2, ...]).
+    
+        >>> merge_with(sum, {1: 1, 2: 2}, {1: 10, 2: 20})
+        {1: 11, 2: 22}
+    
+        >>> merge_with(first, {1: 1, 2: 2}, {2: 20, 3: 30})  # doctest: +SKIP
+        {1: 1, 2: 2, 3: 30}
+    
+        See Also:
+            merge
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:71: NotImplementedError
+___________________________ TestDict.test_merge_with ___________________________
+
+self = <toolz.tests.test_dicttoolz.TestDict object at 0xffffafe33620>
+
+    def test_merge_with(self):
+        D, kw = self.D, self.kw
+        dicts = D({1: 1, 2: 2}), D({1: 10, 2: 20})
+>       assert merge_with(sum, *dicts, **kw) == D({1: 11, 2: 22})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+func = <built-in function sum>, dicts = ({1: 1, 2: 2}, {1: 10, 2: 20})
+kwargs = {}
+
+    def merge_with(func, *dicts, **kwargs):
+        """Merge dictionaries and apply function to combined values
+    
+        A key may occur in more than one dict, and all values mapped from the key
+        will be passed to the function as a list, such as func([val1, val2, ...]).
+    
+        >>> merge_with(sum, {1: 1, 2: 2}, {1: 10, 2: 20})
+        {1: 11, 2: 22}
+    
+        >>> merge_with(first, {1: 1, 2: 2}, {2: 20, 3: 30})  # doctest: +SKIP
+        {1: 1, 2: 2, 3: 30}
+    
+        See Also:
+            merge
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:71: NotImplementedError
+____________________ TestDict.test_merge_with_iterable_arg _____________________
+
+self = <toolz.tests.test_dicttoolz.TestDict object at 0xffffafe33ec0>
+
+    def test_merge_with_iterable_arg(self):
+        D, kw = self.D, self.kw
+        dicts = D({1: 1, 2: 2}), D({1: 10, 2: 20})
+>       assert merge_with(sum, *dicts, **kw) == D({1: 11, 2: 22})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+func = <built-in function sum>, dicts = ({1: 1, 2: 2}, {1: 10, 2: 20})
+kwargs = {}
+
+    def merge_with(func, *dicts, **kwargs):
+        """Merge dictionaries and apply function to combined values
+    
+        A key may occur in more than one dict, and all values mapped from the key
+        will be passed to the function as a list, such as func([val1, val2, ...]).
+    
+        >>> merge_with(sum, {1: 1, 2: 2}, {1: 10, 2: 20})
+        {1: 11, 2: 22}
+    
+        >>> merge_with(first, {1: 1, 2: 2}, {2: 20, 3: 30})  # doctest: +SKIP
+        {1: 1, 2: 2, 3: 30}
+    
+        See Also:
+            merge
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:71: NotImplementedError
+______________________ test_merge_with_non_dict_mappings _______________________
+
+    def test_merge_with_non_dict_mappings():
+        class Foo(Mapping):
+            def __init__(self, d):
+                self.d = d
+    
+            def __iter__(self):
+                return iter(self.d)
+    
+            def __getitem__(self, key):
+                return self.d[key]
+    
+            def __len__(self):
+                return len(self.d)
+    
+        d = Foo({1: 1})
+    
+        assert merge(d) is d or merge(d) == {1: 1}
+>       assert merge_with(sum, d) == {1: 1}
+               ^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_dicttoolz.py:303: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+func = <built-in function sum>
+dicts = (<toolz.tests.test_dicttoolz.test_merge_with_non_dict_mappings.<locals>.Foo object at 0xffffafe310a0>,)
+kwargs = {}
+
+    def merge_with(func, *dicts, **kwargs):
+        """Merge dictionaries and apply function to combined values
+    
+        A key may occur in more than one dict, and all values mapped from the key
+        will be passed to the function as a list, such as func([val1, val2, ...]).
+    
+        >>> merge_with(sum, {1: 1, 2: 2}, {1: 10, 2: 20})
+        {1: 11, 2: 22}
+    
+        >>> merge_with(first, {1: 1, 2: 2}, {2: 20, 3: 30})  # doctest: +SKIP
+        {1: 1, 2: 2, 3: 30}
+    
+        See Also:
+            merge
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+toolz/dicttoolz.py:71: NotImplementedError
+=========================== short test summary info ============================
+FAILED toolz/tests/test_curried.py::test_merge_with - NotImplementedError: ex...
+FAILED toolz/tests/test_curried.py::test_merge_with_list - NotImplementedErro...
+FAILED toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with - No...
+FAILED toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with_iterable_arg
+FAILED toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with - NotI...
+FAILED toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with_iterable_arg
+FAILED toolz/tests/test_dicttoolz.py::TestDict::test_merge_with - NotImplemen...
+FAILED toolz/tests/test_dicttoolz.py::TestDict::test_merge_with_iterable_arg
+FAILED toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings - Not...
+9 failed in 0.19s
+
+--- stderr ---
+

@@ -1,0 +1,232 @@
+{
+  "base_sha": "4d22796e57203b37467a150e451b9879b45aeb3b",
+  "collateral": {
+    "baseline_passing": [
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_cross_boundary_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_offset",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_restores_position",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_success",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_wrong_segment_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_binary_string",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_decimal_string",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_hex_string_lowercase_prefix",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_hex_string_uppercase_prefix",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_int_input_returns_same",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_unknown_format_raises",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments::test_do_comments_prints_comments",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments::test_do_comments_skips_none",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory::test_do_memory_prints_segments",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory::test_do_memory_skips_none",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules::test_do_modules_prints_modules",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules::test_do_modules_skips_none",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell::test_do_tell_none_prints_warning_then_raises",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell::test_do_tell_prints_hex_position",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads::test_do_threads_prints_threads",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads::test_do_threads_skips_none"
+    ],
+    "cmd": "python -m pytest -p no:cacheprovider -q --json-report --json-report-file=.pytest-report.json",
+    "report": ".pytest-report.json",
+    "source": "input-run"
+  },
+  "difficulty": "easy",
+  "difficulty_features": {
+    "callers_count": 0,
+    "cross_module_edges": 0,
+    "diff_size": 4,
+    "files_touched": 1,
+    "functions_touched": 2,
+    "similar_named_functions_nearby": 0,
+    "test_count": 6
+  },
+  "difficulty_rationale": "Despite touching two functions, the diff_size=4 is very small, there are no callers or cross-module edges, and test_count=6 confirms the fix is tightly scoped.",
+  "difficulty_status": "final",
+  "dropped_tests": {
+    "failing_on_solution": [],
+    "passing_on_input": []
+  },
+  "files_in_scope": [
+    "minidump/__amain__.py",
+    "minidump/__main__.py",
+    "minidump/aminidumpfile.py",
+    "minidump/aminidumpreader.py",
+    "minidump/common_structs.py",
+    "minidump/directory.py",
+    "minidump/minidumpfile.py",
+    "minidump/minidumpreader.py",
+    "minidump/minidumpshell.py",
+    "minidump/streams/ExceptionStream.py",
+    "minidump/streams/HandleDataStream.py",
+    "minidump/streams/Memory64ListStream.py",
+    "minidump/streams/MemoryInfoListStream.py",
+    "minidump/streams/MemoryListStream.py",
+    "minidump/streams/ModuleListStream.py",
+    "minidump/streams/SystemInfoStream.py",
+    "minidump/streams/ThreadExListStream.py",
+    "minidump/streams/ThreadInfoListStream.py",
+    "minidump/streams/ThreadListStream.py",
+    "minidump/streams/UnloadedModuleListStream.py",
+    "tests/generated/test_hist_6d779ab.py"
+  ],
+  "id": "hist-6d779ab",
+  "image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+  "image_tag": "bench-minidump",
+  "instruction": "## Goal\n\nFix `MinidumpMemorySegment.search` and `MinidumpMemorySegment.asearch` so that when a memory segment contains multiple occurrences of a pattern, every match is reported at its correct virtual address. The search offset must accumulate across matches instead of resetting.\n\n## Observable behavior\n\n```python\n# Three matches with correct progressive addresses\nseg = MinidumpMemorySegment()\nseg.start_virtual_address = 0x1000\nseg.size = 0x100\nseg.start_file_address = 0x0\nseg.end_virtual_address = 0x1100\n\ndata = b\"A\" * 5 + b\"PAT\" + b\"B\" * 5 + b\"PAT\" + b\"C\" * 5 + b\"PAT\" + b\"D\" * 200\nfh = FakeFileHandler(data)\n\nresult = seg.search(b\"PAT\", fh)\nassert len(result) == 3\nassert result[0] == 0x1000 + 5\nassert result[1] == 0x1000 + 5 + 3 + 5\nassert result[2] == 0x1000 + 5 + 3 + 5 + 3 + 5\n```\n\n```python\n# Adjacent back-to-back patterns at correct addresses\nseg = MinidumpMemorySegment()\nseg.start_virtual_address = 0x3000\nseg.size = 0x100\nseg.start_file_address = 0x0\nseg.end_virtual_address = 0x3100\n\ndata = b\"A\" * 8 + b\"PAT\" * 3 + b\"B\" * 200\nfh = FakeFileHandler(data)\n\nresult = seg.search(b\"PAT\", fh)\nassert len(result) == 3\nassert result[0] == 0x3000 + 8\nassert result[1] == 0x3000 + 8 + 3\nassert result[2] == 0x3000 + 8 + 3 + 3\n```\n\n## Constraints\n\n- Keep the public API of `MinidumpMemorySegment.search` and `MinidumpMemorySegment.asearch` unchanged.\n- Changes are limited to files in scope under `minidump/`.\n\n## How success is measured\n\nRun the verifier tests:\n\n```\npython -m pytest -q tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses\n```",
+  "instruction_attempts": [
+    {
+      "attempt": 1,
+      "draft_title": "Fix search offset accumulation for multiple pattern matches",
+      "issues": [],
+      "review": {
+        "implementation_neutral": true,
+        "issues": [],
+        "self_contained": true,
+        "solvable_by_transcription": false,
+        "states_mechanical_edit": false
+      }
+    }
+  ],
+  "instruction_review": {
+    "implementation_neutral": true,
+    "issues": [],
+    "self_contained": true,
+    "solvable_by_transcription": false,
+    "states_mechanical_edit": false
+  },
+  "instruction_status": "final",
+  "module": "minidump.common_structs",
+  "modules": [
+    "minidump.common_structs"
+  ],
+  "neutrality": null,
+  "new_symbol_rewrite": null,
+  "overlay_files": {
+    "input": [
+      ".dockerignore",
+      "Dockerfile",
+      "constraints.txt",
+      "minidump/structures/peb.py",
+      "pipeline-requirements.in",
+      "pyproject.toml",
+      "requirements.lock.txt",
+      "tests/conftest.py",
+      "tests/generated/test_minidump_common_structs.py",
+      "tests/generated/test_minidump_minidumpshell.py"
+    ],
+    "solution": [
+      ".dockerignore",
+      "Dockerfile",
+      "constraints.txt",
+      "minidump/structures/peb.py",
+      "pipeline-requirements.in",
+      "pyproject.toml",
+      "requirements.lock.txt",
+      "tests/conftest.py",
+      "tests/generated/test_minidump_common_structs.py",
+      "tests/generated/test_minidump_minidumpshell.py"
+    ]
+  },
+  "provenance": {
+    "classification": {
+      "behavior_change_summary": "The search offset is now accumulated correctly across multiple pattern matches within a memory segment, so all occurrences are found at their correct addresses instead of resetting the offset and reporting wrong positions.",
+      "difficulty_guess": "easy",
+      "kind": "bugfix",
+      "self_contained": true,
+      "sha": "6d779ab",
+      "verifiable_via_tests": true
+    },
+    "commit": "6d779ab2e1cbcba36a88933cf9712082e5d4e7ee",
+    "files": [
+      "minidump/common_structs.py"
+    ],
+    "is_merge": true,
+    "message": "Merge pull request #21 from ThePwn1sher/master",
+    "modules": [
+      "minidump.common_structs"
+    ],
+    "parent": "4e9c80ff2a05e8bde6e22f0e652cda807e3089da",
+    "pr_number": 21,
+    "source_files": [
+      "minidump/common_structs.py"
+    ],
+    "touched_functions": [
+      "minidump.common_structs.MinidumpMemorySegment.asearch",
+      "minidump.common_structs.MinidumpMemorySegment.search"
+    ],
+    "type": "history",
+    "verifier_source": "agent-authored"
+  },
+  "repo": "minidump",
+  "title": "Fix search offset accumulation for multiple pattern matches",
+  "verifier_agent": {
+    "attempts": 1,
+    "cache_key": "e2ac01997d53467d",
+    "clean_exit": true,
+    "file": "tests/generated/test_hist_6d779ab.py",
+    "files_changed": [
+      "tests/generated/test_hist_6d779ab.py"
+    ],
+    "outcome": "added",
+    "step": "p3.build.verifier_agent",
+    "summary": "Created `tests/generated/test_hist_6d779ab.py` with 6 pytest tests (3 for `search`, 3 for `asearch`) that fail before the offset-accumulation fix and pass after it, asserting correct virtual addresses for multiple pattern matches within a memory segment.",
+    "trajectory": "transcripts/agent/p3.build.verifier_agent/65fb72f4cdb4.json"
+  },
+  "verifier_cmd": "python -m pytest -q tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses",
+  "verifier_files": [
+    "run.sh",
+    "tests/conftest.py",
+    "tests/generated/test_hist_6d779ab.py"
+  ],
+  "verifier_on_input": {
+    "exit_code": 1,
+    "n_failing": 6,
+    "n_passing": 0
+  },
+  "verifier_on_solution": {
+    "exit_code": 0,
+    "n_failing": 0,
+    "n_passing": 6
+  },
+  "verifier_tests": [
+    "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns",
+    "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses",
+    "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses",
+    "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns",
+    "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses",
+    "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses"
+  ],
+  "verifier_visibility": "visible"
+}

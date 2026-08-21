@@ -1,0 +1,177 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 271,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises",
+          "type": "Function"
+        },
+        {
+          "lineno": 246,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset",
+          "type": "Function"
+        },
+        {
+          "lineno": 283,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position",
+          "type": "Function"
+        },
+        {
+          "lineno": 233,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success",
+          "type": "Function"
+        },
+        {
+          "lineno": 259,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787297114.3761675,
+  "duration": 0.17882585525512695,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 5,
+    "passed": 5,
+    "total": 5
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.0007937109912745655,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_aread_cross_boundary_raises",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 271,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0007740030123386532,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00022475099831353873,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00034333400253672153,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_aread_offset",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 246,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010579200170468539,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.000115999995614402,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00043162700603716075,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_aread_restores_position",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 283,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011345899838488549,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00020537599630188197,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003942100011045113,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_aread_success",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 233,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00025258399546146393,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001683750015217811,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005124179879203439,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_aread_wrong_segment_raises",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 259,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0005815439944854006,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011516700033098459,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

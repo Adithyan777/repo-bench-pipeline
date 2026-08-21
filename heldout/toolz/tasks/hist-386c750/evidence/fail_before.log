@@ -1,0 +1,44 @@
+$ python -m pytest -q toolz/tests/test_itertoolz.py::test_isiterable -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______________________________ test_isiterable ________________________________
+
+    def test_isiterable():
+        # objects that have a __iter__() or __getitem__() method are iterable
+        # https://docs.python.org/3/library/functions.html#iter
+        class IterIterable:
+            def __iter__(self):
+                return iter(["a", "b", "c"])
+    
+        class GetItemIterable:
+            def __getitem__(self, item):
+                return ["a", "b", "c"][item]
+    
+        # "if a class sets __iter__() to None, the class is not iterable"
+        # https://docs.python.org/3/reference/datamodel.html#special-method-names
+        class NotIterable:
+            __iter__ = None
+    
+        class NotIterableEvenWithGetItem:
+            __iter__ = None
+    
+            def __getitem__(self, item):
+                return ["a", "b", "c"][item]
+    
+        assert isiterable([1, 2, 3]) is True
+        assert isiterable('abc') is True
+        assert isiterable(IterIterable()) is True
+>       assert isiterable(GetItemIterable()) is True
+E       AssertionError: assert False is True
+E        +  where False = isiterable(<test_itertoolz.test_isiterable.<locals>.GetItemIterable object at 0xffffb35c6ff0>)
+E        +    where <test_itertoolz.test_isiterable.<locals>.GetItemIterable object at 0xffffb35c6ff0> = <class 'test_itertoolz.test_isiterable.<locals>.GetItemIterable'>()
+
+toolz/tests/test_itertoolz.py:133: AssertionError
+=========================== short test summary info ============================
+FAILED toolz/tests/test_itertoolz.py::test_isiterable - AssertionError: asser...
+1 failed in 0.28s
+
+--- stderr ---
+

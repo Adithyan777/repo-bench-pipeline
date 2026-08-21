@@ -1,0 +1,280 @@
+$ python -m pytest -q tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+FFFFFFFFFF                                                               [100%]
+=================================== FAILURES ===================================
+________________________ TestHexdump.test_ascii_string _________________________
+
+self = <test_minidump_common_structs.TestHexdump object at 0xffff87a53da0>
+
+    def test_ascii_string(self):
+>       result = hexdump(b"Hello")
+                 ^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = b'Hello', length = 16, sep = '.', start = 0
+
+    def hexdump(src, length=16, sep=".", start=0):
+        """
+        @brief Return {src} in hex dump.
+        @param[in] length	{Int} Nb Bytes by row.
+        @param[in] sep		{Char} For the text part, {sep} will be used for non ASCII char.
+        @return {Str} The hexdump
+    
+        @note Full support for python2 and python3 !
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:294: NotImplementedError
+_________________________ TestHexdump.test_custom_sep __________________________
+
+self = <test_minidump_common_structs.TestHexdump object at 0xffff879e0170>
+
+    def test_custom_sep(self):
+>       result = hexdump(b"\x00\x01", sep="?")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = b'\x00\x01', length = 16, sep = '?', start = 0
+
+    def hexdump(src, length=16, sep=".", start=0):
+        """
+        @brief Return {src} in hex dump.
+        @param[in] length	{Int} Nb Bytes by row.
+        @param[in] sep		{Char} For the text part, {sep} will be used for non ASCII char.
+        @return {Str} The hexdump
+    
+        @note Full support for python2 and python3 !
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:294: NotImplementedError
+____________________________ TestHexdump.test_empty ____________________________
+
+self = <test_minidump_common_structs.TestHexdump object at 0xffff87955e20>
+
+    def test_empty(self):
+>       assert hexdump(b"") == ""
+               ^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = b'', length = 16, sep = '.', start = 0
+
+    def hexdump(src, length=16, sep=".", start=0):
+        """
+        @brief Return {src} in hex dump.
+        @param[in] length	{Int} Nb Bytes by row.
+        @param[in] sep		{Char} For the text part, {sep} will be used for non ASCII char.
+        @return {Str} The hexdump
+    
+        @note Full support for python2 and python3 !
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:294: NotImplementedError
+_________________ TestHexdump.test_hex_formatting_single_digit _________________
+
+self = <test_minidump_common_structs.TestHexdump object at 0xffff879e0da0>
+
+    def test_hex_formatting_single_digit(self):
+>       result = hexdump(b"\x0f")
+                 ^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = b'\x0f', length = 16, sep = '.', start = 0
+
+    def hexdump(src, length=16, sep=".", start=0):
+        """
+        @brief Return {src} in hex dump.
+        @param[in] length	{Int} Nb Bytes by row.
+        @param[in] sep		{Char} For the text part, {sep} will be used for non ASCII char.
+        @return {Str} The hexdump
+    
+        @note Full support for python2 and python3 !
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:294: NotImplementedError
+________________________ TestHexdump.test_mixed_content ________________________
+
+self = <test_minidump_common_structs.TestHexdump object at 0xffff87aa9400>
+
+    def test_mixed_content(self):
+>       result = hexdump(b"Hi\x00!")
+                 ^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = b'Hi\x00!', length = 16, sep = '.', start = 0
+
+    def hexdump(src, length=16, sep=".", start=0):
+        """
+        @brief Return {src} in hex dump.
+        @param[in] length	{Int} Nb Bytes by row.
+        @param[in] sep		{Char} For the text part, {sep} will be used for non ASCII char.
+        @return {Str} The hexdump
+    
+        @note Full support for python2 and python3 !
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:294: NotImplementedError
+________________________ TestHexdump.test_multiple_rows ________________________
+
+self = <test_minidump_common_structs.TestHexdump object at 0xffff879e0740>
+
+    def test_multiple_rows(self):
+>       result = hexdump(b"A" * 32)
+                 ^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = b'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', length = 16, sep = '.', start = 0
+
+    def hexdump(src, length=16, sep=".", start=0):
+        """
+        @brief Return {src} in hex dump.
+        @param[in] length	{Int} Nb Bytes by row.
+        @param[in] sep		{Char} For the text part, {sep} will be used for non ASCII char.
+        @return {Str} The hexdump
+    
+        @note Full support for python2 and python3 !
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:294: NotImplementedError
+_______________________ TestHexdump.test_non_ascii_bytes _______________________
+
+self = <test_minidump_common_structs.TestHexdump object at 0xffff879e1a00>
+
+    def test_non_ascii_bytes(self):
+>       result = hexdump(b"\x00\x01\x02\x03")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = b'\x00\x01\x02\x03', length = 16, sep = '.', start = 0
+
+    def hexdump(src, length=16, sep=".", start=0):
+        """
+        @brief Return {src} in hex dump.
+        @param[in] length	{Int} Nb Bytes by row.
+        @param[in] sep		{Char} For the text part, {sep} will be used for non ASCII char.
+        @return {Str} The hexdump
+    
+        @note Full support for python2 and python3 !
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:294: NotImplementedError
+_________________________ TestHexdump.test_odd_length __________________________
+
+self = <test_minidump_common_structs.TestHexdump object at 0xffff879e0a40>
+
+    def test_odd_length(self):
+>       result = hexdump(b"\x01\x02\x03", length=2)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:60: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = b'\x01\x02\x03', length = 2, sep = '.', start = 0
+
+    def hexdump(src, length=16, sep=".", start=0):
+        """
+        @brief Return {src} in hex dump.
+        @param[in] length	{Int} Nb Bytes by row.
+        @param[in] sep		{Char} For the text part, {sep} will be used for non ASCII char.
+        @return {Str} The hexdump
+    
+        @note Full support for python2 and python3 !
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:294: NotImplementedError
+_________________________ TestHexdump.test_single_byte _________________________
+
+self = <test_minidump_common_structs.TestHexdump object at 0xffff87a53920>
+
+    def test_single_byte(self):
+>       result = hexdump(b"\x41")
+                 ^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = b'A', length = 16, sep = '.', start = 0
+
+    def hexdump(src, length=16, sep=".", start=0):
+        """
+        @brief Return {src} in hex dump.
+        @param[in] length	{Int} Nb Bytes by row.
+        @param[in] sep		{Char} For the text part, {sep} will be used for non ASCII char.
+        @return {Str} The hexdump
+    
+        @note Full support for python2 and python3 !
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:294: NotImplementedError
+________________________ TestHexdump.test_start_offset _________________________
+
+self = <test_minidump_common_structs.TestHexdump object at 0xffff879e0440>
+
+    def test_start_offset(self):
+>       result = hexdump(b"AB", start=0x1000)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:46: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+src = b'AB', length = 16, sep = '.', start = 4096
+
+    def hexdump(src, length=16, sep=".", start=0):
+        """
+        @brief Return {src} in hex dump.
+        @param[in] length	{Int} Nb Bytes by row.
+        @param[in] sep		{Char} For the text part, {sep} will be used for non ASCII char.
+        @return {Str} The hexdump
+    
+        @note Full support for python2 and python3 !
+        """
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:294: NotImplementedError
+=========================== short test summary info ============================
+FAILED tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string
+FAILED tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep
+FAILED tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty
+FAILED tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit
+FAILED tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content
+FAILED tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows
+FAILED tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes
+FAILED tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length
+FAILED tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte
+FAILED tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset
+10 failed in 0.31s
+
+--- stderr ---
+

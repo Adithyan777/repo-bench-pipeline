@@ -1,0 +1,104 @@
+{
+  "checks": {
+    "collateral": {
+      "newly_failing": 0,
+      "not_run": 0,
+      "ok": true,
+      "report_present": true
+    },
+    "determinism": {
+      "ok": true,
+      "runs": 3
+    },
+    "fail_before": {
+      "exit_code": 1,
+      "n_failing": 6,
+      "n_passing": 0,
+      "ok": true
+    },
+    "image": {
+      "built_from_input": false,
+      "digest_matches_task": true,
+      "environment_hashes": {
+        "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+        "requirements.lock.txt": "03b5265dd19f0c7405bf2a9cf5bc18925be22a49df936c696b350ef5dc8c4e4e"
+      },
+      "live_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+      "ok": true,
+      "present": true
+    },
+    "pass_after": {
+      "exit_code": 0,
+      "n_failing": 0,
+      "n_passing": 6,
+      "ok": true
+    },
+    "right_reason": {
+      "invalid": [],
+      "ok": true,
+      "tests": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        }
+      }
+    },
+    "static_gate": {
+      "ok": true,
+      "violations": []
+    }
+  },
+  "environment_hashes": {
+    "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+    "requirements.lock.txt": "03b5265dd19f0c7405bf2a9cf5bc18925be22a49df936c696b350ef5dc8c4e4e"
+  },
+  "image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+  "image_tag": "bench-minidump",
+  "reasons": [],
+  "repeat_count": 3,
+  "task_id": "exc-minidump.common_structs-MinidumpMemorySegment.search",
+  "task_image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+  "timestamps": {
+    "finished": "2026-08-21T07:25:24+00:00",
+    "started": "2026-08-21T07:25:11+00:00"
+  },
+  "valid": true
+}

@@ -1,0 +1,66 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 79,
+          "nodeid": "toolz/sandbox/tests/test_core.py::test_unzip",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296073.3764539,
+  "duration": 0.06629371643066406,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "failed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 82,
+          "message": "assert None is not None",
+          "path": "/repo/toolz/sandbox/tests/test_core.py"
+        },
+        "duration": 0.00024229299742728472,
+        "longrepr": "def test_unzip():\n        unzip = getattr(core, 'unzip', None)\n>       assert unzip is not None\nE       assert None is not None\n\ntoolz/sandbox/tests/test_core.py:82: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 82,
+            "message": "AssertionError",
+            "path": "toolz/sandbox/tests/test_core.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_unzip",
+        "test_core.py",
+        "tests",
+        "sandbox",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 79,
+      "nodeid": "toolz/sandbox/tests/test_core.py::test_unzip",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0005071269988548011,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00015387499297503382,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

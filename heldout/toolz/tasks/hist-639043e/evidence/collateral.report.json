@@ -1,0 +1,7308 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 8,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_basic_dict_access",
+          "type": "Function"
+        },
+        {
+          "lineno": 12,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_single_key",
+          "type": "Function"
+        },
+        {
+          "lineno": 16,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_nested_list_access",
+          "type": "Function"
+        },
+        {
+          "lineno": 21,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_missing_key_returns_none",
+          "type": "Function"
+        },
+        {
+          "lineno": 25,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_missing_key_returns_custom_default",
+          "type": "Function"
+        },
+        {
+          "lineno": 30,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_missing_nested_key",
+          "type": "Function"
+        },
+        {
+          "lineno": 38,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_missing_index",
+          "type": "Function"
+        },
+        {
+          "lineno": 43,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_no_default_raises_keyerror",
+          "type": "Function"
+        },
+        {
+          "lineno": 47,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_no_default_raises_indexerror",
+          "type": "Function"
+        },
+        {
+          "lineno": 51,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_no_default_raises_typeerror",
+          "type": "Function"
+        },
+        {
+          "lineno": 55,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_empty_keys_returns_coll",
+          "type": "Function"
+        },
+        {
+          "lineno": 59,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_tuple_keys",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 65,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_remove_single_key",
+          "type": "Function"
+        },
+        {
+          "lineno": 69,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_remove_multiple_keys",
+          "type": "Function"
+        },
+        {
+          "lineno": 73,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_remove_all_keys",
+          "type": "Function"
+        },
+        {
+          "lineno": 77,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_remove_missing_key",
+          "type": "Function"
+        },
+        {
+          "lineno": 81,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_original_unchanged",
+          "type": "Function"
+        },
+        {
+          "lineno": 87,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_with_ordereddict_factory",
+          "type": "Function"
+        },
+        {
+          "lineno": 94,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_many_keys_uses_remaining_path",
+          "type": "Function"
+        },
+        {
+          "lineno": 98,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_few_keys_uses_delete_path",
+          "type": "Function"
+        },
+        {
+          "lineno": 102,
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_unexpected_kwargs_raises",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn",
+          "type": "Class"
+        },
+        {
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc",
+          "type": "Class"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/generated",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "bench/generated/test_toolz_dicttoolz.py",
+          "type": "Module"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_curry.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 6,
+          "nodeid": "bench/test_curry.py::test_get_curried",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_curry_baseline.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 7,
+          "nodeid": "bench/test_curry_baseline.py::test_get",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_first.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 5,
+          "nodeid": "bench/test_first.py::test_first",
+          "type": "Function"
+        },
+        {
+          "lineno": 10,
+          "nodeid": "bench/test_first.py::test_second",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_first_iter.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 4,
+          "nodeid": "bench/test_first_iter.py::test_first_iter",
+          "type": "Function"
+        },
+        {
+          "lineno": 10,
+          "nodeid": "bench/test_first_iter.py::test_second_iter",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_frequencies.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 7,
+          "nodeid": "bench/test_frequencies.py::test_frequencies",
+          "type": "Function"
+        },
+        {
+          "lineno": 11,
+          "nodeid": "bench/test_frequencies.py::test_frequencies_small",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_get.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 5,
+          "nodeid": "bench/test_get.py::test_get",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_get_list.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 5,
+          "nodeid": "bench/test_get_list.py::test_get",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_groupby.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 6,
+          "nodeid": "bench/test_groupby.py::test_groupby",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_join.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 17,
+          "nodeid": "bench/test_join.py::test_many_to_many_large",
+          "type": "Function"
+        },
+        {
+          "lineno": 21,
+          "nodeid": "bench/test_join.py::test_one_to_one_tiny",
+          "type": "Function"
+        },
+        {
+          "lineno": 29,
+          "nodeid": "bench/test_join.py::test_one_to_many",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_memoize.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 3,
+          "nodeid": "bench/test_memoize.py::test_memoize_no_kwargs",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_memoize_kwargs.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 3,
+          "nodeid": "bench/test_memoize_kwargs.py::test_memoize_kwargs",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_pluck.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 6,
+          "nodeid": "bench/test_pluck.py::test_pluck",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_sliding_window.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 5,
+          "nodeid": "bench/test_sliding_window.py::test_sliding_window",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench/test_wordcount.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 15,
+          "nodeid": "bench/test_wordcount.py::test_shakespeare",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "bench",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "bench/generated",
+          "type": "Dir"
+        },
+        {
+          "nodeid": "bench/test_curry.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_curry_baseline.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_first.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_first_iter.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_frequencies.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_get.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_get_list.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_groupby.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_join.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_memoize.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_memoize_kwargs.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_pluck.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_sliding_window.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "bench/test_wordcount.py",
+          "type": "Module"
+        }
+      ]
+    },
+    {
+      "nodeid": "conda.recipe",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "doc/source",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "doc",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "doc/source",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": "examples",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "tlz",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "toolz/curried",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "toolz/sandbox/tests/test_core.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 6,
+          "nodeid": "toolz/sandbox/tests/test_core.py::test_EqualityHashKey_default_key",
+          "type": "Function"
+        },
+        {
+          "lineno": 41,
+          "nodeid": "toolz/sandbox/tests/test_core.py::test_EqualityHashKey_callable_key",
+          "type": "Function"
+        },
+        {
+          "lineno": 58,
+          "nodeid": "toolz/sandbox/tests/test_core.py::test_EqualityHashKey_index_key",
+          "type": "Function"
+        },
+        {
+          "lineno": 78,
+          "nodeid": "toolz/sandbox/tests/test_core.py::test_unzip",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/sandbox/tests/test_parallel.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 9,
+          "nodeid": "toolz/sandbox/tests/test_parallel.py::test_fold",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/sandbox/tests",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "toolz/sandbox/tests/test_core.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/sandbox/tests/test_parallel.py",
+          "type": "Module"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/sandbox",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "toolz/sandbox/tests",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_compatibility.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 3,
+          "nodeid": "toolz/tests/test_compatibility.py::test_map_filter_are_lazy",
+          "type": "Function"
+        },
+        {
+          "lineno": 10,
+          "nodeid": "toolz/tests/test_compatibility.py::test_dict_iteration",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_curried.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 9,
+          "nodeid": "toolz/tests/test_curried.py::test_take",
+          "type": "Function"
+        },
+        {
+          "lineno": 13,
+          "nodeid": "toolz/tests/test_curried.py::test_first",
+          "type": "Function"
+        },
+        {
+          "lineno": 17,
+          "nodeid": "toolz/tests/test_curried.py::test_merge",
+          "type": "Function"
+        },
+        {
+          "lineno": 23,
+          "nodeid": "toolz/tests/test_curried.py::test_merge_with",
+          "type": "Function"
+        },
+        {
+          "lineno": 27,
+          "nodeid": "toolz/tests/test_curried.py::test_merge_with_list",
+          "type": "Function"
+        },
+        {
+          "lineno": 31,
+          "nodeid": "toolz/tests/test_curried.py::test_sorted",
+          "type": "Function"
+        },
+        {
+          "lineno": 35,
+          "nodeid": "toolz/tests/test_curried.py::test_reduce",
+          "type": "Function"
+        },
+        {
+          "lineno": 39,
+          "nodeid": "toolz/tests/test_curried.py::test_module_name",
+          "type": "Function"
+        },
+        {
+          "lineno": 43,
+          "nodeid": "toolz/tests/test_curried.py::test_curried_operator",
+          "type": "Function"
+        },
+        {
+          "lineno": 67,
+          "nodeid": "toolz/tests/test_curried.py::test_curried_namespace",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_curried_doctests.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 4,
+          "nodeid": "toolz/tests/test_curried_doctests.py::test_doctests",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 26,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge",
+          "type": "Function"
+        },
+        {
+          "lineno": 30,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 34,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_with",
+          "type": "Function"
+        },
+        {
+          "lineno": 46,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_with_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 53,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_valmap",
+          "type": "Function"
+        },
+        {
+          "lineno": 57,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_keymap",
+          "type": "Function"
+        },
+        {
+          "lineno": 61,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_itemmap",
+          "type": "Function"
+        },
+        {
+          "lineno": 65,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_valfilter",
+          "type": "Function"
+        },
+        {
+          "lineno": 69,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_keyfilter",
+          "type": "Function"
+        },
+        {
+          "lineno": 73,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_itemfilter",
+          "type": "Function"
+        },
+        {
+          "lineno": 78,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_assoc",
+          "type": "Function"
+        },
+        {
+          "lineno": 90,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_dissoc",
+          "type": "Function"
+        },
+        {
+          "lineno": 105,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_assoc_in",
+          "type": "Function"
+        },
+        {
+          "lineno": 119,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_update_in",
+          "type": "Function"
+        },
+        {
+          "lineno": 142,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_factory",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 26,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge",
+          "type": "Function"
+        },
+        {
+          "lineno": 30,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 34,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with",
+          "type": "Function"
+        },
+        {
+          "lineno": 46,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 53,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_valmap",
+          "type": "Function"
+        },
+        {
+          "lineno": 57,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_keymap",
+          "type": "Function"
+        },
+        {
+          "lineno": 61,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_itemmap",
+          "type": "Function"
+        },
+        {
+          "lineno": 65,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_valfilter",
+          "type": "Function"
+        },
+        {
+          "lineno": 69,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_keyfilter",
+          "type": "Function"
+        },
+        {
+          "lineno": 73,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_itemfilter",
+          "type": "Function"
+        },
+        {
+          "lineno": 78,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_assoc",
+          "type": "Function"
+        },
+        {
+          "lineno": 90,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_dissoc",
+          "type": "Function"
+        },
+        {
+          "lineno": 105,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_assoc_in",
+          "type": "Function"
+        },
+        {
+          "lineno": 119,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_update_in",
+          "type": "Function"
+        },
+        {
+          "lineno": 142,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 26,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge",
+          "type": "Function"
+        },
+        {
+          "lineno": 30,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 34,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with",
+          "type": "Function"
+        },
+        {
+          "lineno": 46,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 53,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_valmap",
+          "type": "Function"
+        },
+        {
+          "lineno": 57,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_keymap",
+          "type": "Function"
+        },
+        {
+          "lineno": 61,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_itemmap",
+          "type": "Function"
+        },
+        {
+          "lineno": 65,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_valfilter",
+          "type": "Function"
+        },
+        {
+          "lineno": 69,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_keyfilter",
+          "type": "Function"
+        },
+        {
+          "lineno": 73,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_itemfilter",
+          "type": "Function"
+        },
+        {
+          "lineno": 78,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_assoc",
+          "type": "Function"
+        },
+        {
+          "lineno": 90,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_dissoc",
+          "type": "Function"
+        },
+        {
+          "lineno": 105,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_assoc_in",
+          "type": "Function"
+        },
+        {
+          "lineno": 119,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_update_in",
+          "type": "Function"
+        },
+        {
+          "lineno": 142,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_dicttoolz.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict",
+          "type": "Class"
+        },
+        {
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict",
+          "type": "Class"
+        },
+        {
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping",
+          "type": "Class"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_functoolz.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 25,
+          "nodeid": "toolz/tests/test_functoolz.py::test_apply",
+          "type": "Function"
+        },
+        {
+          "lineno": 34,
+          "nodeid": "toolz/tests/test_functoolz.py::test_thread_first",
+          "type": "Function"
+        },
+        {
+          "lineno": 42,
+          "nodeid": "toolz/tests/test_functoolz.py::test_thread_last",
+          "type": "Function"
+        },
+        {
+          "lineno": 48,
+          "nodeid": "toolz/tests/test_functoolz.py::test_memoize",
+          "type": "Function"
+        },
+        {
+          "lineno": 63,
+          "nodeid": "toolz/tests/test_functoolz.py::test_memoize_kwargs",
+          "type": "Function"
+        },
+        {
+          "lineno": 77,
+          "nodeid": "toolz/tests/test_functoolz.py::test_memoize_curried",
+          "type": "Function"
+        },
+        {
+          "lineno": 89,
+          "nodeid": "toolz/tests/test_functoolz.py::test_memoize_partial",
+          "type": "Function"
+        },
+        {
+          "lineno": 100,
+          "nodeid": "toolz/tests/test_functoolz.py::test_memoize_key_signature",
+          "type": "Function"
+        },
+        {
+          "lineno": 144,
+          "nodeid": "toolz/tests/test_functoolz.py::test_memoize_curry_cache",
+          "type": "Function"
+        },
+        {
+          "lineno": 153,
+          "nodeid": "toolz/tests/test_functoolz.py::test_memoize_key",
+          "type": "Function"
+        },
+        {
+          "lineno": 162,
+          "nodeid": "toolz/tests/test_functoolz.py::test_memoize_wrapped",
+          "type": "Function"
+        },
+        {
+          "lineno": 173,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_simple",
+          "type": "Function"
+        },
+        {
+          "lineno": 187,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_kwargs",
+          "type": "Function"
+        },
+        {
+          "lineno": 220,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_passes_errors",
+          "type": "Function"
+        },
+        {
+          "lineno": 233,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_docstring",
+          "type": "Function"
+        },
+        {
+          "lineno": 244,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_is_like_partial",
+          "type": "Function"
+        },
+        {
+          "lineno": 265,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_is_idempotent",
+          "type": "Function"
+        },
+        {
+          "lineno": 280,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_attributes_readonly",
+          "type": "Function"
+        },
+        {
+          "lineno": 293,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_attributes_writable",
+          "type": "Function"
+        },
+        {
+          "lineno": 311,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_module",
+          "type": "Function"
+        },
+        {
+          "lineno": 316,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_comparable",
+          "type": "Function"
+        },
+        {
+          "lineno": 348,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_doesnot_transmogrify",
+          "type": "Function"
+        },
+        {
+          "lineno": 359,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_on_classmethods",
+          "type": "Function"
+        },
+        {
+          "lineno": 401,
+          "nodeid": "toolz/tests/test_functoolz.py::test_memoize_on_classmethods",
+          "type": "Function"
+        },
+        {
+          "lineno": 446,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_call",
+          "type": "Function"
+        },
+        {
+          "lineno": 455,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_bind",
+          "type": "Function"
+        },
+        {
+          "lineno": 466,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_unknown_args",
+          "type": "Function"
+        },
+        {
+          "lineno": 481,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_bad_types",
+          "type": "Function"
+        },
+        {
+          "lineno": 485,
+          "nodeid": "toolz/tests/test_functoolz.py::test_curry_subclassable",
+          "type": "Function"
+        },
+        {
+          "lineno": 510,
+          "nodeid": "toolz/tests/test_functoolz.py::test_compose",
+          "type": "Function"
+        },
+        {
+          "lineno": 541,
+          "nodeid": "toolz/tests/test_functoolz.py::test_pipe",
+          "type": "Function"
+        },
+        {
+          "lineno": 547,
+          "nodeid": "toolz/tests/test_functoolz.py::test_complement",
+          "type": "Function"
+        },
+        {
+          "lineno": 574,
+          "nodeid": "toolz/tests/test_functoolz.py::test_do",
+          "type": "Function"
+        },
+        {
+          "lineno": 583,
+          "nodeid": "toolz/tests/test_functoolz.py::test_juxt_generator_input",
+          "type": "Function"
+        },
+        {
+          "lineno": 590,
+          "nodeid": "toolz/tests/test_functoolz.py::test_flip",
+          "type": "Function"
+        },
+        {
+          "lineno": 597,
+          "nodeid": "toolz/tests/test_functoolz.py::test_excepts",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_inspect_args.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 25,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_make_func",
+          "type": "Function"
+        },
+        {
+          "lineno": 49,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_is_valid",
+          "type": "Function"
+        },
+        {
+          "lineno": 116,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_is_valid_py3",
+          "type": "Function"
+        },
+        {
+          "lineno": 204,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_is_partial",
+          "type": "Function"
+        },
+        {
+          "lineno": 209,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_is_valid_curry",
+          "type": "Function"
+        },
+        {
+          "lineno": 233,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_func_keyword",
+          "type": "Function"
+        },
+        {
+          "lineno": 246,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_has_unknown_args",
+          "type": "Function"
+        },
+        {
+          "lineno": 273,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_num_required_args",
+          "type": "Function"
+        },
+        {
+          "lineno": 283,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_has_keywords",
+          "type": "Function"
+        },
+        {
+          "lineno": 295,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_has_varargs",
+          "type": "Function"
+        },
+        {
+          "lineno": 304,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_is_arity",
+          "type": "Function"
+        },
+        {
+          "lineno": 316,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_introspect_curry_valid_py3",
+          "type": "Function"
+        },
+        {
+          "lineno": 358,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_introspect_curry_partial_py3",
+          "type": "Function"
+        },
+        {
+          "lineno": 362,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_introspect_curry_py3",
+          "type": "Function"
+        },
+        {
+          "lineno": 393,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_introspect_builtin_modules",
+          "type": "Function"
+        },
+        {
+          "lineno": 445,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_inspect_signature_property",
+          "type": "Function"
+        },
+        {
+          "lineno": 480,
+          "nodeid": "toolz/tests/test_inspect_args.py::test_inspect_wrapped_property",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_itertoolz.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 44,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_remove",
+          "type": "Function"
+        },
+        {
+          "lineno": 50,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_groupby",
+          "type": "Function"
+        },
+        {
+          "lineno": 54,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_groupby_non_callable",
+          "type": "Function"
+        },
+        {
+          "lineno": 68,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_merge_sorted",
+          "type": "Function"
+        },
+        {
+          "lineno": 97,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_interleave",
+          "type": "Function"
+        },
+        {
+          "lineno": 102,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_unique",
+          "type": "Function"
+        },
+        {
+          "lineno": 108,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_isiterable",
+          "type": "Function"
+        },
+        {
+          "lineno": 114,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_isdistinct",
+          "type": "Function"
+        },
+        {
+          "lineno": 125,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_nth",
+          "type": "Function"
+        },
+        {
+          "lineno": 135,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_first",
+          "type": "Function"
+        },
+        {
+          "lineno": 141,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_second",
+          "type": "Function"
+        },
+        {
+          "lineno": 147,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_last",
+          "type": "Function"
+        },
+        {
+          "lineno": 153,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_rest",
+          "type": "Function"
+        },
+        {
+          "lineno": 158,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_take",
+          "type": "Function"
+        },
+        {
+          "lineno": 163,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_tail",
+          "type": "Function"
+        },
+        {
+          "lineno": 169,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_drop",
+          "type": "Function"
+        },
+        {
+          "lineno": 174,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_take_nth",
+          "type": "Function"
+        },
+        {
+          "lineno": 178,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_get",
+          "type": "Function"
+        },
+        {
+          "lineno": 198,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_mapcat",
+          "type": "Function"
+        },
+        {
+          "lineno": 210,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_cons",
+          "type": "Function"
+        },
+        {
+          "lineno": 214,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_concat",
+          "type": "Function"
+        },
+        {
+          "lineno": 220,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_concatv",
+          "type": "Function"
+        },
+        {
+          "lineno": 226,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_interpose",
+          "type": "Function"
+        },
+        {
+          "lineno": 233,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_frequencies",
+          "type": "Function"
+        },
+        {
+          "lineno": 242,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_reduceby",
+          "type": "Function"
+        },
+        {
+          "lineno": 261,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_reduce_by_init",
+          "type": "Function"
+        },
+        {
+          "lineno": 267,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default",
+          "type": "Function"
+        },
+        {
+          "lineno": 276,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_iterate",
+          "type": "Function"
+        },
+        {
+          "lineno": 281,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_accumulate",
+          "type": "Function"
+        },
+        {
+          "lineno": 295,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_accumulate_works_on_consumable_iterables",
+          "type": "Function"
+        },
+        {
+          "lineno": 299,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_sliding_window",
+          "type": "Function"
+        },
+        {
+          "lineno": 304,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_sliding_window_of_short_iterator",
+          "type": "Function"
+        },
+        {
+          "lineno": 308,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_partition",
+          "type": "Function"
+        },
+        {
+          "lineno": 316,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_partition_all",
+          "type": "Function"
+        },
+        {
+          "lineno": 333,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_count",
+          "type": "Function"
+        },
+        {
+          "lineno": 342,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_pluck",
+          "type": "Function"
+        },
+        {
+          "lineno": 361,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_join",
+          "type": "Function"
+        },
+        {
+          "lineno": 383,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_getter",
+          "type": "Function"
+        },
+        {
+          "lineno": 389,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_key_as_getter",
+          "type": "Function"
+        },
+        {
+          "lineno": 405,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_join_double_repeats",
+          "type": "Function"
+        },
+        {
+          "lineno": 423,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_join_missing_element",
+          "type": "Function"
+        },
+        {
+          "lineno": 434,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_left_outer_join",
+          "type": "Function"
+        },
+        {
+          "lineno": 441,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_right_outer_join",
+          "type": "Function"
+        },
+        {
+          "lineno": 448,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_outer_join",
+          "type": "Function"
+        },
+        {
+          "lineno": 456,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_diff",
+          "type": "Function"
+        },
+        {
+          "lineno": 487,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_topk",
+          "type": "Function"
+        },
+        {
+          "lineno": 503,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_topk_is_stable",
+          "type": "Function"
+        },
+        {
+          "lineno": 507,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_peek",
+          "type": "Function"
+        },
+        {
+          "lineno": 516,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_random_sample",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_recipes.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 7,
+          "nodeid": "toolz/tests/test_recipes.py::test_countby",
+          "type": "Function"
+        },
+        {
+          "lineno": 13,
+          "nodeid": "toolz/tests/test_recipes.py::test_partitionby",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_serialization.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 8,
+          "nodeid": "toolz/tests/test_serialization.py::test_compose",
+          "type": "Function"
+        },
+        {
+          "lineno": 14,
+          "nodeid": "toolz/tests/test_serialization.py::test_curry",
+          "type": "Function"
+        },
+        {
+          "lineno": 20,
+          "nodeid": "toolz/tests/test_serialization.py::test_juxt",
+          "type": "Function"
+        },
+        {
+          "lineno": 27,
+          "nodeid": "toolz/tests/test_serialization.py::test_complement",
+          "type": "Function"
+        },
+        {
+          "lineno": 36,
+          "nodeid": "toolz/tests/test_serialization.py::test_instanceproperty",
+          "type": "Function"
+        },
+        {
+          "lineno": 51,
+          "nodeid": "toolz/tests/test_serialization.py::test_flip",
+          "type": "Function"
+        },
+        {
+          "lineno": 62,
+          "nodeid": "toolz/tests/test_serialization.py::test_curried_exceptions",
+          "type": "Function"
+        },
+        {
+          "lineno": 115,
+          "nodeid": "toolz/tests/test_serialization.py::test_curried_qualname",
+          "type": "Function"
+        },
+        {
+          "lineno": 189,
+          "nodeid": "toolz/tests/test_serialization.py::test_curried_bad_qualname",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_signatures.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 6,
+          "nodeid": "toolz/tests/test_signatures.py::test_is_valid",
+          "type": "Function"
+        },
+        {
+          "lineno": 76,
+          "nodeid": "toolz/tests/test_signatures.py::test_is_partial",
+          "type": "Function"
+        },
+        {
+          "lineno": 80,
+          "nodeid": "toolz/tests/test_signatures.py::test_for_coverage",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_tlz.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 3,
+          "nodeid": "toolz/tests/test_tlz.py::test_tlz",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests/test_utils.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 3,
+          "nodeid": "toolz/tests/test_utils.py::test_raises",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz/tests",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "toolz/tests/test_compatibility.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/tests/test_curried.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/tests/test_curried_doctests.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/tests/test_dicttoolz.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/tests/test_functoolz.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/tests/test_inspect_args.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/tests/test_itertoolz.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/tests/test_recipes.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/tests/test_serialization.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/tests/test_signatures.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/tests/test_tlz.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "toolz/tests/test_utils.py",
+          "type": "Module"
+        }
+      ]
+    },
+    {
+      "nodeid": "toolz",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "toolz/curried",
+          "type": "Package"
+        },
+        {
+          "nodeid": "toolz/sandbox",
+          "type": "Package"
+        },
+        {
+          "nodeid": "toolz/tests",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "bench",
+          "type": "Dir"
+        },
+        {
+          "nodeid": "conda.recipe",
+          "type": "Dir"
+        },
+        {
+          "nodeid": "doc",
+          "type": "Dir"
+        },
+        {
+          "nodeid": "examples",
+          "type": "Dir"
+        },
+        {
+          "nodeid": "tlz",
+          "type": "Package"
+        },
+        {
+          "nodeid": "toolz",
+          "type": "Package"
+        }
+      ]
+    }
+  ],
+  "created": 1787296071.3739264,
+  "duration": 4.971686840057373,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 221,
+    "failed": 6,
+    "passed": 215,
+    "total": 221
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00024175099679268897,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_basic_dict_access",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 8,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_basic_dict_access",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00023037599748931825,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00021529299556277692,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00017850000585895032,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_single_key",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 12,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_single_key",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00016324999160133302,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001110419980250299,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00015808400348760188,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_nested_list_access",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 16,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_nested_list_access",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012237500050105155,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.304199193138629e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001568750012665987,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_missing_key_returns_none",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 21,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_missing_key_returns_none",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.979199967347085e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011912599438801408,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012583300122059882,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_missing_key_returns_custom_default",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 25,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_missing_key_returns_custom_default",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013412600674200803,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001232089998666197,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001452919968869537,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_missing_nested_key",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 30,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_missing_nested_key",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.804200090002269e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011150000500492752,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001276260009035468,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_missing_index",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 38,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_missing_index",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.408399637322873e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013800100714433938,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003346680023241788,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_no_default_raises_keyerror",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 43,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_no_default_raises_keyerror",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.51670081121847e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019687600433826447,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001535420014988631,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_no_default_raises_indexerror",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 47,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_no_default_raises_indexerror",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011199999426025897,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011162500595673919,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000219334993744269,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_no_default_raises_typeerror",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 51,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_no_default_raises_typeerror",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001128759904531762,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00014062599802855402,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010929199925158173,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_empty_keys_returns_coll",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 55,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_empty_keys_returns_coll",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011062499834224582,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012262599193491042,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00020324999059084803,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_tuple_keys",
+        "TestGetIn",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 59,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestGetIn::test_tuple_keys",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012808300380129367,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013525100075639784,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001408340031048283,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_remove_single_key",
+        "TestDissoc",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 65,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_remove_single_key",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011762599751818925,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.4292001449503e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012870899809058756,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_remove_multiple_keys",
+        "TestDissoc",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 69,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_remove_multiple_keys",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001799589954316616,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.404199954587966e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014037499204277992,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_remove_all_keys",
+        "TestDissoc",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 73,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_remove_all_keys",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00016870899708010256,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.608399705030024e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001179169921670109,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_remove_missing_key",
+        "TestDissoc",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 77,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_remove_missing_key",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013466700329445302,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013566800043918192,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012995899305678904,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_original_unchanged",
+        "TestDissoc",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 81,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_original_unchanged",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.59169992711395e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00014837599883321673,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 90,
+          "message": "TypeError: dissoc() got an unexpected keyword argument 'factory'",
+          "path": "/repo/bench/generated/test_toolz_dicttoolz.py"
+        },
+        "duration": 0.00018995899881701916,
+        "longrepr": "self = <test_toolz_dicttoolz.TestDissoc object at 0xffffb2b46db0>\n\n    def test_with_ordereddict_factory(self):\n        d = OrderedDict([(\"x\", 1), (\"y\", 2), (\"z\", 3)])\n>       result = dissoc(d, \"y\", factory=OrderedDict)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       TypeError: dissoc() got an unexpected keyword argument 'factory'\n\nbench/generated/test_toolz_dicttoolz.py:90: TypeError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 90,
+            "message": "TypeError",
+            "path": "bench/generated/test_toolz_dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_with_ordereddict_factory",
+        "TestDissoc",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 87,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_with_ordereddict_factory",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00010775000555440784,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002942099963547662,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013683400175068527,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_many_keys_uses_remaining_path",
+        "TestDissoc",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 94,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_many_keys_uses_remaining_path",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00015804199210833758,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011504199937917292,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00015449999773409218,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_few_keys_uses_delete_path",
+        "TestDissoc",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 98,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_few_keys_uses_delete_path",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010316699626855552,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.233300806954503e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0010802960023283958,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_unexpected_kwargs_raises",
+        "TestDissoc",
+        "test_toolz_dicttoolz.py",
+        "generated",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 102,
+      "nodeid": "bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_unexpected_kwargs_raises",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001705839968053624,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0003133340069325641,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.046013002007384785,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_get_curried",
+        "test_curry.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 6,
+      "nodeid": "bench/test_curry.py::test_get_curried",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0007162109977798536,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00034487601078581065,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.02219220700499136,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_get",
+        "test_curry_baseline.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 7,
+      "nodeid": "bench/test_curry_baseline.py::test_get",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014670900418423116,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0003702099929796532,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.13619512399600353,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_first",
+        "test_first.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 5,
+      "nodeid": "bench/test_first.py::test_first",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014262599870562553,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00017979199765250087,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.1745956410013605,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_second",
+        "test_first.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 10,
+      "nodeid": "bench/test_first.py::test_second",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011675100540742278,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00020737599697895348,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.18597789100022055,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_first_iter",
+        "test_first_iter.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 4,
+      "nodeid": "bench/test_first_iter.py::test_first_iter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013783399481326342,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002843340043909848,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.2112323170003947,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_second_iter",
+        "test_first_iter.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 10,
+      "nodeid": "bench/test_first_iter.py::test_second_iter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002806670090649277,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002747510006884113,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.10769876999256667,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_frequencies",
+        "test_frequencies.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 7,
+      "nodeid": "bench/test_frequencies.py::test_frequencies",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001694999955361709,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00014804299280513078,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.02413096399686765,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_frequencies_small",
+        "test_frequencies.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 11,
+      "nodeid": "bench/test_frequencies.py::test_frequencies_small",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00015000099665485322,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00023658400459680706,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.013676882997970097,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_get",
+        "test_get.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 5,
+      "nodeid": "bench/test_get.py::test_get",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00018841700511984527,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012829199840780348,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.09290846600197256,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_get",
+        "test_get_list.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 5,
+      "nodeid": "bench/test_get_list.py::test_get",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010495900642126799,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00014779300545342267,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.12132136200671084,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_groupby",
+        "test_groupby.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 6,
+      "nodeid": "bench/test_groupby.py::test_groupby",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013912499707657844,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001732929958961904,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.7908060680056224,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_many_to_many_large",
+        "test_join.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 17,
+      "nodeid": "bench/test_join.py::test_many_to_many_large",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.000133000998175703,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00016616799985058606,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.7689478219981538,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_one_to_one_tiny",
+        "test_join.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 21,
+      "nodeid": "bench/test_join.py::test_one_to_one_tiny",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011970799823757261,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002975009992951527,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.43497530500462744,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_one_to_many",
+        "test_join.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 29,
+      "nodeid": "bench/test_join.py::test_one_to_many",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012333400081843138,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001392499980283901,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.020172365999314934,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_memoize_no_kwargs",
+        "test_memoize.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 3,
+      "nodeid": "bench/test_memoize.py::test_memoize_no_kwargs",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010116701014339924,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001657090033404529,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.03244370200263802,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_memoize_kwargs",
+        "test_memoize_kwargs.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 3,
+      "nodeid": "bench/test_memoize_kwargs.py::test_memoize_kwargs",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014750100672245026,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.000293000994133763,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.006701899998006411,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_pluck",
+        "test_pluck.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 6,
+      "nodeid": "bench/test_pluck.py::test_pluck",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00024550099624320865,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00021379301324486732,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.17660152299504261,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sliding_window",
+        "test_sliding_window.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 5,
+      "nodeid": "bench/test_sliding_window.py::test_sliding_window",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00020829201093874872,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002408339933026582,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 17,
+          "message": "FileNotFoundError: [Errno 2] No such file or directory: 'bench/shakespeare.txt'",
+          "path": "/repo/bench/test_wordcount.py"
+        },
+        "duration": 0.00026312599948141724,
+        "longrepr": "def test_shakespeare():\n>       with open('bench/shakespeare.txt') as f:\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       FileNotFoundError: [Errno 2] No such file or directory: 'bench/shakespeare.txt'\n\nbench/test_wordcount.py:17: FileNotFoundError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 17,
+            "message": "FileNotFoundError",
+            "path": "bench/test_wordcount.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_shakespeare",
+        "test_wordcount.py",
+        "bench",
+        "repo",
+        ""
+      ],
+      "lineno": 15,
+      "nodeid": "bench/test_wordcount.py::test_shakespeare",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00010883298818953335,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013675099762622267,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00018149999959859997,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_EqualityHashKey_default_key",
+        "test_core.py",
+        "tests",
+        "sandbox",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 6,
+      "nodeid": "toolz/sandbox/tests/test_core.py::test_EqualityHashKey_default_key",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.000491501996293664,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001670010096859187,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002715839946176857,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_EqualityHashKey_callable_key",
+        "test_core.py",
+        "tests",
+        "sandbox",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 41,
+      "nodeid": "toolz/sandbox/tests/test_core.py::test_EqualityHashKey_callable_key",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010849999671336263,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011733399878721684,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00020925099670421332,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_EqualityHashKey_index_key",
+        "test_core.py",
+        "tests",
+        "sandbox",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 58,
+      "nodeid": "toolz/sandbox/tests/test_core.py::test_EqualityHashKey_index_key",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.454199996776879e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.800100815482438e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014962600835133344,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_unzip",
+        "test_core.py",
+        "tests",
+        "sandbox",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 78,
+      "nodeid": "toolz/sandbox/tests/test_core.py::test_unzip",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.349999552592635e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.216699643526226e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00019733399676624686,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_fold",
+        "test_parallel.py",
+        "tests",
+        "sandbox",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 9,
+      "nodeid": "toolz/sandbox/tests/test_parallel.py::test_fold",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.37499974295497e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.520799747202545e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010433299758005887,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_map_filter_are_lazy",
+        "test_compatibility.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 3,
+      "nodeid": "toolz/tests/test_compatibility.py::test_map_filter_are_lazy",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011241700849495828,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.929200364742428e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010579200170468539,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_dict_iteration",
+        "test_compatibility.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 10,
+      "nodeid": "toolz/tests/test_compatibility.py::test_dict_iteration",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.120900020003319e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.958400237839669e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00017666700296103954,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_take",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 9,
+      "nodeid": "toolz/tests/test_curried.py::test_take",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.083399734459817e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.820799459703267e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 8.804199751466513e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_first",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 13,
+      "nodeid": "toolz/tests/test_curried.py::test_first",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.020899258553982e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.866699888836592e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001636259985389188,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 17,
+      "nodeid": "toolz/tests/test_curried.py::test_merge",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.15009989310056e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.949999417178333e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00015120899479370564,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 23,
+      "nodeid": "toolz/tests/test_curried.py::test_merge_with",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.020899258553982e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.941700459923595e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001644589938223362,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with_list",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 27,
+      "nodeid": "toolz/tests/test_curried.py::test_merge_with_list",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002384169929428026,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011816699407063425,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005326679965946823,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sorted",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 31,
+      "nodeid": "toolz/tests/test_curried.py::test_sorted",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010470900451764464,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010624999413266778,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00024600100005045533,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_reduce",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 35,
+      "nodeid": "toolz/tests/test_curried.py::test_reduce",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.741699614096433e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001129589945776388,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003193760057911277,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_module_name",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 39,
+      "nodeid": "toolz/tests/test_curried.py::test_module_name",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.358400711789727e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.454200335312635e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013954199675936252,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curried_operator",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 43,
+      "nodeid": "toolz/tests/test_curried.py::test_curried_operator",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.92920104181394e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.787499973550439e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0021182159980526194,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curried_namespace",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 67,
+      "nodeid": "toolz/tests/test_curried.py::test_curried_namespace",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.316700743511319e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010791698878165334,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.002528591998270713,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_doctests",
+        "test_curried_doctests.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 4,
+      "nodeid": "toolz/tests/test_curried_doctests.py::test_doctests",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010345900955144316,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002121259894920513,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011395900219213217,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 26,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010404200293123722,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00015058400458656251,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010699999984353781,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_iterable_arg",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 30,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010391700197942555,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00015320899547077715,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001336679997621104,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 34,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_with",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.92090062936768e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013108400162309408,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013187598960939795,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with_iterable_arg",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 46,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_with_iterable_arg",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.883400005288422e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.608399366494268e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.941699681803584e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_valmap",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 53,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_valmap",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.73749959282577e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.379200880881399e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010950099385809153,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_keymap",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 57,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_keymap",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010974999167956412,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013137499627191573,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011700000322889537,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_itemmap",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 61,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_itemmap",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.124999633058906e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.612500096205622e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002880429965443909,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_valfilter",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 65,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_valfilter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.541700663045049e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.74589929683134e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010075099999085069,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_keyfilter",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 69,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_keyfilter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.82500025909394e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.979199967347085e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010350000229664147,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_itemfilter",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 73,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_itemfilter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.720799814909697e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.512599742971361e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010262599971611053,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assoc",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 78,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_assoc",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.516700472682714e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.225100464187562e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010820799798239022,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_dissoc",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 90,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_dissoc",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.312499267049134e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.2333994214423e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001078340137610212,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assoc_in",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 105,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_assoc_in",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.24169983388856e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.087499008979648e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013775100524071604,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_update_in",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 119,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_update_in",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.516699017491192e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.15840030554682e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012525099737104028,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_factory",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 142,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_factory",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.270799298770726e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.537499525118619e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010120800288859755,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 26,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.45829927129671e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001372920087305829,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012916700507048517,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_iterable_arg",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 30,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011858400830533355,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.533399133943021e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00015683399396948516,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 34,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.625099482946098e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.933299977798015e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013200100511312485,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with_iterable_arg",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 46,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_with_iterable_arg",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.595899609848857e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013549999857787043,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011120901035610586,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_valmap",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 53,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_valmap",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011137500405311584,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.874999184627086e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010675100202206522,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_keymap",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 57,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_keymap",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.379199764225632e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010029200348071754,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010716699762269855,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_itemmap",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 61,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_itemmap",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.104200580623001e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.779199561104178e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012258400965947658,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_valfilter",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 65,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_valfilter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001627930032555014,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.800000407267362e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00015141699986997992,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_keyfilter",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 69,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_keyfilter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011462499969638884,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.604200022295117e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010979198850691319,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_itemfilter",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 73,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_itemfilter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.25009953789413e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.416699711233377e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012491698726080358,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assoc",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 78,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_assoc",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012008400517515838,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010712599032558501,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013379199663177133,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_dissoc",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 90,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_dissoc",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.125100041273981e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.441699901595712e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011654199624899775,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assoc_in",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 105,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_assoc_in",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.349999552592635e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.312500722240657e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001432919962098822,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_update_in",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 119,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_update_in",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.316700404975563e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.174999675247818e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011879201338160783,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_factory",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 142,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.379199425689876e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.262599294539541e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001094170002033934,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 26,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.504099969286472e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.033300400711596e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00017350098642054945,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_iterable_arg",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 30,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00018612599524203688,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001130840100813657,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00019212599727325141,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 34,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013354199472814798,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.691699233371764e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013937600306235254,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_with_iterable_arg",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 46,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_with_iterable_arg",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001003340003080666,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010312600352335721,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001102920068660751,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_valmap",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 53,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_valmap",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001428340037818998,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.212500299327075e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011962599819526076,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_keymap",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 57,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_keymap",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.200000204145908e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.958400576375425e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011033400369342417,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_itemmap",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 61,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_itemmap",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.991699723992497e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.833399624563754e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00024070900690276176,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_valfilter",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 65,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_valfilter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.954200893640518e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.924999565351754e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014441700477618724,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_keyfilter",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 69,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_keyfilter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.354199573863298e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012470899673644453,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011441699462011456,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_itemfilter",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 73,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_itemfilter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.800099360290915e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012037499982398003,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012333400081843138,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assoc",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 78,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_assoc",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001086670090444386,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.849998994264752e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00033329300640616566,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_dissoc",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 90,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_dissoc",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.304199193138629e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010775000555440784,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00015320899547077715,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_assoc_in",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 105,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_assoc_in",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.912600216921419e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010745899635367095,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002091249916702509,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_update_in",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 119,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_update_in",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.679199138190597e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010579200170468539,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014370899589266628,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_factory",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 142,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.695898916106671e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.345800208393484e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011604200699366629,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_apply",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 25,
+      "nodeid": "toolz/tests/test_functoolz.py::test_apply",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.733400656841695e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00026887599960900843,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013970900909043849,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_thread_first",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 34,
+      "nodeid": "toolz/tests/test_functoolz.py::test_thread_first",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013450100959744304,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.812500502448529e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001112080062739551,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_thread_last",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 42,
+      "nodeid": "toolz/tests/test_functoolz.py::test_thread_last",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.683399937581271e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.491698827128857e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00023700098972767591,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_memoize",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 48,
+      "nodeid": "toolz/tests/test_functoolz.py::test_memoize",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.458399679511786e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001094170002033934,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001685839961282909,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_memoize_kwargs",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 63,
+      "nodeid": "toolz/tests/test_functoolz.py::test_memoize_kwargs",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012870901264250278,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.670799434185028e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00033366799470968544,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_memoize_curried",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 77,
+      "nodeid": "toolz/tests/test_functoolz.py::test_memoize_curried",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011404200631659478,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001142919936683029,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0014818390045547858,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_memoize_partial",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 89,
+      "nodeid": "toolz/tests/test_functoolz.py::test_memoize_partial",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012733398762065917,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001287500053877011,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004778769944095984,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_memoize_key_signature",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 100,
+      "nodeid": "toolz/tests/test_functoolz.py::test_memoize_key_signature",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013620799290947616,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.000158708993694745,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002585840120445937,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_memoize_curry_cache",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 144,
+      "nodeid": "toolz/tests/test_functoolz.py::test_memoize_curry_cache",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013800100714433938,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012966699432581663,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00026666800840757787,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_memoize_key",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 153,
+      "nodeid": "toolz/tests/test_functoolz.py::test_memoize_key",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012824998702853918,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013204201241023839,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00020025100093334913,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_memoize_wrapped",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 162,
+      "nodeid": "toolz/tests/test_functoolz.py::test_memoize_wrapped",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012825100566260517,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012079199950676411,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005296690069371834,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_simple",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 173,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_simple",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.866700227372348e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011891699978150427,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0006545020005432889,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_kwargs",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 187,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_kwargs",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00021633401047438383,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001823759957915172,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004332100070314482,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_passes_errors",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 220,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_passes_errors",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00018104199261870235,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00017904200649354607,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00023133399372454733,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_docstring",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 233,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_docstring",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00018575099238660187,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.000173916996573098,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005919190007261932,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_is_like_partial",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 244,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_is_like_partial",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001934180036187172,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019387599604669958,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002633340045576915,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_is_idempotent",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 265,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_is_idempotent",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001837089948821813,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00018862501019611955,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013533400488086045,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_attributes_readonly",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 280,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_attributes_readonly",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011166700278408825,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019329199858475477,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002490430051693693,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_attributes_writable",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 293,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_attributes_writable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001114590122597292,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00020012599998153746,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00021666700195055455,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_module",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 311,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_module",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00016112498997244984,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019612601317930967,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00047487700066994876,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_comparable",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 316,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_comparable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00021554299746640027,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013174999912735075,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003255019983043894,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_doesnot_transmogrify",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 348,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_doesnot_transmogrify",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.354199573863298e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001685839961282909,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0007761700107948855,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_on_classmethods",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 359,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_on_classmethods",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00018437601102050394,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001800840109353885,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004537939967121929,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_memoize_on_classmethods",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 401,
+      "nodeid": "toolz/tests/test_functoolz.py::test_memoize_on_classmethods",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00019383399921935052,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011833399184979498,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00020645899348892272,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_call",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 446,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_call",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001275000104214996,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010079200728796422,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014899999951012433,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_bind",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 455,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_bind",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.458400018047541e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.80839943420142e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00032645899045746773,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_unknown_args",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 466,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_unknown_args",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.575100557412952e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.470900113228709e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000115458999061957,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_bad_types",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 481,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_bad_types",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013795901031699032,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.63330060383305e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002683349885046482,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry_subclassable",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 485,
+      "nodeid": "toolz/tests/test_functoolz.py::test_curry_subclassable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.34169947868213e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.32080001803115e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00016016699373722076,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_compose",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 510,
+      "nodeid": "toolz/tests/test_functoolz.py::test_compose",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.170798875857145e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.150100231636316e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011145799362566322,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_pipe",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 541,
+      "nodeid": "toolz/tests/test_functoolz.py::test_pipe",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.4292001449503e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010416700388304889,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013604199921246618,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_complement",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 547,
+      "nodeid": "toolz/tests/test_functoolz.py::test_complement",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.362600394524634e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010904199734795839,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013675099762622267,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_do",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 574,
+      "nodeid": "toolz/tests/test_functoolz.py::test_do",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.512499673292041e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.100000897888094e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014920900866854936,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_juxt_generator_input",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 583,
+      "nodeid": "toolz/tests/test_functoolz.py::test_juxt_generator_input",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002004590060096234,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011158399865962565,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012462599261198193,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_flip",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 590,
+      "nodeid": "toolz/tests/test_functoolz.py::test_flip",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010100100189447403,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.116700675804168e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00048550200881436467,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_excepts",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 597,
+      "nodeid": "toolz/tests/test_functoolz.py::test_excepts",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.325100108981133e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00014154199743643403,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003946270007872954,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_make_func",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 25,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_make_func",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013533400488086045,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010016700252890587,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0018455489916959777,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_is_valid",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 49,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_is_valid",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.212498844135553e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011641699529718608,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0016126720001921058,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_is_valid_py3",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 116,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_is_valid_py3",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012870899809058756,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010495800233911723,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0027167600055690855,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_is_partial",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 204,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_is_partial",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.816700185183436e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00020433400641195476,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.016100017994176596,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_is_valid_curry",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 209,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_is_valid_curry",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00021291700250003487,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00022229200112633407,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00042754299647640437,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_func_keyword",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 233,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_func_keyword",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00021595900761894882,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00018666801042854786,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0008351700089406222,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_has_unknown_args",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 246,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_has_unknown_args",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00017450099403504282,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00020429199503269047,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00046137699973769486,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_num_required_args",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 273,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_num_required_args",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00018666699179448187,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00021654200099874288,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000843503003125079,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_has_keywords",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 283,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_has_keywords",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0005553769879043102,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019579198851715773,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003117930027656257,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_has_varargs",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 295,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_has_varargs",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00015608400281053036,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011941800767090172,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0007078780035953969,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_is_arity",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 304,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_is_arity",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00020050098828505725,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00017770900740288198,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0027038429980166256,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_introspect_curry_valid_py3",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 316,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_introspect_curry_valid_py3",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002008760056924075,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00018758399528451264,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0019189229933544993,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_introspect_curry_partial_py3",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 358,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_introspect_curry_partial_py3",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012025100295431912,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011749999248422682,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00090887799160555,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_introspect_curry_py3",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 362,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_introspect_curry_py3",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001060009963111952,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001269589993171394,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 443,
+          "message": "AssertionError: Missing introspection for the following callables:\n\nbuiltins:\n    anext",
+          "path": "/repo/toolz/tests/test_inspect_args.py"
+        },
+        "duration": 0.02399646300182212,
+        "longrepr": "def test_introspect_builtin_modules():\n        mods = [builtins, functools, itertools, operator, toolz,\n                toolz.functoolz, toolz.itertoolz, toolz.dicttoolz, toolz.recipes]\n    \n        blacklist = set()\n    \n        def add_blacklist(mod, attr):\n            if hasattr(mod, attr):\n                blacklist.add(getattr(mod, attr))\n    \n        add_blacklist(builtins, 'basestring')\n        add_blacklist(builtins, 'breakpoint')\n        add_blacklist(builtins, 'NoneType')\n        add_blacklist(builtins, '__metaclass__')\n        add_blacklist(builtins, 'sequenceiterator')\n    \n        def is_missing(modname, name, func):\n            if name.startswith('_') and not name.startswith('__'):\n                return False\n            if name.startswith('__pyx_unpickle_') or name.endswith('_cython__'):\n                return False\n            try:\n                if issubclass(func, BaseException):\n                    return False\n            except TypeError:\n                pass\n            try:\n                return (callable(func)\n                        and func.__module__ is not None\n                        and modname in func.__module__\n                        and is_partial_args(func, (), {}) is not True\n                        and func not in blacklist)\n            except AttributeError:\n                return False\n    \n        missing = {}\n        for mod in mods:\n            modname = mod.__name__\n            for name, func in vars(mod).items():\n                if is_missing(modname, name, func):\n                    if modname not in missing:\n                        missing[modname] = []\n                    missing[modname].append(name)\n        if missing:\n            messages = []\n            for modname, names in sorted(missing.items()):\n                msg = '{}:\\n    {}'.format(modname, '\\n    '.join(sorted(names)))\n                messages.append(msg)\n            message = 'Missing introspection for the following callables:\\n\\n'\n>           raise AssertionError(message + '\\n\\n'.join(messages))\nE           AssertionError: Missing introspection for the following callables:\nE           \nE           builtins:\nE               anext\n\ntoolz/tests/test_inspect_args.py:443: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 443,
+            "message": "AssertionError",
+            "path": "toolz/tests/test_inspect_args.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_introspect_builtin_modules",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 393,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_introspect_builtin_modules",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00013941699580755085,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002473759959684685,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00037350200000219047,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_inspect_signature_property",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 445,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_inspect_signature_property",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002110009954776615,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011433400504756719,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 498,
+          "message": "AssertionError: assert 1 is None\n +  where 1 = num_required_args(<class 'test_inspect_args.test_inspect_wrapped_property.<locals>.Wrapped'>)",
+          "path": "/repo/toolz/tests/test_inspect_args.py"
+        },
+        "duration": 0.0005164189933566377,
+        "longrepr": "def test_inspect_wrapped_property():\n        class Wrapped(object):\n            def __init__(self, func):\n                self.func = func\n    \n            def __call__(self, *args, **kwargs):\n                return self.func(*args, **kwargs)\n    \n            @property\n            def __wrapped__(self):\n                return self.func\n    \n        func = lambda x: x\n        wrapped = Wrapped(func)\n        if PY3:\n            assert inspect.signature(func) == inspect.signature(wrapped)\n    \n>       assert num_required_args(Wrapped) is None\nE       AssertionError: assert 1 is None\nE        +  where 1 = num_required_args(<class 'test_inspect_args.test_inspect_wrapped_property.<locals>.Wrapped'>)\n\ntoolz/tests/test_inspect_args.py:498: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 498,
+            "message": "AssertionError",
+            "path": "toolz/tests/test_inspect_args.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_inspect_wrapped_property",
+        "test_inspect_args.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 480,
+      "nodeid": "toolz/tests/test_inspect_args.py::test_inspect_wrapped_property",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00010633400233928114,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0005088769976282492,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00035941800160799176,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_remove",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 44,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_remove",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013845899957232177,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00016079199849627912,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013670799671672285,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_groupby",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 50,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_groupby",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00017099999240599573,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00022770900977775455,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002350430004298687,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_groupby_non_callable",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 54,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_groupby_non_callable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014016698696650565,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00017291700351051986,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00021458399714902043,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_merge_sorted",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 68,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_merge_sorted",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011270899267401546,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0003591679997043684,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00027783399855252355,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_interleave",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 97,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_interleave",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00016525000683031976,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002351260045543313,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013150100130587816,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_unique",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 102,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_unique",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013245899754110724,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002844589907908812,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001915419998113066,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_isiterable",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 108,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_isiterable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001409170072292909,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012862500443588942,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001248760090675205,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_isdistinct",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 114,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_isdistinct",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00015845899179112166,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.379199764225632e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00020295899594202638,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_nth",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 125,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_nth",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010741699952632189,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011950000771321356,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010200000542681664,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_first",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 135,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_first",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.633399895392358e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002479169925209135,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00016254201182164252,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_second",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 141,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_second",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001314999972237274,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010737600678112358,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011520899715833366,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_last",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 147,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_last",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.708298603072762e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.358300303574651e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001142919936683029,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_rest",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 153,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_rest",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.23329935176298e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011062499834224582,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010274999658577144,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_take",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 158,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_take",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.437599510420114e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.024998871609569e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011179200373589993,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_tail",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 163,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_tail",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013225099246483296,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.941700798459351e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010358300642110407,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_drop",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 169,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_drop",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010045799717772752,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010908300464507192,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00017745900549925864,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_take_nth",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 174,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_take_nth",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001262920122826472,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001261669967789203,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00016991699521895498,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_get",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 178,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_get",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001102920068660751,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010341699817217886,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011583400191739202,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_mapcat",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 198,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_mapcat",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.304199193138629e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.083400072995573e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010133300384040922,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_cons",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 210,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_cons",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001331670064246282,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002060009865090251,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00022537598852068186,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_concat",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 214,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_concat",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011512500350363553,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011862500105053186,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012025100295431912,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_concatv",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 220,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_concatv",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012420900748111308,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.162600326817483e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00012920900189783424,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_interpose",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 226,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_interpose",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012954199337400496,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.974999946076423e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011700000322889537,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_frequencies",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 233,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_frequencies",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.51670081121847e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010041700443252921,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001892930013127625,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_reduceby",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 242,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_reduceby",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00018654200539458543,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002441260003251955,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011229199299123138,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_reduce_by_init",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 261,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_reduce_by_init",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010875100269913673,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.962600259110332e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00018341699615120888,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_reduce_by_callable_default",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 267,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00023987601161934435,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010895899322349578,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00025033499696291983,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_iterate",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 276,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_iterate",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001163340057246387,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.458301065023988e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013737499830313027,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_accumulate",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 281,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_accumulate",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.92499990388751e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.066698839887977e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010112499876413494,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_accumulate_works_on_consumable_iterables",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 295,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_accumulate_works_on_consumable_iterables",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.625000529922545e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.837498899083585e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00022166800044942647,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sliding_window",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 299,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_sliding_window",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.34169947868213e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00021858399850316346,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011400099901948124,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_sliding_window_of_short_iterator",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 304,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_sliding_window_of_short_iterator",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012420900748111308,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00022187600552570075,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001579169911565259,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_partition",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 308,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_partition",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001256669929716736,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001300009898841381,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00015145899669732898,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_partition_all",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 316,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_partition_all",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.891700756270438e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.699999307282269e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010633400233928114,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_count",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 333,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_count",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.958300506696105e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.479099778924137e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013962599041406065,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_pluck",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 342,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_pluck",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.137600136455148e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.216699643526226e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011916700168512762,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_join",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 361,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_join",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.308399992529303e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.229199738707393e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 9.316699288319796e-05,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_getter",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 383,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_getter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.325099770445377e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 7.995899068191648e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001526669948361814,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_key_as_getter",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 389,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_key_as_getter",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.304198854602873e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.033399353735149e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001326670026173815,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_join_double_repeats",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 405,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_join_double_repeats",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011045900464523584,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00017250100790988654,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001575839996803552,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_join_missing_element",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 423,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_join_missing_element",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001681669964455068,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.637500625103712e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011350000568199903,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_left_outer_join",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 434,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_left_outer_join",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.991700062528253e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.366699669044465e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011370900028850883,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_right_outer_join",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 441,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_right_outer_join",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.683398820925504e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.187500108964741e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010862600174732506,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_outer_join",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 448,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_outer_join",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.287599823437631e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.820899529382586e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00030041798891033977,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_diff",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 456,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_diff",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.891700417734683e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00026187600451521575,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00018283400277141482,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_topk",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 487,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_topk",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00015966800856404006,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010183399717789143,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013287499314174056,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_topk_is_stable",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 503,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_topk_is_stable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.491700620856136e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00020145899907220155,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011070899199694395,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_peek",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 507,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_peek",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010304199531674385,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.533400250598788e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 167,
+          "message": "TypeError: The only supported seed types are: None,\nint, float, str, bytes, and bytearray.",
+          "path": "/usr/local/lib/python3.12/random.py"
+        },
+        "duration": 0.0003384180017746985,
+        "longrepr": "def test_random_sample():\n        alist = list(range(100))\n    \n        assert list(random_sample(prob=1, seq=alist, random_state=2016)) == alist\n    \n        mk_rsample = lambda rs=1: list(random_sample(prob=0.1,\n                                                     seq=alist,\n                                                     random_state=rs))\n        rsample1 = mk_rsample()\n        assert rsample1 == mk_rsample()\n    \n        rsample2 = mk_rsample(1984)\n        randobj = Random(1984)\n        assert rsample2 == mk_rsample(randobj)\n    \n        assert rsample1 != rsample2\n    \n>       assert mk_rsample(object) == mk_rsample(object)\n               ^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_itertoolz.py:534: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntoolz/tests/test_itertoolz.py:522: in <lambda>\n    mk_rsample = lambda rs=1: list(random_sample(prob=0.1,\ntoolz/itertoolz.py:1037: in random_sample\n    random_state = Random(random_state)\n                   ^^^^^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/random.py:132: in __init__\n    self.seed(x)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <random.Random object at 0xaaab1ca9e870>, a = <class 'object'>\nversion = 2\n\n    def seed(self, a=None, version=2):\n        \"\"\"Initialize internal state from a seed.\n    \n        The only supported seed types are None, int, float,\n        str, bytes, and bytearray.\n    \n        None or no argument seeds from current time or from an operating\n        system specific randomness source if available.\n    \n        If *a* is an int, all bits are used.\n    \n        For version 2 (the default), all of the bits are used if *a* is a str,\n        bytes, or bytearray.  For version 1 (provided for reproducing random\n        sequences from older versions of Python), the algorithm for str and\n        bytes generates a narrower range of seeds.\n    \n        \"\"\"\n    \n        if version == 1 and isinstance(a, (str, bytes)):\n            a = a.decode('latin-1') if isinstance(a, bytes) else a\n            x = ord(a[0]) << 7 if a else 0\n            for c in map(ord, a):\n                x = ((1000003 * x) ^ c) & 0xFFFFFFFFFFFFFFFF\n            x ^= len(a)\n            a = -2 if x == -1 else x\n    \n        elif version == 2 and isinstance(a, (str, bytes, bytearray)):\n            if isinstance(a, str):\n                a = a.encode()\n            a = int.from_bytes(a + _sha512(a).digest())\n    \n        elif not isinstance(a, (type(None), int, float, str, bytes, bytearray)):\n>           raise TypeError('The only supported seed types are: None,\\n'\n                            'int, float, str, bytes, and bytearray.')\nE           TypeError: The only supported seed types are: None,\nE           int, float, str, bytes, and bytearray.\n\n/usr/local/lib/python3.12/random.py:167: TypeError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 534,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 522,
+            "message": "in <lambda>",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 1037,
+            "message": "in random_sample",
+            "path": "toolz/itertoolz.py"
+          },
+          {
+            "lineno": 132,
+            "message": "in __init__",
+            "path": "/usr/local/lib/python3.12/random.py"
+          },
+          {
+            "lineno": 167,
+            "message": "TypeError",
+            "path": "/usr/local/lib/python3.12/random.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_random_sample",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 516,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_random_sample",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00010070900316350162,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00026837599580176175,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00020325099467299879,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_countby",
+        "test_recipes.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 7,
+      "nodeid": "toolz/tests/test_recipes.py::test_countby",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00019083399092778563,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0005273770075291395,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002445840073050931,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_partitionby",
+        "test_recipes.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 13,
+      "nodeid": "toolz/tests/test_recipes.py::test_partitionby",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00021371000912040472,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011500000255182385,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00045250200491864234,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_compose",
+        "test_serialization.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 8,
+      "nodeid": "toolz/tests/test_serialization.py::test_compose",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002627509966259822,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010595799540169537,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005044599965913221,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curry",
+        "test_serialization.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 14,
+      "nodeid": "toolz/tests/test_serialization.py::test_curry",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00017608400958124548,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012433399388100952,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00022145899129100144,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_juxt",
+        "test_serialization.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 20,
+      "nodeid": "toolz/tests/test_serialization.py::test_juxt",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00015762500697746873,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00017025000124704093,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001543749967822805,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_complement",
+        "test_serialization.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 27,
+      "nodeid": "toolz/tests/test_serialization.py::test_complement",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011691699910443276,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.041700104717165e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013962500088382512,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_instanceproperty",
+        "test_serialization.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 36,
+      "nodeid": "toolz/tests/test_serialization.py::test_instanceproperty",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012037598935421556,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.654198609292507e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000814168990473263,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_flip",
+        "test_serialization.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 51,
+      "nodeid": "toolz/tests/test_serialization.py::test_flip",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00015383299614768475,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002762509975582361,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00018125100177712739,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curried_exceptions",
+        "test_serialization.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 62,
+      "nodeid": "toolz/tests/test_serialization.py::test_curried_exceptions",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00018870898929890245,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019179200171492994,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0011351700086379424,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curried_qualname",
+        "test_serialization.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 115,
+      "nodeid": "toolz/tests/test_serialization.py::test_curried_qualname",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002808760036714375,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011329200060572475,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001774179982021451,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_curried_bad_qualname",
+        "test_serialization.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 189,
+      "nodeid": "toolz/tests/test_serialization.py::test_curried_bad_qualname",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012141700426582247,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00017637599376030266,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003132510028081015,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_is_valid",
+        "test_signatures.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 6,
+      "nodeid": "toolz/tests/test_signatures.py::test_is_valid",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011312500282656401,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001534589973744005,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000673418995575048,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_is_partial",
+        "test_signatures.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 76,
+      "nodeid": "toolz/tests/test_signatures.py::test_is_partial",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001162919943453744,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001665419986238703,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00017358400509692729,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_for_coverage",
+        "test_signatures.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 80,
+      "nodeid": "toolz/tests/test_signatures.py::test_for_coverage",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0003387509932508692,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001686670002527535,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 1329,
+          "message": "AttributeError: 'TlzSpec' object has no attribute '_uninitialized_submodules'",
+          "path": "<frozen importlib._bootstrap>"
+        },
+        "duration": 0.012300962000153959,
+        "longrepr": "def test_tlz():\n        import tlz\n        tlz.curry\n        tlz.functoolz.curry\n        assert tlz.__package__ == 'tlz'\n        assert tlz.__name__ == 'tlz'\n>       import tlz.curried\n\ntoolz/tests/test_tlz.py:10: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\ntlz/_build_tlz.py:82: in exec_module\n    submodule = import_module(module_name)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nname = 'tlz.curried.operator'\nimport_ = <function _gcd_import at 0xffffb3d280e0>\n\n>   ???\nE   AttributeError: 'TlzSpec' object has no attribute '_uninitialized_submodules'\n\n<frozen importlib._bootstrap>:1329: AttributeError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 10,
+            "message": "",
+            "path": "toolz/tests/test_tlz.py"
+          },
+          {
+            "lineno": 1360,
+            "message": "in _find_and_load",
+            "path": "<frozen importlib._bootstrap>"
+          },
+          {
+            "lineno": 1331,
+            "message": "in _find_and_load_unlocked",
+            "path": "<frozen importlib._bootstrap>"
+          },
+          {
+            "lineno": 935,
+            "message": "in _load_unlocked",
+            "path": "<frozen importlib._bootstrap>"
+          },
+          {
+            "lineno": 82,
+            "message": "in exec_module",
+            "path": "tlz/_build_tlz.py"
+          },
+          {
+            "lineno": 90,
+            "message": "in import_module",
+            "path": "/usr/local/lib/python3.12/importlib/__init__.py"
+          },
+          {
+            "lineno": 1387,
+            "message": "in _gcd_import",
+            "path": "<frozen importlib._bootstrap>"
+          },
+          {
+            "lineno": 1360,
+            "message": "in _find_and_load",
+            "path": "<frozen importlib._bootstrap>"
+          },
+          {
+            "lineno": 1329,
+            "message": "AttributeError",
+            "path": "<frozen importlib._bootstrap>"
+          }
+        ]
+      },
+      "keywords": [
+        "test_tlz",
+        "test_tlz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 3,
+      "nodeid": "toolz/tests/test_tlz.py::test_tlz",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00013762600428890437,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00028216799546498805,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013925098755862564,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_raises",
+        "test_utils.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 3,
+      "nodeid": "toolz/tests/test_utils.py::test_raises",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001421670021954924,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010333400859963149,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

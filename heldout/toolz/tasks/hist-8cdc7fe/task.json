@@ -1,0 +1,149 @@
+{
+  "base_sha": "568c2b8393973cd172a466546c9d95779c452438",
+  "collateral": null,
+  "difficulty": "medium",
+  "difficulty_features": {
+    "callers_count": 0,
+    "cross_module_edges": 1,
+    "diff_size": 31,
+    "files_touched": 2,
+    "functions_touched": 1,
+    "similar_named_functions_nearby": 0,
+    "test_count": 1
+  },
+  "difficulty_rationale": "The task involves adding a new `unzip` function with cross_module_edges=1 and diff_size=31, which is larger and requires understanding how to invert `zip` while correctly handling finite sequences of infinite iterators, making it moderately complex.",
+  "difficulty_status": "final",
+  "dropped_tests": {
+    "failing_on_solution": [],
+    "passing_on_input": []
+  },
+  "files_in_scope": [
+    "toolz/__init__.py",
+    "toolz/sandbox/__init__.py",
+    "toolz/sandbox/core.py",
+    "toolz/sandbox/tests/test_core.py"
+  ],
+  "id": "hist-8cdc7fe",
+  "image_digest": "sha256:ea390db0b06a75508772ea648c158ae15d4d1ea5b2764103f4ec7f9352f828a5",
+  "image_tag": "bench-toolz",
+  "instruction": "## Goal\n\nAdd a new `unzip` function to `toolz.sandbox` that inverts `zip`, producing one iterator per column from a sequence of tuples. It must correctly handle finite sequences of infinite iterators.\n\n## Observable behavior\n\n```python\n# Unzips a simple list correctly\nassert _to_lists(unzip([('a', 1), ('b', 2), ('c', 3)])) \\\n    == [['a', 'b', 'c'], [1, 2, 3]]\n\n# Can handle a finite number of infinite iterators (the naive unzip\n# implementation `zip(*args)` impelementation fails on this example).\na, b, c = unzip(zip(count(1), repeat(0), repeat(1)))\n_assert_initial_matches(a, count(1))\n_assert_initial_matches(b, repeat(0))\n_assert_initial_matches(c, repeat(1))\n```\n\n## Constraints\n\n- The new function must be importable as `unzip` from `toolz.sandbox`.\n- Files in scope: `toolz/__init__.py`, `toolz/sandbox/__init__.py`, `toolz/sandbox/core.py`, `toolz/sandbox/tests/test_core.py`.\n- Do not modify existing public APIs.\n\n## How success is measured\n\n```\npython -m pytest -q toolz/sandbox/tests/test_core.py::test_unzip\n```",
+  "instruction_attempts": [
+    {
+      "attempt": 1,
+      "draft_title": "Add unzip to toolz.sandbox",
+      "issues": [],
+      "review": {
+        "implementation_neutral": true,
+        "issues": [],
+        "self_contained": true,
+        "solvable_by_transcription": false,
+        "states_mechanical_edit": false
+      }
+    }
+  ],
+  "instruction_review": {
+    "implementation_neutral": true,
+    "issues": [],
+    "self_contained": true,
+    "solvable_by_transcription": false,
+    "states_mechanical_edit": false
+  },
+  "instruction_status": "final",
+  "module": "toolz.sandbox.core",
+  "modules": [
+    "toolz.sandbox",
+    "toolz.sandbox.core"
+  ],
+  "neutrality": {
+    "checked": true,
+    "decision": {
+      "flagged_tests": [],
+      "issues": [],
+      "neutral": true
+    },
+    "key": "18712a53e90f565a",
+    "reused": true,
+    "step": "p3.build.neutrality_check_rewrite"
+  },
+  "new_symbol_rewrite": {
+    "attempts": 0,
+    "key": "433b9b3871915414",
+    "kind": "new_symbol_rewrite",
+    "outcome": "reused",
+    "reused": true
+  },
+  "overlay_files": {
+    "input": [
+      ".dockerignore",
+      "Dockerfile",
+      "bench/generated/test_toolz_dicttoolz.py",
+      "constraints.txt",
+      "pipeline-requirements.in",
+      "requirements.lock.txt"
+    ],
+    "solution": [
+      ".dockerignore",
+      "Dockerfile",
+      "bench/generated/test_toolz_dicttoolz.py",
+      "constraints.txt",
+      "pipeline-requirements.in",
+      "requirements.lock.txt"
+    ]
+  },
+  "provenance": {
+    "classification": {
+      "behavior_change_summary": "Adds a new `unzip` function in toolz.sandbox that inverts `zip`, producing one iterator per column from a sequence of tuples, and can handle finite sequences of infinite iterators. Callers can now import and use `unzip` from toolz.sandbox.",
+      "difficulty_guess": "medium",
+      "kind": "feature",
+      "self_contained": true,
+      "sha": "8cdc7fe",
+      "verifiable_via_tests": true
+    },
+    "commit": "8cdc7fec3da3196f74ddc1dd25da81a1446a0bfc",
+    "files": [
+      "doc/source/api.rst",
+      "toolz/sandbox/__init__.py",
+      "toolz/sandbox/core.py",
+      "toolz/sandbox/tests/test_core.py"
+    ],
+    "is_merge": true,
+    "message": "Merge pull request #241 from davidshepherd7/unzip-2",
+    "modules": [
+      "toolz.sandbox",
+      "toolz.sandbox.core"
+    ],
+    "parent": "7994485b37bcb0263c74988861c8cea0ea9b7770",
+    "pr_number": 241,
+    "source_files": [
+      "toolz/sandbox/__init__.py",
+      "toolz/sandbox/core.py"
+    ],
+    "touched_functions": [
+      "toolz.sandbox.core.unzip"
+    ],
+    "type": "history",
+    "verifier_source": "commit-tests"
+  },
+  "repo": "toolz",
+  "title": "Add unzip to toolz.sandbox",
+  "verifier_agent": null,
+  "verifier_cmd": "python -m pytest -q toolz/sandbox/tests/test_core.py::test_unzip",
+  "verifier_files": [
+    "run.sh",
+    "toolz/sandbox/tests/test_core.py"
+  ],
+  "verifier_on_input": {
+    "exit_code": 1,
+    "n_failing": 1,
+    "n_passing": 0
+  },
+  "verifier_on_solution": {
+    "exit_code": 0,
+    "n_failing": 0,
+    "n_passing": 1
+  },
+  "verifier_tests": [
+    "toolz/sandbox/tests/test_core.py::test_unzip"
+  ],
+  "verifier_visibility": "visible"
+}

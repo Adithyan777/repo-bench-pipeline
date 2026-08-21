@@ -1,0 +1,111 @@
+{
+  "checks": {
+    "collateral": {
+      "newly_failing": 0,
+      "not_run": 0,
+      "ok": true,
+      "report_present": true
+    },
+    "determinism": {
+      "ok": true,
+      "runs": 3
+    },
+    "fail_before": {
+      "exit_code": 1,
+      "n_failing": 7,
+      "n_passing": 0,
+      "ok": true
+    },
+    "image": {
+      "built_from_input": false,
+      "digest_matches_task": true,
+      "environment_hashes": {
+        "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+        "requirements.lock.txt": "03b5265dd19f0c7405bf2a9cf5bc18925be22a49df936c696b350ef5dc8c4e4e"
+      },
+      "live_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+      "ok": true,
+      "present": true
+    },
+    "pass_after": {
+      "exit_code": 0,
+      "n_failing": 0,
+      "n_passing": 7,
+      "ok": true
+    },
+    "right_reason": {
+      "invalid": [],
+      "ok": true,
+      "tests": {
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        }
+      }
+    },
+    "static_gate": {
+      "ok": true,
+      "violations": []
+    }
+  },
+  "environment_hashes": {
+    "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+    "requirements.lock.txt": "03b5265dd19f0c7405bf2a9cf5bc18925be22a49df936c696b350ef5dc8c4e4e"
+  },
+  "image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+  "image_tag": "bench-minidump",
+  "reasons": [],
+  "repeat_count": 3,
+  "task_id": "exc-minidump.common_structs-construct_table",
+  "task_image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+  "timestamps": {
+    "finished": "2026-08-21T07:25:23+00:00",
+    "started": "2026-08-21T07:25:11+00:00"
+  },
+  "valid": true
+}

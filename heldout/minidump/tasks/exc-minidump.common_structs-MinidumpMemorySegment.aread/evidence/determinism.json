@@ -1,0 +1,68 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success": "failed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success": "passed",
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

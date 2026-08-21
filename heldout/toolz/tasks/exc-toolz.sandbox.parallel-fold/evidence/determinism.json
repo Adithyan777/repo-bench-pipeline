@@ -1,0 +1,50 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/sandbox/tests/test_parallel.py::test_fold": "failed",
+        "toolz/tests/test_tlz.py::test_tlz": "passed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/sandbox/tests/test_parallel.py::test_fold": "failed",
+        "toolz/tests/test_tlz.py::test_tlz": "passed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/sandbox/tests/test_parallel.py::test_fold": "failed",
+        "toolz/tests/test_tlz.py::test_tlz": "passed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/sandbox/tests/test_parallel.py::test_fold": "passed",
+        "toolz/tests/test_tlz.py::test_tlz": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/sandbox/tests/test_parallel.py::test_fold": "passed",
+        "toolz/tests/test_tlz.py::test_tlz": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/sandbox/tests/test_parallel.py::test_fold": "passed",
+        "toolz/tests/test_tlz.py::test_tlz": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

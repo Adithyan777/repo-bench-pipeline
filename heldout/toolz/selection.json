@@ -1,0 +1,166 @@
+{
+  "achieved_spread": {
+    "easy": 4,
+    "hard": 1,
+    "medium": 5
+  },
+  "counts": {
+    "excision": 4,
+    "history": 6,
+    "net-new": 0
+  },
+  "decisions": [
+    {
+      "difficulty": "easy",
+      "eligible": true,
+      "id": "exc-toolz.dicttoolz-merge",
+      "module": "toolz.dicttoolz",
+      "n_failing": 13,
+      "reason": "selected",
+      "selected": true,
+      "source_type": "excision"
+    },
+    {
+      "difficulty": "easy",
+      "eligible": true,
+      "id": "exc-toolz.dicttoolz-merge_with",
+      "module": "toolz.dicttoolz",
+      "n_failing": 9,
+      "reason": "selected",
+      "selected": true,
+      "source_type": "excision"
+    },
+    {
+      "difficulty": "easy",
+      "eligible": true,
+      "id": "exc-toolz.functoolz-compose",
+      "module": "toolz.functoolz",
+      "n_failing": 6,
+      "reason": "surplus-to-quota",
+      "selected": false,
+      "source_type": "excision"
+    },
+    {
+      "difficulty": "medium",
+      "eligible": true,
+      "id": "exc-toolz.itertoolz-groupby",
+      "module": "toolz.itertoolz",
+      "n_failing": 9,
+      "reason": "selected",
+      "selected": true,
+      "source_type": "excision"
+    },
+    {
+      "difficulty": "hard",
+      "eligible": true,
+      "id": "exc-toolz.sandbox.parallel-fold",
+      "module": "toolz.sandbox.parallel",
+      "n_failing": 1,
+      "reason": "selected",
+      "selected": true,
+      "source_type": "excision"
+    },
+    {
+      "difficulty": "medium",
+      "eligible": true,
+      "id": "hist-2bd9139",
+      "module": "toolz.itertoolz",
+      "n_failing": 1,
+      "reason": "selected",
+      "selected": true,
+      "source_type": "history"
+    },
+    {
+      "difficulty": "easy",
+      "eligible": true,
+      "id": "hist-386c750",
+      "module": "toolz.itertoolz",
+      "n_failing": 1,
+      "reason": "selected",
+      "selected": true,
+      "source_type": "history"
+    },
+    {
+      "difficulty": "medium",
+      "eligible": true,
+      "id": "hist-639043e",
+      "module": "toolz.functoolz",
+      "n_failing": 1,
+      "reason": "selected",
+      "selected": true,
+      "source_type": "history"
+    },
+    {
+      "difficulty": "easy",
+      "eligible": true,
+      "id": "hist-699e0c2",
+      "module": "toolz.itertoolz",
+      "n_failing": 1,
+      "reason": "selected",
+      "selected": true,
+      "source_type": "history"
+    },
+    {
+      "difficulty": "easy",
+      "eligible": true,
+      "id": "hist-84f1c77",
+      "module": "toolz.dicttoolz",
+      "n_failing": 1,
+      "reason": "surplus-to-quota",
+      "selected": false,
+      "source_type": "history"
+    },
+    {
+      "difficulty": "medium",
+      "eligible": true,
+      "id": "hist-8cdc7fe",
+      "module": "toolz.sandbox.core",
+      "n_failing": 1,
+      "reason": "selected",
+      "selected": true,
+      "source_type": "history"
+    },
+    {
+      "difficulty": "medium",
+      "eligible": true,
+      "id": "hist-b8aca17",
+      "module": "toolz.itertoolz",
+      "n_failing": 1,
+      "reason": "selected",
+      "selected": true,
+      "source_type": "history"
+    }
+  ],
+  "distinct_modules": [
+    "toolz.dicttoolz",
+    "toolz.functoolz",
+    "toolz.itertoolz",
+    "toolz.sandbox.core",
+    "toolz.sandbox.parallel"
+  ],
+  "quotas": {
+    "max_excision": 4,
+    "max_netnew": 2,
+    "min_distinct_modules": 4,
+    "min_history": 4
+  },
+  "repo": "toolz",
+  "selected": [
+    "exc-toolz.dicttoolz-merge",
+    "exc-toolz.dicttoolz-merge_with",
+    "exc-toolz.itertoolz-groupby",
+    "exc-toolz.sandbox.parallel-fold",
+    "hist-2bd9139",
+    "hist-386c750",
+    "hist-639043e",
+    "hist-699e0c2",
+    "hist-8cdc7fe",
+    "hist-b8aca17"
+  ],
+  "target_spread": {
+    "easy": 2,
+    "hard": 3,
+    "medium": 5
+  },
+  "total": 10
+}

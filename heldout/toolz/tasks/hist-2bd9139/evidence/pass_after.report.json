@@ -1,0 +1,52 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 315,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_partition_all",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296057.452971,
+  "duration": 0.2760765552520752,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "passed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00024254299933090806,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_partition_all",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 315,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_partition_all",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0007232110074255615,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00015975099813658744,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

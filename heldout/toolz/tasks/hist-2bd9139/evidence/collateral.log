@@ -1,0 +1,254 @@
+$ python -m pytest -p no:cacheprovider -q --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+.................F.....................F................................ [ 32%]
+........................................................................ [ 65%]
+........F.F........F.......................................F............ [ 98%]
+..F.                                                                     [100%]
+=================================== FAILURES ===================================
+___________________ TestDissoc.test_with_ordereddict_factory ___________________
+
+self = <test_toolz_dicttoolz.TestDissoc object at 0xffffb5086d80>
+
+    def test_with_ordereddict_factory(self):
+        d = OrderedDict([("x", 1), ("y", 2), ("z", 3)])
+>       result = dissoc(d, "y", factory=OrderedDict)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: dissoc() got an unexpected keyword argument 'factory'
+
+bench/generated/test_toolz_dicttoolz.py:90: TypeError
+_______________________________ test_shakespeare _______________________________
+
+    def test_shakespeare():
+>       with open('bench/shakespeare.txt') as f:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'bench/shakespeare.txt'
+
+bench/test_wordcount.py:17: FileNotFoundError
+_______________________ test_introspect_builtin_modules ________________________
+
+    def test_introspect_builtin_modules():
+        mods = [builtins, functools, itertools, operator, toolz,
+                toolz.functoolz, toolz.itertoolz, toolz.dicttoolz, toolz.recipes]
+    
+        blacklist = set()
+    
+        def add_blacklist(mod, attr):
+            if hasattr(mod, attr):
+                blacklist.add(getattr(mod, attr))
+    
+        add_blacklist(builtins, 'basestring')
+        add_blacklist(builtins, 'breakpoint')
+        add_blacklist(builtins, 'NoneType')
+        add_blacklist(builtins, '__metaclass__')
+        add_blacklist(builtins, 'sequenceiterator')
+    
+        def is_missing(modname, name, func):
+            if name.startswith('_') and not name.startswith('__'):
+                return False
+            if name.startswith('__pyx_unpickle_') or name.endswith('_cython__'):
+                return False
+            try:
+                if issubclass(func, BaseException):
+                    return False
+            except TypeError:
+                pass
+            try:
+                return (callable(func)
+                        and func.__module__ is not None
+                        and modname in func.__module__
+                        and is_partial_args(func, (), {}) is not True
+                        and func not in blacklist)
+            except AttributeError:
+                return False
+    
+        missing = {}
+        for mod in mods:
+            modname = mod.__name__
+            for name, func in vars(mod).items():
+                if is_missing(modname, name, func):
+                    if modname not in missing:
+                        missing[modname] = []
+                    missing[modname].append(name)
+        if missing:
+            messages = []
+            for modname, names in sorted(missing.items()):
+                msg = '{0}:\n    {1}'.format(modname, '\n    '.join(sorted(names)))
+                messages.append(msg)
+            message = 'Missing introspection for the following callables:\n\n'
+>           raise AssertionError(message + '\n\n'.join(messages))
+E           AssertionError: Missing introspection for the following callables:
+E           
+E           builtins:
+E               anext
+
+toolz/tests/test_inspect_args.py:443: AssertionError
+________________________ test_inspect_wrapped_property _________________________
+
+    def test_inspect_wrapped_property():
+        class Wrapped(object):
+            def __init__(self, func):
+                self.func = func
+    
+            def __call__(self, *args, **kwargs):
+                return self.func(*args, **kwargs)
+    
+            @property
+            def __wrapped__(self):
+                return self.func
+    
+        func = lambda x: x
+        wrapped = Wrapped(func)
+        if PY3:
+            assert inspect.signature(func) == inspect.signature(wrapped)
+    
+>       assert num_required_args(Wrapped) == (False if PY33 else None)
+E       AssertionError: assert 1 == None
+E        +  where 1 = num_required_args(<class 'test_inspect_args.test_inspect_wrapped_property.<locals>.Wrapped'>)
+
+toolz/tests/test_inspect_args.py:498: AssertionError
+___________________________________ test_nth ___________________________________
+
+    def test_nth():
+>       assert nth(2, 'ABCDE') == 'C'
+               ^^^^^^^^^^^^^^^
+
+toolz/tests/test_itertoolz.py:127: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+n = 2, seq = 'ABCDE'
+
+    def nth(n, seq):
+        """ The nth element in a sequence
+    
+        >>> nth(1, 'ABC')
+        'B'
+        """
+>       if isinstance(seq, (tuple, list, collections.Sequence)):
+                                         ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'collections' has no attribute 'Sequence'
+
+toolz/itertoolz.py:386: AttributeError
+______________________________ test_random_sample ______________________________
+
+    def test_random_sample():
+        alist = list(range(100))
+    
+        assert list(random_sample(prob=1, seq=alist, random_state=2016)) == alist
+    
+        mk_rsample = lambda rs=1: list(random_sample(prob=0.1,
+                                                     seq=alist,
+                                                     random_state=rs))
+        rsample1 = mk_rsample()
+        assert rsample1 == mk_rsample()
+    
+        rsample2 = mk_rsample(1984)
+        randobj = Random(1984)
+        assert rsample2 == mk_rsample(randobj)
+    
+        assert rsample1 != rsample2
+    
+>       assert mk_rsample(object) == mk_rsample(object)
+               ^^^^^^^^^^^^^^^^^^
+
+toolz/tests/test_itertoolz.py:533: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+toolz/tests/test_itertoolz.py:521: in <lambda>
+    mk_rsample = lambda rs=1: list(random_sample(prob=0.1,
+toolz/itertoolz.py:997: in random_sample
+    random_state = Random(random_state)
+                   ^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/random.py:132: in __init__
+    self.seed(x)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <random.Random object at 0xaaaad07d3910>, a = <class 'object'>
+version = 2
+
+    def seed(self, a=None, version=2):
+        """Initialize internal state from a seed.
+    
+        The only supported seed types are None, int, float,
+        str, bytes, and bytearray.
+    
+        None or no argument seeds from current time or from an operating
+        system specific randomness source if available.
+    
+        If *a* is an int, all bits are used.
+    
+        For version 2 (the default), all of the bits are used if *a* is a str,
+        bytes, or bytearray.  For version 1 (provided for reproducing random
+        sequences from older versions of Python), the algorithm for str and
+        bytes generates a narrower range of seeds.
+    
+        """
+    
+        if version == 1 and isinstance(a, (str, bytes)):
+            a = a.decode('latin-1') if isinstance(a, bytes) else a
+            x = ord(a[0]) << 7 if a else 0
+            for c in map(ord, a):
+                x = ((1000003 * x) ^ c) & 0xFFFFFFFFFFFFFFFF
+            x ^= len(a)
+            a = -2 if x == -1 else x
+    
+        elif version == 2 and isinstance(a, (str, bytes, bytearray)):
+            if isinstance(a, str):
+                a = a.encode()
+            a = int.from_bytes(a + _sha512(a).digest())
+    
+        elif not isinstance(a, (type(None), int, float, str, bytes, bytearray)):
+>           raise TypeError('The only supported seed types are: None,\n'
+                            'int, float, str, bytes, and bytearray.')
+E           TypeError: The only supported seed types are: None,
+E           int, float, str, bytes, and bytearray.
+
+/usr/local/lib/python3.12/random.py:167: TypeError
+___________________________________ test_tlz ___________________________________
+
+    def test_tlz():
+        import tlz
+        tlz.curry
+        tlz.functoolz.curry
+        assert tlz.__package__ == 'tlz'
+        assert tlz.__name__ == 'tlz'
+>       import tlz.curried
+
+toolz/tests/test_tlz.py:10: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+tlz/_build_tlz.py:82: in exec_module
+    submodule = import_module(module_name)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'tlz.curried.operator'
+import_ = <function _gcd_import at 0xffffb62680e0>
+
+>   ???
+E   AttributeError: 'TlzSpec' object has no attribute '_uninitialized_submodules'
+
+<frozen importlib._bootstrap>:1329: AttributeError
+=========================== short test summary info ============================
+FAILED bench/generated/test_toolz_dicttoolz.py::TestDissoc::test_with_ordereddict_factory
+FAILED bench/test_wordcount.py::test_shakespeare - FileNotFoundError: [Errno ...
+FAILED toolz/tests/test_inspect_args.py::test_introspect_builtin_modules - As...
+FAILED toolz/tests/test_inspect_args.py::test_inspect_wrapped_property - Asse...
+FAILED toolz/tests/test_itertoolz.py::test_nth - AttributeError: module 'coll...
+FAILED toolz/tests/test_itertoolz.py::test_random_sample - TypeError: The onl...
+FAILED toolz/tests/test_tlz.py::test_tlz - AttributeError: 'TlzSpec' object h...
+7 failed, 213 passed in 5.55s
+
+--- stderr ---
+

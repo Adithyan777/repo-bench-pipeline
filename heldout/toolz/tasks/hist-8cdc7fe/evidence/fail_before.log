@@ -1,0 +1,19 @@
+$ python -m pytest -q toolz/sandbox/tests/test_core.py::test_unzip -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________________________________ test_unzip __________________________________
+
+    def test_unzip():
+        unzip = getattr(core, 'unzip', None)
+>       assert unzip is not None
+E       assert None is not None
+
+toolz/sandbox/tests/test_core.py:82: AssertionError
+=========================== short test summary info ============================
+FAILED toolz/sandbox/tests/test_core.py::test_unzip - assert None is not None
+1 failed in 0.06s
+
+--- stderr ---
+

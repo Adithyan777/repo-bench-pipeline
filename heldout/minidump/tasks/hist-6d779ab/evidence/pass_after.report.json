@@ -1,0 +1,208 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 164,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns",
+          "type": "Function"
+        },
+        {
+          "lineno": 125,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses",
+          "type": "Function"
+        },
+        {
+          "lineno": 86,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses",
+          "type": "Function"
+        },
+        {
+          "lineno": 147,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns",
+          "type": "Function"
+        },
+        {
+          "lineno": 103,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses",
+          "type": "Function"
+        },
+        {
+          "lineno": 68,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787297127.0626113,
+  "duration": 0.19305157661437988,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 6,
+    "passed": 6,
+    "total": 6
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.0013282120053190738,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_asearch_adjacent_patterns",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 164,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0009152519924100488,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001738760038278997,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00045858499652240425,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_asearch_five_matches_progressive_addresses",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 125,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00016295800742227584,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001788340014172718,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00029570898914244026,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_asearch_three_matches_correct_addresses",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 86,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013658299576491117,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.200000204145908e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013683299766853452,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_adjacent_patterns",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 147,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.370899351779372e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00037687699659727514,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014954300422687083,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_five_matches_progressive_addresses",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 103,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002008760056924075,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.083400072995573e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002669590030563995,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_three_matches_correct_addresses",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 68,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00019983400125056505,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.645899990573525e-05,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

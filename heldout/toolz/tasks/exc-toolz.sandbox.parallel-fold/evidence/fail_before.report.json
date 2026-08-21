@@ -1,0 +1,102 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 11,
+          "nodeid": "toolz/sandbox/tests/test_parallel.py::test_fold",
+          "type": "Function"
+        },
+        {
+          "lineno": 3,
+          "nodeid": "toolz/tests/test_tlz.py::test_tlz",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296055.6817744,
+  "duration": 0.09968447685241699,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 2,
+    "failed": 1,
+    "passed": 1,
+    "total": 2
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 62,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/sandbox/parallel.py"
+        },
+        "duration": 0.0001331249950453639,
+        "longrepr": "def test_fold():\n>       assert fold(add, range(10), 0) == reduce(add, range(10), 0)\n               ^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/sandbox/tests/test_parallel.py:13: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nbinop = <built-in function add>, seq = range(0, 10), default = 0\nmap = <class 'map'>, chunksize = 128, combine = None\n\n    def fold(binop, seq, default=no_default, map=map, chunksize=128, combine=None):\n        \"\"\"\n        Reduce without guarantee of ordered reduction.\n    \n        Parameters\n        ----------\n        binops\n            Associative operator. The associative property allows us to\n            leverage a parallel map to perform reductions in parallel.\n    \n    \n        inputs:\n    \n        ``binop``     - associative operator. The associative property allows us to\n                        leverage a parallel map to perform reductions in parallel.\n    \n        ``seq``       - a sequence to be aggregated\n        ``default``   - an identity element like 0 for ``add`` or 1 for mul\n    \n        ``map``       - an implementation of ``map``. This may be parallel and\n                        determines how work is distributed.\n        ``chunksize`` - Number of elements of ``seq`` that should be handled\n                        within a single function call\n        ``combine``   - Binary operator to combine two intermediate results.\n                        If ``binop`` is of type (total, item) -> total\n                        then ``combine`` is of type (total, total) -> total\n                        Defaults to ``binop`` for common case of operators like add\n    \n        Fold chunks up the collection into blocks of size ``chunksize`` and then\n        feeds each of these to calls to ``reduce``. This work is distributed\n        with a call to ``map``, gathered back and then refolded to finish the\n        computation. In this way ``fold`` specifies only how to chunk up data but\n        leaves the distribution of this work to an externally provided ``map``\n        function. This function can be sequential or rely on multithreading,\n        multiprocessing, or even distributed solutions.\n    \n        If ``map`` intends to serialize functions it should be prepared to accept\n        and serialize lambdas. Note that the standard ``pickle`` module fails\n        here.\n    \n        Example\n        -------\n    \n        >>> # Provide a parallel map to accomplish a parallel sum\n        >>> from operator import add\n        >>> fold(add, [1, 2, 3, 4], chunksize=2, map=map)\n        10\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/sandbox/parallel.py:62: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 13,
+            "message": "",
+            "path": "toolz/sandbox/tests/test_parallel.py"
+          },
+          {
+            "lineno": 62,
+            "message": "NotImplementedError",
+            "path": "toolz/sandbox/parallel.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_fold",
+        "test_parallel.py",
+        "tests",
+        "sandbox",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 11,
+      "nodeid": "toolz/sandbox/tests/test_parallel.py::test_fold",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0005632940010400489,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00014920899411663413,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.005497186997672543,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_tlz",
+        "test_tlz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 3,
+      "nodeid": "toolz/tests/test_tlz.py::test_tlz",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00037287599116098136,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012174999574199319,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

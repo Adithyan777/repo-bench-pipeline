@@ -1,0 +1,262 @@
+{
+  "agents": {
+    "by_stage": {
+      "p1.testgen.write_tests_agent": 5,
+      "p3.build.verifier_agent": 2
+    },
+    "outcomes": {
+      "added": 1,
+      "dropped_failed_on_real": 2,
+      "dropped_no_file": 1,
+      "kept": 2,
+      "no_tests": 1
+    },
+    "runs": 7
+  },
+  "base_sha": "4d22796e57203b37467a150e451b9879b45aeb3b",
+  "hygiene": {
+    "baseline": {
+      "classifications": [],
+      "counts": {
+        "failed": 0,
+        "passed": 55,
+        "tests": 55
+      },
+      "quarantined": [],
+      "testgen_refreshed": true
+    },
+    "dropped_extras": [],
+    "extras_used": [],
+    "image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+    "image_tag": "bench-minidump",
+    "lint": {
+      "clean": false,
+      "codes": {
+        "B007": 1,
+        "B018": 1,
+        "B904": 1,
+        "E501": 138,
+        "E721": 3,
+        "E722": 10,
+        "F403": 43,
+        "F405": 213,
+        "F811": 1,
+        "F821": 3,
+        "F841": 6,
+        "UP031": 281,
+        "W291": 1,
+        "W293": 1
+      },
+      "config_created": false,
+      "files_changed": 51,
+      "image_rebuilt": true,
+      "noqa_files": 36,
+      "regressed": false,
+      "unfixable": 703
+    },
+    "packaging_style": "setup.py",
+    "python_version": "3.12",
+    "test_framework": "none",
+    "testgen": {
+      "functions_kept": 3,
+      "functions_weak": 0,
+      "modules_kept": 2,
+      "modules_selected": 5,
+      "mutants_killed": 11,
+      "mutants_valid": 12,
+      "mutation_score": 0.917,
+      "suite_after": {
+        "failed": 0,
+        "passed": 55,
+        "tests": 55
+      },
+      "targets": 30
+    },
+    "unresolved_imports": []
+  },
+  "knowledge": {
+    "graph": {
+      "edges": {
+        "calls": 227,
+        "contains": 676,
+        "imports": 79,
+        "inherits": 19,
+        "tested_by": 77
+      },
+      "nodes": 726,
+      "total_edges": 1078
+    },
+    "graph_verification": {
+      "mismatches": 0,
+      "precision_by_edge_type": {
+        "calls": 1.0,
+        "contains": 1.0,
+        "imports": 1.0,
+        "inherits": 1.0,
+        "tested_by": 1.0
+      },
+      "sample_size": 179,
+      "symbol_existence": {
+        "checked": 194,
+        "missing_attr": [],
+        "precision": 1.0,
+        "present": 194,
+        "unimportable_modules": [
+          "minidump.utils.createminidump",
+          "minidump.utils.privileges",
+          "minidump.utils.winapi.defines",
+          "minidump.utils.winapi.kernel32",
+          "minidump.utils.winapi.psapi",
+          "minidump.utils.winapi.version",
+          "minidump.writer"
+        ]
+      }
+    },
+    "okf": {
+      "by_construction": {
+        "counts": {
+          "callers": 54,
+          "link": 64
+        },
+        "note": "graph-derived / structural; true by construction, not independent evidence",
+        "precision": {
+          "callers": 1.0,
+          "link": 1.0
+        }
+      },
+      "conformance": {
+        "conformant": true,
+        "issues": []
+      },
+      "counts": {
+        "function_pages": 150,
+        "modules": 50,
+        "pages": 203,
+        "reserved_pages": 3
+      },
+      "pages_draft": 66,
+      "pages_verified": 84,
+      "semantic_precision": {
+        "callees": 1.0,
+        "raises": 0.282,
+        "side_effects": 0.8
+      },
+      "unchecked_claim_kinds": [
+        "inputs",
+        "outputs",
+        "invariants"
+      ]
+    },
+    "source_module_count": 50
+  },
+  "llm": {
+    "by_step": {
+      "p1.testgen.mutation_retry_agent": 366396,
+      "p1.testgen.write_tests_agent": 494604,
+      "p2.okf.function_contracts": 48429,
+      "p2.okf.module_purpose": 16734
+    },
+    "reasoning_tokens": 66809,
+    "total_tokens": 926163
+  },
+  "missing_artifacts": [
+    "selection"
+  ],
+  "repo": "minidump",
+  "stages": {
+    "baseline": {
+      "duration_s": 0.0,
+      "skipped": false
+    },
+    "build": {
+      "duration_s": 12.68,
+      "skipped": false
+    },
+    "compose": {
+      "duration_s": 0.01,
+      "skipped": false
+    },
+    "detect": {
+      "duration_s": 0.01,
+      "skipped": false
+    },
+    "dockerfile": {
+      "duration_s": 2.56,
+      "skipped": false
+    },
+    "graph": {
+      "duration_s": 0.02,
+      "skipped": false
+    },
+    "indexes": {
+      "coverage_status": "ok",
+      "duration_s": 25.56,
+      "skipped": false
+    },
+    "lint": {
+      "duration_s": 9.36,
+      "skipped": false
+    },
+    "okf": {
+      "duration_s": 149.71,
+      "skipped": false
+    },
+    "pin": {
+      "duration_s": 0.85,
+      "skipped": false
+    },
+    "symbol_index": {
+      "duration_s": 0.23,
+      "skipped": false
+    },
+    "testgen": {
+      "duration_s": 687.84,
+      "skipped": false
+    },
+    "verify": {
+      "duration_s": 1.03,
+      "skipped": false
+    }
+  },
+  "tasks": {
+    "excision_funnel_counts": {
+      "rejected:low-complexity": 1,
+      "rejected:private": 193,
+      "rejected:test-code": 64,
+      "rejected:too-short": 2,
+      "rejected:uncovered": 299,
+      "screened_out": 3,
+      "selected": 5,
+      "surplus": 1
+    },
+    "history_funnel_counts": {
+      "built": 1,
+      "rejected:dependency-changing": 21,
+      "rejected:docs-or-ci-only": 13,
+      "rejected:no-source-change": 6,
+      "rejected:no-verifier-tests": 1,
+      "rejected:non-pr-merge": 4,
+      "rejected:root-commit": 1,
+      "rejected:superseded-by-merge": 1,
+      "rejected:too-large": 3,
+      "rejected:too-many-files": 6,
+      "rejected:too-small": 20,
+      "rejected:uncovered-and-no-tests": 41
+    },
+    "instruct": {
+      "difficulty_spread": {
+        "easy": 5,
+        "medium": 1
+      },
+      "failed": 0,
+      "final": 6,
+      "regenerations": 0,
+      "tasks": 6
+    },
+    "selection": null,
+    "validate": {
+      "tasks": 6,
+      "valid": 6
+    }
+  }
+}

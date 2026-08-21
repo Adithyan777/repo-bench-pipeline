@@ -1,0 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+# Added by the benchmark pipeline (P1 lint/format).
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]

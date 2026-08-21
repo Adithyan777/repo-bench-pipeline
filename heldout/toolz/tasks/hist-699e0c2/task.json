@@ -1,0 +1,148 @@
+{
+  "base_sha": "568c2b8393973cd172a466546c9d95779c452438",
+  "collateral": null,
+  "difficulty": "easy",
+  "difficulty_features": {
+    "callers_count": 0,
+    "cross_module_edges": 0,
+    "diff_size": 16,
+    "files_touched": 1,
+    "functions_touched": 1,
+    "similar_named_functions_nearby": 0,
+    "test_count": 1
+  },
+  "difficulty_rationale": "The change is small and isolated with diff_size=16, touches only 1 file and 1 function, has no callers or cross-module dependencies, and includes a single test, making it straightforward to implement and verify.",
+  "difficulty_status": "final",
+  "dropped_tests": {
+    "failing_on_solution": [],
+    "passing_on_input": []
+  },
+  "files_in_scope": [
+    "toolz/__init__.py",
+    "toolz/itertoolz.py",
+    "toolz/recipes.py",
+    "toolz/sandbox/core.py",
+    "toolz/sandbox/parallel.py",
+    "toolz/tests/test_itertoolz.py"
+  ],
+  "id": "hist-699e0c2",
+  "image_digest": "sha256:ea390db0b06a75508772ea648c158ae15d4d1ea5b2764103f4ec7f9352f828a5",
+  "image_tag": "bench-toolz",
+  "instruction": "## Goal\n\nAdd a `peek` function to `toolz.itertoolz` that returns the first element of a sequence together with an equivalent iterable that still contains that first element.\n\n## Observable behavior\n\n```python\nfrom toolz.itertoolz import peek\n\ndef test_peek():\n    assert peek([1, 2, 3, 4]) == (1, (1, 2, 3, 4))\n    assert peek('ABC') == ('A', 'ABC')\n```\n\n## Constraints\n\n- The new function must be added to `toolz/itertoolz.py` and exposed through `toolz/__init__.py`.\n- Files in scope: `toolz/__init__.py`, `toolz/itertoolz.py`, `toolz/recipes.py`, `toolz/sandbox/core.py`, `toolz/sandbox/parallel.py`, `toolz/tests/test_itertoolz.py`.\n- Do not modify existing public API signatures or break existing tests.\n\n## How success is measured\n\nRun the verifier test with:\n\n```\npython -m pytest -q toolz/tests/test_itertoolz.py::test_peek\n```",
+  "instruction_attempts": [
+    {
+      "attempt": 1,
+      "draft_title": "Add peek function to itertoolz",
+      "issues": [],
+      "review": {
+        "implementation_neutral": true,
+        "issues": [],
+        "self_contained": true,
+        "solvable_by_transcription": false,
+        "states_mechanical_edit": false
+      }
+    }
+  ],
+  "instruction_review": {
+    "implementation_neutral": true,
+    "issues": [],
+    "self_contained": true,
+    "solvable_by_transcription": false,
+    "states_mechanical_edit": false
+  },
+  "instruction_status": "final",
+  "module": "toolz.itertoolz",
+  "modules": [
+    "toolz.itertoolz"
+  ],
+  "neutrality": {
+    "checked": true,
+    "decision": {
+      "flagged_tests": [],
+      "issues": [],
+      "neutral": true
+    },
+    "key": "c557886347a1fa8a",
+    "reused": true,
+    "step": "p3.build.neutrality_check_rewrite"
+  },
+  "new_symbol_rewrite": {
+    "attempts": 0,
+    "key": "d9a33daa43b7b087",
+    "kind": "new_symbol_rewrite",
+    "outcome": "reused",
+    "reused": true
+  },
+  "overlay_files": {
+    "input": [
+      ".dockerignore",
+      "Dockerfile",
+      "bench/generated/test_toolz_dicttoolz.py",
+      "constraints.txt",
+      "pipeline-requirements.in",
+      "requirements.lock.txt"
+    ],
+    "solution": [
+      ".dockerignore",
+      "Dockerfile",
+      "bench/generated/test_toolz_dicttoolz.py",
+      "constraints.txt",
+      "pipeline-requirements.in",
+      "requirements.lock.txt"
+    ]
+  },
+  "provenance": {
+    "classification": {
+      "behavior_change_summary": "Adds a new peek function that returns the first element of a sequence along with an equivalent iterable that still contains that element.",
+      "difficulty_guess": "easy",
+      "kind": "feature",
+      "self_contained": true,
+      "sha": "699e0c2",
+      "verifiable_via_tests": true
+    },
+    "commit": "699e0c217622abacd99498377faa9a7531100a90",
+    "files": [
+      "AUTHORS.md",
+      "doc/source/api.rst",
+      "toolz/itertoolz.py",
+      "toolz/tests/test_itertoolz.py"
+    ],
+    "is_merge": true,
+    "message": "Merge pull request #244 from themiurgo/peek",
+    "modules": [
+      "toolz.itertoolz"
+    ],
+    "parent": "8cdc7fec3da3196f74ddc1dd25da81a1446a0bfc",
+    "pr_number": 244,
+    "source_files": [
+      "toolz/itertoolz.py"
+    ],
+    "touched_functions": [
+      "toolz.itertoolz.peek"
+    ],
+    "type": "history",
+    "verifier_source": "commit-tests"
+  },
+  "repo": "toolz",
+  "title": "Add peek function to itertoolz",
+  "verifier_agent": null,
+  "verifier_cmd": "python -m pytest -q toolz/tests/test_itertoolz.py::test_peek",
+  "verifier_files": [
+    "run.sh",
+    "toolz/tests/test_itertoolz.py"
+  ],
+  "verifier_on_input": {
+    "exit_code": 1,
+    "n_failing": 1,
+    "n_passing": 0
+  },
+  "verifier_on_solution": {
+    "exit_code": 0,
+    "n_failing": 0,
+    "n_passing": 1
+  },
+  "verifier_tests": [
+    "toolz/tests/test_itertoolz.py::test_peek"
+  ],
+  "verifier_visibility": "visible"
+}

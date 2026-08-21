@@ -1,0 +1,125 @@
+12:38:33 [run] repo https://github.com/skelsec/minidump run_dir output/minidump stages hygiene,knowledge,tasks
+12:38:33 [hygiene] start
+12:38:35 [hygiene] run_dir output/minidump image bench-minidump base 4d22796
+12:38:35 [hygiene/detect] start
+12:38:35 [hygiene/detect] done in 0.0s (0 LLM tokens) packaging_style=setup.py python_version=3.12 test_framework=none
+12:38:35 [hygiene/pin] start
+12:38:35 [hygiene/pin] done in 0.9s (0 LLM tokens) pin_count=9 python_version=3.12
+12:38:35 [hygiene/dockerfile] start
+12:38:38 [hygiene/dockerfile] done in 2.6s (0 LLM tokens) base_image=python@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
+12:38:38 [hygiene/compose] start
+12:38:38 [hygiene/compose] done in 0.0s (0 LLM tokens)
+12:38:38 [hygiene/compose] pipeline commit 1ed9f16
+12:38:38 [hygiene/build] start
+12:38:51 [hygiene/build] built bench-minidump
+12:38:51 [hygiene/build] done in 12.7s (0 LLM tokens) outcome=built attempts=0
+12:38:51 [hygiene/baseline] start
+12:38:51 [hygiene/baseline] done in 0.0s (0 LLM tokens) tests=0
+12:38:51 [hygiene/baseline] pipeline commit 7f12776
+12:38:51 [hygiene/testgen] start
+12:38:52 [hygiene/testgen] coverage no_tests: 5 modules, 30 target functions
+12:38:52 [hygiene/testgen] module minidump.common_structs: 6 targets
+12:38:52 [hygiene/testgen] module minidump.common_structs: agent run 1/3 (9 runs left in repo budget)
+12:40:42 [hygiene/testgen] module minidump.common_structs: mutation gate mutants 7/8 killed
+12:40:42 [hygiene/testgen] module minidump.common_structs: kept 2/6 functions, mutants 7/8 killed
+12:40:42 [hygiene/testgen] module minidump.minidumpreader: 6 targets
+12:40:42 [hygiene/testgen] module minidump.minidumpreader: agent run 1/3 (8 runs left in repo budget)
+12:41:18 [hygiene/testgen] module minidump.minidumpreader: tests fail on real code, retrying
+12:41:18 [hygiene/testgen] module minidump.minidumpreader: agent run 2/3 (7 runs left in repo budget)
+12:42:31 [hygiene/testgen] module minidump.minidumpreader: tests fail on real code, retrying
+12:42:31 [hygiene/testgen] module minidump.minidumpreader: agent run 3/3 (6 runs left in repo budget)
+12:43:05 [hygiene/testgen] module minidump.minidumpreader: tests fail on real code, retrying
+12:43:05 [hygiene/testgen] module minidump.minidumpreader: dropped_failed_on_real
+12:43:05 [hygiene/testgen] module minidump.aminidumpreader: 6 targets
+12:43:05 [hygiene/testgen] module minidump.aminidumpreader: agent run 1/3 (5 runs left in repo budget)
+12:43:48 [hygiene/testgen] module minidump.aminidumpreader: tests fail on real code, retrying
+12:43:48 [hygiene/testgen] module minidump.aminidumpreader: agent run 2/3 (4 runs left in repo budget)
+12:47:24 [hygiene/testgen] module minidump.aminidumpreader: tests fail on real code, retrying
+12:47:24 [hygiene/testgen] module minidump.aminidumpreader: agent run 3/3 (3 runs left in repo budget)
+12:49:06 [hygiene/testgen] module minidump.aminidumpreader: tests fail on real code, retrying
+12:49:06 [hygiene/testgen] module minidump.aminidumpreader: dropped_failed_on_real
+12:49:06 [hygiene/testgen] module minidump.minidumpshell: 6 targets
+12:49:06 [hygiene/testgen] module minidump.minidumpshell: agent run 1/3 (2 runs left in repo budget)
+12:49:55 [hygiene/testgen] module minidump.minidumpshell: mutation gate mutants 4/4 killed
+12:49:55 [hygiene/testgen] module minidump.minidumpshell: kept 1/6 functions, mutants 4/4 killed
+12:49:55 [hygiene/testgen] module minidump.streams.SystemInfoStream: 6 targets
+12:49:55 [hygiene/testgen] module minidump.streams.SystemInfoStream: agent run 1/3 (1 runs left in repo budget)
+12:50:16 [hygiene/testgen] module minidump.streams.SystemInfoStream: agent wrote no file
+12:50:16 [hygiene/testgen] module minidump.streams.SystemInfoStream: dropped_no_file
+12:50:19 [hygiene/testgen] done in 687.8s (861000 LLM tokens) modules_kept=2 functions_kept=3 functions_weak=0 functions_no_mutants=9 mutants_killed=11 mutants_valid=12
+12:50:19 [hygiene/testgen] pipeline commit 501cd8a
+12:50:19 [hygiene/lint] start
+12:50:28 [hygiene/lint] done in 9.4s (0 LLM tokens) files_changed=51 noqa=101 clean=False regressed=False
+12:50:28 [hygiene/lint] pipeline commit c6004d9
+hygiene done: output/minidump
+12:50:28 [hygiene] done in 715.0s
+12:50:28 [knowledge] start
+12:50:28 [knowledge/symbol_index] start
+12:50:28 [knowledge/symbol_index] 54 modules, 568 functions
+12:50:28 [knowledge/symbol_index] done in 0.2s (0 LLM tokens)
+12:50:29 [knowledge/indexes] start
+12:50:51 [knowledge/indexes] history index: 118 commits
+12:50:54 [knowledge/indexes] coverage ok: test_map 55 functions
+12:50:54 [knowledge/indexes] done in 25.6s (0 LLM tokens)
+12:50:54 [knowledge/graph] start
+12:50:54 [knowledge/graph] 726 nodes, 1078 edges (calls=227 contains=676 imports=79 inherits=19 tested_by=77)
+12:50:54 [knowledge/graph] done in 0.0s (0 LLM tokens)
+12:50:54 [knowledge/verify] start
+12:50:55 [knowledge/verify] mismatches 0, symbols checked=194 present=194
+12:50:55 [knowledge/verify] done in 1.0s (0 LLM tokens)
+12:50:55 [knowledge/okf] start
+12:53:25 [knowledge/okf] modules=50 pages=203 verified=84 draft=66 conformant=True
+12:53:25 [knowledge/okf] done in 149.7s (65163 LLM tokens)
+knowledge done: output/minidump
+12:53:25 [knowledge] done in 176.6s
+12:53:25 [tasks] start
+12:53:25 [tasks/excision_funnel] start
+12:53:30 [tasks/excision_funnel] considered 568, ranked 9, selected 5 (screen reused 0)
+12:53:30 [tasks/excision_funnel] rejected:low-complexity=1 rejected:private=193 rejected:test-code=64 rejected:too-short=2 rejected:uncovered=299 screened_out=3 selected=5 surplus=1
+12:53:30 [tasks/excision_funnel] done in 4.6s (7090 LLM tokens)
+12:53:30 [tasks/build_excision] start
+12:53:31 [tasks/build_excision] exc-minidump.common_structs-hexdump built
+12:53:32 [tasks/build_excision] exc-minidump.common_structs-construct_table built
+12:53:33 [tasks/build_excision] exc-minidump.common_structs-MinidumpMemorySegment.asearch built
+12:53:34 [tasks/build_excision] exc-minidump.common_structs-MinidumpMemorySegment.search built
+12:53:35 [tasks/build_excision] exc-minidump.common_structs-MinidumpMemorySegment.aread built
+12:53:35 [tasks/build_excision] built=5 unsplittable=0
+12:53:35 [tasks/build_excision] done in 5.7s (0 LLM tokens)
+12:53:35 [tasks/history_funnel] start
+12:53:42 [tasks/history_funnel] considered 118, survivors 3, kept 2, shortlisted 2 (classify reused 0)
+12:53:42 [tasks/history_funnel] rejected:dependency-changing=21 rejected:docs-or-ci-only=13 rejected:no-source-change=6 rejected:non-pr-merge=4 rejected:root-commit=1 rejected:superseded-by-merge=1 rejected:too-large=3 rejected:too-many-files=6 rejected:too-small=20 rejected:uncovered-and-no-tests=41 shortlisted=2
+12:53:42 [tasks/history_funnel] done in 6.8s (2577 LLM tokens)
+12:53:42 [tasks/build_history] start
+12:53:42 [tasks/build_history] shortlist 2, target 10
+12:53:42 [tasks/build_history] 1/2 6d779ab: building
+12:54:39 [tasks/build_history] hist-6d779ab built (verifier agent-authored), 1/10
+12:54:39 [tasks/build_history] 2/2 9d50d3b: building
+12:55:11 [tasks/build_history] hist-9d50d3b rejected (verifier agent-authored): no-verifier-tests(agent)
+12:55:11 [tasks/build_history] attempted 2, built 1, rejected no-verifier-tests=1
+12:55:11 [tasks/build_history] done in 88.6s (228096 LLM tokens)
+12:55:11 [tasks/validate] start
+12:55:11 [tasks/validate] 6 tasks, 4 workers
+12:55:23 [tasks/validate] exc-minidump.common_structs-construct_table VALID (fail-before 7, pass-after 7, det 3/3)
+12:55:24 [tasks/validate] exc-minidump.common_structs-MinidumpMemorySegment.search VALID (fail-before 6, pass-after 6, det 3/3)
+12:55:24 [tasks/validate] exc-minidump.common_structs-MinidumpMemorySegment.aread VALID (fail-before 5, pass-after 5, det 3/3)
+12:55:24 [tasks/validate] exc-minidump.common_structs-MinidumpMemorySegment.asearch VALID (fail-before 6, pass-after 6, det 3/3)
+12:55:33 [tasks/validate] exc-minidump.common_structs-hexdump VALID (fail-before 10, pass-after 10, det 3/3)
+12:55:33 [tasks/validate] hist-6d779ab VALID (fail-before 6, pass-after 6, det 3/3)
+12:55:33 [tasks/validate] 6/6 VALID
+12:55:33 [tasks/validate] done in 22.6s (0 LLM tokens)
+12:55:33 [tasks/instruct] start
+12:55:38 [tasks/instruct] exc-minidump.common_structs-MinidumpMemorySegment.aread: final (attempts 1)
+12:55:44 [tasks/instruct] exc-minidump.common_structs-MinidumpMemorySegment.asearch: final (attempts 1)
+12:55:52 [tasks/instruct] exc-minidump.common_structs-MinidumpMemorySegment.search: final (attempts 1)
+12:55:57 [tasks/instruct] exc-minidump.common_structs-construct_table: final (attempts 1)
+12:56:03 [tasks/instruct] exc-minidump.common_structs-hexdump: final (attempts 1)
+12:56:10 [tasks/instruct] hist-6d779ab: final (attempts 1)
+12:56:13 [tasks/instruct] tasks=6 final=6 failed=0 regenerations=0 reused=0 leak_rejections=0 reviewer_rejections=0
+12:56:13 [tasks/instruct] difficulty easy=5 medium=1
+12:56:13 [tasks/instruct] done in 40.1s (74763 LLM tokens)
+12:56:13 [tasks/manifest] start
+12:56:13 [tasks/manifest] tasks/minidump/tasks.json
+12:56:13 [tasks/manifest] done in 0.0s (0 LLM tokens)
+12:56:13 [tasks/select] start
+12:56:13 [tasks/select] infeasible: only 6 eligible VALID+final tasks, need 10
+selection infeasible: only 6 eligible VALID+final tasks, need 10

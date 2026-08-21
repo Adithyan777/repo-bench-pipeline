@@ -1,0 +1,167 @@
+{
+  "assertions_touching_fn": 8,
+  "base_sha": "4d22796e57203b37467a150e451b9879b45aeb3b",
+  "collateral": {
+    "baseline_passing": [
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row",
+      "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte",
+      "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_cross_boundary_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_offset",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_restores_position",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_success",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_wrong_segment_raises",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long",
+      "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_binary_string",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_decimal_string",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_hex_string_lowercase_prefix",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_hex_string_uppercase_prefix",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_int_input_returns_same",
+      "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_unknown_format_raises",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments::test_do_comments_prints_comments",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments::test_do_comments_skips_none",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory::test_do_memory_prints_segments",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory::test_do_memory_skips_none",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules::test_do_modules_prints_modules",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules::test_do_modules_skips_none",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell::test_do_tell_none_prints_warning_then_raises",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell::test_do_tell_prints_hex_position",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads::test_do_threads_prints_threads",
+      "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads::test_do_threads_skips_none"
+    ],
+    "cmd": "python -m pytest -p no:cacheprovider -q --json-report --json-report-file=.pytest-report.json",
+    "report": ".pytest-report.json"
+  },
+  "difficulty": "easy",
+  "difficulty_features": {
+    "callers_count": 0,
+    "cross_module_edges": 0,
+    "diff_size": 36,
+    "files_touched": 1,
+    "functions_touched": 1,
+    "similar_named_functions_nearby": 0,
+    "test_count": 6
+  },
+  "difficulty_rationale": "A single function with diff_size=36 and no callers needs to be restored; the presence of test_count=6 provides clear guidance for verification.",
+  "difficulty_status": "final",
+  "files_in_scope": [
+    "minidump/__amain__.py",
+    "minidump/__main__.py",
+    "minidump/aminidumpfile.py",
+    "minidump/aminidumpreader.py",
+    "minidump/common_structs.py",
+    "minidump/directory.py",
+    "minidump/minidumpfile.py",
+    "minidump/minidumpreader.py",
+    "minidump/minidumpshell.py",
+    "minidump/streams/ExceptionStream.py",
+    "minidump/streams/HandleDataStream.py",
+    "minidump/streams/Memory64ListStream.py",
+    "minidump/streams/MemoryInfoListStream.py",
+    "minidump/streams/MemoryListStream.py",
+    "minidump/streams/ModuleListStream.py",
+    "minidump/streams/SystemInfoStream.py",
+    "minidump/streams/ThreadExListStream.py",
+    "minidump/streams/ThreadInfoListStream.py",
+    "minidump/streams/ThreadListStream.py",
+    "minidump/streams/UnloadedModuleListStream.py",
+    "tests/generated/test_minidump_common_structs.py"
+  ],
+  "id": "exc-minidump.common_structs-MinidumpMemorySegment.asearch",
+  "image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+  "image_tag": "bench-minidump",
+  "instruction": "## Goal\n\nRestore the original behavior of `minidump.common_structs.MinidumpMemorySegment.asearch` so that it works as an async version of `search`, returning virtual addresses where the given byte pattern occurs within the segment.\n\n## Observable behavior\n\n```python\n# test_asearch_find_all\nseg = MinidumpMemorySegment()\nseg.start_virtual_address = 0x1000\nseg.size = 0x100\nseg.start_file_address = 0x0\nseg.end_virtual_address = 0x1100\n\ndata = b\"X\" * 10 + b\"PATTERN\" + b\"Y\" * 20 + b\"PATTERN\" + b\"Z\" * 200\nfh = AsyncFakeFileHandler(data)\n\nresult = run_async(seg.asearch(b\"PATTERN\", fh))\nassert len(result) == 2\nassert result[0] == 0x1000 + 10\nassert result[1] == 0x1000 + 10 + 7 + 20\n```\n\n```python\n# test_asearch_find_first\nseg = MinidumpMemorySegment()\nseg.start_virtual_address = 0x1000\nseg.size = 0x100\nseg.start_file_address = 0x0\nseg.end_virtual_address = 0x1100\n\ndata = b\"X\" * 10 + b\"PATTERN\" + b\"Y\" * 20 + b\"PATTERN\" + b\"Z\" * 200\nfh = AsyncFakeFileHandler(data)\n\nresult = run_async(seg.asearch(b\"PATTERN\", fh, find_first=True))\nassert result == [0x1000 + 10]\n```\n\n## Constraints\n\n- The method to restore is `asearch` on the class `MinidumpMemorySegment` in `minidump/common_structs.py`.\n- The method signature must remain `asearch(self, pattern, file_handler, find_first=False, chunksize=50 * 1024)`.\n- The implementation must be async and must correctly handle async `seek` and `read` calls on `file_handler`.\n- The method must restore the original file position of `file_handler` after it finishes (even on failure).\n- If `pattern` is longer than the segment size, it must return an empty list.\n- If `find_first=True`, it should return a list containing only the first match address, or an empty list if none.\n- The search must correctly find patterns that cross the `chunksize` boundary.\n\n## How success is measured\n\nRun the verifier tests with:\n\n```bash\npython -m pytest -q tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position\n```\n\nAll listed tests must pass.",
+  "instruction_attempts": [
+    {
+      "attempt": 1,
+      "draft_title": "Restore MinidumpMemorySegment.asearch method",
+      "issues": [],
+      "review": {
+        "implementation_neutral": true,
+        "issues": [],
+        "self_contained": true,
+        "solvable_by_transcription": false,
+        "states_mechanical_edit": false
+      }
+    }
+  ],
+  "instruction_review": {
+    "implementation_neutral": true,
+    "issues": [],
+    "self_contained": true,
+    "solvable_by_transcription": false,
+    "states_mechanical_edit": false
+  },
+  "instruction_status": "final",
+  "module": "minidump.common_structs",
+  "modules": [
+    "minidump.common_structs"
+  ],
+  "provenance": {
+    "docstring_kept": false,
+    "excised_lines": [
+      219,
+      257
+    ],
+    "file": "minidump/common_structs.py",
+    "span": [
+      216,
+      257
+    ],
+    "target": "minidump.common_structs.MinidumpMemorySegment.asearch",
+    "type": "excision"
+  },
+  "repo": "minidump",
+  "title": "Restore MinidumpMemorySegment.asearch method",
+  "verifier_agent": null,
+  "verifier_cmd": "python -m pytest -q tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position",
+  "verifier_files": [
+    "run.sh",
+    "tests/conftest.py",
+    "tests/generated/test_minidump_common_structs.py"
+  ],
+  "verifier_on_input": {
+    "exit_code": 1,
+    "n_failing": 6,
+    "n_passing": 0
+  },
+  "verifier_tests": [
+    "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary",
+    "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all",
+    "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first",
+    "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found",
+    "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long",
+    "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position"
+  ],
+  "verifier_visibility": "visible"
+}

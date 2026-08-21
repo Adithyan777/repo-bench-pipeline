@@ -1,0 +1,44 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/sandbox/tests/test_core.py::test_unzip": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/sandbox/tests/test_core.py::test_unzip": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/sandbox/tests/test_core.py::test_unzip": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/sandbox/tests/test_core.py::test_unzip": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/sandbox/tests/test_core.py::test_unzip": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/sandbox/tests/test_core.py::test_unzip": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

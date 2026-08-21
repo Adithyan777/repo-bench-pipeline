@@ -1,0 +1,97 @@
+{
+  "checks": {
+    "collateral": {
+      "newly_failing": 0,
+      "not_run": 0,
+      "ok": true,
+      "report_present": true
+    },
+    "determinism": {
+      "ok": true,
+      "runs": 3
+    },
+    "fail_before": {
+      "exit_code": 1,
+      "n_failing": 5,
+      "n_passing": 0,
+      "ok": true
+    },
+    "image": {
+      "built_from_input": false,
+      "digest_matches_task": true,
+      "environment_hashes": {
+        "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+        "requirements.lock.txt": "03b5265dd19f0c7405bf2a9cf5bc18925be22a49df936c696b350ef5dc8c4e4e"
+      },
+      "live_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+      "ok": true,
+      "present": true
+    },
+    "pass_after": {
+      "exit_code": 0,
+      "n_failing": 0,
+      "n_passing": 5,
+      "ok": true
+    },
+    "right_reason": {
+      "invalid": [],
+      "ok": true,
+      "tests": {
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises": {
+          "detail": "AssertionError: Regex pattern did not match.\n  Expected regex: 'Read would cross boundaries'\n  Actual message: 'excised'",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success": {
+          "detail": "in minidump/common_structs.py",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success",
+          "outcome": "failed",
+          "reason": "NotImplementedError",
+          "valid": true
+        },
+        "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises": {
+          "detail": "AssertionError: Regex pattern did not match.\n  Expected regex: 'Reading from wrong segment'\n  Actual message: 'excised'",
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises",
+          "outcome": "failed",
+          "reason": "AssertionError",
+          "valid": true
+        }
+      }
+    },
+    "static_gate": {
+      "ok": true,
+      "violations": []
+    }
+  },
+  "environment_hashes": {
+    "Dockerfile": "cc181bfa6745a6f21b5ddad159b6ea56640081df1332b9dc3a7e0c7e1be54562",
+    "requirements.lock.txt": "03b5265dd19f0c7405bf2a9cf5bc18925be22a49df936c696b350ef5dc8c4e4e"
+  },
+  "image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+  "image_tag": "bench-minidump",
+  "reasons": [],
+  "repeat_count": 3,
+  "task_id": "exc-minidump.common_structs-MinidumpMemorySegment.aread",
+  "task_image_digest": "sha256:778d4c1941c1e7474cc99856197e33f5ff505ca7533e553448620637dd98f098",
+  "timestamps": {
+    "finished": "2026-08-21T07:25:24+00:00",
+    "started": "2026-08-21T07:25:11+00:00"
+  },
+  "valid": true
+}

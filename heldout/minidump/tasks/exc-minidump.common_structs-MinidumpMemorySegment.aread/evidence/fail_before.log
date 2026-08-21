@@ -1,0 +1,181 @@
+$ python -m pytest -q tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_______ TestMinidumpMemorySegmentAread.test_aread_cross_boundary_raises ________
+
+self = <test_minidump_common_structs.TestMinidumpMemorySegmentAread object at 0xffff84433ad0>
+
+    def test_aread_cross_boundary_raises(self):
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        fh = AsyncFakeFileHandler(b"x" * 256)
+    
+>       with pytest.raises(Exception, match="Read would cross boundaries"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'Read would cross boundaries'
+E         Actual message: 'excised'
+
+tests/generated/test_minidump_common_structs.py:281: AssertionError
+_______________ TestMinidumpMemorySegmentAread.test_aread_offset _______________
+
+self = <test_minidump_common_structs.TestMinidumpMemorySegmentAread object at 0xffff84549250>
+
+    def test_aread_offset(self):
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        data = b"01234567" * 32
+        fh = AsyncFakeFileHandler(data)
+    
+>       result = run_async(seg.aread(0x1004, 4, fh))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:257: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/generated/test_minidump_common_structs.py:10: in run_async
+    return asyncio.run(coro)
+           ^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <minidump.common_structs.MinidumpMemorySegment object at 0xffff84533320>
+virtual_address = 4100, size = 4
+file_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff84532780>
+
+    async def aread(self, virtual_address, size, file_handler):
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:159: NotImplementedError
+_________ TestMinidumpMemorySegmentAread.test_aread_restores_position __________
+
+self = <test_minidump_common_structs.TestMinidumpMemorySegmentAread object at 0xffff84433ef0>
+
+    def test_aread_restores_position(self):
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        data = b"01234567" * 32
+        fh = AsyncFakeFileHandler(data)
+        run_async(fh.seek(42, 0))
+    
+>       run_async(seg.aread(0x1000, 4, fh))
+
+tests/generated/test_minidump_common_structs.py:295: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/generated/test_minidump_common_structs.py:10: in run_async
+    return asyncio.run(coro)
+           ^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <minidump.common_structs.MinidumpMemorySegment object at 0xffff844c0860>
+virtual_address = 4096, size = 4
+file_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff844c3410>
+
+    async def aread(self, virtual_address, size, file_handler):
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:159: NotImplementedError
+______________ TestMinidumpMemorySegmentAread.test_aread_success _______________
+
+self = <test_minidump_common_structs.TestMinidumpMemorySegmentAread object at 0xffff85024560>
+
+    def test_aread_success(self):
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        data = b"ABCDEFGH" * 32
+        fh = AsyncFakeFileHandler(data)
+    
+>       result = run_async(seg.aread(0x1000, 8, fh))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:244: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/generated/test_minidump_common_structs.py:10: in run_async
+    return asyncio.run(coro)
+           ^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <minidump.common_structs.MinidumpMemorySegment object at 0xffff8458d9d0>
+virtual_address = 4096, size = 8
+file_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff8458ec60>
+
+    async def aread(self, virtual_address, size, file_handler):
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:159: NotImplementedError
+________ TestMinidumpMemorySegmentAread.test_aread_wrong_segment_raises ________
+
+self = <test_minidump_common_structs.TestMinidumpMemorySegmentAread object at 0xffff844335f0>
+
+    def test_aread_wrong_segment_raises(self):
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        fh = AsyncFakeFileHandler(b"x" * 256)
+    
+>       with pytest.raises(Exception, match="Reading from wrong segment"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'Reading from wrong segment'
+E         Actual message: 'excised'
+
+tests/generated/test_minidump_common_structs.py:269: AssertionError
+=========================== short test summary info ============================
+FAILED tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises
+FAILED tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset
+FAILED tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position
+FAILED tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success
+FAILED tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises
+5 failed in 0.37s
+
+--- stderr ---
+

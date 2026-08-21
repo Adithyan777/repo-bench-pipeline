@@ -1,0 +1,19 @@
+$ python -m pytest -q toolz/tests/test_itertoolz.py::test_peek -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________________________________ test_peek ___________________________________
+
+    def test_peek():
+        peek = getattr(itertoolz, 'peek', None)
+>       assert peek is not None
+E       assert None is not None
+
+toolz/tests/test_itertoolz.py:466: AssertionError
+=========================== short test summary info ============================
+FAILED toolz/tests/test_itertoolz.py::test_peek - assert None is not None
+1 failed in 0.22s
+
+--- stderr ---
+

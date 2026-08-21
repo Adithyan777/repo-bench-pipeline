@@ -1,0 +1,75 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 315,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_partition_all",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296055.9231763,
+  "duration": 0.29778623580932617,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "failed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 326,
+          "message": "ValueError",
+          "path": "/repo/toolz/tests/test_itertoolz.py"
+        },
+        "duration": 0.0002902510022977367,
+        "longrepr": "def test_partition_all():\n        assert list(partition_all(2, [1, 2, 3, 4])) == [(1, 2), (3, 4)]\n        assert list(partition_all(3, range(5))) == [(0, 1, 2), (3, 4)]\n        assert list(partition_all(2, [])) == []\n    \n        # Regression test: https://github.com/pytoolz/toolz/issues/387\n        class NoCompare(object):\n            def __eq__(self, other):\n                if self.__class__ == other.__class__:\n                    return True\n                raise ValueError()\n        obj = NoCompare()\n        result = [(obj, obj, obj, obj), (obj, obj, obj)]\n>       assert list(partition_all(4, [obj]*7)) == result\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_itertoolz.py:329: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntoolz/itertoolz.py:723: in partition_all\n    yield prev[:prev.index(no_pad)]\n                ^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <test_itertoolz.test_partition_all.<locals>.NoCompare object at 0xffffb46c5910>\nother = '__no__pad__'\n\n    def __eq__(self, other):\n        if self.__class__ == other.__class__:\n            return True\n>       raise ValueError()\nE       ValueError\n\ntoolz/tests/test_itertoolz.py:326: ValueError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 329,
+            "message": "",
+            "path": "toolz/tests/test_itertoolz.py"
+          },
+          {
+            "lineno": 723,
+            "message": "in partition_all",
+            "path": "toolz/itertoolz.py"
+          },
+          {
+            "lineno": 326,
+            "message": "ValueError",
+            "path": "toolz/tests/test_itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_partition_all",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 315,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_partition_all",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0007335859991144389,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00032308399386238307,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

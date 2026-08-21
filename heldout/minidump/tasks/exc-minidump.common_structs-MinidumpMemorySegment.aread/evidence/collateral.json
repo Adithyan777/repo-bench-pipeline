@@ -1,0 +1,9 @@
+{
+  "baseline_passing": 55,
+  "cmd": "python -m pytest -p no:cacheprovider -q --json-report --json-report-file=.pytest-report.json",
+  "exit_code": 0,
+  "newly_failing": [],
+  "not_run": [],
+  "report_present": true,
+  "still_passing": 55
+}

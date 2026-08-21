@@ -1,0 +1,1963 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": "builder/pyinstaller",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "builder",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "builder/pyinstaller",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": "minidump/streams",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "minidump/structures",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "minidump/utils/winapi",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "minidump/utils",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "minidump/utils/winapi",
+          "type": "Package"
+        }
+      ]
+    },
+    {
+      "nodeid": "minidump",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "minidump/streams",
+          "type": "Package"
+        },
+        {
+          "nodeid": "minidump/structures",
+          "type": "Package"
+        },
+        {
+          "nodeid": "minidump/utils",
+          "type": "Package"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 13,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty",
+          "type": "Function"
+        },
+        {
+          "lineno": 16,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte",
+          "type": "Function"
+        },
+        {
+          "lineno": 23,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string",
+          "type": "Function"
+        },
+        {
+          "lineno": 30,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes",
+          "type": "Function"
+        },
+        {
+          "lineno": 37,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep",
+          "type": "Function"
+        },
+        {
+          "lineno": 44,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset",
+          "type": "Function"
+        },
+        {
+          "lineno": 51,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows",
+          "type": "Function"
+        },
+        {
+          "lineno": 58,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length",
+          "type": "Function"
+        },
+        {
+          "lineno": 63,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit",
+          "type": "Function"
+        },
+        {
+          "lineno": 67,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 74,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic",
+          "type": "Function"
+        },
+        {
+          "lineno": 81,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head",
+          "type": "Function"
+        },
+        {
+          "lineno": 86,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines",
+          "type": "Function"
+        },
+        {
+          "lineno": 90,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns",
+          "type": "Function"
+        },
+        {
+          "lineno": 96,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row",
+          "type": "Function"
+        },
+        {
+          "lineno": 104,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+          "type": "Function"
+        },
+        {
+          "lineno": 111,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 167,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_success",
+          "type": "Function"
+        },
+        {
+          "lineno": 180,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_offset",
+          "type": "Function"
+        },
+        {
+          "lineno": 193,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_wrong_segment_raises",
+          "type": "Function"
+        },
+        {
+          "lineno": 205,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_cross_boundary_raises",
+          "type": "Function"
+        },
+        {
+          "lineno": 217,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_restores_position",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 233,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success",
+          "type": "Function"
+        },
+        {
+          "lineno": 246,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset",
+          "type": "Function"
+        },
+        {
+          "lineno": 259,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises",
+          "type": "Function"
+        },
+        {
+          "lineno": 271,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises",
+          "type": "Function"
+        },
+        {
+          "lineno": 283,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 299,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all",
+          "type": "Function"
+        },
+        {
+          "lineno": 314,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first",
+          "type": "Function"
+        },
+        {
+          "lineno": 327,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found",
+          "type": "Function"
+        },
+        {
+          "lineno": 340,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long",
+          "type": "Function"
+        },
+        {
+          "lineno": 352,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position",
+          "type": "Function"
+        },
+        {
+          "lineno": 366,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 382,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all",
+          "type": "Function"
+        },
+        {
+          "lineno": 397,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first",
+          "type": "Function"
+        },
+        {
+          "lineno": 410,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found",
+          "type": "Function"
+        },
+        {
+          "lineno": 423,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long",
+          "type": "Function"
+        },
+        {
+          "lineno": 435,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position",
+          "type": "Function"
+        },
+        {
+          "lineno": 449,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_common_structs.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump",
+          "type": "Class"
+        },
+        {
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable",
+          "type": "Class"
+        },
+        {
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead",
+          "type": "Class"
+        },
+        {
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread",
+          "type": "Class"
+        },
+        {
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch",
+          "type": "Class"
+        },
+        {
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch",
+          "type": "Class"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 8,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_int_input_returns_same",
+          "type": "Function"
+        },
+        {
+          "lineno": 13,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_decimal_string",
+          "type": "Function"
+        },
+        {
+          "lineno": 18,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_hex_string_lowercase_prefix",
+          "type": "Function"
+        },
+        {
+          "lineno": 23,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_hex_string_uppercase_prefix",
+          "type": "Function"
+        },
+        {
+          "lineno": 27,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_binary_string",
+          "type": "Function"
+        },
+        {
+          "lineno": 32,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_unknown_format_raises",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 42,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory::test_do_memory_prints_segments",
+          "type": "Function"
+        },
+        {
+          "lineno": 55,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory::test_do_memory_skips_none",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 69,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads::test_do_threads_prints_threads",
+          "type": "Function"
+        },
+        {
+          "lineno": 82,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads::test_do_threads_skips_none",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 96,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments::test_do_comments_prints_comments",
+          "type": "Function"
+        },
+        {
+          "lineno": 107,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments::test_do_comments_skips_none",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 120,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules::test_do_modules_prints_modules",
+          "type": "Function"
+        },
+        {
+          "lineno": 131,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules::test_do_modules_skips_none",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 144,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell::test_do_tell_prints_hex_position",
+          "type": "Function"
+        },
+        {
+          "lineno": 153,
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell::test_do_tell_none_prints_warning_then_raises",
+          "type": "Function"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int",
+          "type": "Class"
+        },
+        {
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory",
+          "type": "Class"
+        },
+        {
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads",
+          "type": "Class"
+        },
+        {
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments",
+          "type": "Class"
+        },
+        {
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules",
+          "type": "Class"
+        },
+        {
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell",
+          "type": "Class"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/generated",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "tests/generated/test_minidump_common_structs.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "tests/generated/test_minidump_minidumpshell.py",
+          "type": "Module"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "tests/generated",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "builder",
+          "type": "Dir"
+        },
+        {
+          "nodeid": "minidump",
+          "type": "Package"
+        },
+        {
+          "nodeid": "tests",
+          "type": "Dir"
+        }
+      ]
+    }
+  ],
+  "created": 1787297123.9645898,
+  "duration": 0.3968992233276367,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 55,
+    "passed": 55,
+    "total": 55
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00017541801207698882,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_empty",
+        "TestHexdump",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 13,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002164170000469312,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012258300557732582,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014399999054148793,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_single_byte",
+        "TestHexdump",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 16,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001187919988296926,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0003595849993871525,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001596670044818893,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_ascii_string",
+        "TestHexdump",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 23,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001519170036772266,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010858300083782524,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00017779199697542936,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_non_ascii_bytes",
+        "TestHexdump",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 30,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00021570900571532547,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011700000322889537,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001281260047107935,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_custom_sep",
+        "TestHexdump",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 37,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001138340012403205,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.425099415238947e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001426679955329746,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_start_offset",
+        "TestHexdump",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 44,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00012512499233707786,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012212600267957896,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001477510086260736,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_multiple_rows",
+        "TestHexdump",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 51,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001068339915946126,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.458400018047541e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011920899851247668,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_odd_length",
+        "TestHexdump",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 58,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.92090062936768e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010879199544433504,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010900000052060932,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_hex_formatting_single_digit",
+        "TestHexdump",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 63,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.787500312086195e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.366701124235988e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013541799853555858,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_mixed_content",
+        "TestHexdump",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 67,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.012500231619924e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.249999129679054e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00013541699445340782,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_basic",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 74,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.966599463950843e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.062599565368146e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011500000255182385,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_no_separate_head",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 81,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.270799637306482e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.916699152905494e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010029200348071754,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_empty_lines",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 86,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.991699723992497e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.020899597089738e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00017749999824445695,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_multiple_columns",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 90,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns",
+      "outcome": "passed",
+      "setup": {
+        "duration": 8.81669984664768e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.191699791699648e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011116699897684157,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_single_row",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 96,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010583399853203446,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.670800889376551e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001077499910024926,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_single_row_no_separator",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 104,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.433399827685207e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.945899026002735e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011012499453499913,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_column_padding",
+        "TestConstructTable",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 111,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.529199451208115e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.116700675804168e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001365000061923638,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_read_success",
+        "TestMinidumpMemorySegmentRead",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 167,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_success",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.7541997092776e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.004199819173664e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010850001126527786,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_read_offset",
+        "TestMinidumpMemorySegmentRead",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 180,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_offset",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.433399827685207e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.641699969302863e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00027250099810771644,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_read_wrong_segment_raises",
+        "TestMinidumpMemorySegmentRead",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 193,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_wrong_segment_raises",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010733300587162375,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.86259983619675e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0002338759950362146,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_read_cross_boundary_raises",
+        "TestMinidumpMemorySegmentRead",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 205,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_cross_boundary_raises",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.545899229124188e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.012500231619924e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010916699829977006,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_read_restores_position",
+        "TestMinidumpMemorySegmentRead",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 217,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentRead::test_read_restores_position",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.458400018047541e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.90420051291585e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0006557529995916411,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_aread_success",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 233,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.729199518915266e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002017090009758249,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003592930006561801,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_aread_offset",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 246,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010158400982618332,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.437500557396561e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005275849980534986,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_aread_wrong_segment_raises",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 259,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010045900125987828,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.837500692810863e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00046645999827887863,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_aread_cross_boundary_raises",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 271,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00018237601034343243,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011637499846983701,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004672520008170977,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_aread_restores_position",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 283,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010354199912399054,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010820900206454098,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00014437500794883817,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_find_all",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 299,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010012499114964157,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 8.779199561104178e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001162919943453744,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_find_first",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 314,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.245799446944147e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.104200580623001e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001146260037785396,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_not_found",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 327,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010700100392568856,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.262599633075297e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010937500337604433,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_pattern_too_long",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 340,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.995901200454682e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.091699030250311e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010233400098513812,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_restores_position",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 352,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.24580090213567e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002467090089339763,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001424999936716631,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_search_chunksize_boundary",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 366,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00013254200166556984,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010462600039318204,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.000377709002350457,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_asearch_find_all",
+        "TestMinidumpMemorySegmentAsearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 382,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010512500011827797,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001057499903254211,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003208760026609525,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_asearch_find_first",
+        "TestMinidumpMemorySegmentAsearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 397,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.83339996309951e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00023237599816638976,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003422510053496808,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_asearch_not_found",
+        "TestMinidumpMemorySegmentAsearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 410,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001322089956374839,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019341699953656644,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00031720900733489543,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_asearch_pattern_too_long",
+        "TestMinidumpMemorySegmentAsearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 423,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001253749942407012,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.887600026559085e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00041041799704544246,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_asearch_restores_position",
+        "TestMinidumpMemorySegmentAsearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 435,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.566699736751616e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.458400018047541e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00028162600938230753,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_asearch_chunksize_boundary",
+        "TestMinidumpMemorySegmentAsearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 449,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00014491700858343393,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00026637599512469023,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011929200263693929,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_int_input_returns_same",
+        "TestArgs2Int",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 8,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_int_input_returns_same",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0001280839933315292,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001018330076476559,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00015320901002269238,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_decimal_string",
+        "TestArgs2Int",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 13,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_decimal_string",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00016529200365766883,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012237500050105155,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00011183301103301346,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_hex_string_lowercase_prefix",
+        "TestArgs2Int",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 18,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_hex_string_lowercase_prefix",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00010074999590869993,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.000285750997136347,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00010637599916663021,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_hex_string_uppercase_prefix",
+        "TestArgs2Int",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 23,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_hex_string_uppercase_prefix",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00011150000500492752,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013216701336205006,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0001179169921670109,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_binary_string",
+        "TestArgs2Int",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 27,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_binary_string",
+      "outcome": "passed",
+      "setup": {
+        "duration": 9.458299609832466e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.454200335312635e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00030279200291261077,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_unknown_format_raises",
+        "TestArgs2Int",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 32,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestArgs2Int::test_unknown_format_raises",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00015437600086443126,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010637599916663021,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0006900020089233294,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_do_memory_prints_segments",
+        "TestMinidumpShellDoMemory",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 42,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory::test_do_memory_prints_segments",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0005351259896997362,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00015745899872854352,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00039208499947562814,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_do_memory_skips_none",
+        "TestMinidumpShellDoMemory",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 55,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoMemory::test_do_memory_skips_none",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00034562600194476545,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001596670044818893,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00032266799826174974,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_do_threads_prints_threads",
+        "TestMinidumpShellDoThreads",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 69,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads::test_do_threads_prints_threads",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00028275100339669734,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00016791699454188347,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004212100029690191,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_do_threads_skips_none",
+        "TestMinidumpShellDoThreads",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 82,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoThreads::test_do_threads_skips_none",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00023633400269318372,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001843759964685887,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00037225100095383823,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_do_comments_prints_comments",
+        "TestMinidumpShellDoComments",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 96,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments::test_do_comments_prints_comments",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00026254299154970795,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001441670028725639,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00031612599559593946,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_do_comments_skips_none",
+        "TestMinidumpShellDoComments",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 107,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoComments::test_do_comments_skips_none",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00026541799888946116,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013512599980458617,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.00048437700024805963,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_do_modules_prints_modules",
+        "TestMinidumpShellDoModules",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 120,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules::test_do_modules_prints_modules",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00023025099653750658,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00023370901180896908,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0003265429986640811,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_do_modules_skips_none",
+        "TestMinidumpShellDoModules",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 131,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoModules::test_do_modules_skips_none",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0002540420100558549,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00021033399389125407,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0004923349915770814,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_do_tell_prints_hex_position",
+        "TestMinidumpShellDoTell",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 144,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell::test_do_tell_prints_hex_position",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00025545900280121714,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013370900705922395,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "duration": 0.0005375850014388561,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_do_tell_none_prints_warning_then_raises",
+        "TestMinidumpShellDoTell",
+        "test_minidump_minidumpshell.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 153,
+      "nodeid": "tests/generated/test_minidump_minidumpshell.py::TestMinidumpShellDoTell::test_do_tell_none_prints_warning_then_raises",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.00023562500427942723,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0003210840077372268,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

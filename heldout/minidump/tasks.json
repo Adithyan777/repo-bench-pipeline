@@ -1,0 +1,231 @@
+{
+  "repo": "minidump",
+  "tasks": [
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "exc-minidump.common_structs-MinidumpMemorySegment.aread",
+      "instruction_status": "final",
+      "module": "minidump.common_structs",
+      "modules": [
+        "minidump.common_structs"
+      ],
+      "path": "exc-minidump.common_structs-MinidumpMemorySegment.aread",
+      "provenance": {
+        "docstring_kept": false,
+        "excised_lines": [
+          159,
+          173
+        ],
+        "file": "minidump/common_structs.py",
+        "span": [
+          158,
+          173
+        ],
+        "target": "minidump.common_structs.MinidumpMemorySegment.aread",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore MinidumpMemorySegment.aread async read behavior",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 5,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "exc-minidump.common_structs-MinidumpMemorySegment.asearch",
+      "instruction_status": "final",
+      "module": "minidump.common_structs",
+      "modules": [
+        "minidump.common_structs"
+      ],
+      "path": "exc-minidump.common_structs-MinidumpMemorySegment.asearch",
+      "provenance": {
+        "docstring_kept": false,
+        "excised_lines": [
+          219,
+          257
+        ],
+        "file": "minidump/common_structs.py",
+        "span": [
+          216,
+          257
+        ],
+        "target": "minidump.common_structs.MinidumpMemorySegment.asearch",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore MinidumpMemorySegment.asearch method",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 6,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "exc-minidump.common_structs-MinidumpMemorySegment.search",
+      "instruction_status": "final",
+      "module": "minidump.common_structs",
+      "modules": [
+        "minidump.common_structs"
+      ],
+      "path": "exc-minidump.common_structs-MinidumpMemorySegment.search",
+      "provenance": {
+        "docstring_kept": false,
+        "excised_lines": [
+          176,
+          214
+        ],
+        "file": "minidump/common_structs.py",
+        "span": [
+          175,
+          214
+        ],
+        "target": "minidump.common_structs.MinidumpMemorySegment.search",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore MinidumpMemorySegment.search implementation",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 6,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "exc-minidump.common_structs-construct_table",
+      "instruction_status": "final",
+      "module": "minidump.common_structs",
+      "modules": [
+        "minidump.common_structs"
+      ],
+      "path": "exc-minidump.common_structs-construct_table",
+      "provenance": {
+        "docstring_kept": true,
+        "excised_lines": [
+          340,
+          363
+        ],
+        "file": "minidump/common_structs.py",
+        "span": [
+          337,
+          363
+        ],
+        "target": "minidump.common_structs.construct_table",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore construct_table formatting in minidump.common_structs",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q tests/generated/test_minidump_common_structs.py::TestConstructTable::test_basic tests/generated/test_minidump_common_structs.py::TestConstructTable::test_column_padding tests/generated/test_minidump_common_structs.py::TestConstructTable::test_empty_lines tests/generated/test_minidump_common_structs.py::TestConstructTable::test_multiple_columns tests/generated/test_minidump_common_structs.py::TestConstructTable::test_no_separate_head tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row tests/generated/test_minidump_common_structs.py::TestConstructTable::test_single_row_no_separator",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 7,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "medium",
+      "difficulty_status": "final",
+      "id": "exc-minidump.common_structs-hexdump",
+      "instruction_status": "final",
+      "module": "minidump.common_structs",
+      "modules": [
+        "minidump.common_structs"
+      ],
+      "path": "exc-minidump.common_structs-hexdump",
+      "provenance": {
+        "docstring_kept": true,
+        "excised_lines": [
+          294,
+          334
+        ],
+        "file": "minidump/common_structs.py",
+        "span": [
+          285,
+          334
+        ],
+        "target": "minidump.common_structs.hexdump",
+        "type": "excision"
+      },
+      "source_type": "excision",
+      "title": "Restore hexdump in common_structs",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q tests/generated/test_minidump_common_structs.py::TestHexdump::test_ascii_string tests/generated/test_minidump_common_structs.py::TestHexdump::test_custom_sep tests/generated/test_minidump_common_structs.py::TestHexdump::test_empty tests/generated/test_minidump_common_structs.py::TestHexdump::test_hex_formatting_single_digit tests/generated/test_minidump_common_structs.py::TestHexdump::test_mixed_content tests/generated/test_minidump_common_structs.py::TestHexdump::test_multiple_rows tests/generated/test_minidump_common_structs.py::TestHexdump::test_non_ascii_bytes tests/generated/test_minidump_common_structs.py::TestHexdump::test_odd_length tests/generated/test_minidump_common_structs.py::TestHexdump::test_single_byte tests/generated/test_minidump_common_structs.py::TestHexdump::test_start_offset",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 10,
+        "n_passing": 0
+      }
+    },
+    {
+      "difficulty": "easy",
+      "difficulty_status": "final",
+      "id": "hist-6d779ab",
+      "instruction_status": "final",
+      "module": "minidump.common_structs",
+      "modules": [
+        "minidump.common_structs"
+      ],
+      "path": "hist-6d779ab",
+      "provenance": {
+        "classification": {
+          "behavior_change_summary": "The search offset is now accumulated correctly across multiple pattern matches within a memory segment, so all occurrences are found at their correct addresses instead of resetting the offset and reporting wrong positions.",
+          "difficulty_guess": "easy",
+          "kind": "bugfix",
+          "self_contained": true,
+          "sha": "6d779ab",
+          "verifiable_via_tests": true
+        },
+        "commit": "6d779ab2e1cbcba36a88933cf9712082e5d4e7ee",
+        "files": [
+          "minidump/common_structs.py"
+        ],
+        "is_merge": true,
+        "message": "Merge pull request #21 from ThePwn1sher/master",
+        "modules": [
+          "minidump.common_structs"
+        ],
+        "parent": "4e9c80ff2a05e8bde6e22f0e652cda807e3089da",
+        "pr_number": 21,
+        "source_files": [
+          "minidump/common_structs.py"
+        ],
+        "touched_functions": [
+          "minidump.common_structs.MinidumpMemorySegment.asearch",
+          "minidump.common_structs.MinidumpMemorySegment.search"
+        ],
+        "type": "history",
+        "verifier_source": "agent-authored"
+      },
+      "source_type": "history",
+      "title": "Fix search offset accumulation for multiple pattern matches",
+      "validation_reasons": [],
+      "validation_status": "VALID",
+      "verifier_cmd": "python -m pytest -q tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses",
+      "verifier_on_input": {
+        "exit_code": 1,
+        "n_failing": 6,
+        "n_passing": 0
+      }
+    }
+  ]
+}

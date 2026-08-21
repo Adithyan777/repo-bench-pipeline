@@ -1,0 +1,44 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_partition_all": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_partition_all": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_partition_all": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_partition_all": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_partition_all": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_itertoolz.py::test_partition_all": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

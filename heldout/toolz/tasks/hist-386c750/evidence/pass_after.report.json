@@ -1,0 +1,52 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 107,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_isiterable",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296058.7686822,
+  "duration": 0.26602911949157715,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "passed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.0004535850021056831,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_isiterable",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 107,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_isiterable",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0004970439913449809,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001513760071247816,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

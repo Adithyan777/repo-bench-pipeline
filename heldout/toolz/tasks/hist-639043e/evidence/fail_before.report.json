@@ -1,0 +1,65 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 25,
+          "nodeid": "toolz/tests/test_functoolz.py::test_apply",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296057.193709,
+  "duration": 0.24631977081298828,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "failed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 29,
+          "message": "assert None is not None",
+          "path": "/repo/toolz/tests/test_functoolz.py"
+        },
+        "duration": 0.00031570999999530613,
+        "longrepr": "def test_apply():\n        import toolz.functoolz as ft\n        apply = getattr(ft, 'apply', None)\n>       assert apply is not None\nE       assert None is not None\n\ntoolz/tests/test_functoolz.py:29: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 29,
+            "message": "AssertionError",
+            "path": "toolz/tests/test_functoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_apply",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 25,
+      "nodeid": "toolz/tests/test_functoolz.py::test_apply",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0004902520013274625,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0003058760048588738,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

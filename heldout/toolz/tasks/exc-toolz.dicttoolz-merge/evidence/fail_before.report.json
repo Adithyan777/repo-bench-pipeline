@@ -1,0 +1,680 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 80,
+          "nodeid": "toolz/tests/test_curried.py::test_curried_namespace",
+          "type": "Function"
+        },
+        {
+          "lineno": 18,
+          "nodeid": "toolz/tests/test_curried.py::test_merge",
+          "type": "Function"
+        },
+        {
+          "lineno": 168,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory",
+          "type": "Function"
+        },
+        {
+          "lineno": 41,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge",
+          "type": "Function"
+        },
+        {
+          "lineno": 45,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 168,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory",
+          "type": "Function"
+        },
+        {
+          "lineno": 41,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge",
+          "type": "Function"
+        },
+        {
+          "lineno": 45,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 168,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_factory",
+          "type": "Function"
+        },
+        {
+          "lineno": 41,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge",
+          "type": "Function"
+        },
+        {
+          "lineno": 45,
+          "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg",
+          "type": "Function"
+        },
+        {
+          "lineno": 285,
+          "nodeid": "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings",
+          "type": "Function"
+        },
+        {
+          "lineno": 3,
+          "nodeid": "toolz/tests/test_tlz.py::test_tlz",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296043.5547452,
+  "duration": 0.2339165210723877,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 13,
+    "failed": 13,
+    "total": 13
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 0.0013950810098322108,
+        "longrepr": "def test_curried_namespace():\n        exceptions = import_module(\"toolz.curried.exceptions\")\n        namespace = {}\n    \n        def curry_namespace(ns):\n            return {\n                name: toolz.curry(f) if should_curry(f) else f\n                for name, f in ns.items()\n                if \"__\" not in name\n            }\n    \n        from_toolz = curry_namespace(vars(toolz))\n        from_exceptions = curry_namespace(vars(exceptions))\n>       namespace.update(toolz.merge(from_toolz, from_exceptions))\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_curried.py:94: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = ({'partial': <class 'functools.partial'>, 'reduce': <built-in function reduce>, 'dicttoolz': <module 'toolz.dicttoolz'...olz/__init__.py'>, 'merge_with': <function merge_with at 0xffffa09faf20>, 'merge': <function merge at 0xffffa09fafc0>})\nkwargs = {}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 94,
+            "message": "",
+            "path": "toolz/tests/test_curried.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_curried_namespace",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 80,
+      "nodeid": "toolz/tests/test_curried.py::test_curried_namespace",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0003997499879915267,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001552500034449622,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 0.0001880409981822595,
+        "longrepr": "def test_merge():\n>       assert merge(factory=lambda: defaultdict(int))({1: 1}) == {1: 1}\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_curried.py:20: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntoolz/functoolz.py:330: in __call__\n    return self._partial(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntoolz/curried/exceptions.py:13: in merge\n    return toolz.merge(d, *dicts, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = ({1: 1},)\nkwargs = {'factory': <function test_merge.<locals>.<lambda> at 0xffffa0766ca0>}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 20,
+            "message": "",
+            "path": "toolz/tests/test_curried.py"
+          },
+          {
+            "lineno": 330,
+            "message": "in __call__",
+            "path": "toolz/functoolz.py"
+          },
+          {
+            "lineno": 13,
+            "message": "in merge",
+            "path": "toolz/curried/exceptions.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_merge",
+        "test_curried.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 18,
+      "nodeid": "toolz/tests/test_curried.py::test_merge",
+      "outcome": "failed",
+      "setup": {
+        "duration": 8.345799869857728e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001433750003343448,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 0.00011483299022074789,
+        "longrepr": "self = <toolz.tests.test_dicttoolz.TestCustomMapping object at 0xffffa09648f0>\n\n    def test_factory(self):\n        D, kw = self.D, self.kw  # noqa: F841\n>       assert merge(defaultdict(int, D({1: 2})), D({2: 3})) == {1: 2, 2: 3}\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_dicttoolz.py:171: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = (defaultdict(<class 'int'>, {1: 2}), <toolz.tests.test_dicttoolz.CustomMapping object at 0xffffa0af0b60>)\nkwargs = {}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 171,
+            "message": "",
+            "path": "toolz/tests/test_dicttoolz.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_factory",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 168,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00010554099571891129,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.554201096761972e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 8.924999565351754e-05,
+        "longrepr": "self = <toolz.tests.test_dicttoolz.TestCustomMapping object at 0xffffa0967b00>\n\n    def test_merge(self):\n        D, kw = self.D, self.kw\n>       assert merge(D({1: 1, 2: 2}), D({3: 4}), **kw) == D({1: 1, 2: 2, 3: 4})\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_dicttoolz.py:44: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = (<toolz.tests.test_dicttoolz.CustomMapping object at 0xffffa0965610>, <toolz.tests.test_dicttoolz.CustomMapping object at 0xffffa0964d40>)\nkwargs = {'factory': <function TestCustomMapping.<lambda> at 0xffffa0765b20>}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 44,
+            "message": "",
+            "path": "toolz/tests/test_dicttoolz.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_merge",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 41,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00011337500473018736,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012508301006164402,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 9.625000529922545e-05,
+        "longrepr": "self = <toolz.tests.test_dicttoolz.TestCustomMapping object at 0xffffa0967710>\n\n    def test_merge_iterable_arg(self):\n        D, kw = self.D, self.kw\n>       assert merge([D({1: 1, 2: 2}), D({3: 4})], **kw) == D({1: 1, 2: 2, 3: 4})\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_dicttoolz.py:48: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = ([<toolz.tests.test_dicttoolz.CustomMapping object at 0xffffa0bf48f0>, <toolz.tests.test_dicttoolz.CustomMapping object at 0xffffa0bf4260>],)\nkwargs = {'factory': <function TestCustomMapping.<lambda> at 0xffffa0765b20>}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 48,
+            "message": "",
+            "path": "toolz/tests/test_dicttoolz.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_merge_iterable_arg",
+        "TestCustomMapping",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 45,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.312500383704901e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.549999958835542e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 8.81669984664768e-05,
+        "longrepr": "self = <toolz.tests.test_dicttoolz.TestDefaultDict object at 0xffffa0963d70>\n\n    def test_factory(self):\n        D, kw = self.D, self.kw  # noqa: F841\n>       assert merge(defaultdict(int, D({1: 2})), D({2: 3})) == {1: 2, 2: 3}\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_dicttoolz.py:171: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = (defaultdict(<class 'int'>, {1: 2}), defaultdict(<class 'int'>, {2: 3}))\nkwargs = {}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 171,
+            "message": "",
+            "path": "toolz/tests/test_dicttoolz.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_factory",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 168,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory",
+      "outcome": "failed",
+      "setup": {
+        "duration": 8.245799108408391e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001356659922748804,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 8.429199806414545e-05,
+        "longrepr": "self = <toolz.tests.test_dicttoolz.TestDefaultDict object at 0xffffa0964800>\n\n    def test_merge(self):\n        D, kw = self.D, self.kw\n>       assert merge(D({1: 1, 2: 2}), D({3: 4}), **kw) == D({1: 1, 2: 2, 3: 4})\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_dicttoolz.py:44: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = (defaultdict(<class 'int'>, {1: 1, 2: 2}), defaultdict(<class 'int'>, {3: 4}))\nkwargs = {'factory': <function TestDefaultDict.<lambda> at 0xffffa07651c0>}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 44,
+            "message": "",
+            "path": "toolz/tests/test_dicttoolz.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_merge",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 41,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.420800102408975e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011624999751802534,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 8.81669984664768e-05,
+        "longrepr": "self = <toolz.tests.test_dicttoolz.TestDefaultDict object at 0xffffa0964560>\n\n    def test_merge_iterable_arg(self):\n        D, kw = self.D, self.kw\n>       assert merge([D({1: 1, 2: 2}), D({3: 4})], **kw) == D({1: 1, 2: 2, 3: 4})\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_dicttoolz.py:48: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = ([defaultdict(<class 'int'>, {1: 1, 2: 2}), defaultdict(<class 'int'>, {3: 4})],)\nkwargs = {'factory': <function TestDefaultDict.<lambda> at 0xffffa07651c0>}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 48,
+            "message": "",
+            "path": "toolz/tests/test_dicttoolz.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_merge_iterable_arg",
+        "TestDefaultDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 45,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg",
+      "outcome": "failed",
+      "setup": {
+        "duration": 6.770799518562853e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012395800149533898,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 0.00010216700320597738,
+        "longrepr": "self = <toolz.tests.test_dicttoolz.TestDict object at 0xffffa0962090>\n\n    def test_factory(self):\n        D, kw = self.D, self.kw  # noqa: F841\n>       assert merge(defaultdict(int, D({1: 2})), D({2: 3})) == {1: 2, 2: 3}\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_dicttoolz.py:171: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = (defaultdict(<class 'int'>, {1: 2}), {2: 3}), kwargs = {}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 171,
+            "message": "",
+            "path": "toolz/tests/test_dicttoolz.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_factory",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 168,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_factory",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.495800673495978e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011691600957419723,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 8.891600009519607e-05,
+        "longrepr": "self = <toolz.tests.test_dicttoolz.TestDict object at 0xffffa0961610>\n\n    def test_merge(self):\n        D, kw = self.D, self.kw\n>       assert merge(D({1: 1, 2: 2}), D({3: 4}), **kw) == D({1: 1, 2: 2, 3: 4})\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_dicttoolz.py:44: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = ({1: 1, 2: 2}, {3: 4}), kwargs = {}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 44,
+            "message": "",
+            "path": "toolz/tests/test_dicttoolz.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_merge",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 41,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.19579984433949e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013108400162309408,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 0.00012333299673628062,
+        "longrepr": "self = <toolz.tests.test_dicttoolz.TestDict object at 0xffffa0961ac0>\n\n    def test_merge_iterable_arg(self):\n        D, kw = self.D, self.kw\n>       assert merge([D({1: 1, 2: 2}), D({3: 4})], **kw) == D({1: 1, 2: 2, 3: 4})\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntoolz/tests/test_dicttoolz.py:48: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = ([{1: 1, 2: 2}, {3: 4}],), kwargs = {}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 48,
+            "message": "",
+            "path": "toolz/tests/test_dicttoolz.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_merge_iterable_arg",
+        "TestDict",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 45,
+      "nodeid": "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg",
+      "outcome": "failed",
+      "setup": {
+        "duration": 9.754100756254047e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.529100498184562e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 0.00013741599104832858,
+        "longrepr": "def test_merge_with_non_dict_mappings():\n        class Foo(Mapping):\n            def __init__(self, d):\n                self.d = d\n    \n            def __iter__(self):\n                return iter(self.d)\n    \n            def __getitem__(self, key):\n                return self.d[key]\n    \n            def __len__(self):\n                return len(self.d)\n    \n        d = Foo({1: 1})\n    \n>       assert merge(d) is d or merge(d) == {1: 1}\n               ^^^^^^^^\n\ntoolz/tests/test_dicttoolz.py:302: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = (<toolz.tests.test_dicttoolz.test_merge_with_non_dict_mappings.<locals>.Foo object at 0xffffa09616d0>,)\nkwargs = {}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 302,
+            "message": "",
+            "path": "toolz/tests/test_dicttoolz.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_merge_with_non_dict_mappings",
+        "test_dicttoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 285,
+      "nodeid": "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings",
+      "outcome": "failed",
+      "setup": {
+        "duration": 6.699899677187204e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.304098784923553e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 46,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/toolz/dicttoolz.py"
+        },
+        "duration": 0.0016577890055486932,
+        "longrepr": "def test_tlz():\n>       import tlz\n\ntoolz/tests/test_tlz.py:5: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntlz/__init__.py:9: in <module>\n    from . import _build_tlz  # noqa: F401\n    ^^^^^^^^^^^^^^^^^^^^^^^^\ntlz/_build_tlz.py:91: in <module>\n    tlz_loader.exec_module(sys.modules[\"tlz\"])\ntlz/_build_tlz.py:60: in exec_module\n    module.__dict__.update(toolz.merge(fast_mod.__dict__, module.__dict__))\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ndicts = ({'__name__': 'toolz', '__doc__': None, '__package__': 'toolz', '__loader__': <_frozen_importlib_external.SourceFileLo....\\n', '__package__': 'tlz', '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0xffffa0965940>, ...})\nkwargs = {}\n\n    def merge(*dicts, **kwargs):\n        \"\"\"Merge a collection of dictionaries\n    \n        >>> merge({1: 'one'}, {2: 'two'})\n        {1: 'one', 2: 'two'}\n    \n        Later dictionaries have precedence\n    \n        >>> merge({1: 2, 3: 4}, {3: 3, 4: 4})\n        {1: 2, 3: 3, 4: 4}\n    \n        See Also:\n            merge_with\n        \"\"\"\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\ntoolz/dicttoolz.py:46: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 5,
+            "message": "",
+            "path": "toolz/tests/test_tlz.py"
+          },
+          {
+            "lineno": 9,
+            "message": "in <module>",
+            "path": "tlz/__init__.py"
+          },
+          {
+            "lineno": 91,
+            "message": "in <module>",
+            "path": "tlz/_build_tlz.py"
+          },
+          {
+            "lineno": 60,
+            "message": "in exec_module",
+            "path": "tlz/_build_tlz.py"
+          },
+          {
+            "lineno": 46,
+            "message": "NotImplementedError",
+            "path": "toolz/dicttoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_tlz",
+        "test_tlz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 3,
+      "nodeid": "toolz/tests/test_tlz.py::test_tlz",
+      "outcome": "failed",
+      "setup": {
+        "duration": 6.479199510067701e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010808299703057855,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

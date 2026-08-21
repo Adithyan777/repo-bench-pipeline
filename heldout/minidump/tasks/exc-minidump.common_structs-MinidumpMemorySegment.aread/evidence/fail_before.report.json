@@ -1,0 +1,317 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 271,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises",
+          "type": "Function"
+        },
+        {
+          "lineno": 246,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset",
+          "type": "Function"
+        },
+        {
+          "lineno": 283,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position",
+          "type": "Function"
+        },
+        {
+          "lineno": 233,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success",
+          "type": "Function"
+        },
+        {
+          "lineno": 259,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787297112.7784312,
+  "duration": 0.3711843490600586,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 5,
+    "failed": 5,
+    "total": 5
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 281,
+          "message": "AssertionError: Regex pattern did not match.\n  Expected regex: 'Read would cross boundaries'\n  Actual message: 'excised'",
+          "path": "/repo/tests/generated/test_minidump_common_structs.py"
+        },
+        "duration": 0.0006904189940541983,
+        "longrepr": "self = <test_minidump_common_structs.TestMinidumpMemorySegmentAread object at 0xffff84433ad0>\n\n    def test_aread_cross_boundary_raises(self):\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        fh = AsyncFakeFileHandler(b\"x\" * 256)\n    \n>       with pytest.raises(Exception, match=\"Read would cross boundaries\"):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: Regex pattern did not match.\nE         Expected regex: 'Read would cross boundaries'\nE         Actual message: 'excised'\n\ntests/generated/test_minidump_common_structs.py:281: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 281,
+            "message": "AssertionError",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_aread_cross_boundary_raises",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 271,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_cross_boundary_raises",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00019025099754799157,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00016641699767205864,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 159,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.0003919180016964674,
+        "longrepr": "self = <test_minidump_common_structs.TestMinidumpMemorySegmentAread object at 0xffff84549250>\n\n    def test_aread_offset(self):\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        data = b\"01234567\" * 32\n        fh = AsyncFakeFileHandler(data)\n    \n>       result = run_async(seg.aread(0x1004, 4, fh))\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:257: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/generated/test_minidump_common_structs.py:10: in run_async\n    return asyncio.run(coro)\n           ^^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/asyncio/runners.py:195: in run\n    return runner.run(main)\n           ^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/asyncio/runners.py:118: in run\n    return self._loop.run_until_complete(task)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <minidump.common_structs.MinidumpMemorySegment object at 0xffff84533320>\nvirtual_address = 4100, size = 4\nfile_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff84532780>\n\n    async def aread(self, virtual_address, size, file_handler):\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:159: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 257,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 10,
+            "message": "in run_async",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 195,
+            "message": "in run",
+            "path": "/usr/local/lib/python3.12/asyncio/runners.py"
+          },
+          {
+            "lineno": 118,
+            "message": "in run",
+            "path": "/usr/local/lib/python3.12/asyncio/runners.py"
+          },
+          {
+            "lineno": 691,
+            "message": "in run_until_complete",
+            "path": "/usr/local/lib/python3.12/asyncio/base_events.py"
+          },
+          {
+            "lineno": 159,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_aread_offset",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 246,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_offset",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00011179200373589993,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019545899704098701,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 159,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.0005578349955612794,
+        "longrepr": "self = <test_minidump_common_structs.TestMinidumpMemorySegmentAread object at 0xffff84433ef0>\n\n    def test_aread_restores_position(self):\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        data = b\"01234567\" * 32\n        fh = AsyncFakeFileHandler(data)\n        run_async(fh.seek(42, 0))\n    \n>       run_async(seg.aread(0x1000, 4, fh))\n\ntests/generated/test_minidump_common_structs.py:295: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/generated/test_minidump_common_structs.py:10: in run_async\n    return asyncio.run(coro)\n           ^^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/asyncio/runners.py:195: in run\n    return runner.run(main)\n           ^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/asyncio/runners.py:118: in run\n    return self._loop.run_until_complete(task)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <minidump.common_structs.MinidumpMemorySegment object at 0xffff844c0860>\nvirtual_address = 4096, size = 4\nfile_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff844c3410>\n\n    async def aread(self, virtual_address, size, file_handler):\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:159: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 295,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 10,
+            "message": "in run_async",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 195,
+            "message": "in run",
+            "path": "/usr/local/lib/python3.12/asyncio/runners.py"
+          },
+          {
+            "lineno": 118,
+            "message": "in run",
+            "path": "/usr/local/lib/python3.12/asyncio/runners.py"
+          },
+          {
+            "lineno": 691,
+            "message": "in run_until_complete",
+            "path": "/usr/local/lib/python3.12/asyncio/base_events.py"
+          },
+          {
+            "lineno": 159,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_aread_restores_position",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 283,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_restores_position",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0001493339950684458,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0002381670055910945,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 159,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.0004944180109305307,
+        "longrepr": "self = <test_minidump_common_structs.TestMinidumpMemorySegmentAread object at 0xffff85024560>\n\n    def test_aread_success(self):\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        data = b\"ABCDEFGH\" * 32\n        fh = AsyncFakeFileHandler(data)\n    \n>       result = run_async(seg.aread(0x1000, 8, fh))\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:244: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/generated/test_minidump_common_structs.py:10: in run_async\n    return asyncio.run(coro)\n           ^^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/asyncio/runners.py:195: in run\n    return runner.run(main)\n           ^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/asyncio/runners.py:118: in run\n    return self._loop.run_until_complete(task)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <minidump.common_structs.MinidumpMemorySegment object at 0xffff8458d9d0>\nvirtual_address = 4096, size = 8\nfile_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff8458ec60>\n\n    async def aread(self, virtual_address, size, file_handler):\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:159: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 244,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 10,
+            "message": "in run_async",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 195,
+            "message": "in run",
+            "path": "/usr/local/lib/python3.12/asyncio/runners.py"
+          },
+          {
+            "lineno": 118,
+            "message": "in run",
+            "path": "/usr/local/lib/python3.12/asyncio/runners.py"
+          },
+          {
+            "lineno": 691,
+            "message": "in run_until_complete",
+            "path": "/usr/local/lib/python3.12/asyncio/base_events.py"
+          },
+          {
+            "lineno": 159,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_aread_success",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 233,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_success",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00012995899305678904,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00026554299984127283,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 269,
+          "message": "AssertionError: Regex pattern did not match.\n  Expected regex: 'Reading from wrong segment'\n  Actual message: 'excised'",
+          "path": "/repo/tests/generated/test_minidump_common_structs.py"
+        },
+        "duration": 0.000746168996556662,
+        "longrepr": "self = <test_minidump_common_structs.TestMinidumpMemorySegmentAread object at 0xffff844335f0>\n\n    def test_aread_wrong_segment_raises(self):\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        fh = AsyncFakeFileHandler(b\"x\" * 256)\n    \n>       with pytest.raises(Exception, match=\"Reading from wrong segment\"):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: Regex pattern did not match.\nE         Expected regex: 'Reading from wrong segment'\nE         Actual message: 'excised'\n\ntests/generated/test_minidump_common_structs.py:269: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 269,
+            "message": "AssertionError",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_aread_wrong_segment_raises",
+        "TestMinidumpMemorySegmentAread",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 259,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAread::test_aread_wrong_segment_raises",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0003452929959166795,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00025658399681560695,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

@@ -1,0 +1,286 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 164,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns",
+          "type": "Function"
+        },
+        {
+          "lineno": 125,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses",
+          "type": "Function"
+        },
+        {
+          "lineno": 86,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses",
+          "type": "Function"
+        },
+        {
+          "lineno": 147,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns",
+          "type": "Function"
+        },
+        {
+          "lineno": 103,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses",
+          "type": "Function"
+        },
+        {
+          "lineno": 68,
+          "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787297125.8172994,
+  "duration": 0.16338372230529785,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 6,
+    "failed": 6,
+    "total": 6
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 180,
+          "message": "assert 12293 == (((12288 + 8) + 3) + 3)",
+          "path": "/repo/tests/generated/test_hist_6d779ab.py"
+        },
+        "duration": 0.000643876992398873,
+        "longrepr": "self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb4741cd0>\n\n    def test_asearch_adjacent_patterns(self):\n        \"\"\"Async adjacent patterns must all be found at correct offsets.\"\"\"\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x3000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x3100\n    \n        data = b\"A\" * 8 + b\"PAT\" * 3 + b\"B\" * 200\n        fh = AsyncFakeFileHandler(data)\n    \n        result = run_async(seg.asearch(b\"PAT\", fh))\n        assert len(result) == 3\n        assert result[0] == 0x3000 + 8\n        assert result[1] == 0x3000 + 8 + 3\n>       assert result[2] == 0x3000 + 8 + 3 + 3\nE       assert 12293 == (((12288 + 8) + 3) + 3)\n\ntests/generated/test_hist_6d779ab.py:180: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 180,
+            "message": "AssertionError",
+            "path": "tests/generated/test_hist_6d779ab.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_asearch_adjacent_patterns",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 164,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_adjacent_patterns",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00014754199946764857,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00017904199194163084,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 146,
+          "message": "assert [8196, 8202, 8203, 8203, 8203] == [8196, 8202, 8208, 8214, 8220]\n  \n  At index 2 diff: 8203 != 8208\n  Use -v to get more diff",
+          "path": "/repo/tests/generated/test_hist_6d779ab.py"
+        },
+        "duration": 0.000467625999590382,
+        "longrepr": "self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb4741520>\n\n    def test_asearch_five_matches_progressive_addresses(self):\n        \"\"\"Async version: five matches must all have distinct correct addresses.\"\"\"\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x2000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x2100\n    \n        data = b\"X\" * 4 + b\"HI\" + b\"Y\" * 4 + b\"HI\" + b\"Z\" * 4 + b\"HI\" + b\"W\" * 4 + b\"HI\" + b\"V\" * 4 + b\"HI\" + b\"U\" * 200\n        fh = AsyncFakeFileHandler(data)\n    \n        result = run_async(seg.asearch(b\"HI\", fh))\n        assert len(result) == 5\n        expected = [\n            0x2000 + 4,\n            0x2000 + 4 + 2 + 4,\n            0x2000 + 4 + 2 + 4 + 2 + 4,\n            0x2000 + 4 + 2 + 4 + 2 + 4 + 2 + 4,\n            0x2000 + 4 + 2 + 4 + 2 + 4 + 2 + 4 + 2 + 4,\n        ]\n>       assert result == expected\nE       assert [8196, 8202, 8203, 8203, 8203] == [8196, 8202, 8208, 8214, 8220]\nE         \nE         At index 2 diff: 8203 != 8208\nE         Use -v to get more diff\n\ntests/generated/test_hist_6d779ab.py:146: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 146,
+            "message": "AssertionError",
+            "path": "tests/generated/test_hist_6d779ab.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_asearch_five_matches_progressive_addresses",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 125,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_five_matches_progressive_addresses",
+      "outcome": "failed",
+      "setup": {
+        "duration": 9.116700675804168e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010649999603629112,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 102,
+          "message": "assert 4111 == (((((4096 + 5) + 3) + 5) + 3) + 5)",
+          "path": "/repo/tests/generated/test_hist_6d779ab.py"
+        },
+        "duration": 0.00032120900868903846,
+        "longrepr": "self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb4740da0>\n\n    def test_asearch_three_matches_correct_addresses(self):\n        \"\"\"Async version: three matches must have correct addresses.\"\"\"\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        data = b\"A\" * 5 + b\"PAT\" + b\"B\" * 5 + b\"PAT\" + b\"C\" * 5 + b\"PAT\" + b\"D\" * 200\n        fh = AsyncFakeFileHandler(data)\n    \n        result = run_async(seg.asearch(b\"PAT\", fh))\n        assert len(result) == 3\n        assert result[0] == 0x1000 + 5\n        assert result[1] == 0x1000 + 5 + 3 + 5\n>       assert result[2] == 0x1000 + 5 + 3 + 5 + 3 + 5\nE       assert 4111 == (((((4096 + 5) + 3) + 5) + 3) + 5)\n\ntests/generated/test_hist_6d779ab.py:102: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 102,
+            "message": "AssertionError",
+            "path": "tests/generated/test_hist_6d779ab.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_asearch_three_matches_correct_addresses",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 86,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_asearch_three_matches_correct_addresses",
+      "outcome": "failed",
+      "setup": {
+        "duration": 8.066699956543744e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.14579868549481e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 163,
+          "message": "assert 12293 == (((12288 + 8) + 3) + 3)",
+          "path": "/repo/tests/generated/test_hist_6d779ab.py"
+        },
+        "duration": 0.00016191700706258416,
+        "longrepr": "self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb47418b0>\n\n    def test_search_adjacent_patterns(self):\n        \"\"\"Adjacent patterns: ``PAT`` immediately followed by ``PAT``.\"\"\"\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x3000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x3100\n    \n        data = b\"A\" * 8 + b\"PAT\" * 3 + b\"B\" * 200\n        fh = FakeFileHandler(data)\n    \n        result = seg.search(b\"PAT\", fh)\n        assert len(result) == 3\n        assert result[0] == 0x3000 + 8\n        assert result[1] == 0x3000 + 8 + 3\n>       assert result[2] == 0x3000 + 8 + 3 + 3\nE       assert 12293 == (((12288 + 8) + 3) + 3)\n\ntests/generated/test_hist_6d779ab.py:163: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 163,
+            "message": "AssertionError",
+            "path": "tests/generated/test_hist_6d779ab.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_search_adjacent_patterns",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 147,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_adjacent_patterns",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.412499689962715e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.512600081507117e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 124,
+          "message": "assert [8196, 8202, 8203, 8203, 8203] == [8196, 8202, 8208, 8214, 8220]\n  \n  At index 2 diff: 8203 != 8208\n  Use -v to get more diff",
+          "path": "/repo/tests/generated/test_hist_6d779ab.py"
+        },
+        "duration": 0.0002451679902151227,
+        "longrepr": "self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb47410d0>\n\n    def test_search_five_matches_progressive_addresses(self):\n        \"\"\"Five matches: bug would produce same wrong address for later hits.\"\"\"\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x2000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x2100\n    \n        data = b\"X\" * 4 + b\"HI\" + b\"Y\" * 4 + b\"HI\" + b\"Z\" * 4 + b\"HI\" + b\"W\" * 4 + b\"HI\" + b\"V\" * 4 + b\"HI\" + b\"U\" * 200\n        fh = FakeFileHandler(data)\n    \n        result = seg.search(b\"HI\", fh)\n        assert len(result) == 5\n        expected = [\n            0x2000 + 4,\n            0x2000 + 4 + 2 + 4,\n            0x2000 + 4 + 2 + 4 + 2 + 4,\n            0x2000 + 4 + 2 + 4 + 2 + 4 + 2 + 4,\n            0x2000 + 4 + 2 + 4 + 2 + 4 + 2 + 4 + 2 + 4,\n        ]\n>       assert result == expected\nE       assert [8196, 8202, 8203, 8203, 8203] == [8196, 8202, 8208, 8214, 8220]\nE         \nE         At index 2 diff: 8203 != 8208\nE         Use -v to get more diff\n\ntests/generated/test_hist_6d779ab.py:124: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 124,
+            "message": "AssertionError",
+            "path": "tests/generated/test_hist_6d779ab.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_search_five_matches_progressive_addresses",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 103,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_five_matches_progressive_addresses",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00010675100202206522,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.883400343824178e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 85,
+          "message": "assert 4111 == (((((4096 + 5) + 3) + 5) + 3) + 5)",
+          "path": "/repo/tests/generated/test_hist_6d779ab.py"
+        },
+        "duration": 0.00016262600547634065,
+        "longrepr": "self = <test_hist_6d779ab.TestSearchOffsetAccumulation object at 0xffffb48af470>\n\n    def test_search_three_matches_correct_addresses(self):\n        \"\"\"Three matches: bug would misreport second and third addresses.\"\"\"\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        # Three occurrences of \"PAT\" at known offsets\n        data = b\"A\" * 5 + b\"PAT\" + b\"B\" * 5 + b\"PAT\" + b\"C\" * 5 + b\"PAT\" + b\"D\" * 200\n        fh = FakeFileHandler(data)\n    \n        result = seg.search(b\"PAT\", fh)\n        assert len(result) == 3\n        assert result[0] == 0x1000 + 5\n        assert result[1] == 0x1000 + 5 + 3 + 5\n>       assert result[2] == 0x1000 + 5 + 3 + 5 + 3 + 5\nE       assert 4111 == (((((4096 + 5) + 3) + 5) + 3) + 5)\n\ntests/generated/test_hist_6d779ab.py:85: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 85,
+            "message": "AssertionError",
+            "path": "tests/generated/test_hist_6d779ab.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_search_three_matches_correct_addresses",
+        "TestSearchOffsetAccumulation",
+        "test_hist_6d779ab.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 68,
+      "nodeid": "tests/generated/test_hist_6d779ab.py::TestSearchOffsetAccumulation::test_search_three_matches_correct_addresses",
+      "outcome": "failed",
+      "setup": {
+        "duration": 7.750099757686257e-05,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.091700485441834e-05,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

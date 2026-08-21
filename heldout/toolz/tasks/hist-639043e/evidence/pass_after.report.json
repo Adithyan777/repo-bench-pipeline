@@ -1,0 +1,52 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 25,
+          "nodeid": "toolz/tests/test_functoolz.py::test_apply",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296058.7156563,
+  "duration": 0.21833419799804688,
+  "environment": {},
+  "exitcode": 0,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "passed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "duration": 0.00024162601039279252,
+        "outcome": "passed"
+      },
+      "keywords": [
+        "test_apply",
+        "test_functoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 25,
+      "nodeid": "toolz/tests/test_functoolz.py::test_apply",
+      "outcome": "passed",
+      "setup": {
+        "duration": 0.0006182939978316426,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.000263292997260578,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

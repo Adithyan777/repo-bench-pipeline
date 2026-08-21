@@ -1,0 +1,65 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 463,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_peek",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296067.4976008,
+  "duration": 0.21726036071777344,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "failed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 466,
+          "message": "assert None is not None",
+          "path": "/repo/toolz/tests/test_itertoolz.py"
+        },
+        "duration": 0.00033862599229905754,
+        "longrepr": "def test_peek():\n        peek = getattr(itertoolz, 'peek', None)\n>       assert peek is not None\nE       assert None is not None\n\ntoolz/tests/test_itertoolz.py:466: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 466,
+            "message": "AssertionError",
+            "path": "toolz/tests/test_itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_peek",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 463,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_peek",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00046991900308057666,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00022045901278033853,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

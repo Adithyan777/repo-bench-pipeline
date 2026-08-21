@@ -1,0 +1,67 @@
+{
+  "checks": {
+    "collateral": {
+      "ok": true,
+      "skipped": true
+    },
+    "determinism": {
+      "ok": true,
+      "runs": 3
+    },
+    "fail_before": {
+      "exit_code": 1,
+      "n_failing": 1,
+      "n_passing": 0,
+      "ok": true
+    },
+    "image": {
+      "built_from_input": false,
+      "digest_matches_task": true,
+      "environment_hashes": {
+        "Dockerfile": "abe63c386db9d1d0239166651451c5821513adc92baf2f5cc0dbd96fa01a54ef",
+        "requirements.lock.txt": "809ab2c262961d8deb4425494ee787d6536ba5184f9a62401aabc51b5f8eb4ba"
+      },
+      "live_digest": "sha256:ea390db0b06a75508772ea648c158ae15d4d1ea5b2764103f4ec7f9352f828a5",
+      "ok": true,
+      "present": true
+    },
+    "pass_after": {
+      "exit_code": 0,
+      "n_failing": 0,
+      "n_passing": 1,
+      "ok": true
+    },
+    "right_reason": {
+      "invalid": [],
+      "ok": true,
+      "tests": {
+        "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default": {
+          "detail": "TypeError in toolz/itertoolz.py",
+          "nodeid": "toolz/tests/test_itertoolz.py::test_reduce_by_callable_default",
+          "outcome": "failed",
+          "reason": "exception_in_repo_code",
+          "valid": true
+        }
+      }
+    },
+    "static_gate": {
+      "ok": true,
+      "violations": []
+    }
+  },
+  "environment_hashes": {
+    "Dockerfile": "abe63c386db9d1d0239166651451c5821513adc92baf2f5cc0dbd96fa01a54ef",
+    "requirements.lock.txt": "809ab2c262961d8deb4425494ee787d6536ba5184f9a62401aabc51b5f8eb4ba"
+  },
+  "image_digest": "sha256:ea390db0b06a75508772ea648c158ae15d4d1ea5b2764103f4ec7f9352f828a5",
+  "image_tag": "bench-toolz",
+  "reasons": [],
+  "repeat_count": 3,
+  "task_id": "hist-b8aca17",
+  "task_image_digest": "sha256:ea390db0b06a75508772ea648c158ae15d4d1ea5b2764103f4ec7f9352f828a5",
+  "timestamps": {
+    "finished": "2026-08-21T07:08:00+00:00",
+    "started": "2026-08-21T07:07:52+00:00"
+  },
+  "valid": true
+}

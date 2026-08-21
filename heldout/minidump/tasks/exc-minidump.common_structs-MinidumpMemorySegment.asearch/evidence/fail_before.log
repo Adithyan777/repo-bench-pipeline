@@ -1,0 +1,285 @@
+$ python -m pytest -q tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position -p no:cacheprovider --json-report --json-report-file=.pytest-report.json
+exit_code=1
+--- stdout ---
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_______ TestMinidumpMemorySegmentAsearch.test_asearch_chunksize_boundary _______
+
+self = <test_minidump_common_structs.TestMinidumpMemorySegmentAsearch object at 0xffff974102f0>
+
+    def test_asearch_chunksize_boundary(self):
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        data = b"A" * 30 + b"PATTERN" + b"B" * 219
+        fh = AsyncFakeFileHandler(data)
+    
+>       result = run_async(seg.asearch(b"PATTERN", fh, find_first=True, chunksize=32))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:460: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/generated/test_minidump_common_structs.py:10: in run_async
+    return asyncio.run(coro)
+           ^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <minidump.common_structs.MinidumpMemorySegment object at 0xffff97579790>
+pattern = b'PATTERN'
+file_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff9757a630>
+find_first = True, chunksize = 32
+
+    async def asearch(
+        self, pattern, file_handler, find_first=False, chunksize=50 * 1024
+    ):
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:219: NotImplementedError
+____________ TestMinidumpMemorySegmentAsearch.test_asearch_find_all ____________
+
+self = <test_minidump_common_structs.TestMinidumpMemorySegmentAsearch object at 0xffff9757f560>
+
+    def test_asearch_find_all(self):
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        data = b"X" * 10 + b"PATTERN" + b"Y" * 20 + b"PATTERN" + b"Z" * 200
+        fh = AsyncFakeFileHandler(data)
+    
+>       result = run_async(seg.asearch(b"PATTERN", fh))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:393: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/generated/test_minidump_common_structs.py:10: in run_async
+    return asyncio.run(coro)
+           ^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <minidump.common_structs.MinidumpMemorySegment object at 0xffff973879e0>
+pattern = b'PATTERN'
+file_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff97387dd0>
+find_first = False, chunksize = 51200
+
+    async def asearch(
+        self, pattern, file_handler, find_first=False, chunksize=50 * 1024
+    ):
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:219: NotImplementedError
+___________ TestMinidumpMemorySegmentAsearch.test_asearch_find_first ___________
+
+self = <test_minidump_common_structs.TestMinidumpMemorySegmentAsearch object at 0xffff97387770>
+
+    def test_asearch_find_first(self):
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        data = b"X" * 10 + b"PATTERN" + b"Y" * 20 + b"PATTERN" + b"Z" * 200
+        fh = AsyncFakeFileHandler(data)
+    
+>       result = run_async(seg.asearch(b"PATTERN", fh, find_first=True))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:408: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/generated/test_minidump_common_structs.py:10: in run_async
+    return asyncio.run(coro)
+           ^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <minidump.common_structs.MinidumpMemorySegment object at 0xffff974111c0>
+pattern = b'PATTERN'
+file_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff97412000>
+find_first = True, chunksize = 51200
+
+    async def asearch(
+        self, pattern, file_handler, find_first=False, chunksize=50 * 1024
+    ):
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:219: NotImplementedError
+___________ TestMinidumpMemorySegmentAsearch.test_asearch_not_found ____________
+
+self = <test_minidump_common_structs.TestMinidumpMemorySegmentAsearch object at 0xffff97387b90>
+
+    def test_asearch_not_found(self):
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        data = b"X" * 256
+        fh = AsyncFakeFileHandler(data)
+    
+>       result = run_async(seg.asearch(b"PATTERN", fh))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:421: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/generated/test_minidump_common_structs.py:10: in run_async
+    return asyncio.run(coro)
+           ^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <minidump.common_structs.MinidumpMemorySegment object at 0xffff98322c60>
+pattern = b'PATTERN'
+file_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff974f7a70>
+find_first = False, chunksize = 51200
+
+    async def asearch(
+        self, pattern, file_handler, find_first=False, chunksize=50 * 1024
+    ):
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:219: NotImplementedError
+________ TestMinidumpMemorySegmentAsearch.test_asearch_pattern_too_long ________
+
+self = <test_minidump_common_structs.TestMinidumpMemorySegmentAsearch object at 0xffff97387f80>
+
+    def test_asearch_pattern_too_long(self):
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x10
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1010
+    
+        fh = AsyncFakeFileHandler(b"X" * 16)
+    
+>       result = run_async(seg.asearch(b"PATTERN_TOO_LONG", fh))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/generated/test_minidump_common_structs.py:433: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/generated/test_minidump_common_structs.py:10: in run_async
+    return asyncio.run(coro)
+           ^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <minidump.common_structs.MinidumpMemorySegment object at 0xffff9757aa20>
+pattern = b'PATTERN_TOO_LONG'
+file_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff9757aa50>
+find_first = False, chunksize = 51200
+
+    async def asearch(
+        self, pattern, file_handler, find_first=False, chunksize=50 * 1024
+    ):
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:219: NotImplementedError
+_______ TestMinidumpMemorySegmentAsearch.test_asearch_restores_position ________
+
+self = <test_minidump_common_structs.TestMinidumpMemorySegmentAsearch object at 0xffff97413440>
+
+    def test_asearch_restores_position(self):
+        seg = MinidumpMemorySegment()
+        seg.start_virtual_address = 0x1000
+        seg.size = 0x100
+        seg.start_file_address = 0x0
+        seg.end_virtual_address = 0x1100
+    
+        data = b"X" * 256
+        fh = AsyncFakeFileHandler(data)
+        run_async(fh.seek(42, 0))
+    
+>       run_async(seg.asearch(b"NOTFOUND", fh))
+
+tests/generated/test_minidump_common_structs.py:447: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/generated/test_minidump_common_structs.py:10: in run_async
+    return asyncio.run(coro)
+           ^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <minidump.common_structs.MinidumpMemorySegment object at 0xffff974da660>
+pattern = b'NOTFOUND'
+file_handler = <test_minidump_common_structs.AsyncFakeFileHandler object at 0xffff9747f8f0>
+find_first = False, chunksize = 51200
+
+    async def asearch(
+        self, pattern, file_handler, find_first=False, chunksize=50 * 1024
+    ):
+>       raise NotImplementedError("excised")
+E       NotImplementedError: excised
+
+minidump/common_structs.py:219: NotImplementedError
+=========================== short test summary info ============================
+FAILED tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_chunksize_boundary
+FAILED tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_all
+FAILED tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_find_first
+FAILED tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_not_found
+FAILED tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_pattern_too_long
+FAILED tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentAsearch::test_asearch_restores_position
+6 failed in 0.55s
+
+--- stderr ---
+

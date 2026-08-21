@@ -1,0 +1,515 @@
+11:47:35 [run] repo https://github.com/pytoolz/toolz run_dir output/toolz stages hygiene,knowledge,tasks
+11:47:35 [hygiene] start
+11:47:37 [hygiene] run_dir output/toolz image bench-toolz base 568c2b8
+11:47:37 [hygiene/detect] start
+11:47:37 [hygiene/detect] done in 0.0s (0 LLM tokens) packaging_style=pyproject python_version=3.12 test_framework=pytest
+11:47:37 [hygiene/pin] start
+11:47:37 [hygiene/pin] done in 0.2s (0 LLM tokens) pin_count=9 python_version=3.12
+11:47:37 [hygiene/dockerfile] start
+11:47:40 [hygiene/dockerfile] done in 3.2s (0 LLM tokens) base_image=python@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
+11:47:40 [hygiene/compose] start
+11:47:40 [hygiene/compose] done in 0.0s (0 LLM tokens)
+11:47:40 [hygiene/compose] pipeline commit c1d4058
+11:47:40 [hygiene/build] start
+11:48:08 [hygiene/build] built bench-toolz
+11:48:08 [hygiene/build] done in 27.8s (0 LLM tokens) outcome=built attempts=0
+11:48:08 [hygiene/baseline] start
+11:48:10 [hygiene/baseline] suite: 186 tests, 0 failing
+11:48:10 [hygiene/baseline] done in 1.9s (0 LLM tokens) tests=186 passed=186 skipped=0 quarantined=0
+11:48:10 [hygiene/testgen] start
+11:48:15 [hygiene/testgen] coverage ok: 2 modules, 5 target functions
+11:48:15 [hygiene/testgen] module toolz.dicttoolz: 2 targets
+11:48:15 [hygiene/testgen] module toolz.dicttoolz: agent run 1/3 (9 runs left in repo budget)
+11:48:45 [hygiene/testgen] module toolz.dicttoolz: mutation gate mutants 5/8 killed
+11:48:45 [hygiene/testgen] module toolz.dicttoolz: kept 2/2 functions, mutants 5/8 killed
+11:48:45 [hygiene/testgen] module tlz._build_tlz: 3 targets
+11:48:45 [hygiene/testgen] module tlz._build_tlz: agent run 1/3 (8 runs left in repo budget)
+11:49:24 [hygiene/testgen] module tlz._build_tlz: mutation gate mutants 10/10 killed
+11:49:24 [hygiene/testgen] module tlz._build_tlz: kept 3/3 functions, mutants 10/10 killed
+11:49:28 [hygiene/testgen] done in 78.2s (40841 LLM tokens) modules_kept=2 functions_kept=5 functions_weak=0 functions_no_mutants=0 mutants_killed=15 mutants_valid=18
+11:49:28 [hygiene/testgen] pipeline commit 2784893
+11:49:28 [hygiene/lint] start
+11:49:39 [hygiene/lint] done in 11.1s (0 LLM tokens) files_changed=46 noqa=51 clean=True regressed=False
+11:49:40 [hygiene/lint] pipeline commit aaf441f
+hygiene done: output/toolz
+11:49:40 [hygiene] done in 124.6s
+11:49:40 [knowledge] start
+11:49:40 [knowledge/symbol_index] start
+11:49:40 [knowledge/symbol_index] 53 modules, 406 functions
+11:49:40 [knowledge/symbol_index] done in 0.2s (0 LLM tokens)
+11:49:40 [knowledge/indexes] start
+11:51:32 [knowledge/indexes] history index: 1230 commits
+11:51:38 [knowledge/indexes] coverage ok: test_map 182 functions
+11:51:38 [knowledge/indexes] done in 118.0s (0 LLM tokens)
+11:51:38 [knowledge/graph] start
+11:51:38 [knowledge/graph] 177 nodes, 1116 edges (calls=79 contains=161 imports=23 tested_by=853)
+11:51:38 [knowledge/graph] done in 0.0s (0 LLM tokens)
+11:51:38 [knowledge/verify] start
+11:51:39 [knowledge/verify] mismatches 0, symbols checked=124 present=124
+11:51:39 [knowledge/verify] done in 0.8s (0 LLM tokens)
+11:51:39 [knowledge/okf] start
+11:52:47 [knowledge/okf] modules=16 pages=155 verified=104 draft=32 conformant=True
+11:52:47 [knowledge/okf] done in 68.1s (42111 LLM tokens)
+knowledge done: output/toolz
+11:52:47 [knowledge] done in 187.4s
+11:52:47 [tasks] start
+11:52:47 [tasks/excision_funnel] start
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/adithyankrishnan/Desktop/heldout-run/pipeline/cli.py", line 283, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/adithyankrishnan/Desktop/heldout-run/pipeline/cli.py", line 145, in main
+    _run_tasks(args, config)
+  File "/Users/adithyankrishnan/Desktop/heldout-run/pipeline/cli.py", line 198, in _run_tasks
+    run_tasks(ctx)
+  File "/Users/adithyankrishnan/Desktop/heldout-run/pipeline/tasks/runner.py", line 70, in run_tasks
+    _run_step(ctx, name)
+  File "/Users/adithyankrishnan/Desktop/heldout-run/pipeline/tasks/runner.py", line 85, in _run_step
+    _STEP_FUNCS[name](ctx)
+  File "/Users/adithyankrishnan/Desktop/heldout-run/pipeline/tasks/runner.py", line 122, in step_excision_funnel
+    selected = excision.screen(ranked, ctx.repo, ctx.llm, ctx.config, decisions)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adithyankrishnan/Desktop/heldout-run/pipeline/tasks/excision.py", line 257, in screen
+    res = llm.complete_json(
+          ^^^^^^^^^^^^^^^^^^
+  File "/Users/adithyankrishnan/Desktop/heldout-run/pipeline/llm/client.py", line 167, in complete_json
+    raise SchemaValidationError(f"{step}: {last_error}")
+pipeline.llm.client.SchemaValidationError: p3.excision.screen_candidate: schema validation failed: '[{"qualname": "toolz.dicttoolz.merge_with", "docstring_leaks_impl": false, "trivially_inferable": false, "reason": "Docstring describes behavior/contract only; implementation involves defaultdict list-append trick and factory handling not spelled out."}, {"qualname": "toolz.itertoolz.getter", "docstring_leaks_impl": false, "trivially_inferable": false, "reason": "No docstring given; body handles list-index edge cases (single, empty, multiple) not obvious from signature alone."}, {"qualname": "toolz.functoolz.compose", "docstring_leaks_impl": false, "trivially_inferable": false, "reason": "Docstring describes composition semantics but not the Compose class or identity/len-1 special cases; body not a trivial one-liner."}, {"qualname": "toolz.sandbox.parallel.fold", "docstring_leaks_impl": false, "trivially_inferable": false, "reason": "Docstring describes behavior but not the chunking/recursion implementation details; non-trivial algorithm."}, {"qualname": "toolz.dicttoolz.merge", "docstring_leaks_impl": false, "trivially_inferable": false, "reason": "Docstring describes precedence behavior only; body uses _get_factory and iterable-of-dicts handling not spelled out."}, {"qualname": "toolz.itertoolz.groupby", "docstring_leaks_impl": false, "trivially_inferable": false, "reason": "Docstring shows examples but not the defaultdict list-append trick or getter conversion; non-trivial implementation."}, {"qualname": "toolz.dicttoolz.update_in", "docstring_leaks_impl": false, "trivially_inferable": false, "reason": "Docstring describes behavior but not the iterative nested-copy algorithm; non-trivial implementation."}, {"qualname": "toolz.itertoolz.reduceby", "docstring_leaks_impl": false, "trivially_inferable": false, "reason": "Docstring describes semantics and init handling but not the exact accumulation logic; non-trivial."}, {"qualname": "toolz.dicttoolz.dissoc", "docstring_leaks_impl": false, "trivially_inferable": false, "reason": "Docstring describes behavior but not the threshold-based two-branch strategy or factory handling; non-trivial."}, {"qualname": ""toolz.itertoolz.partition_all", "docstring_leaks_impl": false, "trivially_inferable": false, ""reason":": "Docstring describes output only; body uses zip_longest/no_pad sentinel and binary-search trimming, not spelled out."}], [{"qualname": "toolz.dicttoolz.valfilter", "docstring_leaks_impl": false, "trivially_inferable": true, "reason": "Trivial loop filtering dict by value with factory; body obvious from name and signature."}, {"qualname": "toolz.itertolz.pluck", "docstring_leaks_impl": false, "trivially_inferable": false, "reason": "Docstring describes behavior but not the getter/default handling branches; non-trivial."}, {"qualname": "toolz.dicttoolz.itemfilter", "docstring_leaks_impl": false, "trivially_inferable": true, "reason": "Trivial loop filtering dict items with factory; body obvious from name and signature."}, {"qualname": "toolz.itertoolz.unique", "docstring_leaks_impl": false, "trivially_inferable": false, "reason": "Docstring describes behavior but not the key-based seen-set logic; small non-trivial generator."}, {"qualname": "toolz.dicttoolz.keyfilter", "docstring_leaks_impl": false, "trivially_inferable": true, "reason": "Trivial loop filtering dict by key with factory; body obvious from name and signature."}]' is not of type 'array'
+11:59:58 [run] repo https://github.com/pytoolz/toolz run_dir output/toolz stages hygiene,knowledge,tasks
+11:59:58 [hygiene] start
+11:59:58 [hygiene] run_dir output/toolz image bench-toolz base 568c2b8
+11:59:58 [hygiene/detect] skipped (unchanged)
+11:59:58 [hygiene/pin] start
+11:59:58 [hygiene/pin] done in 0.3s (0 LLM tokens) pin_count=9 python_version=3.12
+11:59:58 [hygiene/dockerfile] skipped (unchanged)
+11:59:58 [hygiene/compose] skipped (unchanged)
+11:59:58 [hygiene/build] skipped (unchanged)
+11:59:58 [hygiene/baseline] start
+12:00:00 [hygiene/baseline] suite: 186 tests, 0 failing
+12:00:00 [hygiene/baseline] done in 2.0s (0 LLM tokens) tests=186 passed=186 skipped=0 quarantined=0
+12:00:00 [hygiene/testgen] start
+12:00:05 [hygiene/testgen] coverage ok: 2 modules, 5 target functions
+12:00:05 [hygiene/testgen] module toolz.dicttoolz: 2 targets
+12:00:05 [hygiene/testgen] module toolz.dicttoolz: agent run 1/3 (9 runs left in repo budget)
+12:00:28 [hygiene/testgen] module toolz.dicttoolz: mutation gate mutants 6/8 killed
+12:00:28 [hygiene/testgen] module toolz.dicttoolz: kept 2/2 functions, mutants 6/8 killed
+12:00:28 [hygiene/testgen] module tlz._build_tlz: 3 targets
+12:00:28 [hygiene/testgen] module tlz._build_tlz: agent run 1/3 (8 runs left in repo budget)
+12:01:18 [hygiene/testgen] module tlz._build_tlz: mutation gate mutants 10/10 killed
+12:01:18 [hygiene/testgen] module tlz._build_tlz: kept 3/3 functions, mutants 10/10 killed
+12:01:23 [hygiene/testgen] done in 82.6s (23943 LLM tokens) modules_kept=2 functions_kept=5 functions_weak=0 functions_no_mutants=0 mutants_killed=16 mutants_valid=18
+12:01:23 [hygiene/testgen] pipeline commit a8c0f81
+12:01:23 [hygiene/lint] start
+12:01:36 [hygiene/lint] done in 12.9s (0 LLM tokens) files_changed=1 noqa=0 clean=True regressed=False
+12:01:36 [hygiene/lint] pipeline commit 331ff51
+hygiene done: output/toolz
+12:01:36 [hygiene] done in 98.2s
+12:01:36 [knowledge] start
+12:01:36 [knowledge/symbol_index] start
+12:01:36 [knowledge/symbol_index] 53 modules, 409 functions
+12:01:36 [knowledge/symbol_index] done in 0.2s (0 LLM tokens)
+12:01:36 [knowledge/indexes] start
+12:03:28 [knowledge/indexes] history index: 1230 commits
+12:03:34 [knowledge/indexes] coverage ok: test_map 182 functions
+12:03:34 [knowledge/indexes] done in 117.6s (0 LLM tokens)
+12:03:34 [knowledge/graph] start
+12:03:34 [knowledge/graph] 177 nodes, 1116 edges (calls=79 contains=161 imports=23 tested_by=853)
+12:03:34 [knowledge/graph] done in 0.0s (0 LLM tokens)
+12:03:34 [knowledge/verify] start
+12:03:35 [knowledge/verify] mismatches 0, symbols checked=124 present=124
+12:03:35 [knowledge/verify] done in 0.8s (0 LLM tokens)
+12:03:35 [knowledge/okf] start
+12:03:36 [knowledge/okf] modules=16 pages=155 verified=104 draft=32 conformant=True
+12:03:36 [knowledge/okf] done in 1.9s (0 LLM tokens)
+knowledge done: output/toolz
+12:03:36 [knowledge] done in 120.7s
+12:03:36 [tasks] start
+12:03:37 [tasks/excision_funnel] start
+12:03:42 [tasks/excision_funnel] considered 409, ranked 18, selected 5 (screen reused 0)
+12:03:42 [tasks/excision_funnel] rejected:few-covering-tests=38 rejected:init-module=1 rejected:low-complexity=14 rejected:private=55 rejected:test-code=251 rejected:too-long=2 rejected:too-short=15 rejected:uncovered=8 rejected:verifier-imports-private=7 screened_out=1 selected=5 surplus=12
+12:03:42 [tasks/excision_funnel] done in 5.4s (6086 LLM tokens)
+12:03:42 [tasks/build_excision] start
+12:03:43 [tasks/build_excision] exc-toolz.dicttoolz-merge_with built
+12:03:44 [tasks/build_excision] exc-toolz.functoolz-compose built
+12:03:45 [tasks/build_excision] exc-toolz.sandbox.parallel-fold built
+12:03:46 [tasks/build_excision] exc-toolz.dicttoolz-merge built
+12:03:47 [tasks/build_excision] exc-toolz.itertoolz-groupby built
+12:03:47 [tasks/build_excision] built=5 unsplittable=0
+12:03:47 [tasks/build_excision] done in 5.4s (0 LLM tokens)
+12:03:47 [tasks/history_funnel] start
+12:04:39 [tasks/history_funnel] considered 1230, survivors 349, kept 23, shortlisted 20 (classify reused 0)
+12:04:39 [tasks/history_funnel] classified_out=6 rejected:dependency-changing=54 rejected:docs-or-ci-only=211 rejected:no-source-change=218 rejected:non-pr-merge=36 rejected:reverted-by=3 rejected:root-commit=1 rejected:superseded-by-merge=45 rejected:too-large=7 rejected:too-many-files=4 rejected:too-small=157 rejected:uncovered-and-no-tests=167 rejected:unparseable=23 shortlisted=20 surplus=278
+12:04:39 [tasks/history_funnel] done in 51.7s (19255 LLM tokens)
+12:04:39 [tasks/build_history] start
+12:04:39 [tasks/build_history] shortlist 20, target 10
+12:04:39 [tasks/build_history] 1/20 5a7e078: building
+12:06:00 [tasks/build_history] hist-5a7e078 rejected (verifier commit-tests): verifier-not-implementation-neutral(rewrite:unchanged)
+12:06:00 [tasks/build_history] 2/20 afef2c1: building
+12:06:01 [tasks/build_history] hist-afef2c1 rejected (verifier commit-tests): verifier-fails-on-solution
+12:06:01 [tasks/build_history] 3/20 a55ce46: building
+12:06:02 [tasks/build_history] hist-a55ce46 rejected (verifier commit-tests): env-drift(SyntaxError)
+12:06:02 [tasks/build_history] 4/20 a1fc490: building
+12:06:04 [tasks/build_history] hist-a1fc490 rejected (verifier commit-tests): verifier-fails-on-solution
+12:06:04 [tasks/build_history] 5/20 639043e: building
+12:06:38 [tasks/build_history] hist-639043e built (verifier commit-tests), 1/10
+12:06:38 [tasks/build_history] 6/20 8cdc7fe: building
+12:06:39 [tasks/build_history] hist-8cdc7fe rejected (verifier commit-tests): verifier-imports-symbol-missing-in-input(toolz.sandbox.core.unzip; rewrite:budget-exhausted)
+12:06:39 [tasks/build_history] 7/20 75bac2a: building
+12:06:40 [tasks/build_history] hist-75bac2a rejected (verifier commit-tests): verifier-imports-non-public-or-missing(toolz.functoolz.core._num_required_args)
+12:06:40 [tasks/build_history] 8/20 386c750: building
+12:06:47 [tasks/build_history] hist-386c750 built (verifier commit-tests), 2/10
+12:06:47 [tasks/build_history] 9/20 2bf9e8b: building
+12:06:50 [tasks/build_history] hist-2bf9e8b rejected (verifier commit-tests): verifier-on-input:error_before_repo_call
+12:06:50 [tasks/build_history] 10/20 2bd9139: building
+12:06:58 [tasks/build_history] hist-2bd9139 built (verifier commit-tests), 3/10
+12:06:58 [tasks/build_history] 11/20 1b23ada: building
+12:07:00 [tasks/build_history] hist-1b23ada rejected (verifier commit-tests): commit-tests-pass-on-input
+12:07:00 [tasks/build_history] 12/20 3b7c54a: building
+12:07:01 [tasks/build_history] hist-3b7c54a rejected (verifier commit-tests): env-drift(SyntaxError)
+12:07:01 [tasks/build_history] 13/20 bf0f253: building
+12:07:02 [tasks/build_history] hist-bf0f253 rejected (verifier commit-tests): env-drift(SyntaxError)
+12:07:02 [tasks/build_history] 14/20 0d3639b: building
+12:07:04 [tasks/build_history] hist-0d3639b rejected (verifier commit-tests): env-drift(SyntaxError)
+12:07:04 [tasks/build_history] 15/20 46af29c: building
+12:07:05 [tasks/build_history] hist-46af29c rejected (verifier commit-tests): env-drift(SyntaxError)
+12:07:05 [tasks/build_history] 16/20 699e0c2: building
+12:07:06 [tasks/build_history] hist-699e0c2 rejected (verifier commit-tests): verifier-imports-symbol-missing-in-input(toolz.itertoolz.peek; rewrite:budget-exhausted)
+12:07:06 [tasks/build_history] 17/20 0ca38c8: building
+12:07:08 [tasks/build_history] hist-0ca38c8 rejected (verifier commit-tests): verifier-imports-symbol-missing-in-input(toolz.itertoolz.diff; rewrite:budget-exhausted)
+12:07:08 [tasks/build_history] 18/20 b8aca17: building
+12:07:12 [tasks/build_history] hist-b8aca17 built (verifier commit-tests), 4/10
+12:07:12 [tasks/build_history] 19/20 84f1c77: building
+12:07:13 [tasks/build_history] hist-84f1c77 rejected (verifier commit-tests): verifier-imports-symbol-missing-in-input(toolz.dicttoolz.dissoc; rewrite:budget-exhausted)
+12:07:13 [tasks/build_history] 20/20 82ef300: building
+12:07:15 [tasks/build_history] hist-82ef300 rejected (verifier commit-tests): verifier-on-input:error_before_repo_call
+12:07:15 [tasks/build_history] attempted 20, built 4, rejected verifier-not-implementation-neutral=1 verifier-fails-on-solution=2 env-drift=5 verifier-imports-symbol-missing-in-input=4 verifier-imports-non-public-or-missing=1 verifier-on-input:error_before_repo_call=2 commit-tests-pass-on-input=1
+12:07:15 [tasks/build_history] done in 156.1s (246209 LLM tokens)
+12:07:15 [tasks/validate] start
+12:07:15 [tasks/validate] 9 tasks, 4 workers
+12:07:30 [tasks/validate] exc-toolz.dicttoolz-merge_with VALID (fail-before 9, pass-after 9, det 3/3)
+12:07:30 [tasks/validate] exc-toolz.dicttoolz-merge VALID (fail-before 13, pass-after 13, det 3/3)
+12:07:32 [tasks/validate] exc-toolz.functoolz-compose VALID (fail-before 6, pass-after 6, det 3/3)
+12:07:32 [tasks/validate] exc-toolz.itertoolz-groupby VALID (fail-before 9, pass-after 9, det 3/3)
+12:07:48 [tasks/validate] exc-toolz.sandbox.parallel-fold VALID (fail-before 1, pass-after 2, det 3/3)
+12:07:54 [tasks/validate] hist-2bd9139 VALID (fail-before 1, pass-after 1, det 3/3)
+12:07:54 [tasks/validate] hist-639043e VALID (fail-before 1, pass-after 1, det 3/3)
+12:07:54 [tasks/validate] hist-386c750 VALID (fail-before 1, pass-after 1, det 3/3)
+12:07:56 [tasks/validate] hist-b8aca17 VALID (fail-before 1, pass-after 1, det 3/3)
+12:07:56 [tasks/validate] 9/9 VALID
+12:07:56 [tasks/validate] done in 40.7s (0 LLM tokens)
+12:07:56 [tasks/instruct] start
+12:08:00 [tasks/instruct] exc-toolz.dicttoolz-merge: final (attempts 1)
+12:08:05 [tasks/instruct] exc-toolz.dicttoolz-merge_with: final (attempts 1)
+12:08:10 [tasks/instruct] exc-toolz.functoolz-compose: final (attempts 1)
+12:08:14 [tasks/instruct] exc-toolz.itertoolz-groupby: final (attempts 1)
+12:08:19 [tasks/instruct] exc-toolz.sandbox.parallel-fold: final (attempts 1)
+12:08:24 [tasks/instruct] hist-2bd9139: final (attempts 1)
+12:08:29 [tasks/instruct] hist-386c750: final (attempts 1)
+12:08:37 [tasks/instruct] hist-639043e: final (attempts 1)
+12:08:42 [tasks/instruct] hist-b8aca17: final (attempts 1)
+12:08:47 [tasks/instruct] tasks=9 final=9 failed=0 regenerations=0 reused=0 leak_rejections=0 reviewer_rejections=0
+12:08:47 [tasks/instruct] difficulty easy=4 hard=1 medium=4
+12:08:47 [tasks/instruct] done in 51.4s (127542 LLM tokens)
+12:08:47 [tasks/manifest] start
+12:08:47 [tasks/manifest] tasks/toolz/tasks.json
+12:08:47 [tasks/manifest] done in 0.0s (0 LLM tokens)
+12:08:47 [tasks/select] start
+12:08:47 [tasks/select] infeasible: only 9 eligible VALID+final tasks, need 10
+selection infeasible: only 9 eligible VALID+final tasks, need 10
+12:09:32 [run] repo https://github.com/pytoolz/toolz run_dir output/toolz stages tasks
+12:09:32 [tasks] start
+12:09:32 [tasks/excision_funnel] skipped (unchanged)
+12:09:32 [tasks/build_excision] skipped (unchanged)
+12:09:32 [tasks/history_funnel] start
+12:10:12 [tasks/history_funnel] considered 1230, survivors 349, kept 23, shortlisted 20 (classify reused 30)
+12:10:12 [tasks/history_funnel] classified_out=6 rejected:dependency-changing=54 rejected:docs-or-ci-only=211 rejected:no-source-change=218 rejected:non-pr-merge=36 rejected:reverted-by=3 rejected:root-commit=1 rejected:superseded-by-merge=45 rejected:too-large=7 rejected:too-many-files=4 rejected:too-small=157 rejected:uncovered-and-no-tests=167 rejected:unparseable=23 shortlisted=20 surplus=278
+12:10:12 [tasks/history_funnel] done in 39.9s (0 LLM tokens)
+12:10:12 [tasks/build_history] start
+12:10:12 [tasks/build_history] shortlist 20, target 10
+12:10:12 [tasks/build_history] 1/20 5a7e078: building
+12:10:15 [tasks/build_history] hist-5a7e078 rejected (verifier commit-tests): verifier-not-implementation-neutral(rewrite:unchanged)
+12:10:15 [tasks/build_history] 2/20 afef2c1: building
+12:10:16 [tasks/build_history] hist-afef2c1 rejected (verifier commit-tests): verifier-fails-on-solution
+12:10:16 [tasks/build_history] 3/20 a55ce46: building
+12:10:17 [tasks/build_history] hist-a55ce46 rejected (verifier commit-tests): env-drift(SyntaxError)
+12:10:17 [tasks/build_history] 4/20 a1fc490: building
+12:10:19 [tasks/build_history] hist-a1fc490 rejected (verifier commit-tests): verifier-fails-on-solution
+12:10:19 [tasks/build_history] 5/20 639043e: building
+12:10:27 [tasks/build_history] hist-639043e built (verifier commit-tests), 1/10
+12:10:27 [tasks/build_history] 6/20 8cdc7fe: building
+12:10:47 [tasks/build_history] hist-8cdc7fe built (verifier commit-tests), 2/10
+12:10:47 [tasks/build_history] 7/20 75bac2a: building
+12:10:48 [tasks/build_history] hist-75bac2a rejected (verifier commit-tests): verifier-imports-non-public-or-missing(toolz.functoolz.core._num_required_args)
+12:10:48 [tasks/build_history] 8/20 386c750: building
+12:10:54 [tasks/build_history] hist-386c750 built (verifier commit-tests), 3/10
+12:10:54 [tasks/build_history] 9/20 2bf9e8b: building
+12:10:57 [tasks/build_history] hist-2bf9e8b rejected (verifier commit-tests): verifier-on-input:error_before_repo_call
+12:10:57 [tasks/build_history] 10/20 2bd9139: building
+12:11:03 [tasks/build_history] hist-2bd9139 built (verifier commit-tests), 4/10
+12:11:03 [tasks/build_history] 11/20 1b23ada: building
+12:11:05 [tasks/build_history] hist-1b23ada rejected (verifier commit-tests): commit-tests-pass-on-input
+12:11:05 [tasks/build_history] 12/20 3b7c54a: building
+12:11:07 [tasks/build_history] hist-3b7c54a rejected (verifier commit-tests): env-drift(SyntaxError)
+12:11:07 [tasks/build_history] 13/20 bf0f253: building
+12:11:08 [tasks/build_history] hist-bf0f253 rejected (verifier commit-tests): env-drift(SyntaxError)
+12:11:08 [tasks/build_history] 14/20 0d3639b: building
+12:11:10 [tasks/build_history] hist-0d3639b rejected (verifier commit-tests): env-drift(SyntaxError)
+12:11:10 [tasks/build_history] 15/20 46af29c: building
+12:11:11 [tasks/build_history] hist-46af29c rejected (verifier commit-tests): env-drift(SyntaxError)
+12:11:11 [tasks/build_history] 16/20 699e0c2: building
+12:12:01 [tasks/build_history] hist-699e0c2 built (verifier commit-tests), 5/10
+12:12:01 [tasks/build_history] 17/20 0ca38c8: building
+12:12:02 [tasks/build_history] hist-0ca38c8 rejected (verifier commit-tests): verifier-imports-symbol-missing-in-input(toolz.itertoolz.diff; rewrite:budget-exhausted)
+12:12:02 [tasks/build_history] 18/20 b8aca17: building
+12:12:05 [tasks/build_history] hist-b8aca17 built (verifier commit-tests), 6/10
+12:12:05 [tasks/build_history] 19/20 84f1c77: building
+12:12:07 [tasks/build_history] hist-84f1c77 rejected (verifier commit-tests): verifier-imports-symbol-missing-in-input(toolz.dicttoolz.dissoc; rewrite:budget-exhausted)
+12:12:07 [tasks/build_history] 20/20 82ef300: building
+12:12:09 [tasks/build_history] hist-82ef300 rejected (verifier commit-tests): verifier-on-input:error_before_repo_call
+12:12:09 [tasks/build_history] attempted 20, built 6, rejected verifier-not-implementation-neutral=1 verifier-fails-on-solution=2 env-drift=5 verifier-imports-non-public-or-missing=1 verifier-on-input:error_before_repo_call=2 commit-tests-pass-on-input=1 verifier-imports-symbol-missing-in-input=2
+12:12:09 [tasks/build_history] done in 116.7s (127478 LLM tokens)
+12:12:09 [tasks/validate] start
+12:12:09 [tasks/validate] 11 tasks, 4 workers
+12:12:21 [tasks/validate] exc-toolz.dicttoolz-merge_with VALID (fail-before 9, pass-after 9, det 3/3)
+12:12:21 [tasks/validate] exc-toolz.dicttoolz-merge VALID (fail-before 13, pass-after 13, det 3/3)
+12:12:22 [tasks/validate] exc-toolz.functoolz-compose VALID (fail-before 6, pass-after 6, det 3/3)
+12:12:23 [tasks/validate] exc-toolz.itertoolz-groupby VALID (fail-before 9, pass-after 9, det 3/3)
+12:12:35 [tasks/validate] exc-toolz.sandbox.parallel-fold VALID (fail-before 1, pass-after 2, det 3/3)
+12:12:40 [tasks/validate] hist-2bd9139 VALID (fail-before 1, pass-after 1, det 3/3)
+12:12:41 [tasks/validate] hist-639043e VALID (fail-before 1, pass-after 1, det 3/3)
+12:12:41 [tasks/validate] hist-386c750 VALID (fail-before 1, pass-after 1, det 3/3)
+12:12:44 [tasks/validate] hist-699e0c2 VALID (fail-before 1, pass-after 1, det 3/3)
+12:12:46 [tasks/validate] hist-8cdc7fe VALID (fail-before 1, pass-after 1, det 3/3)
+12:12:47 [tasks/validate] hist-b8aca17 VALID (fail-before 1, pass-after 1, det 3/3)
+12:12:47 [tasks/validate] 11/11 VALID
+12:12:47 [tasks/validate] done in 38.7s (0 LLM tokens)
+12:12:47 [tasks/instruct] start
+12:12:48 [tasks/instruct] exc-toolz.dicttoolz-merge: final (attempts 1, reused)
+12:12:48 [tasks/instruct] exc-toolz.dicttoolz-merge_with: final (attempts 1, reused)
+12:12:48 [tasks/instruct] exc-toolz.functoolz-compose: final (attempts 1, reused)
+12:12:48 [tasks/instruct] exc-toolz.itertoolz-groupby: final (attempts 1, reused)
+12:12:48 [tasks/instruct] exc-toolz.sandbox.parallel-fold: final (attempts 1, reused)
+12:12:49 [tasks/instruct] hist-2bd9139: final (attempts 1, reused)
+12:12:49 [tasks/instruct] hist-386c750: final (attempts 1, reused)
+12:12:49 [tasks/instruct] hist-639043e: final (attempts 1, reused)
+12:12:55 [tasks/instruct] hist-699e0c2: failed (attempts 3)
+12:13:00 [tasks/instruct] hist-8cdc7fe: final (attempts 1)
+12:13:02 [tasks/instruct] hist-b8aca17: final (attempts 1, reused)
+12:13:03 [tasks/instruct] tasks=11 final=10 failed=1 regenerations=2 reused=9 leak_rejections=3 reviewer_rejections=0
+12:13:03 [tasks/instruct] difficulty easy=5 hard=1 medium=5
+12:13:03 [tasks/instruct] done in 15.9s (26718 LLM tokens)
+12:13:03 [tasks/manifest] start
+12:13:03 [tasks/manifest] tasks/toolz/tasks.json
+12:13:03 [tasks/manifest] done in 0.0s (0 LLM tokens)
+12:13:03 [tasks/select] start
+12:13:03 [tasks/select] infeasible: quota caps leave at most 9 selectable (history 5, excision<= 4, net-new<= 0), need 10
+selection infeasible: quota caps leave at most 9 selectable (history 5, excision<= 4, net-new<= 0), need 10
+12:23:55 [run] repo https://github.com/pytoolz/toolz run_dir output/toolz stages tasks
+12:23:55 [tasks] start
+12:23:56 [tasks/excision_funnel] start
+12:23:56 [tasks/excision_funnel] considered 409, ranked 18, selected 5 (screen reused 15)
+12:23:56 [tasks/excision_funnel] rejected:few-covering-tests=38 rejected:init-module=1 rejected:low-complexity=14 rejected:private=55 rejected:test-code=251 rejected:too-long=2 rejected:too-short=15 rejected:uncovered=8 rejected:verifier-imports-private=7 screened_out=1 selected=5 surplus=12
+12:23:56 [tasks/excision_funnel] done in 0.1s (0 LLM tokens)
+12:23:56 [tasks/build_excision] start
+12:23:57 [tasks/build_excision] exc-toolz.dicttoolz-merge_with built
+12:23:58 [tasks/build_excision] exc-toolz.functoolz-compose built
+12:23:59 [tasks/build_excision] exc-toolz.sandbox.parallel-fold built
+12:24:00 [tasks/build_excision] exc-toolz.dicttoolz-merge built
+12:24:01 [tasks/build_excision] exc-toolz.itertoolz-groupby built
+12:24:01 [tasks/build_excision] built=5 unsplittable=0
+12:24:01 [tasks/build_excision] done in 5.7s (0 LLM tokens)
+12:24:01 [tasks/history_funnel] start
+12:24:40 [tasks/history_funnel] considered 1230, survivors 349, kept 23, shortlisted 20 (classify reused 30)
+12:24:40 [tasks/history_funnel] classified_out=6 rejected:dependency-changing=54 rejected:docs-or-ci-only=211 rejected:no-source-change=218 rejected:non-pr-merge=36 rejected:reverted-by=3 rejected:root-commit=1 rejected:superseded-by-merge=45 rejected:too-large=7 rejected:too-many-files=4 rejected:too-small=157 rejected:uncovered-and-no-tests=167 rejected:unparseable=23 shortlisted=20 surplus=278
+12:24:40 [tasks/history_funnel] done in 38.4s (0 LLM tokens)
+12:24:40 [tasks/build_history] start
+12:24:40 [tasks/build_history] shortlist 20, target 10
+12:24:40 [tasks/build_history] 1/20 5a7e078: building
+12:24:42 [tasks/build_history] hist-5a7e078 rejected (verifier commit-tests): verifier-not-implementation-neutral(rewrite:unchanged)
+12:24:42 [tasks/build_history] 2/20 afef2c1: building
+12:24:44 [tasks/build_history] hist-afef2c1 rejected (verifier commit-tests): verifier-fails-on-solution
+12:24:44 [tasks/build_history] 3/20 a55ce46: building
+12:24:45 [tasks/build_history] hist-a55ce46 rejected (verifier commit-tests): env-drift(SyntaxError)
+12:24:45 [tasks/build_history] 4/20 a1fc490: building
+12:24:46 [tasks/build_history] hist-a1fc490 rejected (verifier commit-tests): verifier-fails-on-solution
+12:24:46 [tasks/build_history] 5/20 639043e: building
+12:24:53 [tasks/build_history] hist-639043e built (verifier commit-tests), 1/10
+12:24:53 [tasks/build_history] 6/20 8cdc7fe: building
+12:24:57 [tasks/build_history] hist-8cdc7fe built (verifier commit-tests), 2/10
+12:24:57 [tasks/build_history] 7/20 75bac2a: building
+12:24:58 [tasks/build_history] hist-75bac2a rejected (verifier commit-tests): verifier-imports-non-public-or-missing(toolz.functoolz.core._num_required_args)
+12:24:58 [tasks/build_history] 8/20 386c750: building
+12:25:04 [tasks/build_history] hist-386c750 built (verifier commit-tests), 3/10
+12:25:04 [tasks/build_history] 9/20 2bf9e8b: building
+12:25:06 [tasks/build_history] hist-2bf9e8b rejected (verifier commit-tests): verifier-on-input:error_before_repo_call
+12:25:06 [tasks/build_history] 10/20 2bd9139: building
+12:25:12 [tasks/build_history] hist-2bd9139 built (verifier commit-tests), 4/10
+12:25:12 [tasks/build_history] 11/20 1b23ada: building
+12:25:14 [tasks/build_history] hist-1b23ada rejected (verifier commit-tests): commit-tests-pass-on-input
+12:25:14 [tasks/build_history] 12/20 3b7c54a: building
+12:25:16 [tasks/build_history] hist-3b7c54a rejected (verifier commit-tests): env-drift(SyntaxError)
+12:25:16 [tasks/build_history] 13/20 bf0f253: building
+12:25:17 [tasks/build_history] hist-bf0f253 rejected (verifier commit-tests): env-drift(SyntaxError)
+12:25:17 [tasks/build_history] 14/20 0d3639b: building
+12:25:18 [tasks/build_history] hist-0d3639b rejected (verifier commit-tests): env-drift(SyntaxError)
+12:25:18 [tasks/build_history] 15/20 46af29c: building
+12:25:19 [tasks/build_history] hist-46af29c rejected (verifier commit-tests): env-drift(SyntaxError)
+12:25:19 [tasks/build_history] 16/20 699e0c2: building
+12:25:24 [tasks/build_history] hist-699e0c2 built (verifier commit-tests), 5/10
+12:25:24 [tasks/build_history] 17/20 0ca38c8: building
+12:30:42 [tasks/build_history] hist-0ca38c8 rejected (verifier commit-tests): verifier-not-implementation-neutral(rewrite:unchanged)
+12:30:42 [tasks/build_history] 18/20 b8aca17: building
+12:30:45 [tasks/build_history] hist-b8aca17 built (verifier commit-tests), 6/10
+12:30:45 [tasks/build_history] 19/20 84f1c77: building
+12:30:47 [tasks/build_history] hist-84f1c77 rejected (verifier commit-tests): verifier-imports-symbol-missing-in-input(toolz.dicttoolz.dissoc; rewrite:budget-exhausted)
+12:30:47 [tasks/build_history] 20/20 82ef300: building
+12:30:48 [tasks/build_history] hist-82ef300 rejected (verifier commit-tests): verifier-on-input:error_before_repo_call
+12:30:49 [tasks/build_history] attempted 20, built 6, rejected verifier-not-implementation-neutral=2 verifier-fails-on-solution=2 env-drift=5 verifier-imports-non-public-or-missing=1 verifier-on-input:error_before_repo_call=2 commit-tests-pass-on-input=1 verifier-imports-symbol-missing-in-input=1
+12:30:49 [tasks/build_history] done in 368.7s (343450 LLM tokens)
+12:30:49 [tasks/validate] start
+12:30:49 [tasks/validate] 11 tasks, 4 workers
+12:31:00 [tasks/validate] exc-toolz.dicttoolz-merge_with VALID (fail-before 9, pass-after 9, det 3/3)
+12:31:01 [tasks/validate] exc-toolz.dicttoolz-merge VALID (fail-before 13, pass-after 13, det 3/3)
+12:31:02 [tasks/validate] exc-toolz.functoolz-compose VALID (fail-before 6, pass-after 6, det 3/3)
+12:31:02 [tasks/validate] exc-toolz.itertoolz-groupby VALID (fail-before 9, pass-after 9, det 3/3)
+12:31:12 [tasks/validate] exc-toolz.sandbox.parallel-fold VALID (fail-before 1, pass-after 2, det 3/3)
+12:31:17 [tasks/validate] hist-2bd9139 VALID (fail-before 1, pass-after 1, det 3/3)
+12:31:18 [tasks/validate] hist-639043e VALID (fail-before 1, pass-after 1, det 3/3)
+12:31:18 [tasks/validate] hist-386c750 VALID (fail-before 1, pass-after 1, det 3/3)
+12:31:20 [tasks/validate] hist-699e0c2 VALID (fail-before 1, pass-after 1, det 3/3)
+12:31:23 [tasks/validate] hist-8cdc7fe VALID (fail-before 1, pass-after 1, det 3/3)
+12:31:24 [tasks/validate] hist-b8aca17 VALID (fail-before 1, pass-after 1, det 3/3)
+12:31:24 [tasks/validate] 11/11 VALID
+12:31:24 [tasks/validate] done in 35.3s (0 LLM tokens)
+12:31:24 [tasks/instruct] start
+12:31:24 [tasks/instruct] exc-toolz.dicttoolz-merge: final (attempts 1, reused)
+12:31:24 [tasks/instruct] exc-toolz.dicttoolz-merge_with: final (attempts 1, reused)
+12:31:25 [tasks/instruct] exc-toolz.functoolz-compose: final (attempts 1, reused)
+12:31:25 [tasks/instruct] exc-toolz.itertoolz-groupby: final (attempts 1, reused)
+12:31:25 [tasks/instruct] exc-toolz.sandbox.parallel-fold: final (attempts 1, reused)
+12:31:25 [tasks/instruct] hist-2bd9139: final (attempts 1, reused)
+12:31:25 [tasks/instruct] hist-386c750: final (attempts 1, reused)
+12:31:26 [tasks/instruct] hist-639043e: final (attempts 1, reused)
+12:31:26 [tasks/instruct] hist-699e0c2: failed (attempts 3, reused)
+12:31:26 [tasks/instruct] hist-8cdc7fe: final (attempts 1, reused)
+12:31:26 [tasks/instruct] hist-b8aca17: final (attempts 1, reused)
+12:31:26 [tasks/instruct] tasks=11 final=10 failed=1 regenerations=2 reused=11 leak_rejections=3 reviewer_rejections=0
+12:31:26 [tasks/instruct] difficulty easy=5 hard=1 medium=5
+12:31:26 [tasks/instruct] done in 1.9s (0 LLM tokens)
+12:31:26 [tasks/manifest] start
+12:31:26 [tasks/manifest] tasks/toolz/tasks.json
+12:31:26 [tasks/manifest] done in 0.0s (0 LLM tokens)
+12:31:26 [tasks/select] start
+12:31:26 [tasks/select] infeasible: quota caps leave at most 9 selectable (history 5, excision<= 4, net-new<= 0), need 10
+selection infeasible: quota caps leave at most 9 selectable (history 5, excision<= 4, net-new<= 0), need 10
+12:35:25 [run] repo https://github.com/pytoolz/toolz run_dir output/toolz stages tasks
+12:35:25 [tasks] start
+12:35:25 [tasks/excision_funnel] start
+12:35:25 [tasks/excision_funnel] considered 409, ranked 18, selected 5 (screen reused 15)
+12:35:25 [tasks/excision_funnel] rejected:few-covering-tests=38 rejected:init-module=1 rejected:low-complexity=14 rejected:private=55 rejected:test-code=251 rejected:too-long=2 rejected:too-short=15 rejected:uncovered=8 rejected:verifier-imports-private=7 screened_out=1 selected=5 surplus=12
+12:35:25 [tasks/excision_funnel] done in 0.1s (0 LLM tokens)
+12:35:25 [tasks/build_excision] start
+12:35:26 [tasks/build_excision] exc-toolz.dicttoolz-merge_with built
+12:35:28 [tasks/build_excision] exc-toolz.functoolz-compose built
+12:35:28 [tasks/build_excision] exc-toolz.sandbox.parallel-fold built
+12:35:30 [tasks/build_excision] exc-toolz.dicttoolz-merge built
+12:35:31 [tasks/build_excision] exc-toolz.itertoolz-groupby built
+12:35:31 [tasks/build_excision] built=5 unsplittable=0
+12:35:31 [tasks/build_excision] done in 5.8s (0 LLM tokens)
+12:35:31 [tasks/history_funnel] start
+12:36:11 [tasks/history_funnel] considered 1230, survivors 349, kept 23, shortlisted 20 (classify reused 30)
+12:36:11 [tasks/history_funnel] classified_out=6 rejected:dependency-changing=54 rejected:docs-or-ci-only=211 rejected:no-source-change=218 rejected:non-pr-merge=36 rejected:reverted-by=3 rejected:root-commit=1 rejected:superseded-by-merge=45 rejected:too-large=7 rejected:too-many-files=4 rejected:too-small=157 rejected:uncovered-and-no-tests=167 rejected:unparseable=23 shortlisted=20 surplus=278
+12:36:11 [tasks/history_funnel] done in 40.1s (0 LLM tokens)
+12:36:11 [tasks/build_history] start
+12:36:11 [tasks/build_history] shortlist 20, target 10
+12:36:11 [tasks/build_history] 1/20 5a7e078: building
+12:36:14 [tasks/build_history] hist-5a7e078 rejected (verifier commit-tests): verifier-not-implementation-neutral(rewrite:unchanged)
+12:36:14 [tasks/build_history] 2/20 afef2c1: building
+12:36:15 [tasks/build_history] hist-afef2c1 rejected (verifier commit-tests): verifier-fails-on-solution
+12:36:15 [tasks/build_history] 3/20 a55ce46: building
+12:36:16 [tasks/build_history] hist-a55ce46 rejected (verifier commit-tests): env-drift(SyntaxError)
+12:36:16 [tasks/build_history] 4/20 a1fc490: building
+12:36:17 [tasks/build_history] hist-a1fc490 rejected (verifier commit-tests): verifier-fails-on-solution
+12:36:17 [tasks/build_history] 5/20 639043e: building
+12:36:25 [tasks/build_history] hist-639043e built (verifier commit-tests), 1/10
+12:36:25 [tasks/build_history] 6/20 8cdc7fe: building
+12:36:29 [tasks/build_history] hist-8cdc7fe built (verifier commit-tests), 2/10
+12:36:29 [tasks/build_history] 7/20 75bac2a: building
+12:36:30 [tasks/build_history] hist-75bac2a rejected (verifier commit-tests): verifier-imports-non-public-or-missing(toolz.functoolz.core._num_required_args)
+12:36:30 [tasks/build_history] 8/20 386c750: building
+12:36:36 [tasks/build_history] hist-386c750 built (verifier commit-tests), 3/10
+12:36:36 [tasks/build_history] 9/20 2bf9e8b: building
+12:36:39 [tasks/build_history] hist-2bf9e8b rejected (verifier commit-tests): verifier-on-input:error_before_repo_call
+12:36:39 [tasks/build_history] 10/20 2bd9139: building
+12:36:45 [tasks/build_history] hist-2bd9139 built (verifier commit-tests), 4/10
+12:36:45 [tasks/build_history] 11/20 1b23ada: building
+12:36:47 [tasks/build_history] hist-1b23ada rejected (verifier commit-tests): commit-tests-pass-on-input
+12:36:47 [tasks/build_history] 12/20 3b7c54a: building
+12:36:48 [tasks/build_history] hist-3b7c54a rejected (verifier commit-tests): env-drift(SyntaxError)
+12:36:48 [tasks/build_history] 13/20 bf0f253: building
+12:36:50 [tasks/build_history] hist-bf0f253 rejected (verifier commit-tests): env-drift(SyntaxError)
+12:36:50 [tasks/build_history] 14/20 0d3639b: building
+12:36:51 [tasks/build_history] hist-0d3639b rejected (verifier commit-tests): env-drift(SyntaxError)
+12:36:51 [tasks/build_history] 15/20 46af29c: building
+12:36:52 [tasks/build_history] hist-46af29c rejected (verifier commit-tests): env-drift(SyntaxError)
+12:36:52 [tasks/build_history] 16/20 699e0c2: building
+12:36:57 [tasks/build_history] hist-699e0c2 built (verifier commit-tests), 5/10
+12:36:57 [tasks/build_history] 17/20 0ca38c8: building
+12:37:00 [tasks/build_history] hist-0ca38c8 rejected (verifier commit-tests): verifier-not-implementation-neutral(rewrite:unchanged)
+12:37:00 [tasks/build_history] 18/20 b8aca17: building
+12:37:03 [tasks/build_history] hist-b8aca17 built (verifier commit-tests), 6/10
+12:37:03 [tasks/build_history] 19/20 84f1c77: building
+12:37:20 [tasks/build_history] hist-84f1c77 built (verifier commit-tests), 7/10
+12:37:20 [tasks/build_history] 20/20 82ef300: building
+12:37:22 [tasks/build_history] hist-82ef300 rejected (verifier commit-tests): verifier-on-input:error_before_repo_call
+12:37:22 [tasks/build_history] attempted 20, built 7, rejected verifier-not-implementation-neutral=2 verifier-fails-on-solution=2 env-drift=5 verifier-imports-non-public-or-missing=1 verifier-on-input:error_before_repo_call=2 commit-tests-pass-on-input=1
+12:37:22 [tasks/build_history] done in 70.8s (13342 LLM tokens)
+12:37:22 [tasks/validate] start
+12:37:22 [tasks/validate] 12 tasks, 4 workers
+12:37:34 [tasks/validate] exc-toolz.dicttoolz-merge_with VALID (fail-before 9, pass-after 9, det 3/3)
+12:37:34 [tasks/validate] exc-toolz.dicttoolz-merge VALID (fail-before 13, pass-after 13, det 3/3)
+12:37:35 [tasks/validate] exc-toolz.functoolz-compose VALID (fail-before 6, pass-after 6, det 3/3)
+12:37:35 [tasks/validate] exc-toolz.itertoolz-groupby VALID (fail-before 9, pass-after 9, det 3/3)
+12:37:46 [tasks/validate] exc-toolz.sandbox.parallel-fold VALID (fail-before 1, pass-after 2, det 3/3)
+12:37:51 [tasks/validate] hist-2bd9139 VALID (fail-before 1, pass-after 1, det 3/3)
+12:37:52 [tasks/validate] hist-639043e VALID (fail-before 1, pass-after 1, det 3/3)
+12:37:52 [tasks/validate] hist-386c750 VALID (fail-before 1, pass-after 1, det 3/3)
+12:37:55 [tasks/validate] hist-699e0c2 VALID (fail-before 1, pass-after 1, det 3/3)
+12:37:59 [tasks/validate] hist-84f1c77 VALID (fail-before 1, pass-after 1, det 3/3)
+12:37:59 [tasks/validate] hist-8cdc7fe VALID (fail-before 1, pass-after 1, det 3/3)
+12:38:00 [tasks/validate] hist-b8aca17 VALID (fail-before 1, pass-after 1, det 3/3)
+12:38:00 [tasks/validate] 12/12 VALID
+12:38:00 [tasks/validate] done in 37.9s (0 LLM tokens)
+12:38:00 [tasks/instruct] start
+12:38:00 [tasks/instruct] exc-toolz.dicttoolz-merge: final (attempts 1, reused)
+12:38:00 [tasks/instruct] exc-toolz.dicttoolz-merge_with: final (attempts 1, reused)
+12:38:00 [tasks/instruct] exc-toolz.functoolz-compose: final (attempts 1, reused)
+12:38:01 [tasks/instruct] exc-toolz.itertoolz-groupby: final (attempts 1, reused)
+12:38:01 [tasks/instruct] exc-toolz.sandbox.parallel-fold: final (attempts 1, reused)
+12:38:01 [tasks/instruct] hist-2bd9139: final (attempts 1, reused)
+12:38:01 [tasks/instruct] hist-386c750: final (attempts 1, reused)
+12:38:01 [tasks/instruct] hist-639043e: final (attempts 1, reused)
+12:38:05 [tasks/instruct] hist-699e0c2: final (attempts 1)
+12:38:09 [tasks/instruct] hist-84f1c77: final (attempts 1)
+12:38:11 [tasks/instruct] hist-8cdc7fe: final (attempts 1, reused)
+12:38:11 [tasks/instruct] hist-b8aca17: final (attempts 1, reused)
+12:38:12 [tasks/instruct] tasks=12 final=12 failed=0 regenerations=0 reused=10 leak_rejections=0 reviewer_rejections=0
+12:38:12 [tasks/instruct] difficulty easy=6 hard=1 medium=5
+12:38:12 [tasks/instruct] done in 11.9s (20673 LLM tokens)
+12:38:12 [tasks/manifest] start
+12:38:12 [tasks/manifest] tasks/toolz/tasks.json
+12:38:12 [tasks/manifest] done in 0.0s (0 LLM tokens)
+12:38:12 [tasks/select] start
+12:38:12 [tasks/select] selected 10: exc-toolz.dicttoolz-merge, exc-toolz.dicttoolz-merge_with, exc-toolz.itertoolz-groupby, exc-toolz.sandbox.parallel-fold, hist-2bd9139, hist-386c750, hist-639043e, hist-699e0c2, hist-8cdc7fe, hist-b8aca17
+12:38:12 [tasks/select] types excision=4 history=6; difficulty easy=4 hard=1 medium=5; modules 5; output/toolz/tasks/selection.json
+12:38:12 [tasks/select] done in 0.0s (0 LLM tokens)
+tasks done: tasks/toolz (12/12 VALID)
+report: output/toolz/REPORT.md
+12:38:15 [tasks] done in 170.4s
+12:38:15 [summary] total 170s
+12:38:15 [summary/tasks] excision_funnel=0s build_excision=6s history_funnel=40s build_history=71s validate=38s instruct=12s manifest=0s select=0s
+12:38:15 [summary/llm] tokens total=102362 big=102362
+12:38:15 [summary/tasks] VALID 12/12
+12:38:15 [summary/select] 10 selected: exc-toolz.dicttoolz-merge, exc-toolz.dicttoolz-merge_with, exc-toolz.itertoolz-groupby, exc-toolz.sandbox.parallel-fold, hist-2bd9139, hist-386c750, hist-639043e, hist-699e0c2, hist-8cdc7fe, hist-b8aca17

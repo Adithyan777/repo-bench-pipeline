@@ -1,0 +1,116 @@
+{
+  "fail_before": [
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_curried.py::test_curried_namespace": "failed",
+        "toolz/tests/test_curried.py::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory": "failed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_factory": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg": "failed",
+        "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings": "failed",
+        "toolz/tests/test_tlz.py::test_tlz": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_curried.py::test_curried_namespace": "failed",
+        "toolz/tests/test_curried.py::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory": "failed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_factory": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg": "failed",
+        "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings": "failed",
+        "toolz/tests/test_tlz.py::test_tlz": "failed"
+      }
+    },
+    {
+      "exit_code": 1,
+      "outcomes": {
+        "toolz/tests/test_curried.py::test_curried_namespace": "failed",
+        "toolz/tests/test_curried.py::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory": "failed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_factory": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge": "failed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg": "failed",
+        "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings": "failed",
+        "toolz/tests/test_tlz.py::test_tlz": "failed"
+      }
+    }
+  ],
+  "identical": true,
+  "pass_after": [
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_curried.py::test_curried_namespace": "passed",
+        "toolz/tests/test_curried.py::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory": "passed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_factory": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg": "passed",
+        "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings": "passed",
+        "toolz/tests/test_tlz.py::test_tlz": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_curried.py::test_curried_namespace": "passed",
+        "toolz/tests/test_curried.py::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory": "passed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_factory": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg": "passed",
+        "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings": "passed",
+        "toolz/tests/test_tlz.py::test_tlz": "passed"
+      }
+    },
+    {
+      "exit_code": 0,
+      "outcomes": {
+        "toolz/tests/test_curried.py::test_curried_namespace": "passed",
+        "toolz/tests/test_curried.py::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_factory": "passed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestCustomMapping::test_merge_iterable_arg": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_factory": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDefaultDict::test_merge_iterable_arg": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_factory": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge": "passed",
+        "toolz/tests/test_dicttoolz.py::TestDict::test_merge_iterable_arg": "passed",
+        "toolz/tests/test_dicttoolz.py::test_merge_with_non_dict_mappings": "passed",
+        "toolz/tests/test_tlz.py::test_tlz": "passed"
+      }
+    }
+  ],
+  "runs": 3
+}

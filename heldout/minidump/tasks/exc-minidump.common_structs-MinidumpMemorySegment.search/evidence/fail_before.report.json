@@ -1,0 +1,316 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 366,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary",
+          "type": "Function"
+        },
+        {
+          "lineno": 299,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all",
+          "type": "Function"
+        },
+        {
+          "lineno": 314,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first",
+          "type": "Function"
+        },
+        {
+          "lineno": 327,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found",
+          "type": "Function"
+        },
+        {
+          "lineno": 340,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long",
+          "type": "Function"
+        },
+        {
+          "lineno": 352,
+          "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787297112.7095315,
+  "duration": 0.2736201286315918,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 6,
+    "failed": 6,
+    "total": 6
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 176,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.000166126003023237,
+        "longrepr": "self = <test_minidump_common_structs.TestMinidumpMemorySegmentSearch object at 0xffffbb1e0560>\n\n    def test_search_chunksize_boundary(self):\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        # Pattern spans across a small chunksize boundary\n        data = b\"A\" * 30 + b\"PATTERN\" + b\"B\" * 219\n        fh = FakeFileHandler(data)\n    \n>       result = seg.search(b\"PATTERN\", fh, find_first=True, chunksize=32)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:378: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <minidump.common_structs.MinidumpMemorySegment object at 0xffffbb34d2e0>\npattern = b'PATTERN'\nfile_handler = <test_minidump_common_structs.FakeFileHandler object at 0xffffbb34d670>\nfind_first = True, chunksize = 32\n\n    def search(self, pattern, file_handler, find_first=False, chunksize=50 * 1024):\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:176: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 378,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 176,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_search_chunksize_boundary",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 366,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_chunksize_boundary",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0001665840100031346,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001806250074878335,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 176,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.00013512599980458617,
+        "longrepr": "self = <test_minidump_common_structs.TestMinidumpMemorySegmentSearch object at 0xffffbb253650>\n\n    def test_search_find_all(self):\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        data = b\"X\" * 10 + b\"PATTERN\" + b\"Y\" * 20 + b\"PATTERN\" + b\"Z\" * 200\n        fh = FakeFileHandler(data)\n    \n>       result = seg.search(b\"PATTERN\", fh)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:310: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <minidump.common_structs.MinidumpMemorySegment object at 0xffffbb34dca0>\npattern = b'PATTERN'\nfile_handler = <test_minidump_common_structs.FakeFileHandler object at 0xffffbb34f110>\nfind_first = False, chunksize = 51200\n\n    def search(self, pattern, file_handler, find_first=False, chunksize=50 * 1024):\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:176: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 310,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 176,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_search_find_all",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 299,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_all",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00011041700781788677,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00016925000818446279,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 176,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.00014379200001712888,
+        "longrepr": "self = <test_minidump_common_structs.TestMinidumpMemorySegmentSearch object at 0xffffbb253980>\n\n    def test_search_find_first(self):\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        data = b\"X\" * 10 + b\"PATTERN\" + b\"Y\" * 20 + b\"PATTERN\" + b\"Z\" * 200\n        fh = FakeFileHandler(data)\n    \n>       result = seg.search(b\"PATTERN\", fh, find_first=True)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:325: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <minidump.common_structs.MinidumpMemorySegment object at 0xffffbb253740>\npattern = b'PATTERN'\nfile_handler = <test_minidump_common_structs.FakeFileHandler object at 0xffffbb1e03b0>\nfind_first = True, chunksize = 51200\n\n    def search(self, pattern, file_handler, find_first=False, chunksize=50 * 1024):\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:176: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 325,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 176,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_search_find_first",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 314,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_find_first",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00011604199244175106,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00019008399976883084,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 176,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.0001282090088352561,
+        "longrepr": "self = <test_minidump_common_structs.TestMinidumpMemorySegmentSearch object at 0xffffbb253d10>\n\n    def test_search_not_found(self):\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        data = b\"X\" * 256\n        fh = FakeFileHandler(data)\n    \n>       result = seg.search(b\"PATTERN\", fh)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:338: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <minidump.common_structs.MinidumpMemorySegment object at 0xffffbb1e0680>\npattern = b'PATTERN'\nfile_handler = <test_minidump_common_structs.FakeFileHandler object at 0xffffbb1e0590>\nfind_first = False, chunksize = 51200\n\n    def search(self, pattern, file_handler, find_first=False, chunksize=50 * 1024):\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:176: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 338,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 176,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_search_not_found",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 327,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_not_found",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00010258400288876146,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001781250030035153,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 176,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.0001416669983882457,
+        "longrepr": "self = <test_minidump_common_structs.TestMinidumpMemorySegmentSearch object at 0xffffbb1e1310>\n\n    def test_search_pattern_too_long(self):\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x10\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1010\n    \n        fh = FakeFileHandler(b\"X\" * 16)\n    \n>       result = seg.search(b\"PATTERN_TOO_LONG\", fh)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/generated/test_minidump_common_structs.py:350: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <minidump.common_structs.MinidumpMemorySegment object at 0xffffbb2ae4e0>\npattern = b'PATTERN_TOO_LONG'\nfile_handler = <test_minidump_common_structs.FakeFileHandler object at 0xffffbb2adf40>\nfind_first = False, chunksize = 51200\n\n    def search(self, pattern, file_handler, find_first=False, chunksize=50 * 1024):\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:176: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 350,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 176,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_search_pattern_too_long",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 340,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_pattern_too_long",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00013387500075623393,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00021429199841804802,
+        "outcome": "passed"
+      }
+    },
+    {
+      "call": {
+        "crash": {
+          "lineno": 176,
+          "message": "NotImplementedError: excised",
+          "path": "/repo/minidump/common_structs.py"
+        },
+        "duration": 0.00020149999181739986,
+        "longrepr": "self = <test_minidump_common_structs.TestMinidumpMemorySegmentSearch object at 0xffffbb1e01d0>\n\n    def test_search_restores_position(self):\n        seg = MinidumpMemorySegment()\n        seg.start_virtual_address = 0x1000\n        seg.size = 0x100\n        seg.start_file_address = 0x0\n        seg.end_virtual_address = 0x1100\n    \n        data = b\"X\" * 256\n        fh = FakeFileHandler(data)\n        fh.seek(42, 0)\n    \n>       seg.search(b\"NOTFOUND\", fh)\n\ntests/generated/test_minidump_common_structs.py:364: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <minidump.common_structs.MinidumpMemorySegment object at 0xffffbb2ae2a0>\npattern = b'NOTFOUND'\nfile_handler = <test_minidump_common_structs.FakeFileHandler object at 0xffffbb2ae330>\nfind_first = False, chunksize = 51200\n\n    def search(self, pattern, file_handler, find_first=False, chunksize=50 * 1024):\n>       raise NotImplementedError(\"excised\")\nE       NotImplementedError: excised\n\nminidump/common_structs.py:176: NotImplementedError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 364,
+            "message": "",
+            "path": "tests/generated/test_minidump_common_structs.py"
+          },
+          {
+            "lineno": 176,
+            "message": "NotImplementedError",
+            "path": "minidump/common_structs.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_search_restores_position",
+        "TestMinidumpMemorySegmentSearch",
+        "test_minidump_common_structs.py",
+        "generated",
+        "tests",
+        "repo",
+        ""
+      ],
+      "lineno": 352,
+      "nodeid": "tests/generated/test_minidump_common_structs.py::TestMinidumpMemorySegmentSearch::test_search_restores_position",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.00014804198872298002,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00018233399896416813,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

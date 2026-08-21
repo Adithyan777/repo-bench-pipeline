@@ -1,0 +1,65 @@
+{
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "lineno": 107,
+          "nodeid": "toolz/tests/test_itertoolz.py::test_isiterable",
+          "type": "Function"
+        }
+      ]
+    }
+  ],
+  "created": 1787296057.1404097,
+  "duration": 0.27893924713134766,
+  "environment": {},
+  "exitcode": 1,
+  "root": "/repo",
+  "summary": {
+    "collected": 1,
+    "failed": 1,
+    "total": 1
+  },
+  "tests": [
+    {
+      "call": {
+        "crash": {
+          "lineno": 133,
+          "message": "AssertionError: assert False is True\n +  where False = isiterable(<test_itertoolz.test_isiterable.<locals>.GetItemIterable object at 0xffffb35c6ff0>)\n +    where <test_itertoolz.test_isiterable.<locals>.GetItemIterable object at 0xffffb35c6ff0> = <class 'test_itertoolz.test_isiterable.<locals>.GetItemIterable'>()",
+          "path": "/repo/toolz/tests/test_itertoolz.py"
+        },
+        "duration": 0.000813627993920818,
+        "longrepr": "def test_isiterable():\n        # objects that have a __iter__() or __getitem__() method are iterable\n        # https://docs.python.org/3/library/functions.html#iter\n        class IterIterable:\n            def __iter__(self):\n                return iter([\"a\", \"b\", \"c\"])\n    \n        class GetItemIterable:\n            def __getitem__(self, item):\n                return [\"a\", \"b\", \"c\"][item]\n    \n        # \"if a class sets __iter__() to None, the class is not iterable\"\n        # https://docs.python.org/3/reference/datamodel.html#special-method-names\n        class NotIterable:\n            __iter__ = None\n    \n        class NotIterableEvenWithGetItem:\n            __iter__ = None\n    \n            def __getitem__(self, item):\n                return [\"a\", \"b\", \"c\"][item]\n    \n        assert isiterable([1, 2, 3]) is True\n        assert isiterable('abc') is True\n        assert isiterable(IterIterable()) is True\n>       assert isiterable(GetItemIterable()) is True\nE       AssertionError: assert False is True\nE        +  where False = isiterable(<test_itertoolz.test_isiterable.<locals>.GetItemIterable object at 0xffffb35c6ff0>)\nE        +    where <test_itertoolz.test_isiterable.<locals>.GetItemIterable object at 0xffffb35c6ff0> = <class 'test_itertoolz.test_isiterable.<locals>.GetItemIterable'>()\n\ntoolz/tests/test_itertoolz.py:133: AssertionError",
+        "outcome": "failed",
+        "traceback": [
+          {
+            "lineno": 133,
+            "message": "AssertionError",
+            "path": "toolz/tests/test_itertoolz.py"
+          }
+        ]
+      },
+      "keywords": [
+        "test_isiterable",
+        "test_itertoolz.py",
+        "tests",
+        "toolz",
+        "repo",
+        ""
+      ],
+      "lineno": 107,
+      "nodeid": "toolz/tests/test_itertoolz.py::test_isiterable",
+      "outcome": "failed",
+      "setup": {
+        "duration": 0.0004912099975626916,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00023020899971015751,
+        "outcome": "passed"
+      }
+    }
+  ]
+}
